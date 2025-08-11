@@ -7,7 +7,8 @@
   /* Semantic colors */
   --primary: #e8505e;
   --primary-dark: #cf464f;
-  --primary-light: #fff7f5;
+  --primary-light: #ff969f;
+  --primary-lighter: #fff7f5;
   --secondary: #bbfdf5;
   --secondary-light: #c0e6f0;
   --accent: #d5fdad;
@@ -58,6 +59,7 @@
   --color-primary: var(--primary);
   --color-primary-dark: var(--primary-dark);
   --color-primary-light: var(--primary-light);
+  --color-primary-lighter: var(--primary-lighter);
   --color-secondary: var(--secondary);
   --color-secondary-light: var(--secondary-light);
   --color-accent: var(--accent);

@@ -4,7 +4,7 @@ import BlogCard from '@/shared/ui/molecules/blog-card';
 
 const Blogs: React.FC = () => {
   return (
-    <section className="common-component bg-primary-light text-black">
+    <section className="common-component bg-primary-lighter text-black">
       <div className="common-container px-6 pt-8 pb-12 md:px-24 md:pt-18 md:pb-24 !max-w-[1336px] flex-col">
         <h2 className="text-[1.1rem] md:text-3xl font-semibold leading-[1.25] tracking-normal">
           {blogPageData.title}

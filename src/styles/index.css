@@ -27,6 +27,8 @@ body {
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: var(--color-surface);
+  background: url('images/background_image_1.png') no-repeat center fixed var(--color-surface);
+  background-size: cover;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
