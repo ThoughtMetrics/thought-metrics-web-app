@@ -7,8 +7,6 @@ const CustomButtonAtom: React.FC<CustomButtonProps> = ({
   label,
   className = '',
 }) => {
-  console.log('className:', className);
-
   return (
     <div className="w-full">
       <button

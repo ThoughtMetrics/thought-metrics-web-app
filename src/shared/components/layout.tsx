@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Header from './header';
 import Footer from './footer';
 import { Breadcrumbs } from './breadcrumbs';
+import ScrollToTop from './scroll-to-top';
 
 const Layout: React.FC = () => {
   const location = useLocation();
@@ -11,7 +12,7 @@ const Layout: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-
+      <ScrollToTop />
       <main className="flex-1 relative">
         {showBreadcrumbs && (
           <div className="absolute w-full flex justify-center z-50">

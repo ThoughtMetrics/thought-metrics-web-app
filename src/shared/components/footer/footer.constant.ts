@@ -1,6 +1,8 @@
+import { ROUTES } from '@/routes/routeConfig';
+
 export interface FooterLinkData {
   label: string;
-  href: string;
+  path: string;
   isBold?: string;
 }
 
@@ -32,21 +34,45 @@ export const footerData = {
     {
       title: 'Research Methods',
       links: [
-        { label: 'Qualitative Research', href: '#' },
-        { label: 'Quantitative Research', href: '#' },
-        { label: 'Recruitment and Fieldwork', href: '#' },
-        { label: 'Surveys', href: '#' },
-        { label: 'Focus Group Discussions', href: '#' },
-        { label: 'Quality Checks and Data Security', href: '#' },
+        {
+          label: 'Qualitative Research',
+          path: ROUTES.RESEARCH_METHODS_QUANTITATIVE_RESEARCH,
+        },
+        {
+          label: 'Quantitative Research',
+          path: ROUTES.RESEARCH_METHODS_QUALITATIVE_RESEARCH,
+        },
+        {
+          label: 'Recruitment and Fieldwork',
+          path: ROUTES.RESEARCH_METHODS_FIELDWORK,
+        },
+        { label: 'Surveys', path: ROUTES.RESEARCH_METHODS_SURVEYS },
+        {
+          label: 'Focus Group Discussions',
+          path: ROUTES.RESEARCH_METHODS_FOCUS_GROUP,
+        },
+        {
+          label: 'Quality Checks and Data Security',
+          path: ROUTES.RESEARCH_METHODS_QUALITY,
+        },
       ],
     },
     {
       title: 'Capabilities',
       links: [
-        { label: 'Branding and Advertising Communication', href: '#' },
-        { label: 'Market Opportunity Research', href: '#' },
-        { label: 'Product Research', href: '#' },
-        { label: 'Customer Research and Segmentation', href: '#' },
+        {
+          label: 'Branding and Advertising Communication',
+          path: ROUTES.CAPABILITY_BRANDING_ADVERTISING,
+        },
+        {
+          label: 'Market Opportunity Research',
+          path: ROUTES.CAPABILITY_MARKET_OPPORTUNITY,
+        },
+        { label: 'Product Research', path: ROUTES.CAPABILITY_PRODUCT_RESEARCH },
+        {
+          label: 'Customer Research and Segmentation',
+          path: ROUTES.CAPABILITY_CUSTOMER_RESEARCH,
+        },
       ],
     },
     {

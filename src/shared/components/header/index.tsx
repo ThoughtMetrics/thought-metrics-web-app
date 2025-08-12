@@ -118,7 +118,7 @@ const Header: React.FC = () => {
         >
           {/* Desktop View */}
           <nav className="flex-nowrap gap-3 xl:gap-4 xxl:gap-6 wide:gap-5 py-2 xl:py-3.5 xxl:py-4 hidden md:flex items-center">
-            <Link to={ROUTES.HOME}>
+            <Link viewTransition={true} to={ROUTES.HOME}>
               <Logo className="w-34 xl:w-45 xxl:w-52" />
             </Link>
             {navigationItems.map((item) => (
@@ -147,7 +147,7 @@ const Header: React.FC = () => {
 
           {/* Mobile view */}
           <nav className="w-full py-4 px-5 items-center justify-between flex md:hidden">
-            <Link to={ROUTES.HOME}>
+            <Link viewTransition={true} to={ROUTES.HOME}>
               <Logo className="w-52" />
             </Link>
             <button
@@ -216,6 +216,7 @@ const Header: React.FC = () => {
                     {column.items.length > 0 &&
                       column.items.map((item, itemIndex) => (
                         <Link
+                          viewTransition={true}
                           onClick={() => handleDropdownLeave()}
                           key={itemIndex + item.label}
                           to={'path' in item ? item.path : '#'}
@@ -291,6 +292,7 @@ const Header: React.FC = () => {
                             )}
                             {column.items.map((subItem, subIndex) => (
                               <Link
+                                viewTransition={true}
                                 key={subIndex}
                                 to={'path' in subItem ? subItem.path : '#'}
                                 onClick={() => handleDropdownLeave()}

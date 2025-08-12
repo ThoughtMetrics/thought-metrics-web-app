@@ -1,6 +1,7 @@
 import React from 'react';
 import { footerData } from './footer.constant';
 import { LogoWhite } from '@/assets';
+import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
   const scrollToTop = () => {
@@ -40,20 +41,19 @@ const Footer: React.FC = () => {
         {/* Navigation */}
         <div className="grid grid-cols-2 md:flex gap-2 xxl:gap-3 wide:gap-4 text-md xxl:text-base wide:text-lg">
           {footerData.sections.map((section) => (
-            <nav
-              key={section.title}
-              className="flex flex-col gap-1"
-            >
+            <nav key={section.title} className="flex flex-col gap-1">
               <h4 className="font-semibold m-0">{section.title}</h4>
               <ul className="list-none p-0 m-0 flex flex-col gap-1 xl:gap-1 xxl:gap-1.5 wide:gap-2">
-                {section.links.map((link) => (
+                {section.links.map((link, index) => (
                   <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className={`font-light hover:underline ${link.isBold && '!font-bold'}`}
+                    <Link
+                      viewTransition={true}
+                      key={index + link.label}
+                      to={'path' in link ? link.path : '#'}
+                      className="text-xxs xl:text-sm xxl:text-lg hover:underline cursor-pointer tracking-wider"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

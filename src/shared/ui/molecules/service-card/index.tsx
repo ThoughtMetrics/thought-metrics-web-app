@@ -15,7 +15,6 @@ const ServiceCard: React.FC<any> = ({
   iconClassName = '',
   contentClassName = '',
 }) => {
-  console.log(contentClassName);
   return (
     <div
       key={index + service.title}
