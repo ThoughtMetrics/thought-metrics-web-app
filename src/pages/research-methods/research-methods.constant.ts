@@ -6,7 +6,6 @@ import {
   IllustrationUsecaseQuantitativeResearchIcon,
   LocatorPinIcon,
   RobustSamplingReachIcon,
-  SlideBrickIcon,
   StackIllustration,
   SurveyDesignIcon,
 } from '@/assets';
@@ -242,7 +241,7 @@ export const researchMethods = {
     },
     actionSection: {
       title:
-        "Make decisions backed by data. Explore our robust quantitative research solutions.",
+        'Make decisions backed by data. Explore our robust quantitative research solutions.',
       illustration: StackIllustration,
       img: '/images/research_method_girl_1.png',
       actionLabel: "Let's Connect",

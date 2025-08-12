@@ -1,8 +1,6 @@
-import { ArrowRed, HomeIcon } from '@/assets';
-import type { BreadcrumbItem } from '@/core/interfaces/breadcrumb-item.interface';
 import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 interface BreadcrumbProps {
   className?: string;
