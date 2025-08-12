@@ -8,8 +8,8 @@ const HeroSection: React.FC<any> = ({ heroSection }: any) => {
       <div className="absolute w-full h-full flex justify-end pt-10 md:p-0">
         <IllustrationSquares className="h-[17rem] md:h-[98%] w-auto stroke-2 md:stroke-1 stroke-primary" />
       </div>
-      <div className="absolute w-full h-full flex justify-end pt-24 md:pt-0 md:items-center">
-        <div className="pl-[8%] pr-[25%] md:pr-[15%] xl:pr-[10%] xxl:pr-[15%] wide:pr-[12%]">
+      <div className="absolute w-full h-full flex justify-end pt-18 md:pt-0 md:items-center">
+        <div className="pl-[6%] pr-[8%] xxl:pr-[15%] wide:pr-[12%]">
           <CustomImageAtom
             src={heroSection.illustration.img}
             size={heroSection.illustration.size}

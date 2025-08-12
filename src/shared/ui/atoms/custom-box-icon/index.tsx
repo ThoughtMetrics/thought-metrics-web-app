@@ -16,13 +16,13 @@ const CustomBoxIcon: React.FC<any> = ({
   return (
     <div
       className={cn(
-        'w-16 h-16 rounded-md flex justify-center items-center px-3',
+        'w-16 h-16 rounded-md flex justify-center items-center p-2',
         isBorder ? 'border-black border-1' : '',
         isActive && BG_COLORS[bgColor],
         className
       )}
     >
-      <Icon />
+      <Icon className="w-full h-full" />
     </div>
   );
 };

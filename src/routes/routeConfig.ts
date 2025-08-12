@@ -22,6 +22,16 @@ export const ROUTES = {
   CAPABILITY_MARKET_OPPORTUNITY: '/capabilities/market_opportunity',
   CAPABILITY_PRODUCT_RESEARCH: '/capabilities/product_research',
   CAPABILITY_CUSTOMER_RESEARCH: '/capabilities/customer_research',
+  /* Research Methods */
+  RESEARCH_METHODS: '/research_methods',
+  RESEARCH_METHODS_QUANTITATIVE_RESEARCH:
+    '/research_methods/quantitative_research',
+  RESEARCH_METHODS_QUALITATIVE_RESEARCH:
+    '/research_methods/qualitative_research',
+  RESEARCH_METHODS_FIELDWORK: '/research_methods/fieldwork',
+  RESEARCH_METHODS_FOCUS_GROUP: '/research_methods/focus_group',
+  RESEARCH_METHODS_SURVEYS: '/research_methods/surveys',
+  RESEARCH_METHODS_QUALITY: '/research_methods/quality',
   /* Other Routes */
   NOT_FOUND: '*',
 } as const;
@@ -46,6 +56,7 @@ export const generateBreadcrumbsFromPath = (
 
     // Custom labels for known segments
     const segmentLabels: Record<string, string> = {
+      /* Industries */
       industries: 'Industries',
       advertising_marketing: 'Advertising and Marketing',
       internet: 'Internet and Media',
@@ -58,10 +69,20 @@ export const generateBreadcrumbsFromPath = (
       fmcg: 'FMCG',
       investor: 'Investor',
       technology: 'Technology',
+      /* Capabilities */
+      capabilities: 'Capabilities',
       branding_advertising: 'Branding and Advertising Communication',
       market_opportunity: 'Market Opportunity Research',
       product_research: 'Product Research',
       customer_research: 'Customer Research and Segmentation',
+      /* Research Methods */
+      research_methods: 'Research Methods',
+      quantitative_research: 'Quantitative Research',
+      qualitative_research: 'Qualitative Research',
+      fieldwork: 'Recruitment and Fieldwork',
+      focus_group: 'Focus Group Discussions',
+      surveys: 'Surveys',
+      quality: 'Quality Checks and Data Security',
     };
 
     if (segmentLabels[segment]) {

@@ -1,7 +1,5 @@
 import React from 'react';
 import { carouselData } from './hero-carousel.constant';
-import { cn } from '@/core/utils/cn';
-import { HeroCarousel1 } from '@/assets';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectFade, Pagination } from 'swiper/modules';
 import './hero-carousel.style.css';
@@ -36,23 +34,10 @@ const HeroCarousel: React.FC = () => {
             >
               <div className="grid grid-cols-[48%_52%] w-full h-full">
                 {/* Image Section */}
-                <div className="relative h-full w-full flex items-center justify-end">
-                  {(() => {
-                    const ImgComponent = item.imgComponent;
-                    return ImgComponent ? (
-                      <ImgComponent
-                        className={cn(
-                          'w-full xl:w-[38rem] xxl:w-[45rem] wide:w-[55rem] h-full object-contain scale-100',
-                          index === 0
-                            ? 'p-[4rem] max-h-[25rem] xl:max-h-[28rem] xxl:max-h-[33rem] wide:max-w-[45rem] wide:max-h-[35rem] pr-0'
-                            : '',
-                          index === 1
-                            ? 'p-[3rem] max-h-[25rem] xl:max-h-[30rem] xxl:max-h-[37rem] wide:w-[45rem] wide:min-h-[40rem] pr-0'
-                            : ''
-                        )}
-                      />
-                    ) : null;
-                  })()}
+                <div className="relative h-full w-full flex justify-end items-center">
+                  <div className="w-[30rem] xxl:w-fit px-[4rem] xxl:px-[8rem] py-[2rem]">
+                    <img src={item.src} alt={item.alt} />
+                  </div>
                 </div>
 
                 {/* Text Section */}
@@ -98,7 +83,11 @@ const HeroCarousel: React.FC = () => {
         </div>
         <CustomButtonAtom label={carouselData[0].buttonLabel} />
 
-        <HeroCarousel1 className="pt-10 w-full h-70 object-contain scale-100 py-0" />
+        <img
+          src={carouselData[0].src}
+          alt={carouselData[0].alt}
+          className="pt-10 w-full h-70 object-contain scale-100 py-0"
+        />
       </div>
     </section>
   );

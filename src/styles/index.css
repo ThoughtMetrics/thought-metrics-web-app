@@ -25,9 +25,7 @@ body {
   overflow: hidden;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: var(--color-surface);
-  background: url('images/background_image_1.png') no-repeat center fixed var(--color-surface);
+  background: var(--color-surface) url('/images/background_image_1.png') no-repeat fixed center;
   background-size: cover;
 
   font-synthesis: none;

@@ -1,0 +1,5 @@
+.research-method-component {
+  background: var(--color-surface) url('/images/background_image_3.png')
+    no-repeat fixed center;
+  background-size: cover;
+}

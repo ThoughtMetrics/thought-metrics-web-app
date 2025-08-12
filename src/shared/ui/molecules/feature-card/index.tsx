@@ -2,7 +2,7 @@ import { cn } from '@/core/utils/cn';
 
 const BG_COLORS: Record<string, string> = {
   default: 'bg-transparent',
-  white: 'bg-white',
+  white: 'bg-white/20',
 };
 
 const FeatureCard: React.FC<any> = ({ feature, index, className }) => {
@@ -32,15 +32,13 @@ const BrandAdFeatureCard: React.FC<any> = ({
   className,
   contentClassName = '',
 }) => {
-  const bgColor =
-    feature.bgColor && `${BG_COLORS[feature.bgColor]}/${feature.bgOpacity}`;
   return (
     <div
       key={index + feature.title}
       className={cn(
         'text-white rounded-lg flex flex-col gap-1 md:gap-2 text-md md:text-base',
         feature.isBorder ? 'border-white border-1' : '',
-        bgColor,
+        feature.bgColor && `${BG_COLORS[feature.bgColor]}`,
         className
       )}
     >
@@ -63,8 +61,6 @@ const BrandAdFeatureCard: React.FC<any> = ({
 };
 
 const MarketOptFeatureCard: React.FC<any> = ({ feature, index, className }) => {
-  const bgColor =
-    feature.bgColor && `${BG_COLORS[feature.bgColor]}/${feature.bgOpacity}`;
   return (
     <div
       key={index + feature.title}
@@ -74,7 +70,7 @@ const MarketOptFeatureCard: React.FC<any> = ({ feature, index, className }) => {
         className={cn(
           'w-full h-full flex text-white rounded-md font-semibold items-center justify-center text-center text-xs md:text-base p-1 md:px-2 md:py-4',
           feature.isBorder ? 'border-white border-1' : '',
-          bgColor,
+          feature.bgColor && `${BG_COLORS[feature.bgColor]}`,
           'shadow-lg'
         )}
       >

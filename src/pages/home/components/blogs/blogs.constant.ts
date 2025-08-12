@@ -10,9 +10,8 @@ export interface BlogCardData {
 
 export const blogPageData = {
   title: 'Fresh Ideas to Help You Reach New Heights.',
-  cards: [
+  items: [
     {
-      id: 'blog-1',
       src: '/illustrations/illustration-child-shine.svg',
       alt: 'AI & Empathy: Can Machines Decode Human Emotions in UX?',
       type: 'Insight',
@@ -22,7 +21,6 @@ export const blogPageData = {
       link: '#',
     },
     {
-      id: 'blog-2',
       src: '/illustrations/illustration-growth-chart.svg',
       alt: '2025 Trends in AI-Driven User Research: Benchmarks',
       type: 'Report',
@@ -32,7 +30,6 @@ export const blogPageData = {
       link: '#',
     },
     {
-      id: 'blog-1',
       src: '/illustrations/illustration-communicate.svg',
       alt: 'Beyond Speed: The Strategic Value of AI in Qualitative Research',
       type: 'Whitepaper',
@@ -42,7 +39,6 @@ export const blogPageData = {
       link: '#',
     },
     {
-      id: 'blog-1',
       src: '/illustrations/illustration-work-desk.svg',
       alt: 'How AI is Changing the Way We Ask Questions',
       type: 'Blog',

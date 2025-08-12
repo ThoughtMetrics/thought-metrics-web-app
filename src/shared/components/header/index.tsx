@@ -229,7 +229,7 @@ const Header: React.FC = () => {
               </div>
             )}
             <div className="absolute right-0 pr-13">
-              <StackIllustration className="w-21 xl:w-25 xxl:w-32" />
+              <StackIllustration className="w-21 xl:w-25 xxl:w-32 fill-current text-white" />
             </div>
           </div>
         </div>

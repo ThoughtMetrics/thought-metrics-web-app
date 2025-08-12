@@ -19,16 +19,31 @@ export const headerDropdownData = {
       columns: [
         {
           items: [
-            { label: 'Quantitative Research' },
-            { label: 'Qualitative Research' },
-            { label: 'Recruitment and Fieldwork' },
+            {
+              label: 'Quantitative Research',
+              path: ROUTES.RESEARCH_METHODS_QUANTITATIVE_RESEARCH,
+            },
+            {
+              label: 'Qualitative Research',
+              path: ROUTES.RESEARCH_METHODS_QUALITATIVE_RESEARCH,
+            },
+            {
+              label: 'Recruitment and Fieldwork',
+              path: ROUTES.RESEARCH_METHODS_FIELDWORK,
+            },
           ],
         },
         {
           items: [
-            { label: 'Surveys' },
-            { label: 'Focus Group Discussions' },
-            { label: 'Quality Checks and Data Security' },
+            { label: 'Surveys', path: ROUTES.RESEARCH_METHODS_SURVEYS },
+            {
+              label: 'Focus Group Discussions',
+              path: ROUTES.RESEARCH_METHODS_FOCUS_GROUP,
+            },
+            {
+              label: 'Quality Checks and Data Security',
+              path: ROUTES.RESEARCH_METHODS_QUALITY,
+            },
           ],
         },
       ],

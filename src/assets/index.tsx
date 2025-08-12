@@ -22,25 +22,6 @@ export {
 };
 
 /* Home Page */
-//Hero Carousel SVGs
-import HeroCarousel1 from './svgs/hero-carousel-1.svg?react';
-import HeroCarousel2 from './svgs/hero-carousel-2.svg?react';
-
-import WingOne from './svgs/hero-carousel-3-wing-1.svg?react';
-import WingTwo from './svgs/hero-carousel-3-wing-2.svg?react';
-
-const HeroCarousel3: React.FC<{ className?: string }> = ({ className }) => {
-  return (
-    <div className={className}>
-      <div className="relative w-full h-full">
-        <WingOne className="stack-svg" />
-        <WingTwo className="stack-svg" />
-      </div>
-    </div>
-  );
-};
-
-export { HeroCarousel1, HeroCarousel2, HeroCarousel3 };
 
 //Solutions Insights SVGs
 import PersonWithPhone from './svgs/illustration-model.svg?react';
@@ -210,3 +191,94 @@ export { MarketOptFeatureIllustration };
 /* Blog Illustration */
 import ResourcesIllustration from './svgs/resources.svg?react';
 export { ResourcesIllustration };
+
+/* Research Methods Page ICONS & Illustrations */
+import AccessibilityIcon from './svgs/accessibility.svg?react';
+import AdvancedAnalyticsIcon from './svgs/advanced-analytics.svg?react';
+import AIFeedbackLoopsIcon from './svgs/ai-feedback-loops.svg?react';
+import AutomatedCallingIcon from './svgs/automated-calling.svg?react';
+import AutomationIcon from './svgs/automation.svg?react';
+import CaptureMomentReactionIcon from './svgs/capture-moment-reaction.svg?react';
+import ComplianceEthicsIcon from './svgs/compliance-ethics.svg?react';
+import ConvenienceIcon from './svgs/convenience.svg?react';
+import CostEfficiencyIcon from './svgs/cost-efficiency.svg?react';
+import CustomizationInnovationIcon from './svgs/customization-innovation.svg?react';
+import DataAualityAssuranceIcon from './svgs/data-auality-assurance.svg?react';
+import DataProcessingIcon from './svgs/data-processing.svg?react';
+import DesignIcon from './svgs/design.svg?react';
+import DesignedModeratedExpertsIcon from './svgs/designed-moderated-experts.svg?react';
+import EthicalOversightIcon from './svgs/ethical-oversight.svg?react';
+import FasterInsightfulReportingIcon from './svgs/faster-insightful-reporting.svg?react';
+import FieldworkManagementIcon from './svgs/fieldwork-management.svg?react';
+import FlexibleFormatsIcon from './svgs/flexible-formats.svg?react';
+import FraudDetectionQualityControlIcon from './svgs/fraud-detection-quality-control.svg?react';
+import OperationalEfficiencyIcon from './svgs/operational-efficiency.svg?react';
+import PersonalTouchIcon from './svgs/personal-touch.svg?react';
+import RealTimeInsightsIcon from './svgs/real-time-insights.svg?react';
+import ResearchDMRIcon from './svgs/research-d-m-r.svg?react';
+import RobustSamplingReachIcon from './svgs/robust-sampling-reach.svg?react';
+import SamplingIcon from './svgs/sampling.svg?react';
+import ScalableProjectsIcon from './svgs/scalable-projects.svg?react';
+import SmartSurveyDesignIcon from './svgs/smart-survey-design.svg?react';
+import SmarterParticipantSelectionIcon from './svgs/smarter-participant-selection.svg?react';
+import SpeedIcon from './svgs/speed.svg?react';
+import SurfaceFeedbackIcon from './svgs/surface-feedback.svg?react';
+import SurveyDesignIcon from './svgs/survey-design.svg?react';
+import SurveyReportsIcon from './svgs/survey-reports.svg?react';
+import UnderstandConsumerHabitsIcon from './svgs/understand-consumer-habits.svg?react';
+import ArrowIcon from './svgs/→.svg?react';
+
+/* Illustrations */
+import GreyEllipseIcon from './illustrations/grey-ellipse.svg?react';
+import IllustrationDataSecurityIcon from './illustrations/illustration-data-security.svg?react';
+import IllustrationLoginIcon from './illustrations/illustration-login.svg?react';
+import IllustrationParticipantQualityIcon from './illustrations/illustration-participant-quality.svg?react';
+import IllustrationRightRespondentsIcon from './illustrations/illustration-right-respondents.svg?react';
+import IllustrationUsecaseQualitativeResearchIcon from './illustrations/illustration-usecase-qualitative-research.svg?react';
+import IllustrationUsecaseQuantitativeResearchIcon from './illustrations/illustration-usecase-quantitative-research.svg?react';
+import RedEllipseIcon from './illustrations/red-ellipse.svg?react';
+
+export {
+  AccessibilityIcon,
+  AdvancedAnalyticsIcon,
+  AIFeedbackLoopsIcon,
+  AutomatedCallingIcon,
+  AutomationIcon,
+  CaptureMomentReactionIcon,
+  ComplianceEthicsIcon,
+  ConvenienceIcon,
+  CostEfficiencyIcon,
+  CustomizationInnovationIcon,
+  DataAualityAssuranceIcon,
+  DataProcessingIcon,
+  DesignIcon,
+  DesignedModeratedExpertsIcon,
+  EthicalOversightIcon,
+  FasterInsightfulReportingIcon,
+  FieldworkManagementIcon,
+  FlexibleFormatsIcon,
+  FraudDetectionQualityControlIcon,
+  OperationalEfficiencyIcon,
+  PersonalTouchIcon,
+  RealTimeInsightsIcon,
+  ResearchDMRIcon,
+  RobustSamplingReachIcon,
+  SamplingIcon,
+  ScalableProjectsIcon,
+  SmartSurveyDesignIcon,
+  SmarterParticipantSelectionIcon,
+  SpeedIcon,
+  SurfaceFeedbackIcon,
+  SurveyDesignIcon,
+  SurveyReportsIcon,
+  UnderstandConsumerHabitsIcon,
+  GreyEllipseIcon,
+  ArrowIcon,
+  IllustrationDataSecurityIcon,
+  IllustrationLoginIcon,
+  IllustrationParticipantQualityIcon,
+  IllustrationRightRespondentsIcon,
+  IllustrationUsecaseQualitativeResearchIcon,
+  IllustrationUsecaseQuantitativeResearchIcon,
+  RedEllipseIcon,
+};

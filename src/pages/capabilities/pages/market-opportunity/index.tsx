@@ -2,7 +2,7 @@ import HeroSection from '@/shared/ui/templates/hero-section';
 import { capabilities } from '../../capabilities.constant';
 import { CapabilityActionSection } from '@/shared/ui/templates/action-section';
 import { MarketOpportunitySection } from '@/shared/ui/templates/service-section';
-import QuestionarySection from '@/shared/ui/templates/questionary-section';
+import { QuestionarySection } from '@/shared/ui/templates/questionary-section';
 import MarketOptFeatureSection from './components/market-opt-feature-section';
 import MarketOptB2BServices from './components/market-opt-b2b-services';
 const CapabilitiesMarketOpportunityPage: React.FC = () => {

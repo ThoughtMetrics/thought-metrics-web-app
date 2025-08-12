@@ -29,6 +29,13 @@ import CapabilitiesCustomerResearchPage from '@/pages/capabilities/pages/custome
 import CapabilitiesMarketOpportunityPage from '@/pages/capabilities/pages/market-opportunity';
 import CapabilitiesProductResearchPage from '@/pages/capabilities/pages/product-research';
 import CapabilitiesPage from '@/pages/capabilities';
+import ResearchMethodsPage from '@/pages/research-methods';
+import ResearchMethodQuantitativeResearch from '@/pages/research-methods/pages/quantitative-research';
+import ResearchMethodQualitativeResearch from '@/pages/research-methods/pages/qualitative-research';
+import ResearchMethodFieldwork from '@/pages/research-methods/pages/fieldwork';
+import ResearchMethodFocusGroup from '@/pages/research-methods/pages/focus-group';
+import ResearchMethodSurveys from '@/pages/research-methods/pages/surveys';
+import ResearchMethodQuality from '@/pages/research-methods/pages/quality';
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -59,6 +66,17 @@ export const router = createBrowserRouter(
         <Route path="market_opportunity" element={<CapabilitiesMarketOpportunityPage />} />
         <Route path="product_research" element={<CapabilitiesProductResearchPage />} />
         <Route path="customer_research" element={<CapabilitiesCustomerResearchPage />} />
+      </Route>
+
+      {/* Research Methods Routes with Nested Structure */}
+      <Route path="research_methods" element={<ResearchMethodsPage />}>
+        <Route index element={<Navigate to="/research_methods" replace />} />
+        <Route path="quantitative_research" element={<ResearchMethodQuantitativeResearch />} />
+        <Route path="qualitative_research" element={<ResearchMethodQualitativeResearch />} />
+        <Route path="fieldwork" element={<ResearchMethodFieldwork />} />
+        <Route path="focus_group" element={<ResearchMethodFocusGroup />} />
+        <Route path="surveys" element={<ResearchMethodSurveys />} />
+        <Route path="quality" element={<ResearchMethodQuality />} />
       </Route>
 
       {/* 404 Route */}

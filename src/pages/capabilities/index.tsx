@@ -24,7 +24,7 @@ const CapabilitiesPage: React.FC = () => {
           {/* CTA Section */}
           <div className="mt-16 text-center bg-blue-50 rounded-lg p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              Don't See Your Industry?
+              Don't See Your Capability?
             </h2>
             <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
               We work across many more capabilities and can customize our research

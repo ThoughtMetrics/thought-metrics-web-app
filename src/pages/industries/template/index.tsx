@@ -1,8 +1,8 @@
 import { IndustryActionSection } from '@/shared/ui/templates/action-section';
-import CaseStudySection from '@/shared/ui/templates/casestudy-section';
+import {CaseStudySection} from '@/shared/ui/templates/casestudy-section';
 import FeatureSection from '@/shared/ui/templates/feature-section';
 import HeroSection from '@/shared/ui/templates/hero-section';
-import QuestionarySection from '@/shared/ui/templates/questionary-section';
+import { QuestionarySection } from '@/shared/ui/templates/questionary-section';
 import {IndustryServiceSection} from '@/shared/ui/templates/service-section';
 
 const IndustryTemplatePage: React.FC<any> = ({ industry }: any) => {

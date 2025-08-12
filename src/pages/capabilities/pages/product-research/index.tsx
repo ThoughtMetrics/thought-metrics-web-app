@@ -2,7 +2,7 @@ import HeroSection from '@/shared/ui/templates/hero-section';
 import { capabilities } from '../../capabilities.constant';
 import { CapabilityActionSection } from '@/shared/ui/templates/action-section';
 import { ProductResearchSection } from '@/shared/ui/templates/service-section';
-import QuestionarySection from '@/shared/ui/templates/questionary-section';
+import { QuestionarySection } from '@/shared/ui/templates/questionary-section';
 import ProductResearchB2BServices from './components/product-research-b2b-services';
 import ProductResearchFeatureSection from './components/product-research-feature-section';
 

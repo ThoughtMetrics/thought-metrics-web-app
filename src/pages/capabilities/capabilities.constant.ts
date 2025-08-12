@@ -229,7 +229,6 @@ export const capabilities = {
             'Compelling narratives, attention-grabbing visuals, and emotionally resonant storytelling can all enhance the impact of advertisements.',
           isBorder: false,
           bgColor: 'white',
-          bgOpacity: '20',
         },
         {
           sNo: '02',
@@ -238,7 +237,6 @@ export const capabilities = {
             "Crafting content that speaks to the audience's interests and needs contributes to increased engagement and relevance.",
           isBorder: false,
           bgColor: 'white',
-          bgOpacity: '20',
         },
         {
           sNo: '03',
@@ -247,7 +245,6 @@ export const capabilities = {
             'Choosing the right channels to deliver your message is pivotal. Selecting platforms where your audience actively engages increases the likelihood of exposure.',
           isBorder: false,
           bgColor: 'white',
-          bgOpacity: '20',
         },
         {
           sNo: '04',
@@ -256,7 +253,6 @@ export const capabilities = {
             "Ads should be positioned where they align with the audience's interests, maximizing exposure and resonance. Selecting appropriate ad formats (e.g., video, display, native) also affects engagement.",
           isBorder: false,
           bgColor: 'white',
-          bgOpacity: '20',
         },
         {
           sNo: '05',
@@ -265,7 +261,6 @@ export const capabilities = {
             'CTAs guide the audience on the desired next steps. Well-crafted CTAs prompt engagement, whether it’s making a purchase, subscribing to a newsletter, or exploring more content.',
           isBorder: false,
           bgColor: 'white',
-          bgOpacity: '20',
         },
         {
           sNo: '06',
@@ -274,7 +269,6 @@ export const capabilities = {
             'Analyzing competitors’ strategies allows you to differentiate your offering, leveraging unique selling points to capture consumer attention.',
           isBorder: false,
           bgColor: 'white',
-          bgOpacity: '20',
         },
         {
           sNo: '07',
@@ -283,7 +277,6 @@ export const capabilities = {
             'Advertisements that resonate with cultural values and preferences establish a deeper connection with the audience.',
           isBorder: false,
           bgColor: 'white',
-          bgOpacity: '20',
         },
         {
           sNo: '08',
@@ -292,7 +285,6 @@ export const capabilities = {
             'Personalized messages, tailored to individual preferences and behaviors, resonate more strongly with recipients.',
           isBorder: false,
           bgColor: 'white',
-          bgOpacity: '20',
         },
       ],
     },
@@ -543,7 +535,6 @@ export const capabilities = {
             title: 'Identify opportunities and threats',
             isBorder: true,
             bgColor: 'white',
-            bgOpacity: '20',
             isArrow: true,
             isUpperCurve: true,
           },
@@ -551,14 +542,12 @@ export const capabilities = {
             title: 'Develop actionable insights',
             isBorder: true,
             bgColor: 'white',
-            bgOpacity: '20',
             isArrow: true,
           },
           {
             title: 'Continuously monitor',
             isBorder: true,
             bgColor: 'white',
-            bgOpacity: '20',
             isArrow: true,
           },
         ],

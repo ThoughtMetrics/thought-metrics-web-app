@@ -3,7 +3,7 @@ import { capabilities } from '../../capabilities.constant';
 import { CapabilityActionSection } from '@/shared/ui/templates/action-section';
 import CustomerResearchFeatureSection from './components/customer-research-feature-section';
 import CustomerResearchB2BServices from './components/customer-research-b2b-services';
-import QuestionarySection from '@/shared/ui/templates/questionary-section';
+import { QuestionarySection } from '@/shared/ui/templates/questionary-section';
 import { CustomerResearchSection } from '@/shared/ui/templates/service-section';
 
 const CapabilitiesCustomerResearchPage: React.FC = () => {

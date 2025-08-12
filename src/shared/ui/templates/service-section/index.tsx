@@ -11,6 +11,7 @@ const IndustryServiceSection: React.FC<any> = ({ serviceSection }: any) => {
               service={service}
               index={index}
               className="px-4 py-6 md:px-6 md:py-15 gap-4 md:gap-8"
+              iconClassName="p-3"
             />
           ))}
         </div>
@@ -34,7 +35,7 @@ const ResearchServiceSection: React.FC<any> = ({ serviceSection }: any) => {
               service={service}
               index={index}
               className="px-4 py-4 gap-3 hover:bg-primary group"
-              iconClassName="w-12 h-12 p-0 group-hover:bg-primary-light"
+              iconClassName="w-12 h-12 group-hover:bg-primary-light"
             />
           ))}
         </div>
@@ -165,5 +166,5 @@ export {
   ResearchServiceSection,
   MarketOpportunitySection,
   ProductResearchSection,
-  CustomerResearchSection
+  CustomerResearchSection,
 };
