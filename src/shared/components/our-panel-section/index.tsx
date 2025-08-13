@@ -18,7 +18,7 @@ const OurPanelSection: React.FC = () => {
             loading={pageContent.illustration.loading as any}
           />
         </div>
-        <div className="w-full h-full flex flex-col gap-6">
+        <div className="w-full h-full flex flex-col gap-6 md:pr-28">
           <h1 className="w-[80%] font-semibold text-primary text-xl xl:text-3xl wide:text-4xl">
             {pageContent.head}
           </h1>

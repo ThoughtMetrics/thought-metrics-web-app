@@ -851,4 +851,27 @@ export const researchMethods = {
       actionLabel: "Let's Connect",
     },
   },
+  surveys: {
+    heroSection: {
+      title: 'Survey Smarter. Decide Better.',
+      description:
+        'From survey design to insights delivery, we manage the entire process—online, by phone, or in-person—so you can reach the right respondents, collect high-quality data, and make confident, data-backed decisions.',
+      actionLabel: 'Request a Bid',
+      illustration: {
+        img: '/images/research_methods_surveys_1.png',
+        size: 'full',
+        aspectRatio: 'landscape',
+        shadowPosition: 'br',
+        shadowOpacity: 'full',
+        objectFit: 'cover',
+        loading: 'lazy',
+      },
+    },
+    actionSection: {
+      title: 'Discover insights that drive smarter decisions.',
+      illustration: StackIllustration,
+      img: '/images/research_method_girl_1.png',
+      actionLabel: "Let's Connect",
+    },
+  },
 } as const;
