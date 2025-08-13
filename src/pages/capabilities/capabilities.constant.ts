@@ -889,7 +889,7 @@ export const capabilities = {
       },
     },
     serviceSection: {
-      title: 'Customer Research and Segmentation.',
+      innerTitle: 'Customer Research and Segmentation.',
       items: [
         {
           iconOptions: {

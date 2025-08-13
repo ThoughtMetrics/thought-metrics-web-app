@@ -1,18 +1,24 @@
 import {
   AdvancedAnalyticsIcon,
+  CaptureMomentReactionIcon,
   ComplianceEthicsIcon,
   DataProcessingIcon,
   DataAualityAssuranceIcon as DataQualityAssuranceIcon,
+  DesignedModeratedExpertsIcon,
   FastTimeIcon,
   FieldworkManagementIcon,
+  FlexibleFormatsIcon,
   IllustrationUsecaseQualitativeResearchIcon,
   IllustrationUsecaseQuantitativeResearchIcon,
   LocatorPinIcon,
   ResearchDMRIcon,
   RobustSamplingReachIcon,
+  ScalableProjectsIcon,
   SmarterParticipantSelectionIcon,
   StackIllustration,
+  SurfaceFeedbackIcon,
   SurveyDesignIcon,
+  UnderstandConsumerHabitsIcon,
 } from '@/assets';
 
 export const researchMethods = {
@@ -632,6 +638,214 @@ export const researchMethods = {
     actionSection: {
       title:
         'Leave the logistics to us. We deliver seamless, end-to-end fieldwork execution.',
+      illustration: StackIllustration,
+      img: '/images/research_method_girl_1.png',
+      actionLabel: "Let's Connect",
+    },
+  },
+  focus_group: {
+    heroSection: {
+      title: "Get Inside Your Customer's Mind",
+      description:
+        'From candid conversations to breakthrough insights — uncover what truly drives decisions with expertly designed focus groups.',
+      actionLabel: 'Request a Bid',
+      illustration: {
+        img: '/images/research_methods_focus_group_1.png',
+        size: 'full',
+        aspectRatio: 'landscape',
+        shadowPosition: 'br',
+        shadowOpacity: 'full',
+        objectFit: 'cover',
+        loading: 'lazy',
+      },
+    },
+    serviceSection: {
+      title: 'Know What Customers Are Really Thinking',
+      items: [
+        {
+          iconOptions: {
+            icon: SurfaceFeedbackIcon,
+            isActive: true,
+            isBorder: false,
+            bgColor: 'primary-light',
+          },
+          title: 'Go Beyond Surface-Level Feedback',
+          description:
+            'Focus groups allow you to hear the why behind customer opinions. Move past basic surveys and get to the root of what drives consumer choices, behaviors, and brand perceptions.',
+          bgColor: 'grey',
+          isBorder: false,
+          isActive: true,
+        },
+        {
+          iconOptions: {
+            icon: FlexibleFormatsIcon,
+            isActive: true,
+            isBorder: false,
+            bgColor: 'primary-light',
+          },
+          title: 'Flexible Formats That Fit Your Goals',
+          description:
+            "Whether you're running a round-table discussion, classroom-style setup, or immersive product experience — we design the environment that suits your objectives. Music tests, taste tests, app walkthroughs.",
+          bgColor: 'grey',
+          isBorder: false,
+          isActive: true,
+        },
+        {
+          iconOptions: {
+            icon: UnderstandConsumerHabitsIcon,
+            isActive: true,
+            isBorder: false,
+            bgColor: 'primary-light',
+          },
+          title: 'Understand Consumer and Competitor Habits',
+          description:
+            'Gain powerful context by uncovering not just what your audience thinks, but how their perceptions compare with competitors in real-time discussions.',
+          bgColor: 'grey',
+          isBorder: false,
+          isActive: true,
+        },
+        {
+          iconOptions: {
+            icon: CaptureMomentReactionIcon,
+            isActive: true,
+            isBorder: false,
+            bgColor: 'primary-light',
+          },
+          title: 'Capture Unfiltered, In-the-Moment Reactions',
+          description:
+            'Real-time conversations allow participants to express thoughts naturally, leading to unexpected insights, emotional cues, and spontaneous feedback no survey can replicate',
+          bgColor: 'grey',
+          isBorder: false,
+          isActive: true,
+        },
+        {
+          iconOptions: {
+            icon: DesignedModeratedExpertsIcon,
+            isActive: true,
+            isBorder: false,
+            bgColor: 'primary-light',
+          },
+          title: 'Designed and Moderated by Experts',
+          description:
+            'Our team handles every detail — from participant recruitment to discussion guides and professional moderation — ensuring your sessions are strategic, smooth, and insight-rich.',
+          bgColor: 'grey',
+          isBorder: false,
+          isActive: true,
+        },
+        {
+          iconOptions: {
+            icon: ScalableProjectsIcon,
+            isActive: true,
+            isBorder: false,
+            bgColor: 'primary-light',
+          },
+          title: 'Scalable for Projects Big and Small',
+          description:
+            'From quick feedback loops to in-depth multi-day studies across geographies, our approach scales to meet your timeline, scope, and budget.',
+          bgColor: 'grey',
+          isBorder: false,
+          isActive: true,
+        },
+      ],
+    },
+    questionarySection: {
+      title: 'Finding the Right Respondents',
+    },
+    aboutUsSection: {
+      header: 'Making Focus Group Discussions Easier',
+      title: 'What Sets Our Facilities Apart',
+      items: [
+        {
+          label: 'Global Reach:',
+          description:
+            'National and international presence, either directly or through trusted partners.',
+        },
+        {
+          label: 'Versatile Setups:',
+          description:
+            'Choose from living-room style spaces, dyads, triads, one-on-ones, or full conference setups.',
+        },
+        {
+          label: 'Participant-Friendly Amenities:',
+          description:
+            'High-speed WiFi, cold drinks, and a welcoming atmosphere to ensure comfort.',
+        },
+        {
+          label: 'Advanced Tech Support:',
+          description:
+            'AI-based voice recording, transcription, translation, and coding for faster analysis.',
+        },
+        {
+          label: 'Custom Recording Options:',
+          description:
+            'Fixed stationary cameras with optional camera operators for enhanced control and coverage.',
+        },
+        {
+          label: 'Fully Equipped Kitchens:',
+          description:
+            'Ideal for product prep, taste testing, and storage during consumer evaluations.',
+        },
+        {
+          label: 'On-Site Support Staff:',
+          description:
+            'Our team is there to guide respondents smoothly through every stage of the study.',
+        },
+      ],
+      illustration: {
+        img: '/images/research_methods_focus_group_2.png',
+        size: 'full',
+        aspectRatio: 'portrait',
+        shadowPosition: 'br',
+        shadowOpacity: 'full',
+        objectFit: 'cover',
+        loading: 'lazy',
+      },
+    },
+    blogData: {
+      title: 'Latest Insights for Quantitative Research',
+      items: [
+        {
+          src: '/illustrations/illustration-child-shine.svg',
+          alt: 'AI & Empathy: Can Machines Decode Human Emotions in UX?',
+          type: 'Insight',
+          label: 'AI & Empathy: Can Machines Decode Human Emotions in UX?',
+          description:
+            'A thought-provoking exploration of how far AI has come in understanding human emotion during user experience research — and where it still falls short.',
+          link: '#',
+        },
+        {
+          src: '/illustrations/illustration-growth-chart.svg',
+          alt: '2025 Trends in AI-Driven User Research: Benchmarks',
+          type: 'Report',
+          label: '2025 Trends in AI-Driven User Research: Benchmarks',
+          description:
+            'Based on data from 200+ global teams, this report covers key adoption trends, performance benchmarks, and future forecasts for AI integration in UX research workflows.',
+          link: '#',
+        },
+        {
+          src: '/illustrations/illustration-communicate.svg',
+          alt: 'Beyond Speed: The Strategic Value of AI in Qualitative Research',
+          type: 'Whitepaper',
+          label:
+            'Beyond Speed: The Strategic Value of AI in Qualitative Research',
+          description:
+            'This whitepaper examines the long-term business impact of using AI for qualitative insight — from verbatim analysis to participant segmentation.',
+          link: '#',
+        },
+        {
+          src: '/illustrations/illustration-work-desk.svg',
+          alt: 'How AI is Changing the Way We Ask Questions',
+          type: 'Blog',
+          label: 'How AI is Changing the Way We Ask Questions',
+          description:
+            'What if your survey could rewrite itself mid-way? This blog post looks at the rise of adaptive surveys and how AI is making questionnaires more relevant, responsive, and human.',
+          link: '#',
+        },
+      ],
+    },
+    actionSection: {
+      title:
+        'Get real insights, face-to-face. Run powerful focus groups with the right participants.',
       illustration: StackIllustration,
       img: '/images/research_method_girl_1.png',
       actionLabel: "Let's Connect",

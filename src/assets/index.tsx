@@ -234,6 +234,7 @@ import IllustrationDataSecurityIcon from './illustrations/illustration-data-secu
 import IllustrationLoginIcon from './illustrations/illustration-login.svg?react';
 import IllustrationParticipantQualityIcon from './illustrations/illustration-participant-quality.svg?react';
 import IllustrationRightRespondentsIcon from './illustrations/illustration-right-respondents.svg?react';
+import IllustrationRightRespondentsMIcon from './illustrations/illustration-right-respondents-m.svg?react';
 import IllustrationUsecaseQualitativeResearchIcon from './illustrations/illustration-usecase-qualitative-research.svg?react';
 import IllustrationUsecaseQuantitativeResearchIcon from './illustrations/illustration-usecase-quantitative-research.svg?react';
 import RedEllipseIcon from './illustrations/red-ellipse.svg?react';
@@ -278,6 +279,7 @@ export {
   IllustrationLoginIcon,
   IllustrationParticipantQualityIcon,
   IllustrationRightRespondentsIcon,
+  IllustrationRightRespondentsMIcon,
   IllustrationUsecaseQualitativeResearchIcon,
   IllustrationUsecaseQuantitativeResearchIcon,
   RedEllipseIcon,
