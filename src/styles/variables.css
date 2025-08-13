@@ -27,7 +27,8 @@
   --custom-grey-3: #e8e2e2;
   --custom-grey-4: #e5e6ea;
   --custom-blue: #4c4fa9;
-  --custom-blue-light: #f0f0fa;
+  --custom-blue-light: #f5f5ff;
+  --custom-blue-lighter: #f0f0fa;
   --custom-violet: #f2edff;
   --custom-violet-light: #e3e9fb;
   --custom-pink: #ffeaeb;
@@ -82,6 +83,7 @@
   --color-custom-violet-light: var(--custom-violet-light);
   --color-custom-pink: var(--custom-pink);
   --color-custom-blue-light: var(--custom-blue-light);
+  --color-custom-blue-lighter: var(--custom-blue-lighter);
 
   /* Custom breakpoints*/
   --breakpoint-xs: 480px;

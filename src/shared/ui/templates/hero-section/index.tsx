@@ -1,8 +1,9 @@
 import { IllustrationSquares } from '@/assets';
 import CustomImageAtom from '../../atoms/custom-image';
 import CustomButtonAtom from '../../atoms/custom-button';
+import { cn } from '@/core/utils/cn';
 
-const HeroSection: React.FC<any> = ({ heroSection }: any) => {
+const HeroSection: React.FC<any> = ({ heroSection, contentClassName }: any) => {
   return (
     <section className="common-component w-full h-full relative pt-10 md:pt-0">
       <div className="absolute w-full h-full flex justify-end pt-10 md:p-0">
@@ -22,7 +23,12 @@ const HeroSection: React.FC<any> = ({ heroSection }: any) => {
         </div>
       </div>
       <div className="z-1 common-container w-full !max-w-[var(--breakpoint-2xl)] md:min-h-[480px] xl:min-h-[580px] wide:min-h-[780px] items-center p-5 md:p-10 xxl:p-0">
-        <div className="md:w-[43%] xxl:w-[37%] wide:w-[50%] h-full flex flex-col gap-3 justify-center">
+        <div
+          className={cn(
+            'md:w-[43%] xxl:w-[37%] wide:w-[50%] h-full flex flex-col gap-3 justify-center',
+            contentClassName
+          )}
+        >
           <div className="h-[18rem] sm:h-[28rem] md:h-0"></div>
           <h1 className="w-[80%] text-primary text-2xl xl:text-[2.5rem] wide:text-[3rem] font-semibold">
             {heroSection.title}

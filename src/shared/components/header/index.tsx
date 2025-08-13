@@ -284,7 +284,7 @@ const Header: React.FC = () => {
                     {section && activeMobileDropdown === item && (
                       <div className="pb-4">
                         {section.columns.map((column, columnIndex) => (
-                          <div key={columnIndex} className="mb-4">
+                          <div key={columnIndex}>
                             {'sub_title' in column && column.sub_title && (
                               <h5 className="text-white/80 text-sm font-semibold mb-2 px-4">
                                 {column.sub_title}

@@ -56,7 +56,7 @@ export const Breadcrumbs: React.FC<BreadcrumbProps> = ({ className = '' }) => {
     //   </ol>
     // </nav>
     <div className={`text-black font-semibold text-xl wide:text-2xl ${className}`}>
-      <div className="flex flex-col gap-2 md:gap-3 w-[70%] md:w-[50%] justify-end h-17.5 xl:h-27.5 xxl:h-32.5 wide:h-50.5">
+      <div className="flex flex-col gap-2 md:gap-3 w-[75%] md:w-[50%] justify-end h-17.5 xl:h-27.5 xxl:h-32.5 wide:h-50.5">
         <span>{breadcrumbs[breadcrumbs.length - 1].label}</span>
         <div className="w-25 h-1 bg-primary rounded"></div>
       </div>

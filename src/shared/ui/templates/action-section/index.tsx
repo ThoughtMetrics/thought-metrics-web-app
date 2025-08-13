@@ -2,7 +2,7 @@ import CustomButtonAtom from '../../atoms/custom-button';
 
 const IndustryActionSection: React.FC<any> = ({ actionSection }: any) => {
   return (
-    <section className="common-component w-full h-full relative bg-gradient-to-r from-custom-blue-light to-custom-grey-4">
+    <section className="common-component w-full h-full relative bg-gradient-to-r from-custom-blue-lighter to-custom-grey-4">
       <actionSection.illustration className="absolute -right-26 md:-right-48 -bottom-28 w-[12rem] md:w-[28rem]" />
       <div className="z-1 common-container w-full !max-w-[var(--breakpoint-2xl)] !grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-0 px-6 md:px-24 pt-10">
         <div className="flex flex-col items-start justify-center gap-6">
@@ -49,10 +49,10 @@ const CapabilityActionSection: React.FC<any> = ({ actionSection }: any) => {
 
 const ResearchMethodActionSection: React.FC<any> = ({ actionSection }: any) => {
   return (
-    <section className="common-component w-full h-full bg-gradient-to-r from-custom-blue-light to-custom-grey-4">
+    <section className="common-component w-full h-full bg-gradient-to-r from-custom-blue-lighter to-custom-grey-4">
       <div className="z-1 common-container w-full !max-w-[var(--breakpoint-2xl)] !grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-0 px-6 md:px-24 pt-10">
         <div className="flex flex-col items-start justify-center gap-6">
-          <h1 className="w-[90%] xl:w-[85%] wide:w-[95%] text-black text-2xl xl:text-[2.5rem] wide:text-[3rem] font-semibold">
+          <h1 className="w-[90%] xl:w-[85%] xxl:w-[80%] wide:w-[96%] text-black text-2xl xl:text-[2.5rem] wide:text-[3rem] font-semibold">
             {actionSection.title}
           </h1>
           <CustomButtonAtom

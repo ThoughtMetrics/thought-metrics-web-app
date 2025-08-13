@@ -77,7 +77,7 @@ const ResearchMethodQuestionarySection: React.FC<any> = ({
             </span>
             <div
               className={cn(
-                'absolute top-0 -right-[3.5rem] xl:-right-[2rem] xxl:-right-[4.5rem]',
+                'absolute top-2 -right-[3.5rem] xl:-right-[2rem] xxl:-right-[4.5rem]',
                 illustrationClassName
               )}
             >
