@@ -223,8 +223,10 @@ import SmartSurveyDesignIcon from './svgs/smart-survey-design.svg?react';
 import SmarterParticipantSelectionIcon from './svgs/smarter-participant-selection.svg?react';
 import SpeedIcon from './svgs/speed.svg?react';
 import SurfaceFeedbackIcon from './svgs/surface-feedback.svg?react';
+import SurveyResearchIcon from './svgs/survey-research.svg?react';
 import SurveyDesignIcon from './svgs/survey-design.svg?react';
 import SurveyReportsIcon from './svgs/survey-reports.svg?react';
+import DataCollectionIcon from './svgs/data-collection.svg?react';
 import UnderstandConsumerHabitsIcon from './svgs/understand-consumer-habits.svg?react';
 import ArrowIcon from './svgs/→.svg?react';
 
@@ -254,6 +256,7 @@ export {
   DataProcessingIcon,
   DesignIcon,
   DesignedModeratedExpertsIcon,
+  DataCollectionIcon,
   EthicalOversightIcon,
   FasterInsightfulReportingIcon,
   FieldworkManagementIcon,
@@ -270,6 +273,7 @@ export {
   SmarterParticipantSelectionIcon,
   SpeedIcon,
   SurfaceFeedbackIcon,
+  SurveyResearchIcon,
   SurveyDesignIcon,
   SurveyReportsIcon,
   UnderstandConsumerHabitsIcon,

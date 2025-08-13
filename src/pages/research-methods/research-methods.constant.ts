@@ -1,23 +1,38 @@
 import {
+  AccessibilityIcon,
   AdvancedAnalyticsIcon,
+  AutomatedCallingIcon,
+  AutomationIcon,
   CaptureMomentReactionIcon,
   ComplianceEthicsIcon,
+  ConvenienceIcon,
+  CostEfficiencyIcon,
+  CustomizationInnovationIcon,
+  DataCollectionIcon,
+  DataDrivenIcon,
   DataProcessingIcon,
   DataAualityAssuranceIcon as DataQualityAssuranceIcon,
   DesignedModeratedExpertsIcon,
+  DesignIcon,
   FastTimeIcon,
   FieldworkManagementIcon,
   FlexibleFormatsIcon,
   IllustrationUsecaseQualitativeResearchIcon,
   IllustrationUsecaseQuantitativeResearchIcon,
   LocatorPinIcon,
+  PersonalTouchIcon,
+  RealTimeInsightsIcon,
   ResearchDMRIcon,
   RobustSamplingReachIcon,
+  SamplingIcon,
   ScalableProjectsIcon,
   SmarterParticipantSelectionIcon,
+  SpeedIcon,
   StackIllustration,
   SurfaceFeedbackIcon,
   SurveyDesignIcon,
+  SurveyReportsIcon,
+  SurveyResearchIcon,
   UnderstandConsumerHabitsIcon,
 } from '@/assets';
 
@@ -866,6 +881,156 @@ export const researchMethods = {
         objectFit: 'cover',
         loading: 'lazy',
       },
+    },
+    serviceSection: {
+      head: 'From online and telephone surveys to mixed-mode interviewing and central location testing, our capabilities span a wide range of methodologies—ensuring we reach respondents in the ways they prefer, and deliver the high-quality data our clients rely on.',
+      services: [
+        {
+          bgColor: 'red',
+          title: 'Online Surveys',
+          description:
+            'Online surveys provides the participants the means to engage with the research wherever they are. But executing online market research surveys requires more than collecting data; we add value with specialized programming, screening, and engaging respondents.',
+          items: [
+            {
+              label: 'Cost Efficiency',
+              description:
+                'Save significant resources compared to phone and email studies.',
+              icon: CostEfficiencyIcon,
+            },
+            {
+              label: 'Speed',
+              description:
+                'Benefit from quick responses and fast turnaround times.',
+              icon: SpeedIcon,
+            },
+            {
+              label: 'Convenience',
+              description:
+                'Let respondents participate at their convenience, ensuring higher response rates.',
+              icon: ConvenienceIcon,
+            },
+            {
+              label: 'Automation',
+              description:
+                'Streamline input, handling, analysis, and reporting for efficient data management.',
+              icon: AutomationIcon,
+            },
+            {
+              label: 'Design',
+              description:
+                'Integrate multimedia and custom features like recreating and existing online store.',
+              icon: DesignIcon,
+            },
+          ],
+        },
+        {
+          bgColor: 'green',
+          title: 'Phone Data Collection',
+          description:
+            'In a world rapidly shifting towards digital, the power of a human voice and the value of real conversation remain critical. We blend strength of technology and human connection through our phone data collection service.',
+          items: [
+            {
+              label: 'Accessibility',
+              description:
+                "Broadband access isn't guaranteed and phone interviewing ensures representative sampling.",
+              icon: AccessibilityIcon,
+            },
+            {
+              label: 'Personal Touch',
+              description:
+                'Consumer get the personal touch of providing feedback to a real person rather than a computer',
+              icon: PersonalTouchIcon,
+            },
+            {
+              label: 'Automated Calling',
+              description:
+                'Automated dialing, scheduling and call recording dispositions to enhance productivity.',
+              icon: AutomatedCallingIcon,
+            },
+            {
+              label: 'Customization and Innovation',
+              description:
+                'Our ih-house programming and technical staff ensure surveys are conducted to our requirements.',
+              icon: CustomizationInnovationIcon,
+            },
+            {
+              label: 'Real-Time Insights',
+              description:
+                'Gain instant access to customer responses as they come in using real-time dashboards.',
+              icon: RealTimeInsightsIcon,
+            },
+          ],
+        },
+        {
+          bgColor: 'blue',
+          title: 'Mixed Mode Interviewing',
+          description:
+            'Sometimes the best way to collect the data you need is not online or phone, but both with a mixed mode methodology. We often find that the best results, especially with niche or rural audiences comes from studies with an online survey as well as direct phone out reach.',
+          items: [
+            {
+              label: '1. Broader Reach',
+              description:
+                'Combining online and phone outreach ensures no audience is left behind — especially in rural or low-internet-penetration areas where digital-only methods fall short.',
+            },
+            {
+              label: '2. Increased Response Rates',
+              description:
+                "By meeting respondents where they're most comfortable, mixed mode boosts engagement and completion rates, making your data more representative and robust.",
+            },
+            {
+              label: '3. Deeper Insights',
+              description:
+                "Online surveys capture structured data fast, while phone calls allow for clarification, probing, and capturing the nuances that numbers alone can't provide.",
+            },
+            {
+              label: '4. Tailored Approach',
+              description:
+                'Every audience is different. Mixed mode gives you the freedom to design outreach that fits the demographic — from urban professionals to remote farmers.',
+            },
+          ],
+        },
+      ],
+    },
+    featureSection: {
+      title: 'End-to-End Survey Solutions That Deliver Actionable Insights',
+      items: [
+        {
+          label: 'Survey Research',
+          description:
+            'Our survey methodologies work closely with clients to develop and implement survey design which best meets the project requirements. This includes instrument design, pretesting and refinement.',
+          icon: SurveyResearchIcon,
+        },
+        {
+          label: 'Survey Design',
+          description:
+            'Methodologist in the consultative process translate business objectives into information needs and a well-defined survey plan. Cognitive testing involves structured testing necessary to ensure questions are clear.',
+          icon: SurveyDesignIcon,
+        },
+        {
+          label: 'Sampling',
+          description:
+            'Survey statisticians provide expert recommendations on the appropriate sampling strategies and sample frame to meet specific need, target the right audience with messaging that engages response.',
+          icon: SamplingIcon,
+        },
+        {
+          label: 'Data Collection',
+          description:
+            'Survey is fielded by data collection team using survey modes appropriate for the study. We have web/mobile survey platforms,  CATI survey call center and maintain capabilities to delivery surveys via email and text.',
+          icon: DataCollectionIcon,
+        },
+        {
+          label: 'Data Analysis',
+          description:
+            'Apply broad range of statistical techniques to analyze and model data for clients using statistical software tools (SPSS, R, SAS, Stata, Python etc) and data visualization tools (Tableau and Power BI), machine learning and open text mining.',
+          icon: DataDrivenIcon,
+        },
+        {
+          label: 'Survey Reports',
+          description:
+            'Aggregate findings and provide survey reporting to meet your needs, presenting overall findings, breakouts and multivariate analysis, as well as professional documentation of methodology and analysis. ',
+          icon: SurveyReportsIcon,
+        },
+      ],
     },
     actionSection: {
       title: 'Discover insights that drive smarter decisions.',

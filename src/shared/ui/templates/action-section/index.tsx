@@ -24,8 +24,8 @@ const IndustryActionSection: React.FC<any> = ({ actionSection }: any) => {
 
 const CapabilityActionSection: React.FC<any> = ({ actionSection }: any) => {
   return (
-    <section className="common-component w-full h-full relative bg-secondary-light">
-      <actionSection.illustration className="absolute h-full -right-40 md:-right-75 xl:-right-65 xxl:-right-50 -bottom-20 md:bottom-0 w-[16rem] md:w-[26rem] fill-current text-white" />
+    <section className="common-component w-full h-full relative bg-primary-lighter">
+      <actionSection.illustration className="absolute h-full -right-40 md:-right-75 xl:-right-65 xxl:-right-50 -bottom-20 md:bottom-0 w-[16rem] md:w-[26rem] fill-current text-primary" />
       <div className="z-1 common-container w-full !max-w-[var(--breakpoint-2xl)] !grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-0 px-6 md:px-24 pt-10">
         <div className="hidden md:flex xxl:items-center xxl:justify-center w-[80%] md:w-full">
           <img src={actionSection.img} />

@@ -9,8 +9,6 @@
   --primary-dark: #cf464f;
   --primary-light: #ff969f;
   --primary-lighter: #fff7f5;
-  --secondary: #bbfdf5;
-  --secondary-light: #c0e6f0;
   --accent: #d5fdad;
   --neutral: #ececec;
   --surface: #fbeeee;
@@ -32,6 +30,7 @@
   --custom-violet: #f2edff;
   --custom-violet-light: #e3e9fb;
   --custom-pink: #ffeaeb;
+  --custom-green-light: #f0fffd;
 
   /* Shadows */
   --shadow-xl:
@@ -61,8 +60,6 @@
   --color-primary-dark: var(--primary-dark);
   --color-primary-light: var(--primary-light);
   --color-primary-lighter: var(--primary-lighter);
-  --color-secondary: var(--secondary);
-  --color-secondary-light: var(--secondary-light);
   --color-accent: var(--accent);
   --color-neutral: var(--neutral);
   --color-surface: var(--surface);
@@ -84,6 +81,7 @@
   --color-custom-pink: var(--custom-pink);
   --color-custom-blue-light: var(--custom-blue-light);
   --color-custom-blue-lighter: var(--custom-blue-lighter);
+  --color-custom-green-light: var(--custom-green-light);
 
   /* Custom breakpoints*/
   --breakpoint-xs: 480px;
