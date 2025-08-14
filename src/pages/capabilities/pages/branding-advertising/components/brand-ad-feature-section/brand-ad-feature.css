@@ -1,0 +1,5 @@
+.common-component {
+  background: var(--color-surface) url('/images/background_image_5.png')
+    no-repeat center;
+  background-size: cover;
+}

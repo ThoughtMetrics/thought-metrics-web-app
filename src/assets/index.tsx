@@ -288,3 +288,31 @@ export {
   IllustrationUsecaseQuantitativeResearchIcon,
   RedEllipseIcon,
 };
+
+/* OurPanel */
+
+import AdvertisingMarketingIcon from './svgs/advertising-marketing.svg?react';
+import AutomotiveIcon from './svgs/automotive.svg?react';
+import EducationIcon from './svgs/education.svg?react';
+import FinancialServicesIcon from './svgs/financial-services.svg?react';
+import FmcgIcon from './svgs/fmcg.svg?react';
+import HealthcareLifeSciencesIcon from './svgs/healthcare-life-sciences.svg?react';
+import HrIcon from './svgs/hr.svg?react';
+import InvestorsIcon from './svgs/investors.svg?react';
+import MediaInternetPublishersIcon from './svgs/media-internet-publishers.svg?react';
+import RetailMerchandisingIcon from './svgs/retail-merchandising.svg?react';
+import TechnologyIcon from './svgs/technology.svg?react';
+
+export {
+  AdvertisingMarketingIcon,
+  AutomotiveIcon,
+  EducationIcon,
+  FinancialServicesIcon,
+  FmcgIcon,
+  HealthcareLifeSciencesIcon,
+  HrIcon,
+  InvestorsIcon,
+  MediaInternetPublishersIcon,
+  RetailMerchandisingIcon,
+  TechnologyIcon,
+};
