@@ -36,12 +36,15 @@ import ResearchMethodFieldwork from '@/pages/research-methods/pages/fieldwork';
 import ResearchMethodFocusGroup from '@/pages/research-methods/pages/focus-group';
 import ResearchMethodSurveys from '@/pages/research-methods/pages/surveys';
 import ResearchMethodQuality from '@/pages/research-methods/pages/quality';
+import OurPanel from '@/pages/our-panel';
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />}>
       {/* Home Route */}
       <Route index element={<Home />} />
+
+      <Route path="our_panel" element={<OurPanel />} />
 
       {/* Industries Routes with Nested Structure */}
       <Route path="industries" element={<IndustriesPage />}>

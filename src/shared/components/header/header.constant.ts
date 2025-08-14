@@ -126,6 +126,7 @@ export const headerDropdownData = {
         },
         {
           sub_title: 'Our Panel',
+          path: ROUTES.OUR_PANEL,
           items: [],
         },
       ],

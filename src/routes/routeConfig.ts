@@ -3,6 +3,7 @@ import type { BreadcrumbItem } from '@/core/interfaces/breadcrumb-item.interface
 
 export const ROUTES = {
   HOME: '/',
+  OUR_PANEL: '/our_panel',
   /* Industry Routes */
   INDUSTRY: '/industries',
   INDUSTRY_ADVERTISING: '/industries/advertising_marketing',
@@ -56,6 +57,7 @@ export const generateBreadcrumbsFromPath = (
 
     // Custom labels for known segments
     const segmentLabels: Record<string, string> = {
+      our_panel: 'Our Panel',
       /* Industries */
       industries: 'Industries',
       advertising_marketing: 'Advertising and Marketing',

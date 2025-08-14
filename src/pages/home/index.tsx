@@ -1,7 +1,13 @@
 //Home.tsx
-import { B2BServices, Blogs, HeroCarousel, Industries, SolutionInsights } from './components';
+import {
+  B2BServices,
+  Blogs,
+  HeroCarousel,
+  Industries,
+  SolutionInsights,
+} from './components';
 
-const Home = () => {
+const Home: React.FC = () => {
   return (
     <>
       <HeroCarousel />

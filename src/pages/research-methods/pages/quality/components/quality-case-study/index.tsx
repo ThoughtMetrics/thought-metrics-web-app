@@ -29,7 +29,10 @@ const QualityCaseStudySection: React.FC<any> = ({
           <p className="md:w-[83.5%] text-md md:text-base leading-5">
             {caseStudySection.description}
           </p>
-          <caseStudySection.illustrationComponent className="md:hidden w-full h-fit" />
+          <img
+            src="/images/research_methods_quality_1.png"
+            className="md:hidden w-full h-fit"
+          />
           <ul className={cn('text-md md:text-base space-y-2', className)}>
             {caseStudySection.list.map((value: string) => {
               return <p className="leading-5">{value}</p>;

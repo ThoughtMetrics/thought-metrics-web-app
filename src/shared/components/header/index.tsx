@@ -209,9 +209,15 @@ const Header: React.FC = () => {
                     className="flex flex-col gap-0.5 xl:gap-2"
                   >
                     {'sub_title' in column && column.sub_title != null && (
-                      <h4 className="text-sm xl:text-md xxl:text-xl font-medium hover:underline cursor-pointer tracking-wider">
+                      <Link
+                        viewTransition={true}
+                        key={columnIndex}
+                        to={'path' in column ? column.path : '#'}
+                        onClick={() => handleDropdownLeave()}
+                        className="text-sm xl:text-md xxl:text-xl font-medium hover:underline cursor-pointer tracking-wider"
+                      >
                         {column.sub_title}
-                      </h4>
+                      </Link>
                     )}
                     {column.items.length > 0 &&
                       column.items.map((item, itemIndex) => (
@@ -286,9 +292,15 @@ const Header: React.FC = () => {
                         {section.columns.map((column, columnIndex) => (
                           <div key={columnIndex}>
                             {'sub_title' in column && column.sub_title && (
-                              <h5 className="text-white/80 text-sm font-semibold mb-2 px-4">
+                              <Link
+                                viewTransition={true}
+                                key={columnIndex}
+                                to={'path' in column ? column.path : '#'}
+                                onClick={() => handleDropdownLeave()}
+                                className="text-white/80 text-sm font-semibold mb-2 px-4"
+                              >
                                 {column.sub_title}
-                              </h5>
+                              </Link>
                             )}
                             {column.items.map((subItem, subIndex) => (
                               <Link
