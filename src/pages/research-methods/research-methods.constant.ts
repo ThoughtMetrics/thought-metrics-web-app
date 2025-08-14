@@ -1,6 +1,7 @@
 import {
   AccessibilityIcon,
   AdvancedAnalyticsIcon,
+  AIFeedbackLoopsIcon,
   AutomatedCallingIcon,
   AutomationIcon,
   CaptureMomentReactionIcon,
@@ -14,12 +15,18 @@ import {
   DataAualityAssuranceIcon as DataQualityAssuranceIcon,
   DesignedModeratedExpertsIcon,
   DesignIcon,
+  EthicalOversightIcon,
+  FasterInsightfulReportingIcon,
   FastTimeIcon,
   FieldworkManagementIcon,
   FlexibleFormatsIcon,
+  FraudDetectionQualityControlIcon,
+  IllustrationDataSecurityIcon,
+  IllustrationParticipantQualityIcon,
   IllustrationUsecaseQualitativeResearchIcon,
   IllustrationUsecaseQuantitativeResearchIcon,
   LocatorPinIcon,
+  OperationalEfficiencyIcon,
   PersonalTouchIcon,
   RealTimeInsightsIcon,
   ResearchDMRIcon,
@@ -1034,6 +1041,163 @@ export const researchMethods = {
     },
     actionSection: {
       title: 'Discover insights that drive smarter decisions.',
+      illustration: StackIllustration,
+      img: '/images/research_method_girl_1.png',
+      actionLabel: "Let's Connect",
+    },
+  },
+  quality: {
+    heroSection: {
+      title:
+        'We rigorously ensure every participant meets the highest quality standards.',
+      description:
+        "We don't just identify potential participants — we thoroughly validate they're the right fit for your project.",
+      illustrationComponent: IllustrationParticipantQualityIcon,
+      items: [
+        {
+          sNo: '01',
+          label: 'Registration',
+          description:
+            "Whether they discover us through a social post or a personal recommendation, every research participant begins their journey on our in house application. With up to 100 unique registrations daily, it's a strong pipeline — but how do we know they're all genuine?",
+        },
+        {
+          sNo: '02',
+          label: 'Duplication Checks',
+          description:
+            'Once someone registers, our in-house software runs a thorough duplication check — scanning email addresses, phone numbers, postcodes, IPs, and usernames. If a match is found, both profiles are unsubscribed, making it nearly impossible to create multiple identities.',
+        },
+        {
+          sNo: '03',
+          label: 'Tele screening',
+          description:
+            "If no duplication is found, we've got a new member! But before they can join a project, they go through a tele-screening. The Roots team chats with them to verify details and ask about any previous research. Friendly yet thorough, they're experts at spotting participants who are genuine, engaged, and right on brief.",
+        },
+        {
+          sNo: '04',
+          label: 'Attendance Confirmation',
+          description:
+            "Next comes participation. Once we've identified the right respondents, we follow a strict three-step confirmation process to maximize attendance: an initial email confirmation, a rescreen call 24–48 hours before the research, and a final SMS reminder on the day itself.",
+        },
+        {
+          sNo: '05',
+          label: 'Handling Cancellations',
+          description:
+            "Of course, there are times—like illness—when participants need to cancel. But we're always quick to minimize any disruption. As soon as we're notified, we move fast to secure a replacement from the backup participants we've already lined up.",
+        },
+        {
+          sNo: '06',
+          label: 'Data Driven Insights',
+          description:
+            'No matter which research methodologies we use, data is always at the core. Our quality assurance processes and advanced analytics keep us on track every step of the way. By following the data, we refine and improve our approach—delivering high-quality insights that drive real impact.',
+        },
+      ],
+    },
+    caseStudySection: {
+      head: 'Data Security',
+      title: 'Your Data is Safe with Thought Metrics',
+      description:
+        'Data is at the heart of what we do. Every day we use, collect, store and send personal participant and research information. Its security is our highest priority.',
+      list: [
+        'Our Information Security Management System (ISMS) safeguards the availability, confidentiality, and integrity of data in full compliance with standards like GDPR.',
+        'All data is encrypted and stored on secure servers equipped with advanced monitoring technology. Access is strictly limited to authenticated, authorised personnel who require it to perform their roles. We enforce a strong password policy, including mandatory complexity and automatic account lockouts after multiple failed login attempts. Access logs are maintained to track all network activity involving data.',
+        'With these rigorous protocols—and a team fully dedicated to data protection and security—you can trust that your data is in safe hands.',
+      ],
+      illustrationComponent: IllustrationDataSecurityIcon,
+    },
+    serviceSection: {
+      head: 'AI and Automation in Research',
+      description:
+        "We're embracing the power of AI and automation to raise the bar on research quality, efficiency, and security.",
+      items: [
+        {
+          label: 'Smarter Participant Selection',
+          description:
+            'We use AI to identify patterns and match the most relevant, engaged participants to your project.',
+          iconOptions: {
+            icon: SmarterParticipantSelectionIcon,
+            isActive: false,
+            isBorder: false,
+            bgColor: 'transparent',
+          },
+          bgColor: 'default',
+          isBorder: true,
+          isActive: false,
+        },
+        {
+          label: 'Fraud Detection & Quality Control',
+          description:
+            'Machine learning helps us flag duplicates, inconsistencies, or suspicious activity early—boosting data integrity.',
+          iconOptions: {
+            icon: FraudDetectionQualityControlIcon,
+            isActive: false,
+            isBorder: false,
+            bgColor: 'transparent',
+          },
+          bgColor: 'default',
+          isBorder: true,
+          isActive: false,
+        },
+        {
+          label: 'Faster, Insightful Reporting',
+          description:
+            'Automation speeds up reporting workflows and helps surface meaningful insights quickly and accurately.',
+          iconOptions: {
+            icon: FasterInsightfulReportingIcon,
+            isActive: false,
+            isBorder: false,
+            bgColor: 'transparent',
+          },
+          bgColor: 'default',
+          isBorder: true,
+          isActive: false,
+        },
+        {
+          label: 'Operational Efficiency',
+          description:
+            'From screening to scheduling, automation supports smoother processes, reducing manual effort and turnaround time.',
+          iconOptions: {
+            icon: OperationalEfficiencyIcon,
+            isActive: false,
+            isBorder: false,
+            bgColor: 'transparent',
+          },
+          bgColor: 'default',
+          isBorder: true,
+          isActive: false,
+        },
+        {
+          label: 'Ethical Oversight',
+          description:
+            'AI is always guided by human review. Our team ensures AI-driven outcomes are accurate, fair, and aligned with ethical standards',
+          iconOptions: {
+            icon: EthicalOversightIcon,
+            isActive: false,
+            isBorder: false,
+            bgColor: 'transparent',
+          },
+          bgColor: 'default',
+          isBorder: true,
+          isActive: false,
+        },
+        {
+          label: 'AI Feedback Loops',
+          description:
+            'We use anonymise, aggregated performance data to fine-tune our systems—helping us improve recruitment accuracy and research efficiency without ever compromising individual client data.',
+          iconOptions: {
+            icon: AIFeedbackLoopsIcon,
+            isActive: false,
+            isBorder: false,
+            bgColor: 'transparent',
+          },
+          bgColor: 'default',
+          isBorder: true,
+          isActive: false,
+        },
+      ],
+    },
+    actionSection: {
+      title:
+        'Trust in every step. Our commitment to quality and security keeps your data safe.',
       illustration: StackIllustration,
       img: '/images/research_method_girl_1.png',
       actionLabel: "Let's Connect",
