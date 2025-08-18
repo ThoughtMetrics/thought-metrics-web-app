@@ -98,11 +98,11 @@ export const headerDropdownData = {
             },
             { label: 'Investors', path: ROUTES.INDUSTRY_INVESTOR },
             { label: 'Automotive', path: ROUTES.INDUSTRY_AUTOMOTIVE },
+            { label: 'Education', path: ROUTES.INDUSTRY_EDUCATION },
           ],
         },
         {
           items: [
-            { label: 'Education', path: ROUTES.INDUSTRY_EDUCATION },
             { label: 'Human Resources', path: ROUTES.INDUSTRY_HR },
             {
               label: 'Media and Internet Publishers',
