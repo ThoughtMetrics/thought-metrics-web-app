@@ -1,4 +1,16 @@
-import { FmcgIcon } from '@/assets';
+import {
+  AdvertisingMarketingIcon,
+  AutomotiveIcon,
+  EducationIcon,
+  FinancialServicesIcon,
+  FmcgIcon,
+  HealthcareLifeSciencesIcon,
+  HrIcon,
+  InvestorsIcon,
+  MediaInternetPublishersIcon,
+  RetailMerchandisingIcon,
+  TechnologyIcon,
+} from '@/assets';
 
 export const ourPanel = {
   heroSection: {
@@ -8,7 +20,7 @@ export const ourPanel = {
       "With our unmatched capabilities, seamless processes, and commitment to quality, we're the ideal fieldwork partner to bring your research to life.",
     illustration: {
       img: '/images/our_panel_2.png',
-      size: 'full',
+      size: 'default',
       aspectRatio: 'landscape',
       shadowPosition: 'br',
       shadowOpacity: 'full',
@@ -79,35 +91,87 @@ export const ourPanel = {
           'From everyday shoppers to loyal brand users, our panelists provide rapid, real-world feedback on products, packaging, and consumer behavior.',
       },
       {
-        icon: FmcgIcon,
-        label: 'Duplication Checks',
+        icon: RetailMerchandisingIcon,
+        label: 'Retail & Merchandising',
         description:
-          'Once someone registers, our in-house software runs a thorough duplication check — scanning email addresses, phone numbers, postcodes, IPs, and usernames. If a match is found, both profiles are unsubscribed, making it nearly impossible to create multiple identities.',
+          'We engage with both in-store and online shoppers, as well as retail professionals, to offer insights on buying decisions, display effectiveness, and customer journeys.',
       },
       {
-        icon: FmcgIcon,
-        label: 'Tele screening',
+        icon: HealthcareLifeSciencesIcon,
+        label: 'Healthcare & Life Sciences',
         description:
-          "If no duplication is found, we've got a new member! But before they can join a project, they go through a tele-screening. The Roots team chats with them to verify details and ask about any previous research. Friendly yet thorough, they're experts at spotting participants who are genuine, engaged, and right on brief.",
+          'Our panel includes patients, caregivers, HCPs, and wellness-focused individuals, offering diverse perspectives on treatments, services, and innovations.',
       },
       {
-        icon: FmcgIcon,
-        label: 'Attendance Confirmation',
+        icon: AdvertisingMarketingIcon,
+        label: 'Advertising & Marketing',
         description:
-          "Next comes participation. Once we've identified the right respondents, we follow a strict three-step confirmation process to maximize attendance: an initial email confirmation, a rescreen call 24–48 hours before the research, and a final SMS reminder on the day itself.",
+          'From consumers reacting to campaigns to marketing professionals evaluating strategy, we gather honest opinions on what cuts through and what falls flat.',
       },
       {
-        icon: FmcgIcon,
-        label: 'Handling Cancellations',
+        icon: FinancialServicesIcon,
+        label: 'Financial Services',
         description:
-          "Of course, there are times—like illness—when participants need to cancel. But we're always quick to minimize any disruption. As soon as we're notified, we move fast to secure a replacement from the backup participants we've already lined up.",
+          "Whether it's everyday banking users, insurance policyholders, or financial advisors, our panel represents a full spectrum of financial decision-makers.",
       },
       {
-        icon: FmcgIcon,
-        label: 'Data Driven Insights',
+        icon: InvestorsIcon,
+        label: 'Investors',
         description:
           'No matter which research methodologies we use, data is always at the core. Our quality assurance processes and advanced analytics keep us on track every step of the way. By following the data, we refine and improve our approach—delivering high-quality insights that drive real impact.',
       },
+      {
+        icon: AutomotiveIcon,
+        label: 'Automotive',
+        description:
+          'Our panelists include everyday drivers, EV adopters, and fleet managers — people who live on the road and influence the automotive market.',
+      },
+      {
+        icon: EducationIcon,
+        label: 'Education',
+        description:
+          'We engage with students, parents, teachers, and administrators to uncover insights around learning, policy, and the future of education.',
+      },
+      {
+        icon: HrIcon,
+        label: 'Human Resources',
+        description:
+          'From hiring managers to L&D specialists and employees across industries, our HR panel offers grounded perspectives on workplace culture and talent management.',
+      },
+      {
+        icon: MediaInternetPublishersIcon,
+        label: 'Media and Internet Publishers',
+        description:
+          "We reach both content creators and media consumers, allowing you to test ideas, formats, and platforms with those shaping and consuming today's media.",
+      },
+      {
+        icon: TechnologyIcon,
+        label: 'Technology',
+        description:
+          'Our tech-savvy panel spans early adopters, IT professionals, and digital natives — perfect for product testing, UX feedback, and trend tracking.',
+      },
     ],
+  },
+  caseStudySection: {
+    head: 'Join Our Panel',
+    title: 'Be part of something that shapes the future.',
+    list: [
+      "Whether it's sharing your opinion on a new product, testing a service before it launches, or giving feedback that helps brands improve — your voice matters. By joining our panel, you'll get the opportunity to take part in paid research projects that fit your interests and schedule.",
+      "It's flexible, and rewarding.",
+      'All you need is honesty, reliability, and a willingness to share your views. We welcome people from all walks of life — because the best insights come from real, diverse experiences.',
+    ],
+    description:
+      'Ready to get involved?<br>Sign up today and help influence the products, services, and experiences of tomorrow.',
+    illustration: {
+      img: '/images/our_panel_3.png',
+      size: 'full',
+      aspectRatio: 'landscape',
+      objectFit: 'cover',
+      loading: 'lazy',
+    },
+    actionButton: {
+      label: 'Sign Up',
+      path: '',
+    },
   },
 } as const;

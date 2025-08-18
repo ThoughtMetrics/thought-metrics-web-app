@@ -696,7 +696,6 @@ export const capabilities = {
         'Product research drives smarter decisions across product development, brand messaging, packaging, services, digital experiences, marketing campaigns, and everything that shapes customer engagement.',
       illustration: {
         img: '/images/capabilities_product_research_2.png',
-        size: 'default',
         aspectRatio: 'square',
         objectFit: 'cover',
         loading: 'lazy',
