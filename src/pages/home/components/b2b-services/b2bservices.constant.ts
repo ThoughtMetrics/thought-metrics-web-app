@@ -1,4 +1,5 @@
 import { BoxCluster, DoorPerson, IllustrationSlope, Spiral } from '@/assets';
+import { ROUTES } from '@/routes/routeConfig';
 
 export interface ServiceCardData {
   type: number;
@@ -7,6 +8,7 @@ export interface ServiceCardData {
   backgroundColor: string;
   illustration: string;
   className1?: string;
+  path?: string;
 }
 
 export const contentSecondData = {
@@ -20,6 +22,7 @@ export const contentSecondData = {
         'We help brands resonate. From brand perception and awareness to message testing and ad effectiveness, our research empowers you to communicate with clarity and impact. Backed by qualitative insights and robust tracking, we ensure your brand voice connects with the right audience.',
       backgroundColor: 'green',
       illustration: IllustrationSlope,
+      path: ROUTES.CAPABILITY_BRANDING_ADVERTISING,
     },
     {
       className: 'absolute top-1/2 right-0 transform -translate-y-1/2 h-[80%]',
@@ -28,6 +31,7 @@ export const contentSecondData = {
         "Find your edge before you enter. Our market opportunity research identifies whitespace, tests feasibility, and maps competitive dynamics. Whether you're planning a launch or exploring new segments, we provide the insights to make bold, informed moves.",
       backgroundColor: 'purple',
       illustration: DoorPerson,
+      path: ROUTES.CAPABILITY_MARKET_OPPORTUNITY,
     },
     {
       className: 'absolute top-1/2 right-0 transform -translate-y-1/2 h-[90%]',
@@ -36,6 +40,7 @@ export const contentSecondData = {
         "Know who you're talking to — and why it matters. We uncover the motivations, behaviors, and needs of your customers, then segment them meaningfully to guide strategy. Our blend of qualitative and quantitative approaches ensures depth, accuracy, and actionable clarity.",
       backgroundColor: 'gray',
       illustration: Spiral,
+      path: ROUTES.CAPABILITY_CUSTOMER_RESEARCH,
     },
     {
       className: 'absolute right-8 top-8',
@@ -45,6 +50,7 @@ export const contentSecondData = {
         'Build products that solve real problems. From concept testing and feature prioritization to in-use feedback, we support every phase of product development. Our insights help you align innovation with user expectations — minimizing risk and maximizing relevance.',
       backgroundColor: 'pink',
       illustration: BoxCluster,
+      path: ROUTES.CAPABILITY_PRODUCT_RESEARCH,
     },
   ],
 };

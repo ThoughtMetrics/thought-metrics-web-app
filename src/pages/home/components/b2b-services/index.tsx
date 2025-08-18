@@ -1,6 +1,7 @@
 import React from 'react';
 import { contentSecondData } from './b2bservices.constant';
 import { ArrowRight } from '@/assets';
+import { Link } from 'react-router-dom';
 
 const B2BServices: React.FC = () => {
   return (
@@ -30,7 +31,9 @@ const B2BServices: React.FC = () => {
                 {contentSecondData.services[0].description}
               </p>
               <div className="py-2">
-                <ArrowRight />
+                <Link to={contentSecondData.services[0].path} viewTransition={true}>
+                  <ArrowRight />
+                </Link>
               </div>
             </div>
           </div>
@@ -48,7 +51,9 @@ const B2BServices: React.FC = () => {
                 className="py-2"
                 aria-label={`Learn more about ${contentSecondData.services[1].title}`}
               >
-                <ArrowRight />
+                <Link to={contentSecondData.services[1].path} viewTransition={true}>
+                  <ArrowRight />
+                </Link>
               </div>
             </div>
             {(() => {
@@ -74,7 +79,9 @@ const B2BServices: React.FC = () => {
                 className="py-2"
                 aria-label={`Learn more about ${contentSecondData.services[2].title}`}
               >
-                <ArrowRight />
+                <Link to={contentSecondData.services[2].path} viewTransition={true}>
+                  <ArrowRight />
+                </Link>
               </div>
             </div>
             {(() => {
@@ -98,7 +105,9 @@ const B2BServices: React.FC = () => {
                 className="py-2"
                 aria-label={`Learn more about ${contentSecondData.services[3].title}`}
               >
-                <ArrowRight />
+                <Link to={contentSecondData.services[3].path} viewTransition={true}>
+                  <ArrowRight />
+                </Link>
               </div>
             </div>
             {(() => {

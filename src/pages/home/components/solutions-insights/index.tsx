@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { solutionsInsights } from './solutions-insights.constant';
 import { ArrowRight, PersonWithPhone } from '@/assets';
 import { cn } from '@/core/utils/cn';
+import { Link } from 'react-router-dom';
 
 const SolutionInsights: React.FC = () => {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
@@ -79,7 +80,9 @@ const SolutionInsights: React.FC = () => {
               >
                 {card.description}
               </p>
-              <button
+              <Link
+                to={card.path}
+                viewTransition={true}
                 className={cn(
                   'absolute bottom-0 right-0 w-[72px] h-[38px] rounded-tl-[4px] rounded-br-[3px] bg-primary text-white border-none flex items-center justify-center cursor-pointer transition-all duration-300 ease-in-out',
                   hoveredCard === index && 'bg-white text-primary'
@@ -92,7 +95,7 @@ const SolutionInsights: React.FC = () => {
                     hoveredCard === index ? 'text-black' : ''
                   )}
                 />
-              </button>
+              </Link>
             </button>
           ))}
         </div>

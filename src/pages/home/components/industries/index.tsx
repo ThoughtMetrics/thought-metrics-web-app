@@ -5,6 +5,7 @@ import { ArrowRed } from '@/assets';
 import './industries.style.css';
 import { Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
 
 const Industries: React.FC = () => {
   const [activeTab, setActiveTab] = useState<IndustryTabData>(
@@ -76,8 +77,12 @@ const Industries: React.FC = () => {
                 <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
                   {activeTab.tabNumber}
                 </div>
-                <div className="h-10 px-8 rounded-md bg-primary flex items-center justify-center">
-                  See More
+                <div className="w-fit h-full flex items-center justify-end">
+                  <CustomButtonAtom
+                    label="See More"
+                    path={activeTab.path}
+                    className="h-10 px-8 py-3 text-black text-base"
+                  />
                 </div>
               </div>
             </div>
@@ -152,8 +157,14 @@ const Industries: React.FC = () => {
                       <div className="w-7 h-8 rounded-full bg-primary flex items-center justify-center">
                         {industry.tabNumber}
                       </div>
-                      <div className="h-8 px-4 rounded-md bg-primary flex items-center justify-center">
-                        See More
+                      <div>
+                        <div className="w-fit h-full flex items-center justify-end">
+                          <CustomButtonAtom
+                            label="See More"
+                            path={industry.path}
+                            className="h-8 px-4 py-2 text-black text-xs"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -1,3 +1,5 @@
+import { ROUTES } from '@/routes/routeConfig';
+
 export interface IndustryTabData {
   id: string;
   label: string;
@@ -10,6 +12,7 @@ export interface IndustryTabData {
   tabNumber: string;
   isMobile: boolean;
   shortTitle?: string;
+  path: string;
 }
 
 export const industryData = {
@@ -30,6 +33,7 @@ export const industryData = {
       image: '/illustrations/illustration-store.svg',
       imageAlt: 'FMCG retail store aisle',
       tabNumber: '01',
+      path: ROUTES.INDUSTRY_FMCG,
     },
     {
       id: 'retail',
@@ -47,6 +51,7 @@ export const industryData = {
       imageAlt: 'Retail store interior',
       tabNumber: '02',
       shortTitle: 'Retail',
+      path: ROUTES.INDUSTRY_RETAIL,
     },
     {
       id: 'financial-services',
@@ -63,6 +68,7 @@ export const industryData = {
       image: '/illustrations/illustration-financials.svg',
       imageAlt: 'Person making payment using credit card',
       tabNumber: '03',
+      path: ROUTES.INDUSTRY_FINANCE,
     },
     {
       id: 'investors',
@@ -79,6 +85,7 @@ export const industryData = {
       image: '/illustrations/illustration-investors.svg',
       imageAlt: 'Group of people analyzing business data',
       tabNumber: '04',
+      path: ROUTES.INDUSTRY_INVESTOR,
     },
     {
       id: 'media',
@@ -94,6 +101,7 @@ export const industryData = {
       image: '/illustrations/illustration-media.svg',
       imageAlt: 'Media professional recording video with camera',
       tabNumber: '05',
+      path: ROUTES.INDUSTRY_INTERNET,
     },
     {
       id: 'technology',
@@ -110,6 +118,7 @@ export const industryData = {
       image: '/illustrations/illustration-tech.svg',
       imageAlt: 'Person reviewing code on a computer screen',
       tabNumber: '06',
+      path: ROUTES.INDUSTRY_TECHNOLOGY,
     },
     {
       id: 'automotive',
@@ -126,6 +135,7 @@ export const industryData = {
       image: '/illustrations/illustration-automobile.svg',
       imageAlt: 'Close-up of sports car wheel',
       tabNumber: '07',
+      path: ROUTES.INDUSTRY_AUTOMOTIVE,
     },
     {
       id: 'advertising-marketing',
@@ -143,6 +153,7 @@ export const industryData = {
       imageAlt: 'Crowded Times Square with advertising billboards',
       tabNumber: '08',
       shortTitle: 'Advertising',
+      path: ROUTES.INDUSTRY_ADVERTISING,
     },
     {
       id: 'human-resources',
@@ -159,6 +170,7 @@ export const industryData = {
       image: '/illustrations/illustration-hr.svg',
       imageAlt: 'Corporate employees in HR interview discussion',
       tabNumber: '09',
+      path: ROUTES.INDUSTRY_HR,
     },
     {
       id: 'education',
@@ -175,6 +187,7 @@ export const industryData = {
       image: '/illustrations/illustration-education.svg',
       imageAlt: 'Student learning in a classroom environment',
       tabNumber: '10',
+      path: ROUTES.INDUSTRY_EDUCATION,
     },
     {
       id: 'healthcare',
@@ -192,6 +205,7 @@ export const industryData = {
       imageAlt: 'Healthcare consultation',
       tabNumber: '11',
       shortTitle: 'Healthcare',
+      path: ROUTES.INDUSTRY_HEALTHCARE,
     },
   ] as IndustryTabData[],
 };
