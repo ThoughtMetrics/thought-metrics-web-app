@@ -7,7 +7,7 @@ const CustomerResearchFeatureSection: React.FC<any> = ({
   featureClassName,
 }: any) => {
   return (
-    <section className="common-component w-full h-full relative bg-primary">
+    <section className="common-component w-full h-full relative text-black brand-ad-component">
       <div
         className={cn(
           'common-container relative px-6 py-8 md:px-24 md:py-24 !max-w-[1336px] flex-col gap-12 z-10',
@@ -15,22 +15,21 @@ const CustomerResearchFeatureSection: React.FC<any> = ({
         )}
       >
         <div className="flex items-end gap-2 relative">
-          <div className="w-[75%] md:w-auto text-xl md:text-3xl font-semibold text-white leading-tight relative">
+          <div className="w-fit text-xl md:text-3xl font-semibold leading-tight relative">
             <p
-              className="text-wrap"
+              className="text-nowrap"
               dangerouslySetInnerHTML={{
                 __html: featureSection.title,
               }}
             />
-            <div className="w-[60%] xs:w-[30%] md:w-[70%] h-2 bg-primary absolute left-0 bottom-0 -z-1"></div>
           </div>
-          <div className="absolute bg-white h-0.5 w-full mb-1 -z-2"></div>
+          <div className="hidden md:block bg-black h-0.5 w-full mb-1 -z-2"></div>
         </div>
 
         {/* Desktop view */}
         <div
           className={cn(
-            'hidden md:grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 bg-primary',
+            'hidden md:grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8',
             className
           )}
         >

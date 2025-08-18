@@ -91,7 +91,7 @@ export const footerData = {
         { label: 'Request a Bid', href: '#' },
         { label: 'Careers', href: '#' },
         { label: 'Contact Us', href: '#' },
-        { label: 'Our Panel', href: '#', isBold: true },
+        { label: 'Our Panel', path: ROUTES.OUR_PANEL, isBold: true },
       ],
     },
   ] as FooterSectionData[],

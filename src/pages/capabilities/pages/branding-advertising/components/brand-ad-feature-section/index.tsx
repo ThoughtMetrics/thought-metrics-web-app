@@ -1,7 +1,6 @@
 import { IllustrationSquares1 } from '@/assets';
 import { cn } from '@/core/utils/cn';
 import { BrandAdFeatureCard } from '@/shared/ui/molecules/feature-card';
-import './brand-ad-feature.css';
 
 const BrandAdFeatureSection: React.FC<any> = ({
   featureSection,
@@ -9,7 +8,7 @@ const BrandAdFeatureSection: React.FC<any> = ({
   cardClassName,
 }: any) => {
   return (
-    <section className="common-component w-full h-full relative bg-primary text-black">
+    <section className="common-component w-full h-full relative bg-primary text-black brand-ad-component">
       <div className="hidden md:flex absolute w-full h-full justify-start items-center md:p-0 z-1">
         <IllustrationSquares1 className="xl:h-[60%] xxl:h-[70%] w-auto stroke-2 md:stroke-1 stroke-primary" />
       </div>
@@ -17,9 +16,8 @@ const BrandAdFeatureSection: React.FC<any> = ({
         <div className="flex items-end gap-2 relative">
           <h2 className="text-xl md:text-3xl font-semibold leading-tight md:text-nowrap relative">
             {featureSection.title}
-            <div className="w-[65%] md:w-[103%] h-2 bg-gradient-to-r from- to-#EBE7EE absolute left-0 bottom-0 -z-1"></div>
           </h2>
-          <div className="absolute bg-black h-0.5 w-full mb-1 -z-2"></div>
+          <div className="hidden md:block bg-black h-0.5 w-full mb-1 -z-2"></div>
         </div>
         {/* Desktop view */}
         <div
@@ -33,7 +31,7 @@ const BrandAdFeatureSection: React.FC<any> = ({
               feature={feature}
               index={index}
               className={cn(
-                'px-7 py-6 bg-primary/15 text-black',
+                'px-7 py-6 bg-primary/20 text-black',
                 index === featureSection.items.length - 1 && 'bg-primary',
                 cardClassName
               )}
@@ -43,7 +41,7 @@ const BrandAdFeatureSection: React.FC<any> = ({
         {/* Mobile view */}
         <div
           className={cn(
-            'md:hidden flex flex-nowrap shrink-0 overflow-x-scroll hide-scrollbar gap-6 ',
+            'md:hidden flex flex-nowrap shrink-0 overflow-x-scroll hide-scrollbar gap-6',
             className
           )}
         >
@@ -51,7 +49,11 @@ const BrandAdFeatureSection: React.FC<any> = ({
             <BrandAdFeatureCard
               feature={feature}
               index={index}
-              className={cn('px-5 py-4 shrink-0 w-[65%]', cardClassName)}
+              className={cn(
+                'px-5 py-4 shrink-0 w-[65%] bg-primary/20 text-black',
+                index === featureSection.items.length - 1 && 'bg-primary',
+                cardClassName
+              )}
             />
           ))}
         </div>

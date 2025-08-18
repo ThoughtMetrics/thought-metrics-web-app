@@ -72,3 +72,15 @@ body {
     @apply w-full flex justify-center min-w-auto;
   }
 }
+
+.brand-ad-component {
+  background: var(--color-surface) url('/images/background_image_5.png')
+    no-repeat center;
+  background-size: cover;
+}
+
+.industries-component {
+  background: var(--color-surface) url('/images/background_image_4.png')
+    no-repeat center;
+  background-size: cover;
+}

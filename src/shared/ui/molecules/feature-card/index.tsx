@@ -10,13 +10,13 @@ const FeatureCard: React.FC<any> = ({ feature, index, className }) => {
     <div
       key={index + feature.title}
       className={cn(
-        'text-white rounded-lg flex flex-col gap-2 md:gap-8',
-        feature.isBorder ? 'border-white border-1' : '',
+        'text-black rounded-lg flex flex-col gap-2 md:gap-8',
+        feature.isBorder ? 'border-primary border-1' : '',
         feature.bgColor && BG_COLORS[feature.bgColor],
         className
       )}
     >
-      <div className="flex flex-col gap-4 md:gap-8 xxl:gap-10">
+      <div className="flex flex-col gap-4 md:gap-8 xxl:gap-10 h-full">
         <h2 className="text-base xxl:text-xl font-medium">{feature.title}</h2>
         <p className="text-md xxl:text-base font-normal leading-5">
           {feature.description}
@@ -36,8 +36,8 @@ const BrandAdFeatureCard: React.FC<any> = ({
     <div
       key={index + feature.title}
       className={cn(
-        'text-white rounded-lg flex flex-col gap-1 md:gap-2 text-md md:text-base',
-        feature.isBorder ? 'border-white border-1' : '',
+        'text-black rounded-lg flex flex-col gap-1 md:gap-2 text-md md:text-base',
+        feature.isBorder ? 'border-primary border-1' : '',
         feature.bgColor && `${BG_COLORS[feature.bgColor]}`,
         className
       )}
@@ -64,12 +64,12 @@ const MarketOptFeatureCard: React.FC<any> = ({ feature, index, className }) => {
   return (
     <div
       key={index + feature.title}
-      className={cn('w-full h-full bg-primary', className)}
+      className={cn('w-full h-full', className)}
     >
       <div
         className={cn(
-          'w-full h-full flex text-white rounded-md font-semibold items-center justify-center text-center text-xs md:text-base p-1 md:px-2 md:py-4',
-          feature.isBorder ? 'border-white border-1' : '',
+          'w-full h-full flex text-black rounded-md font-medium items-center justify-center text-center text-xs md:text-base p-1 md:px-2 md:py-4',
+          feature.isBorder ? 'border-black border-1' : '',
           feature.bgColor && `${BG_COLORS[feature.bgColor]}`,
           'shadow-lg'
         )}
