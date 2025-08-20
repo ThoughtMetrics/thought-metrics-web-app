@@ -81,7 +81,7 @@ const Industries: React.FC = () => {
                   <CustomButtonAtom
                     label="See More"
                     path={activeTab.path}
-                    className="h-10 px-8 py-3 text-black text-base"
+                    className="h-10 px-8 py-2 text-black text-base"
                   />
                 </div>
               </div>

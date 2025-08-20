@@ -129,7 +129,7 @@ const OurPanel: React.FC = () => {
         </div>
       </section>
       {/* Section 3 */}
-      <section className="common-component w-full h-full relative bg-white px-6 pt-14 pb-8 md:p-0 text-black">
+      <section className="common-component w-full h-full relative z-1 bg-white px-6 pt-14 pb-8 md:p-0 text-black">
         <div
           className={cn(
             'common-container !max-w-[1336px] !grid grid-cols-1 md:grid-cols-2 items-center justify-between'
@@ -160,13 +160,15 @@ const OurPanel: React.FC = () => {
                 __html: ourPanel.caseStudySection.description,
               }}
             />
-            <CustomButtonAtom
-              label={ourPanel.caseStudySection.actionButton.label}
-              className='font-medium px-12 py-2 md:px-18 md:py-3 md:text-xl'
-            />
+            <div className="py-4">
+              <CustomButtonAtom
+                label={ourPanel.caseStudySection.actionButton.label}
+                className="font-medium px-12 py-2 md:px-18 md:py-3 md:text-xl"
+              />
+            </div>
           </div>
         </div>
-        <div className="absolute h-full w-full !grid grid-cols-1 md:grid-cols-2">
+        <div className="absolute h-full w-full !grid grid-cols-1 md:grid-cols-2 -z-1">
           <div className="col-span-1"></div>
           <div className="col-span-1 hidden md:block place-self-end self-center">
             <CustomImageAtom

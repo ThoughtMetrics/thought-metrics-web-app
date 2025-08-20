@@ -6,6 +6,7 @@
 :root {
   /* Semantic colors */
   --primary: #e8505e;
+  --secondary: #2a2b8a;
   --primary-dark: #cf464f;
   --primary-light: #ff969f;
   --primary-lighter: #fff7f5;
@@ -57,6 +58,7 @@
 @theme {
   /* Semantic colors */
   --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
   --color-primary-dark: var(--primary-dark);
   --color-primary-light: var(--primary-light);
   --color-primary-lighter: var(--primary-lighter);

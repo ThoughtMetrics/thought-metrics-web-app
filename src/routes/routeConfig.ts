@@ -33,6 +33,9 @@ export const ROUTES = {
   RESEARCH_METHODS_FOCUS_GROUP: '/research_methods/focus_group',
   RESEARCH_METHODS_SURVEYS: '/research_methods/surveys',
   RESEARCH_METHODS_QUALITY: '/research_methods/quality',
+  /* Landing */
+  RESPONDENT_LANDING: '/respondent_landing',
+  ADVOCATE_LANDING: '/advocate_landing',
   /* Other Routes */
   NOT_FOUND: '*',
 } as const;
@@ -85,6 +88,9 @@ export const generateBreadcrumbsFromPath = (
       focus_group: 'Focus Group Discussions',
       surveys: 'Surveys',
       quality: 'Quality Checks and Data Security',
+      /* Landing */
+      respondent_landing: 'Respondent Landing',
+      advocate_landing: 'Advocate Landing',
     };
 
     if (segmentLabels[segment]) {

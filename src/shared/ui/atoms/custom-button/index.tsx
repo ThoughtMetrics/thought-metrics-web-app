@@ -12,16 +12,16 @@ const CustomButtonAtom: React.FC<CustomButtonProps> = ({
 }) => {
   return (
     <div className="w-full">
-      <Link
-        to={path}
-        viewTransition={true}
+      <button
         className={cn(
-          'bg-primary text-white font-bold rounded-md text-xl text-nowrap py-1 px-6 w-auto hover:bg-custom-blue hover:text-white',
+          'bg-primary text-white font-bold rounded-md text-xl text-nowrap py-1 px-6 w-auto hover:bg-secondary hover:text-white transition-all duration-300 ease-in-out',
           className
         )}
       >
-        <label>{label}</label>
-      </Link>
+        <Link to={path} viewTransition={true}>
+          <label>{label}</label>
+        </Link>
+      </button>
     </div>
   );
 };
