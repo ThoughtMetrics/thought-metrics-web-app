@@ -7,14 +7,14 @@ body,
   height: 100%;
   overflow-x: hidden;
   overflow-y: scroll;
-}
-
-/* Prevent bounce scrolling on iOS */
-body {
+  /* Prevent bounce scrolling on iOS */
   position: fixed;
-  width: 100%;
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
+}
+
+body {
+  overflow: unset;
 }
 
 :root {
@@ -25,7 +25,8 @@ body {
   overflow: hidden;
 
   color-scheme: light dark;
-  background: var(--color-surface) url('/images/background_image_1.png') no-repeat center;
+  background: var(--color-surface) url('/images/background_image_1.png')
+    no-repeat center;
   background-size: cover;
 
   font-synthesis: none;

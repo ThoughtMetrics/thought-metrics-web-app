@@ -321,13 +321,13 @@ export {
 import IllustrationSquares2 from './svgs/illustration-squares-2.svg?react';
 import PatientsIcon from './svgs/patients.svg?react';
 import HealthcareProfessionalsIcon from './svgs/healthcare-professionals.svg?react';
-import Consumers from './svgs/consumers.svg?react';
+import ConsumersIcon from './svgs/consumers.svg?react';
 import BusinessProfessionalsIcon from './svgs/business-professionals.svg?react';
 
 export {
   IllustrationSquares2,
   PatientsIcon,
   HealthcareProfessionalsIcon,
-  Consumers,
+  ConsumersIcon,
   BusinessProfessionalsIcon,
 };
