@@ -4,7 +4,6 @@ import { cn } from '@/core/utils/cn';
 const BlogCard: React.FC<any> = ({ blog, className = '' }) => {
   return (
     <article
-      key={blog.id}
       className={cn(
         'snap-start snap-always w-[85%] relative shrink-0 backdrop-blur-[40px] overflow-hidden group hover:shadow-xl transition-shadow duration-300 md:w-auto',
         className

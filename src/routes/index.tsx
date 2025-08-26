@@ -40,13 +40,43 @@ import OurPanel from '@/pages/our-panel';
 import AdvocateLandingPage from '@/pages/landing/advocate-landing';
 import RespondentLandingPage from '@/pages/landing/respondent-landing';
 import LandingLayout from '@/shared/components/landing-layout';
+// import ResourcePage from '@/pages/resources';
+
+/* // Home loader - prefetches blog data
+const homeLoader = async () => {
+  await queryClient.prefetchQuery({
+    queryKey: contentKeys.blog({
+      type: [ContentType.ARTICLE, ContentType.INSIGHT],
+      limit: 4,
+    }),
+    queryFn: () =>
+      contentService.getBlogContents({
+        type: [ContentType.ARTICLE, ContentType.INSIGHT],
+        limit: 4,
+      }),
+  });
+
+  return null;
+};
+
+// Resource loader - prefetches specific content
+const resourceLoader = async ({ params }: { params: any }) => {
+  if (!params.slug) return null;
+
+  const content = await queryClient.fetchQuery({
+    queryKey: contentKeys.slug(params.slug),
+    queryFn: () => contentService.getContentBySlug(params.slug),
+  });
+
+  return { content };
+}; */
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       {/* Static Content Routes */}
       <Route path="/" element={<Layout />}>
-        <Route index element={<Home />} />
+        <Route index element={<Home />}/>
 
         <Route path="industries" element={<IndustriesPage />}>
           <Route index element={<Navigate to="/industries" replace />} />
@@ -100,6 +130,8 @@ export const router = createBrowserRouter(
         </Route>
 
         <Route path="our_panel" element={<OurPanel />} />
+
+        {/* <Route path="resources/:slug" element={<ResourcePage />}/> */}
       </Route>
 
       {/* Landing Content Routes */}

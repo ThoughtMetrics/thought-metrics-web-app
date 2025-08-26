@@ -9,6 +9,7 @@ const IndustryTemplatePage: React.FC<any> = ({
   industry,
   featureCardClassName,
 }: any) => {
+  industry.heroSection.illustration.className = 'pt-4';
   return (
     <>
       <HeroSection heroSection={industry.heroSection} />

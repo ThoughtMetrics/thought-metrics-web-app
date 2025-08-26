@@ -24,8 +24,8 @@ const BlogOrganism: React.FC<any> = ({
           {data.title}
         </h2>
         <div className="snap-x snap-mandatory scroll-smooth hide-scrollbar h-fit pt-6 flex overflow-x-scroll gap-3 md:overflow-auto md:grid md:grid-cols-4 md:gap-6 md:snap-none">
-          {data.items.map((blog: any) => (
-            <BlogCard blog={blog} />
+          {data.items.map((blog: any, index: number) => (
+            <BlogCard key={index + blog.id} blog={blog} />
           ))}
         </div>
       </div>

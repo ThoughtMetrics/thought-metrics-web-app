@@ -1,5 +1,6 @@
 // routes/routeConfig.ts - FIXED VERSION
-import type { BreadcrumbItem } from '@/core/interfaces/breadcrumb-item.interface';
+
+import type { BreadcrumbItem } from '@/core/types/breadcrumb-item.type';
 
 export const ROUTES = {
   HOME: '/',
@@ -36,6 +37,8 @@ export const ROUTES = {
   /* Landing */
   RESPONDENT_LANDING: '/respondent_landing',
   ADVOCATE_LANDING: '/advocate_landing',
+  /* Resource Route (Blog, Article, Insights, Report, etc) */
+  RESOURCES: '/resources',
   /* Other Routes */
   NOT_FOUND: '*',
 } as const;
@@ -87,10 +90,12 @@ export const generateBreadcrumbsFromPath = (
       fieldwork: 'Recruitment and Fieldwork',
       focus_group: 'Focus Group Discussions',
       surveys: 'Surveys',
-      quality: 'Quality Checks and Data Security',
+      quality: 'Participant Quality',
       /* Landing */
       respondent_landing: 'Respondent Landing',
       advocate_landing: 'Advocate Landing',
+      /* Resource Route (Blog, Article, Insights, Report, etc) */
+      resources: 'Resources',
     };
 
     if (segmentLabels[segment]) {

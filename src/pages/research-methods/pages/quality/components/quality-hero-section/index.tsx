@@ -1,5 +1,6 @@
 import { cn } from '@/core/utils/cn';
 import './quality-hero-section.css';
+import { PageTitle } from '@/shared/components/page-title';
 
 const QualityHeroSection: React.FC<any> = ({
   heroSection,
@@ -21,6 +22,7 @@ const QualityHeroSection: React.FC<any> = ({
           )}
         >
           <div className="h-[18rem] md:h-[8rem] wide:h-[14rem]"></div>
+          <PageTitle />
           <h1
             className={cn(
               'w-[80%] md:w-[95%] wide:w-[80%] text-2xl md:text-4xl font-medium',

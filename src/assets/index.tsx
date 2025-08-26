@@ -331,3 +331,21 @@ export {
   ConsumersIcon,
   BusinessProfessionalsIcon,
 };
+
+/* Blog Page */
+
+import ClipPinIcon from './svgs/clip-pin.svg?react';
+import FacebookIcon from './svgs/facebook.svg?react';
+import InstagramIcon from './svgs/instagram.svg?react';
+import LinkedinIcon from './svgs/linkedin.svg?react';
+import MailIcon from './svgs/mail.svg?react';
+import XIcon from './svgs/x.svg?react';
+
+export {
+  ClipPinIcon,
+  FacebookIcon,
+  InstagramIcon,
+  LinkedinIcon,
+  MailIcon,
+  XIcon,
+};

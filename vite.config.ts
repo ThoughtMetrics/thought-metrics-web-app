@@ -1,3 +1,5 @@
+//vite.config.ts
+
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react-swc';
 import svgr from 'vite-plugin-svgr';
@@ -50,6 +52,7 @@ export default defineConfig({
       '@utils': path.resolve(__dirname, './src/core/utils'),
       '@pages': path.resolve(__dirname, './src/pages'),
       '@services': path.resolve(__dirname, './src/services'),
+      '@interfaces': path.resolve(__dirname, './src/core/interfaces'),
       '@ui': path.resolve(__dirname, './src/shared/ui'),
       '@components': path.resolve(__dirname, './src/shared/components'),
     },

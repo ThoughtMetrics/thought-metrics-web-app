@@ -4,12 +4,13 @@ import './our-panel.css';
 import CustomImageAtom from '@/shared/ui/atoms/custom-image';
 import ServiceCard from '@/shared/ui/molecules/service-card';
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
+import { PageTitle } from '@/shared/components/page-title';
 const OurPanel: React.FC = () => {
   return (
     <div className="text-black">
       {/* Section 1 */}
-      <section className="common-component w-full h-full relative pt-10 md:pt-0 section-1">
-        <div className="absolute top-0 right-0 md:min-h-[360px] xl:min-h-[480px] wide:min-h-[580px] w-[50%] flex justify-center pt-10 md:items-center">
+      <section className="common-component w-full h-full relative section-1">
+        <div className="absolute top-0 right-0 md:min-h-[360px] xl:min-h-[480px] wide:min-h-[580px] w-[50%] flex justify-center md:items-center">
           <div className="pr-[8rem] xxl:pr-[8rem] wide:pr-[16rem]">
             <CustomImageAtom
               src={ourPanel.heroSection.illustration.img}
@@ -22,7 +23,7 @@ const OurPanel: React.FC = () => {
         </div>
         <div className="common-container p-5 md:p-10 xxl:p-0 !max-w-[var(--breakpoint-2xl)] flex-col">
           <div className="md:w-[28%] xl:w-[37%] wide:w-[40%] h-full flex flex-col gap-3 justify-center md:min-h-[360px] xl:min-h-[480px] wide:min-h-[580px]">
-            <div className="h-[2rem] md:h-[4rem]"></div>
+            <PageTitle />
             <h2 className="w-full md:text-2xl xl:text-3xl xxl:text-4xl md:leading-8 xl:leading-11">
               <span>{ourPanel.heroSection.title}</span>
             </h2>
