@@ -9,7 +9,7 @@ const OurPanel: React.FC = () => {
   return (
     <div className="text-black">
       {/* Section 1 */}
-      <section className="common-component w-full h-full relative section-1">
+      <section className="common-component w-full h-full relative bg-[url('/images/background_image_8_1_m.png')] md:bg-[url('/images/background_image_8_1.png')] our-panel-container">
         <div className="absolute top-0 right-0 md:min-h-[360px] xl:min-h-[480px] wide:min-h-[580px] w-[50%] flex justify-center md:items-center">
           <div className="pr-[8rem] xxl:pr-[8rem] wide:pr-[16rem]">
             <CustomImageAtom
@@ -21,10 +21,10 @@ const OurPanel: React.FC = () => {
             />
           </div>
         </div>
-        <div className="common-container p-5 md:p-10 xxl:p-0 !max-w-[var(--breakpoint-2xl)] flex-col">
+        <div className="common-container p-5 md:p-10 xxl:p-0 !max-w-[var(--breakpoint-2xl)] flex-col pb-28">
           <div className="md:w-[28%] xl:w-[37%] wide:w-[40%] h-full flex flex-col gap-3 justify-center md:min-h-[360px] xl:min-h-[480px] wide:min-h-[580px]">
-            <PageTitle />
-            <h2 className="w-full md:text-2xl xl:text-3xl xxl:text-4xl md:leading-8 xl:leading-11">
+            <PageTitle className='w-32'/>
+            <h2 className="w-full text-xl md:text-2xl xl:text-3xl xxl:text-4xl md:leading-8 xl:leading-11">
               <span>{ourPanel.heroSection.title}</span>
             </h2>
             <CustomImageAtom
@@ -95,7 +95,7 @@ const OurPanel: React.FC = () => {
         </div>
       </section>
       {/* Section 2 */}
-      <section className="common-component w-full h-full relative pt-10 md:pt-0 section-2">
+      <section className="common-component w-full h-full relative bg-[url('/images/background_image_8_2_m.png')] md:bg-[url('/images/background_image_8_2.png')] our-panel-container">
         <div className="common-container p-5 md:p-10 xxl:p-0 !max-w-[var(--breakpoint-2xl)] flex-col">
           <div className="flex flex-col gap-6 items-center xxl:py-8">
             <label className="font-semibold text-xl md:text-2xl xl:text-3xl wide:text-4xl">

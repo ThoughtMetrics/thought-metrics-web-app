@@ -1,11 +1,5 @@
-.section-1 {
-  background: var(--color-surface) url('/images/background_image_8_1.png')
-    no-repeat;
+.our-panel-container {
+  background-color: var(--color-surface);
   background-size: 100% 100%;
-}
-
-.section-2 {
-  background: var(--color-surface) url('/images/background_image_8_2.png')
-    no-repeat;
-  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }

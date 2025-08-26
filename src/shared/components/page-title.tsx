@@ -29,7 +29,7 @@ export const PageTitle: React.FC<BreadcrumbProps> = ({ className = '' }) => {
       `}
     >
       <span>{breadcrumbs[breadcrumbs.length - 1].label}</span>
-      <div className="w-25 md:w-45 h-1 bg-primary rounded"></div>
+      <div className="w-25 md:w-45 max-w-full h-1 bg-primary rounded"></div>
     </div>
   );
 };

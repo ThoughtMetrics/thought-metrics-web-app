@@ -1,6 +1,4 @@
-import type { SEOHeadProps } from '@/shared/components/seo/SEOHead';
-
-export const seoContent: SEOHeadProps = {
+export const seoContent = {
   title: 'Thought Metrics',
   description:
     'Leading customer research and market intelligence platform delivering actionable insights for data-driven business decisions.',
