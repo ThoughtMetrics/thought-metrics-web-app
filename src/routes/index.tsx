@@ -40,6 +40,7 @@ import OurPanel from '@/pages/our-panel';
 import AdvocateLandingPage from '@/pages/landing/advocate-landing';
 import RespondentLandingPage from '@/pages/landing/respondent-landing';
 import LandingLayout from '@/shared/components/landing-layout';
+import Careers from '@/pages/careers';
 // import ResourcePage from '@/pages/resources';
 
 /* // Home loader - prefetches blog data
@@ -76,7 +77,7 @@ export const router = createBrowserRouter(
     <>
       {/* Static Content Routes */}
       <Route path="/" element={<Layout />}>
-        <Route index element={<Home />}/>
+        <Route index element={<Home />} />
 
         <Route path="industries" element={<IndustriesPage />}>
           <Route index element={<Navigate to="/industries" replace />} />
@@ -132,6 +133,7 @@ export const router = createBrowserRouter(
         <Route path="our_panel" element={<OurPanel />} />
 
         {/* <Route path="resources/:slug" element={<ResourcePage />}/> */}
+        <Route path="careers" element={<Careers />} />
       </Route>
 
       {/* Landing Content Routes */}

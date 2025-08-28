@@ -89,7 +89,7 @@ export const footerData = {
       links: [
         { label: 'Join Our Panel', href: '#' },
         { label: 'Request a Bid', href: '#' },
-        { label: 'Careers', href: '#' },
+        { label: 'Careers', path: ROUTES.CAREERS },
         { label: 'Contact Us', href: '#' },
         { label: 'Our Panel', path: ROUTES.OUR_PANEL, isBold: true },
       ],

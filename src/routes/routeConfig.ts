@@ -40,6 +40,7 @@ export const ROUTES = {
   /* Resource Route (Blog, Article, Insights, Report, etc) */
   RESOURCES: '/resources',
   /* Other Routes */
+  CAREERS: '/careers',
   NOT_FOUND: '*',
 } as const;
 
@@ -96,6 +97,8 @@ export const generateBreadcrumbsFromPath = (
       advocate_landing: 'Advocate Landing',
       /* Resource Route (Blog, Article, Insights, Report, etc) */
       resources: 'Resources',
+      /* Other */
+      careers: 'Careers',
     };
 
     if (segmentLabels[segment]) {
