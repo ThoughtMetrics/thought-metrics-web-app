@@ -349,3 +349,6 @@ export {
   MailIcon,
   XIcon,
 };
+
+import RedTickIcon from './svgs/red-tick.svg?react';
+export { RedTickIcon };

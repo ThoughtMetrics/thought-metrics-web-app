@@ -14,7 +14,7 @@ const LandingHeroSection: React.FC<any> = ({ heroSection }) => {
         <div className="md:hidden absolute w-full h-[95%] flex justify-end top-1/2 transform -translate-y-1/2">
           <IllustrationSquares2 className="h-full w-auto stroke-1.75 stroke-primary" />
         </div>
-        <div className="md:w-[43%] xxl:w-[37%] wide:w-[50%] h-full flex flex-col gap-10 justify-center">
+        <div className="md:w-[43%] xxl:w-[50%] h-full flex flex-col gap-10 justify-center">
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-4">
               <h2 className="flex flex-col gap-2">
@@ -36,7 +36,7 @@ const LandingHeroSection: React.FC<any> = ({ heroSection }) => {
             />
             {heroSection.faqButton && (
               <CustomButtonAtom
-                className="font-semibold py-1 xl:py-2 text-lg xl:text-xl border-secondary bg-white text-secondary hover:bg-custom-blue w-full border-2"
+                className="font-semibold py-1 xl:py-2 text-lg xl:text-xl border-secondary bg-white text-secondary hover:bg-custom-blue w-full border-2 max-w-[13rem]"
                 label={heroSection.faqButton.label}
               />
             )}
