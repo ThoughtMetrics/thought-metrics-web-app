@@ -17,17 +17,17 @@ export const footerData = {
     {
       name: 'LinkedIn',
       icon: '/icons/linkedin.svg',
-      href: 'https://linkedin.com/company/thoughtmetrics',
+      path: 'https://linkedin.com/company/thoughtmetrics',
     },
     {
       name: 'Twitter',
       icon: '/icons/space-x.svg',
-      href: 'https://twitter.com/thoughtmetrics',
+      path: 'https://twitter.com/thoughtmetrics',
     },
     {
       name: 'Vimeo',
       icon: '/icons/vimeo.svg',
-      href: 'https://vimeo.com/thoughtmetrics',
+      path: 'https://vimeo.com/thoughtmetrics',
     },
   ],
   sections: [
@@ -78,19 +78,22 @@ export const footerData = {
     {
       title: 'Legal',
       links: [
-        { label: 'Privacy', href: '#' },
-        { label: 'AI Policy', href: '#' },
-        { label: 'Business Conduct and Ethics', href: '#' },
-        { label: 'Site Disclaimer', href: '#' },
+        { label: 'Privacy', path: ROUTES.PRIVACY_POLICY },
+        { label: 'AI Policy', path: ROUTES.AI_POLICY },
+        {
+          label: 'Business Conduct and Ethics',
+          path: ROUTES.BUSINESS_CONDUCT_ETHICS,
+        },
+        { label: 'Site Disclaimer', path: ROUTES.SITE_DISCLAIMER },
       ],
     },
     {
       title: 'Connect',
       links: [
-        { label: 'Join Our Panel', href: '#' },
+        { label: 'Join Our Panel', path: 'ROUTES.JOIN_OUR_PANEL' },
         { label: 'Request a Bid', href: '#' },
         { label: 'Careers', path: ROUTES.CAREERS },
-        { label: 'Contact Us', href: '#' },
+        { label: 'Contact Us', path: ROUTES.CONTACT_US },
         { label: 'Our Panel', path: ROUTES.OUR_PANEL, isBold: true },
       ],
     },

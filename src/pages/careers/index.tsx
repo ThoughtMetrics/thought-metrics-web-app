@@ -25,7 +25,7 @@ const Careers: React.FC = () => {
           <h2 className="w-full text-2xl xl:text-3xl xxl:text-4xl font-semibold text-end tracking-tighter">
             <span>{careers.aboutUsSection.head}</span>
           </h2>
-          <div className="shrink-0 grid grid-cols-1 md:grid-cols-3 md:gap-x-28 gap-y-8 md:gap-y-18 md:p-8 pb-8">
+          <div className="shrink-0 grid grid-cols-1 md:grid-cols-3 md:gap-x-28 gap-y-8 md:gap-y-18 md:py-8 pb-8">
             {careers.aboutUsSection.items.map((item, index: number) => {
               return (
                 <div

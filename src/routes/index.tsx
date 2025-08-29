@@ -41,6 +41,11 @@ import AdvocateLandingPage from '@/pages/landing/advocate-landing';
 import RespondentLandingPage from '@/pages/landing/respondent-landing';
 import LandingLayout from '@/shared/components/landing-layout';
 import Careers from '@/pages/careers';
+import ContactUs from '@/pages/contact-us';
+import PrivacyPolicy from '@/pages/privacy-policy';
+import BusinessConductEthics from '@/pages/business-conduct-ethics';
+import AIPolicy from '@/pages/ai-policy';
+import SiteDisclaimer from '@/pages/site-disclaimer';
 // import ResourcePage from '@/pages/resources';
 
 /* // Home loader - prefetches blog data
@@ -134,6 +139,14 @@ export const router = createBrowserRouter(
 
         {/* <Route path="resources/:slug" element={<ResourcePage />}/> */}
         <Route path="careers" element={<Careers />} />
+        <Route path="contact_us" element={<ContactUs />} />
+        <Route path="site_disclaimer" element={<SiteDisclaimer />} />
+        <Route path="privacy_policy" element={<PrivacyPolicy />} />
+        <Route
+          path="business_conduct_ethics"
+          element={<BusinessConductEthics />}
+        />
+        <Route path="ai_policy" element={<AIPolicy />} />
       </Route>
 
       {/* Landing Content Routes */}

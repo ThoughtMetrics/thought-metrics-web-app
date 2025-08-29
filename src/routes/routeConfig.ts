@@ -41,6 +41,11 @@ export const ROUTES = {
   RESOURCES: '/resources',
   /* Other Routes */
   CAREERS: '/careers',
+  CONTACT_US: '/contact_us',
+  SITE_DISCLAIMER: '/site_disclaimer',
+  PRIVACY_POLICY: '/privacy_policy',
+  BUSINESS_CONDUCT_ETHICS: '/business_conduct_ethics',
+  AI_POLICY: '/ai_policy',
   NOT_FOUND: '*',
 } as const;
 
@@ -98,7 +103,12 @@ export const generateBreadcrumbsFromPath = (
       /* Resource Route (Blog, Article, Insights, Report, etc) */
       resources: 'Resources',
       /* Other */
+      contact_us: 'Contact Us',
       careers: 'Careers',
+      site_disclaimer: 'Site Disclaimer',
+      privacy_policy: 'Privacy Policy',
+      business_conduct_ethics: 'Business Conduct and Ethics Policy',
+      ai_policy: 'AI Policy',
     };
 
     if (segmentLabels[segment]) {

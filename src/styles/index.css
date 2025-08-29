@@ -85,3 +85,9 @@ body {
     no-repeat center;
   background-size: cover;
 }
+
+.policies-component {
+  background: var(--color-surface) url('/images/policies.png')
+    no-repeat center;
+  background-size: cover;
+}
