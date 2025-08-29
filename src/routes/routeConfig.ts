@@ -46,6 +46,7 @@ export const ROUTES = {
   PRIVACY_POLICY: '/privacy_policy',
   BUSINESS_CONDUCT_ETHICS: '/business_conduct_ethics',
   AI_POLICY: '/ai_policy',
+  START_YOUR_RESEARCH: 'start_your_research',
   NOT_FOUND: '*',
 } as const;
 
@@ -109,6 +110,8 @@ export const generateBreadcrumbsFromPath = (
       privacy_policy: 'Privacy Policy',
       business_conduct_ethics: 'Business Conduct and Ethics Policy',
       ai_policy: 'AI Policy',
+
+      start_your_research: 'Start Your Research',
     };
 
     if (segmentLabels[segment]) {

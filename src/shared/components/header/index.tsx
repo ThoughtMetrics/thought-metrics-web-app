@@ -138,7 +138,7 @@ const Header: React.FC = () => {
               </button>
             ))}
             <Link
-              to={ROUTES.RESPONDENT_LANDING}
+              to={ROUTES.START_YOUR_RESEARCH}
               viewTransition={true}
               className="py-0.5 xl:py-[3px] xxl:py-1 px-4 text-[11px] xl:text-sm xxl:text-base border-[1px] xl:border-[1.25px] xxl:border-[1.5px] font-medium cursor-pointer transition-all duration-300 ease-in-out whitespace-nowrap border-primary bg-white text-primary hover:text-custom-blue hover:border-custom-blue"
             >
@@ -333,13 +333,17 @@ const Header: React.FC = () => {
             {/* Action Buttons */}
             <div className="px-6 mt-8 flex flex-col gap-3">
               <Link
-              to={ROUTES.RESPONDENT_LANDING}
-              viewTransition={true} className="w-full py-3 px-4 border border-white text-white font-medium rounded hover:bg-white/10 transition-colors text-center">
+                to={ROUTES.START_YOUR_RESEARCH}
+                viewTransition={true}
+                className="w-full py-3 px-4 border border-white text-white font-medium rounded hover:bg-white/10 transition-colors text-center"
+              >
                 Start Your Research
               </Link>
               <Link
-              to={ROUTES.RESPONDENT_LANDING}
-              viewTransition={true} className="w-full py-3 px-4 bg-white text-primary font-medium rounded hover:bg-white/90 transition-colors text-center">
+                to={ROUTES.RESPONDENT_LANDING}
+                viewTransition={true}
+                className="w-full py-3 px-4 bg-white text-primary font-medium rounded hover:bg-white/90 transition-colors text-center"
+              >
                 Join a Paid Focus Group
               </Link>
             </div>

@@ -1,26 +1,30 @@
-import { IllustrationSquares2 } from '@/assets';
 import type {
-  ContactFormData,
-  ContactFormStore,
-} from '@/core/types/contact-us.type';
-import { ROUTES } from '@/routes/routeConfig';
-import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
+  ResearchFormData,
+  ResearchFormStore,
+} from '@/core/types/start-research-item.type';
+import { startYourResearchConstants } from './constant';
+import { IllustrationSquares2 } from '@/assets';
 import {
   CheckboxAtom,
+  CheckboxGroupAtom,
   PhoneInputAtom,
+  SelectAtom,
   TextareaAtom,
   TextInputAtom,
 } from '@/shared/ui/atoms/custom-input';
-import React from 'react';
+import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
 import { Link } from 'react-router-dom';
-import { create } from 'zustand';
+import { ROUTES } from '@/routes/routeConfig';
 import { devtools } from 'zustand/middleware';
-import { contactUsConstants } from './contact-us.constants';
+import React from 'react';
+import { create } from 'zustand';
 
-// Destructure constants for cleaner usage
 const {
   initialFormData,
+  countries,
   countryCodes,
+  helpOptions,
+  researchTypes,
   defaultCountryCode,
   storeName,
   validationMessages,
@@ -28,16 +32,15 @@ const {
   formResetDelay,
   apiSimulationDelay,
   ui,
-} = contactUsConstants;
+} = startYourResearchConstants;
 
-// Convert string regex to RegExp object
 const emailRegexPattern = new RegExp(emailRegex);
 
-// Zustand store for contact form
-const useContactFormStore = create<ContactFormStore>()(
+// Zustand store
+const useResearchFormStore = create<ResearchFormStore>()(
   devtools(
     (set, get) => ({
-      formData: initialFormData as ContactFormData,
+      formData: initialFormData as ResearchFormData,
       isSubmitting: false,
       isSubmitted: false,
       errors: {},
@@ -59,7 +62,7 @@ const useContactFormStore = create<ContactFormStore>()(
       resetForm: () =>
         set(
           {
-            formData: initialFormData as ContactFormData,
+            formData: initialFormData as ResearchFormData,
             isSubmitting: false,
             isSubmitted: false,
             errors: {},
@@ -71,20 +74,24 @@ const useContactFormStore = create<ContactFormStore>()(
 
       validateForm: () => {
         const { formData } = get();
-        const errors: Partial<ContactFormData> = {};
+        const errors: Partial<ResearchFormData> = {};
 
         if (!formData.firstName.trim())
           errors.firstName = validationMessages.firstName;
         if (!formData.lastName.trim())
           errors.lastName = validationMessages.lastName;
-        if (!formData.email.trim())
-          errors.email = validationMessages.email.required;
-        else if (!emailRegexPattern.test(formData.email))
-          errors.email = validationMessages.email.invalid;
-        if (!formData.subject.trim())
-          errors.subject = validationMessages.subject;
-        if (!formData.message.trim())
-          errors.message = validationMessages.message;
+        if (!formData.businessEmail.trim())
+          errors.businessEmail = validationMessages.businessEmail.required;
+        else if (!emailRegexPattern.test(formData.businessEmail))
+          errors.businessEmail = validationMessages.businessEmail.invalid;
+        if (!formData.countryOrRegion.trim())
+          errors.countryOrRegion = validationMessages.countryOrRegion;
+        if (!formData.company.trim())
+          errors.company = validationMessages.company;
+        if (!formData.researchTopic.trim())
+          errors.researchTopic = validationMessages.researchTopic;
+        if (!formData.projectDetails.trim())
+          errors.projectDetails = validationMessages.projectDetails;
 
         set({ errors }, false, 'validateForm');
         return Object.keys(errors).length === 0;
@@ -92,19 +99,17 @@ const useContactFormStore = create<ContactFormStore>()(
 
       submitForm: async () => {
         const { formData, validateForm } = get();
-        console.log(formData);
 
         if (!validateForm()) return;
 
         set({ isSubmitting: true }, false, 'submitForm_start');
 
         try {
-          // Simulate API call using constant delay
           await new Promise((resolve) =>
             setTimeout(resolve, apiSimulationDelay)
           );
 
-          console.log('Form submitted:', formData);
+          console.log('Research form submitted:', formData);
 
           set(
             {
@@ -115,7 +120,6 @@ const useContactFormStore = create<ContactFormStore>()(
             'submitForm_success'
           );
 
-          // Reset form after configured delay
           setTimeout(() => {
             get().resetForm();
           }, formResetDelay);
@@ -123,7 +127,7 @@ const useContactFormStore = create<ContactFormStore>()(
           set(
             {
               isSubmitting: false,
-              errors: { email: validationMessages.submitError },
+              errors: { businessEmail: validationMessages.submitError },
             },
             false,
             'submitForm_error'
@@ -137,7 +141,7 @@ const useContactFormStore = create<ContactFormStore>()(
   )
 );
 
-const ContactUs: React.FC = () => {
+const ResearchForm: React.FC = () => {
   const {
     formData,
     isSubmitting,
@@ -147,23 +151,30 @@ const ContactUs: React.FC = () => {
     updateField,
     updateCountryCode,
     submitForm,
-  } = useContactFormStore();
+  } = useResearchFormStore();
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value, type } = e.target;
     if (type === 'checkbox') {
       const { checked } = e.target as HTMLInputElement;
-      updateField(name as keyof ContactFormData, checked);
+      updateField(name as keyof ResearchFormData, checked);
     } else {
-      updateField(name as keyof ContactFormData, value);
+      updateField(name as keyof ResearchFormData, value);
     }
   };
 
   const handleCountryCodeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     updateCountryCode(e.target.value);
   };
+
+  const handleCheckboxGroupChange =
+    (field: keyof ResearchFormData) => (selectedValues: string[]) => {
+      updateField(field, selectedValues);
+    };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -191,7 +202,7 @@ const ContactUs: React.FC = () => {
               </svg>
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-black mb-2">
             {ui.successMessage.title}
           </h2>
           <p className="text-gray-600">{ui.successMessage.description}</p>
@@ -213,15 +224,14 @@ const ContactUs: React.FC = () => {
       </div>
 
       <div className="common-container px-6 py-8 md:px-24 md:py-12 !max-w-[var(--breakpoint-2xl)] flex-col">
-        <h1 className="text-3xl font-semibold text-gray-900 mb-4">
-          {ui.mainHeading}
+        <h1 className="font-medium md:text-xl text-black mb-2 flex flex-col pb-4">
+          <span>{ui.mainHeading}</span>
+          <span>{ui.subHeading}</span>
         </h1>
 
         <div className="flex flex-wrap md:flex-nowrap gap-12 md:gap-28">
           {/* Form Section */}
           <div className="lg:w-2/3">
-            <p className="text-gray-600 mb-8">{ui.description}</p>
-
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Name Fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -248,13 +258,13 @@ const ContactUs: React.FC = () => {
               {/* Email and Phone */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <TextInputAtom
-                  id="email"
-                  name="email"
-                  label={ui.fieldLabels.email}
+                  id="businessEmail"
+                  name="businessEmail"
+                  label={ui.fieldLabels.businessEmail}
                   type="email"
-                  value={formData.email}
+                  value={formData.businessEmail}
                   onChange={handleInputChange}
-                  error={errors.email}
+                  error={errors.businessEmail}
                   required
                 />
                 <PhoneInputAtom
@@ -269,45 +279,82 @@ const ContactUs: React.FC = () => {
                 />
               </div>
 
-              {/* Reference Number */}
-              <TextInputAtom
-                id="referenceNumber"
-                name="referenceNumber"
-                label={ui.fieldLabels.referenceNumber}
-                value={formData.referenceNumber}
-                onChange={handleInputChange}
-              />
+              {/* Country and Company */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <SelectAtom
+                  id="countryOrRegion"
+                  name="countryOrRegion"
+                  label={ui.fieldLabels.countryOrRegion}
+                  value={formData.countryOrRegion}
+                  onChange={handleInputChange}
+                  options={countries}
+                  error={errors.countryOrRegion}
+                  required
+                />
+                <TextInputAtom
+                  id="company"
+                  name="company"
+                  label={ui.fieldLabels.company}
+                  value={formData.company}
+                  onChange={handleInputChange}
+                  error={errors.company}
+                  required
+                />
+              </div>
 
-              <p className="text-sm text-gray-600">{ui.referenceNumberNote}</p>
+              {/* Job Title and Research Topic */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <TextInputAtom
+                  id="jobTitle"
+                  name="jobTitle"
+                  label={ui.fieldLabels.jobTitle}
+                  value={formData.jobTitle}
+                  onChange={handleInputChange}
+                />
+                <TextInputAtom
+                  id="researchTopic"
+                  name="researchTopic"
+                  label={ui.fieldLabels.researchTopic}
+                  value={formData.researchTopic}
+                  onChange={handleInputChange}
+                  error={errors.researchTopic}
+                  required
+                />
+              </div>
 
-              {/* Subject */}
-              <TextInputAtom
-                id="subject"
-                name="subject"
-                label={ui.fieldLabels.subject}
-                value={formData.subject}
-                onChange={handleInputChange}
-                error={errors.subject}
-                required
-              />
-
-              {/* Message */}
+              {/* Project Details */}
               <TextareaAtom
-                id="message"
-                name="message"
-                label={ui.fieldLabels.message}
-                value={formData.message}
+                id="projectDetails"
+                name="projectDetails"
+                label={ui.fieldLabels.projectDetails}
+                value={formData.projectDetails}
                 onChange={handleInputChange}
-                error={errors.message}
+                error={errors.projectDetails}
                 required
-                rows={6}
+                rows={4}
               />
 
-              <p className="text-sm text-gray-600">{ui.referenceNumberNote}</p>
+              {/* How can we help you today */}
+              <CheckboxGroupAtom
+                label={ui.fieldLabels.helpOptions}
+                options={helpOptions}
+                selectedValues={formData.helpOptions}
+                onChange={handleCheckboxGroupChange('helpOptions')}
+                columns={2}
+              />
+
+              {/* Type of Research */}
+              <CheckboxGroupAtom
+                label={ui.fieldLabels.researchType}
+                options={researchTypes}
+                selectedValues={formData.researchType}
+                onChange={handleCheckboxGroupChange('researchType')}
+                columns={2}
+              />
 
               {/* Consent Section */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-black">
                   {ui.consentSection.title}
                 </h3>
                 <p className="text-sm text-gray-600">
@@ -367,7 +414,7 @@ const ContactUs: React.FC = () => {
               <CustomButtonAtom
                 label={isSubmitting ? ui.buttons.submitting : ui.buttons.submit}
                 className="py-2 px-14"
-                disabled={isSubmitting}
+                disabled={!isSubmitting}
               />
             </form>
           </div>
@@ -375,7 +422,7 @@ const ContactUs: React.FC = () => {
           {/* Contact Info Section */}
           <div className="lg:w-1/3 text-end">
             <div className="p-4 sticky top-4 border-y-1 border-black w-full">
-              <h3 className="text-xl font-medium text-gray-900 mb-4">
+              <h3 className="text-xl font-medium text-black mb-4">
                 {ui.contactInfo.title}
               </h3>
               <div className="space-y-3">
@@ -394,4 +441,4 @@ const ContactUs: React.FC = () => {
   );
 };
 
-export default ContactUs;
+export default ResearchForm;

@@ -25,8 +25,7 @@ body {
   overflow: hidden;
 
   color-scheme: light dark;
-  background: var(--color-surface) url('/images/background_image_1.png')
-    no-repeat center;
+  background: var(--color-surface) url('/images/background_image_1.png') no-repeat center;
   background-size: cover;
 
   font-synthesis: none;
@@ -75,19 +74,43 @@ body {
 }
 
 .brand-ad-component {
-  background: var(--color-surface) url('/images/background_image_5.png')
-    no-repeat center;
+  background: var(--color-surface) url('/images/background_image_5.png') no-repeat center;
   background-size: cover;
 }
 
 .industries-component {
-  background: var(--color-surface) url('/images/background_image_4.png')
-    no-repeat center;
+  background: var(--color-surface) url('/images/background_image_4.png') no-repeat center;
   background-size: cover;
 }
 
 .policies-component {
-  background: var(--color-surface) url('/images/policies.png')
-    no-repeat center;
+  background: var(--color-surface) url('/images/policies.png') no-repeat center;
   background-size: cover;
+}
+
+.form-1-component {
+  background: var(--color-surface) url('/images/form_image_1.png') no-repeat center;
+  background-size: cover;
+}
+
+input[type="checkbox"] {
+  flex-shrink: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--custom-grey);
+  border-radius: 0;
+  cursor: pointer;
+  position: relative;
+}
+
+input[type="checkbox"]:checked::after {
+  content: "✔";
+  /* custom tick */
+  color: var(--primary);
+  /* 🎨 tick color */
+  font-size: 15px;
+  position: absolute;
+  top: -40%;
 }

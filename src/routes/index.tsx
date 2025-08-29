@@ -46,6 +46,7 @@ import PrivacyPolicy from '@/pages/privacy-policy';
 import BusinessConductEthics from '@/pages/business-conduct-ethics';
 import AIPolicy from '@/pages/ai-policy';
 import SiteDisclaimer from '@/pages/site-disclaimer';
+import ResearchForm from '@/pages/start-your-research';
 // import ResourcePage from '@/pages/resources';
 
 /* // Home loader - prefetches blog data
@@ -147,6 +148,7 @@ export const router = createBrowserRouter(
           element={<BusinessConductEthics />}
         />
         <Route path="ai_policy" element={<AIPolicy />} />
+        <Route path="start_your_research" element={<ResearchForm />} />
       </Route>
 
       {/* Landing Content Routes */}
