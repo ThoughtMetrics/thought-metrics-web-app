@@ -25,6 +25,7 @@
   --custom-grey-2: #9e9d9d;
   --custom-grey-3: #e8e2e2;
   --custom-grey-4: #e5e6ea;
+  --custom-grey-5: #f4f4f4;
   --custom-blue: #4c4fa9;
   --custom-blue-light: #f5f5ff;
   --custom-blue-lighter: #f0f0fa;
@@ -78,6 +79,7 @@
   --color-custom-grey-2: var(--custom-grey-2);
   --color-custom-grey-3: var(--custom-grey-3);
   --color-custom-grey-4: var(--custom-grey-4);
+  --color-custom-grey-5: var(--custom-grey-5);
   --color-custom-violet: var(--custom-violet);
   --color-custom-violet-light: var(--custom-violet-light);
   --color-custom-pink: var(--custom-pink);

@@ -272,90 +272,103 @@ export const landing = {
       label: 'Want to Partner with Thought Metrics?',
       description:
         'To manage the high volume of applications, we are responding only to those applicants whose profiles best match our requirements and expectations.',
-      inputs: [
-        {
-          key: 'firstName',
-          label: 'First name',
-          type: 'text',
+      inputForm: {
+        initialFormData: {
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          instagramHandle: '',
+          instagramFollowers: '',
+          xHandle: '',
+          xFollowers: '',
+          linkedinUrl: '',
+          linkedinConnections: '',
+          youtubeChannel: '',
+          youtubeFollowers: '',
+          supportGroups: '',
+          audienceDescription: '',
+          partnershipReason: '',
         },
-        {
-          key: 'lastName',
-          label: 'Last name',
-          type: 'text',
+        countryCodes: [
+          { code: '+91', country: 'India' },
+          { code: '+1', country: 'USA' },
+          { code: '+44', country: 'UK' },
+        ],
+        defaultCountryCode: '+91',
+        storeName: 'partnership-form-store',
+        validationMessages: {
+          firstName: 'First name is required',
+          lastName: 'Last name is required',
+          email: {
+            required: 'Email is required',
+            invalid: 'Email is invalid',
+          },
+          instagramHandle: 'Instagram handle is required',
+          supportGroups: 'This field is required',
+          audienceDescription: 'Audience description is required',
+          partnershipReason: 'Partnership reason is required',
+          submitError: 'Submission failed. Please try again.',
         },
-        {
-          key: 'email',
-          label: 'Email',
-          type: 'email',
+        emailRegex: '\\S+@\\S+\\.\\S+',
+        formResetDelay: 3000,
+        apiSimulationDelay: 2000,
+        ui: {
+          pageTitle: 'Partner with Thought Metrics',
+          mainHeading: 'Want to Partner with Thought Metrics?',
+          description:
+            'To manage the high volume of applications, we are responding only to those applicants whose profiles best match our requirements and expectations.',
+          sections: {
+            personalInfo: 'Personal Information',
+            socialMedia: 'Social Media Presence',
+            partnership: 'Partnership Details',
+          },
+          fieldLabels: {
+            firstName: 'First name',
+            lastName: 'Last name',
+            email: 'Email',
+            phone: 'Phone (Optional)',
+            instagramHandle: 'Instagram handle',
+            instagramFollowers: 'Instagram followers',
+            xHandle: 'X handle',
+            xFollowers: 'X followers',
+            linkedinUrl: 'LinkedIn URL',
+            linkedinConnections: 'LinkedIn Connections',
+            youtubeChannel: 'YouTube Channel',
+            youtubeFollowers: 'YouTube Followers',
+            supportGroups:
+              'Are there any other groups or organizations you support that you believe could be a valuable partnership with Thought Metrics?',
+            audienceDescription:
+              'Describe your audience. Who follows your accounts and who are you trying to reach?',
+            partnershipReason:
+              'Why do you want to partner with Thought Metrics?',
+          },
+          placeholders: {
+            supportGroups:
+              'This could include support groups, Facebook communities, local organizations, or similar networks.',
+            audienceDescription:
+              'Describe your audience demographics, interests, and engagement patterns',
+            partnershipReason:
+              'Tell us about your motivation and what you hope to achieve through this partnership',
+          },
+          buttons: {
+            submit: 'Submit',
+            submitting: 'Submitting...',
+          },
+          successMessage: {
+            title: 'Thank You!',
+            description:
+              "Your partnership application has been submitted successfully. We'll review your application and get back to you soon.",
+          },
+          footerLinks: {
+            privacyPolicy: 'Privacy Policy',
+            unsubscribe: 'Unsubscribe',
+            getHelp: 'Get Help',
+          },
+          privacyNote:
+            'Thought Metrics keeps the contact information you provide to us to contact you about our products and services. You may unsubscribe from these communications at anytime. For information on how to unsubscribe, as well as our privacy practices and commitment to protecting your privacy, check out our Privacy Policy.',
         },
-        {
-          key: 'phoneNumber',
-          label: 'Phone number',
-          type: 'tel',
-        },
-        {
-          key: 'instagramUrl',
-          label: 'Instagram handle',
-          type: 'text',
-          isOptional: true,
-        },
-        {
-          key: 'instagramFollowersCount',
-          label: 'Instagram followers',
-          type: 'number',
-        },
-        {
-          key: 'xUrl',
-          label: 'X handle',
-          type: 'text',
-          isOptional: true,
-        },
-        {
-          key: 'xFollowersCount',
-          label: 'X followers',
-          type: 'number',
-        },
-        {
-          key: 'linkedInUrl',
-          label: 'Linkedin URL',
-          type: 'text',
-          isOptional: true,
-        },
-        {
-          key: 'linkedInFollowersCount',
-          label: 'Linkedin connections',
-          type: 'number',
-        },
-        {
-          key: 'youtubeUrl',
-          label: 'YouTube channel',
-          type: 'text',
-          isOptional: true,
-        },
-        {
-          key: 'youtubeFollowersCount',
-          label: 'YouTube followers',
-          type: 'number',
-        },
-        {
-          key: 'otherChannels',
-          head: 'Are there any other groups or organizations you support that you believe could form a valuable partnership with Thought Metrics?',
-          label:
-            'This could include support groups, Facebook communities, local organizations, or similar networks.',
-          type: 'textarea',
-        },
-        {
-          key: 'yourAudience',
-          label:
-            'Describe your audience. Who follows your accounts and who are you trying to reach?',
-          type: 'textarea',
-        },
-        {
-          key: 'wdywtPartner',
-          label: 'Why do you want to partner with Thought Metrics?',
-          type: 'textarea',
-        },
-      ],
+      },
       note: 'Thought Metrics needs the contact information you provide to us to contact you about our products and services. You may unsubscribe from these communications at anytime. For information on how to unsubscribe, as well  as our privacy practices and commitment to protecting your privacy, check out our Privacy Policy.',
       actionButton: {
         label: 'Submit',

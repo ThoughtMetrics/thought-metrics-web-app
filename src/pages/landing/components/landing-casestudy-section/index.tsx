@@ -10,7 +10,7 @@ const LandingCaseStudySection: React.FC<any> = ({
     <section className="common-component w-full h-full relative bg-white text-black">
       <div
         className={cn(
-          'common-container px-6 pt-14 pb-8 md:px-24 md:py-24 !max-w-[1336px] !grid grid-cols-1 md:grid-cols-[50%_50%] gap-6 items-end justify-between',
+          'common-container px-6 pt-14 pb-8 md:px-24 md:py-24 !max-w-[1336px] !grid grid-cols-1 md:grid-cols-[50%_48%] gap-[2%] items-end justify-between',
           className
         )}
       >
@@ -69,7 +69,7 @@ const LandingCaseStudySection: React.FC<any> = ({
           aspectRatio={questionarySection.illustration.aspectRatio}
           objectFit={questionarySection.illustration.objectFit}
           loading={questionarySection.illustration.loading}
-          className="hidden md:block !max-h-[45rem] wide:!max-h-[52rem]"
+          className="w-full hidden md:block !max-h-[45rem] wide:!max-h-[52rem]"
         />
       </div>
     </section>

@@ -3,6 +3,7 @@ import { landing } from '../landing.constant';
 import LandingHeroSection from '../components/landing-hero-section';
 import LandingCaseStudySection from '../components/landing-casestudy-section';
 import LandingWorkingFlowSection from '../components/landing-working-flow-section';
+import PartnershipForm from './components/partnership-form';
 
 const AdvocateLandingPage: React.FC = () => {
   return (
@@ -14,6 +15,7 @@ const AdvocateLandingPage: React.FC = () => {
       <LandingWorkingFlowSection
         workingFlowSection={landing.advocate.workingFlowSection}
       />
+      <PartnershipForm />
     </>
   );
 };

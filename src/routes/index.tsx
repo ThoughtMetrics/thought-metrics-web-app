@@ -39,7 +39,6 @@ import ResearchMethodQuality from '@/pages/research-methods/pages/quality';
 import OurPanel from '@/pages/our-panel';
 import AdvocateLandingPage from '@/pages/landing/advocate-landing';
 import RespondentLandingPage from '@/pages/landing/respondent-landing';
-import LandingLayout from '@/shared/components/landing-layout';
 import Careers from '@/pages/careers';
 import ContactUs from '@/pages/contact-us';
 import PrivacyPolicy from '@/pages/privacy-policy';
@@ -47,6 +46,9 @@ import BusinessConductEthics from '@/pages/business-conduct-ethics';
 import AIPolicy from '@/pages/ai-policy';
 import SiteDisclaimer from '@/pages/site-disclaimer';
 import ResearchForm from '@/pages/start-your-research';
+import ReportDownloadPage from '@/pages/report-download';
+import LandingLayout from '@/shared/components/landing-layout';
+import InteractionLayout from '@/shared/components/intraction-layout';
 // import ResourcePage from '@/pages/resources';
 
 /* // Home loader - prefetches blog data
@@ -155,6 +157,10 @@ export const router = createBrowserRouter(
       <Route path="/" element={<LandingLayout />}>
         <Route path="respondent_landing" element={<RespondentLandingPage />} />
         <Route path="advocate_landing" element={<AdvocateLandingPage />} />
+      </Route>
+
+      <Route path="/" element={<InteractionLayout />}>
+        <Route path="report_download" element={<ReportDownloadPage />} />
       </Route>
 
       {/* 404 Route */}

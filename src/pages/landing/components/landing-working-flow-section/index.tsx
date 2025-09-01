@@ -11,14 +11,15 @@ const LandingWorkingFlowSection: React.FC<any> = ({
         <h2 className="w-[50%] md:w-[20%] text-2xl xl:text-3xl xxl:text-4xl font-semibold">
           <span>{workingFlowSection.head}</span>
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-x-8 gap-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 md:gap-14">
           {workingFlowSection.items.map((item: any, index: number) => {
             return (
               <div
                 key={index + item.label}
                 className={cn(
-                  'flex flex-col p-8 pl-4 md:p-8',
-                  index !== 0 && 'border-t-[1px] border-t-custom-grey-2 md:border-t-0 md:border-l-[1px] md:border-l-custom-grey-2'
+                  'flex flex-col p-8 pl-4 md:p-0',
+                  index !== workingFlowSection.items.length - 1 &&
+                    'md:pr-8 border-b-[1px] border-b-custom-grey-2 md:border-b-0 md:border-r-[1px] md:border-r-custom-grey-2'
                 )}
               >
                 <h2 className="font-medium text-4xl">{item.sNo}</h2>

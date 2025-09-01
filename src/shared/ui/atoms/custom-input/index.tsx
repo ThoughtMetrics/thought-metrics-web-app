@@ -38,8 +38,8 @@ const TextInputAtom: React.FC<TextInputProps> = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`w-full px-3 py-2 border-b-2 bg-neutral focus:bg-white focus:outline-none transition-colors ${
-          error ? 'border-primary' : 'border-gray-300 focus:border-primary'
+        className={`w-full px-3 py-2 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors ${
+          error ? 'border-primary' : 'border-custom-grey-2 focus:border-primary'
         }`}
       />
       {error && <p className="mt-1 text-sm text-primary">{error}</p>}
@@ -76,8 +76,8 @@ const TextareaAtom: React.FC<TextareaProps> = ({
         onChange={onChange}
         rows={rows}
         placeholder={placeholder}
-        className={`w-full px-3 py-2 border-b-2 bg-neutral focus:bg-white focus:outline-none transition-colors resize-vertical ${
-          error ? 'border-primary' : 'border-gray-300 focus:border-primary'
+        className={`w-full px-3 py-2 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors resize-vertical ${
+          error ? 'border-primary' : 'border-custom-grey-2 focus:border-primary'
         }`}
       />
       {error && <p className="mt-1 text-sm text-primary">{error}</p>}
@@ -102,7 +102,7 @@ const CheckboxAtom: React.FC<CheckboxProps> = ({
         name={name}
         checked={checked}
         onChange={onChange}
-        className="mt-1 h-4 w-4 text-primary focus:text-primary border-gray-300 rounded"
+        className="mt-1 h-4 w-4 text-primary focus:text-primary border-custom-grey-2 rounded"
       />
       <span className="text-sm text-black">{label}</span>
     </label>
@@ -135,7 +135,7 @@ const PhoneInputAtom: React.FC<PhoneInputProps> = ({
       </label>
       <div className="flex">
         <select
-          className="px-2 py-2 border-b-2 border-gray-300 bg-neutral focus:border-primary focus:bg-white focus:outline-none border-r-2"
+          className="px-2 py-2 border-b-2 border-custom-grey-2 bg-custom-grey-5 focus:border-primary focus:bg-white focus:outline-none border-r-2"
           value={countryCode}
           onChange={onCountryCodeChange}
         >
@@ -151,7 +151,7 @@ const PhoneInputAtom: React.FC<PhoneInputProps> = ({
           name={name}
           value={value}
           onChange={onChange}
-          className="flex-1 px-3 py-2 border-b-2 border-gray-300 bg-neutral focus:border-primary focus:bg-white focus:outline-none transition-colors"
+          className="flex-1 px-3 py-2 border-b-2 border-custom-grey-2 bg-custom-grey-5 focus:border-primary focus:bg-white focus:outline-none transition-colors"
         />
       </div>
     </div>
@@ -184,8 +184,8 @@ const SelectAtom: React.FC<SelectProps> = ({
         name={name}
         value={value}
         onChange={onChange}
-        className={`w-full px-3 py-2 border-b-2 bg-neutral focus:bg-white focus:outline-none transition-colors ${
-          error ? 'border-primary' : 'border-gray-300 focus:border-primary'
+        className={`w-full px-3 py-2 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors ${
+          error ? 'border-primary' : 'border-custom-grey-2 focus:border-primary'
         }`}
       >
         <option value="">{placeholder}</option>
@@ -239,7 +239,7 @@ const CheckboxGroupAtom: React.FC<CheckboxGroupProps> = ({
                   ? addOption(option.id)
                   : removeOption(option.id)
               }
-              className="mt-1 h-4 w-4 text-primary focus:text-primary border-gray-300 rounded"
+              className="mt-1 h-4 w-4 text-primary focus:text-primary border-custom-grey-2 rounded"
             />
             <span className="text-sm text-black">{option.label}</span>
           </label>
