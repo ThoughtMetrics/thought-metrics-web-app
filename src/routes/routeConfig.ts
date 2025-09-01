@@ -46,8 +46,12 @@ export const ROUTES = {
   PRIVACY_POLICY: '/privacy_policy',
   BUSINESS_CONDUCT_ETHICS: '/business_conduct_ethics',
   AI_POLICY: '/ai_policy',
-  START_YOUR_RESEARCH: 'start_your_research',
-  REPORT_DOWNLOAD: 'report_download',
+  START_YOUR_RESEARCH: '/start_your_research',
+  REPORT_DOWNLOAD: '/report_download',
+  AUTH: '/auth',
+  SIGN_UP: '/sign_up',
+  UNSUBSCRIBE: '/unsubscribe',
+  EDIT_PROFILE: '/edit_profile',
   NOT_FOUND: '*',
 } as const;
 
@@ -113,6 +117,10 @@ export const generateBreadcrumbsFromPath = (
       ai_policy: 'AI Policy',
       report_download: 'Report Download',
       start_your_research: 'Start Your Research',
+      auth: 'Login',
+      sign_up: 'Sign Up',
+      unsubscribe: 'Unsubscribe',
+      edit_profile: 'Edit Profile',
     };
 
     if (segmentLabels[segment]) {

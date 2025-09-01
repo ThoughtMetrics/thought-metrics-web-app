@@ -17,7 +17,7 @@ const LandingHeader: React.FC = () => {
             </Link>
             <div className="flex items-center justify-end">
               <CustomButtonAtom
-                path={ROUTES.RESPONDENT_LANDING}
+                path={ROUTES.SIGN_UP}
                 label="Sign Up"
                 className="rounded font-medium text-sm md:text-lg px-6 py-2 md:px-13 bg-secondary hover:bg-custom-blue"
               />

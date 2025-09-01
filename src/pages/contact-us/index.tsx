@@ -343,7 +343,7 @@ const ContactUs: React.FC = () => {
                 <p className="text-xs">
                   You may{' '}
                   <Link
-                    to={ROUTES.PRIVACY_POLICY}
+                    to={ROUTES.UNSUBSCRIBE}
                     viewTransition={true}
                     className="underline"
                   >

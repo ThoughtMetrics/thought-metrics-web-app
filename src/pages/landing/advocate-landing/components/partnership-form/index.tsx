@@ -1,8 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { ROUTES } from '@/routes/routeConfig';
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
 import {
   TextInputAtom,
@@ -14,6 +12,7 @@ import type {
   PartnershipFormData,
   PartnershipFormStore,
 } from '@/core/types/partnership-form.type';
+import InteractionFooter from '@/shared/components/interaction-footer';
 
 // Destructure constants
 const {
@@ -195,7 +194,6 @@ const PartnershipForm: React.FC = () => {
   return (
     <div>
       <div className="common-component bg-custom-pink text-black flex-col items-center relative">
-        
         <div className="absolute right-0 hidden lg:block h-full w-[45%] bg-[url('/images/landing_page_6.png')] bg-cover bg-no-repeat bg-center"></div>
         <div className="container px-6 lg:px-0 py-12 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-18">
@@ -353,30 +351,7 @@ const PartnershipForm: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="w-full h-2.5 bg-gradient-to-r from-secondary to-primary"></div>
-      {/* Footer Links */}
-      <div className="bg-white w-full flex justify-center">
-        <div className="common-container !max-w-[var(--breakpoint-2xl)] space-x-8 px-6 py-4 md:px-24 flex items-center">
-          <Link
-            to={ROUTES.PRIVACY_POLICY}
-            className="text-sm md:text-lg text-black font-medium hover:font-regular underline"
-          >
-            {ui.footerLinks.privacyPolicy}
-          </Link>
-          <Link
-            to={ROUTES.PRIVACY_POLICY}
-            className="text-sm md:text-lg text-black font-medium hover:font-regular underline"
-          >
-            {ui.footerLinks.unsubscribe}
-          </Link>
-          <Link
-            to={ROUTES.CONTACT_US}
-            className="text-sm md:text-lg text-black font-medium hover:font-regular underline"
-          >
-            {ui.footerLinks.getHelp}
-          </Link>
-        </div>
-      </div>
+      <InteractionFooter />
     </div>
   );
 };

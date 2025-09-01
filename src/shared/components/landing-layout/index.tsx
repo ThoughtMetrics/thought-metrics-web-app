@@ -8,9 +8,7 @@ const LandingLayout: React.FC = () => {
     <div className="min-h-screen flex flex-col">
       <LandingHeader />
       <ScrollToTop />
-      <main className="flex-1 relative">
-        <Outlet />
-      </main>
+      <Outlet />
     </div>
   );
 };

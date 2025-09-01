@@ -11,7 +11,7 @@ export interface BaseInputProps {
 }
 
 export interface TextInputProps extends BaseInputProps {
-  type?: 'text' | 'email' | 'tel';
+  type?: 'text' | 'email' | 'tel' | 'password';
   placeholder?: string;
 }
 

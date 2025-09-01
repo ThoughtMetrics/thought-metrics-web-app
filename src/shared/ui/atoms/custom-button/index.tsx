@@ -22,7 +22,7 @@ const CustomButtonAtom: React.FC<CustomButtonProps> = ({
         disabled={disabled}
       >
         <Link to={path} viewTransition={true}>
-          <label>{label}</label>
+          {label}
         </Link>
       </button>
     </div>

@@ -49,6 +49,10 @@ import ResearchForm from '@/pages/start-your-research';
 import ReportDownloadPage from '@/pages/report-download';
 import LandingLayout from '@/shared/components/landing-layout';
 import InteractionLayout from '@/shared/components/intraction-layout';
+import AuthPage from '@/pages/auth';
+import SignUpPage from '@/pages/auth/sign-up';
+import UnsubscribePage from '@/pages/auth/unsubscribe';
+import EditProfilePage from '@/pages/auth/edit-profile';
 // import ResourcePage from '@/pages/resources';
 
 /* // Home loader - prefetches blog data
@@ -151,6 +155,8 @@ export const router = createBrowserRouter(
         />
         <Route path="ai_policy" element={<AIPolicy />} />
         <Route path="start_your_research" element={<ResearchForm />} />
+        {/* 404 Route */}
+        <Route path="*" element={<NotFound />} />
       </Route>
 
       {/* Landing Content Routes */}
@@ -159,13 +165,17 @@ export const router = createBrowserRouter(
         <Route path="advocate_landing" element={<AdvocateLandingPage />} />
       </Route>
 
-      <Route path="/" element={<InteractionLayout />}>
+      {/* Design Content Routes */}
+      <Route path="/">
         <Route path="report_download" element={<ReportDownloadPage />} />
+        <Route path="auth" element={<AuthPage />} />
       </Route>
 
-      {/* 404 Route */}
-      <Route path="/" element={<Layout />}>
-        <Route path="*" element={<NotFound />} />
+      {/* Authed Content Routes */}
+      <Route path="/" element={<InteractionLayout />}>
+        <Route path="sign_up" element={<SignUpPage />} />
+        <Route path="unsubscribe" element={<UnsubscribePage />} />
+        <Route path="edit_profile" element={<EditProfilePage />} />
       </Route>
     </>
   )
