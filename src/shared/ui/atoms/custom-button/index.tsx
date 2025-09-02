@@ -14,17 +14,17 @@ const CustomButtonAtom: React.FC<CustomButtonProps> = ({
 }) => {
   return (
     <div className="w-full">
-      <button
-        className={cn(
-          'bg-primary text-white font-bold rounded-md text-xl text-nowrap py-1 px-6 w-auto hover:bg-secondary hover:text-white transition-all duration-300 ease-in-out',
-          className
-        )}
-        disabled={disabled}
-      >
-        <Link to={path} viewTransition={true}>
+      <Link to={path} viewTransition={true}>
+        <button
+          className={cn(
+            'bg-primary text-white font-bold rounded-md text-xl text-nowrap py-1 px-6 w-auto hover:bg-secondary hover:text-white transition-all duration-300 ease-in-out',
+            className
+          )}
+          disabled={disabled}
+        >
           {label}
-        </Link>
-      </button>
+        </button>
+      </Link>
     </div>
   );
 };

@@ -11,6 +11,8 @@ body,
   position: fixed;
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
+  /* end */
+  /* scroll-behavior: smooth; */
 }
 
 body {
@@ -33,7 +35,7 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  scroll-behavior: smooth;
+  /* scroll-behavior: smooth; */
 
   /* Custom scrollbar */
   ::-webkit-scrollbar {

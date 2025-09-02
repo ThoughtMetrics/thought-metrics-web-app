@@ -2,8 +2,9 @@ import { IllustrationSquares2 } from '@/assets';
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
 import type React from 'react';
 import '../../landing.style.css';
+import { ROUTES } from '@/routes/routeConfig';
 
-const LandingHeroSection: React.FC<any> = ({ heroSection }) => {
+const LandingHeroSection: React.FC<any> = ({ heroSection, faqId }) => {
   return (
     <section className="common-component w-full h-full relative md:pt-0 landing_hero_section">
       <div className="absolute top-0 w-full h-full bg-primary/65" />
@@ -30,15 +31,19 @@ const LandingHeroSection: React.FC<any> = ({ heroSection }) => {
             </p>
           </div>
           <div className="flex gap-5 w-[90%] md:w-[85%] z-1">
-            <CustomButtonAtom
-              className="font-semibold py-1 xl:py-2 text-lg xl:text-xl bg-secondary hover:bg-custom-blue w-full max-w-[13rem]"
-              label={heroSection.signButton.label}
-            />
-            {heroSection.faqButton && (
+            <div className="max-w-[13rem] w-full">
               <CustomButtonAtom
-                className="font-semibold py-1 xl:py-2 text-lg xl:text-xl border-secondary bg-white text-secondary hover:bg-custom-blue w-full border-2 max-w-[13rem]"
-                label={heroSection.faqButton.label}
+                path={ROUTES.SIGN_UP}
+                className="font-semibold py-1 xl:py-2 px-6 text-lg xl:text-xl bg-secondary hover:bg-custom-blue w-full"
+                label={heroSection.signButton.label}
               />
+            </div>
+            {heroSection.faqButton && (
+              <a href={`#${faqId}`} className="w-full max-w-[13rem]">
+                <button className="rounded-md text-nowrap px-6 hover:text-white transition-all duration-300 ease-in-out font-semibold py-1 xl:py-2 text-lg xl:text-xl border-secondary bg-white text-secondary hover:bg-custom-blue w-full border-2">
+                  {heroSection.faqButton.label}
+                </button>
+              </a>
             )}
           </div>
         </div>

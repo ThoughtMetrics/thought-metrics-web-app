@@ -232,5 +232,47 @@ export const signUpFormConstant = {
       description:
         'Your account has been created successfully. You can now participate in research studies and surveys.',
     },
+    faqData: [
+      {
+        question: "What's a focus group?",
+        answer:
+          "A focus group is a round-table discussion on products and services that you use. The discussions are led by market research professionals and usually last between 1–2 hours. While focus groups are a common type of research study, we also conduct taste tests, product trials, in-home interviews, shop-along interviews, phone interviews, and online research.\nWhen you're done, you will receive an incentive for your contribution!",
+      },
+      {
+        question: 'Why and how do I register?',
+        answer:
+          "Registering will add you to Thought Metrics' participant community, giving you access to various study opportunities. During the sign-up process, we will ask for:\n• Contact information\n• Demographic details\n• Household information\n\nThis helps us identify if you qualify for a particular project. Additional screening may be needed to confirm qualification.\nClick here to register.",
+      },
+      {
+        question: 'Where does Thought Metrics do a focus group?',
+        answer:
+          'Thought Metrics has focus group facilities across India. When you register, you can choose the one nearest to you. If you do not live close to any facility, you can register for our national database, and you will be eligible for phone or online interviews.',
+      },
+      {
+        question: 'Do you do other types of studies?',
+        answer:
+          'Yes! While focus groups are a common type of research study, we also conduct:\n• Online surveys\n• Phone surveys\n• In-home interviews\n• Shop-along interviews\n• Product trials\n• Taste tests',
+      },
+      {
+        question: 'Once I have registered, what happens?',
+        answer:
+          'Once you register, your details are stored in the Thought Metrics participant community. From there:\n• You may be contacted for projects you qualify for based on your profile.\n• Some additional screening may be required to confirm eligibility.\n• When selected, you will be provided with study details, timing, and incentive information.',
+      },
+      {
+        question: 'Is my information safe?',
+        answer:
+          'Yes! Thought Metrics adheres to the Insights Association Code of Standards and Ethics for Market Research and Data Analytics. Your information is kept completely confidential. We do not sell or share your information with any third party. For more information, please see our Privacy Policy.',
+      },
+      {
+        question: 'What are my responsibilities as a focus group participant?',
+        answer:
+          'To make research meaningful and accurate, we ask all participants to:\n• Be truthful when answering questions about yourself and your habits.\n• Arrive for your appointment on time and ready to participate in the discussion.\n• Notify Thought Metrics if you must cancel, with as much advance notice as possible.\n• Enjoy it! Focus groups are fun and engaging.',
+      },
+      {
+        question: 'How do I unsubscribe?',
+        answer:
+          'If you would like to unsubscribe from our database and no longer receive calls or emails about upcoming focus groups, please click unsubscribe from your account settings.',
+      },
+    ],
   },
 };

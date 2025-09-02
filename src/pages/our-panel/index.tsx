@@ -23,7 +23,7 @@ const OurPanel: React.FC = () => {
         </div>
         <div className="common-container p-5 md:p-10 xxl:p-0 !max-w-[var(--breakpoint-2xl)] flex-col pb-28">
           <div className="md:w-[28%] xl:w-[37%] wide:w-[40%] h-full flex flex-col gap-3 justify-center md:min-h-[360px] xl:min-h-[480px] wide:min-h-[580px]">
-            <PageTitle className='w-32'/>
+            <PageTitle className="w-fit md:w-24 xl:w-32 wide:w-48" />
             <h2 className="w-full text-xl md:text-2xl xl:text-3xl xxl:text-4xl md:leading-8 xl:leading-11">
               <span>{ourPanel.heroSection.title}</span>
             </h2>

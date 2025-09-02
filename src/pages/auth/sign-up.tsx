@@ -15,6 +15,7 @@ import {
 } from '@/shared/ui/atoms/custom-input';
 import { Link } from 'react-router-dom';
 import { ArrowRed, FacebookOutlineIcon, GoogleOutlineIcon } from '@/assets';
+import FaqOrganism from '@/shared/ui/organisms/faq-organism';
 
 // Destructure constants
 const {
@@ -608,6 +609,9 @@ const SignUpPage: React.FC = () => {
             <ArrowRed className="fill-current text-white" />
           </button>
         </form>
+        <div className="py-12">
+          <FaqOrganism data={ui.faqData} />
+        </div>
       </div>
     </div>
   );

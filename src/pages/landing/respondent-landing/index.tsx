@@ -12,7 +12,10 @@ import LandingSignUpSection from '../components/landing-sign-section';
 const RespondentLandingPage: React.FC = () => {
   return (
     <>
-      <LandingHeroSection heroSection={landing.respondent.heroSection} />
+      <LandingHeroSection
+        heroSection={landing.respondent.heroSection}
+        faqId={landing.respondent.questionarySection.id}
+      />
       <LandingCaseStudySection
         questionarySection={landing.respondent.caseStudySection}
       />
@@ -28,11 +31,11 @@ const RespondentLandingPage: React.FC = () => {
       />
       <LandingJoinUsSection joinUsSection={landing.respondent.joinUsSection} />
       <LandingQuestionarySection
+        faqId={landing.respondent.questionarySection.id}
+        aria-labelledby={landing.respondent.questionarySection.id}
         questionarySection={landing.respondent.questionarySection}
       />
-      <LandingSignUpSection
-        signUpSection={landing.respondent.signUpSection}
-      />
+      <LandingSignUpSection signUpSection={landing.respondent.signUpSection} />
     </>
   );
 };

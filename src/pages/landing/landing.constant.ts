@@ -164,16 +164,55 @@ export const landing = {
       },
     },
     questionarySection: {
+      id: 'respondent-faq',
       label: 'Frequently Asked Questions',
-      list: [
-        "What's a focus group?",
-        'What will I need to do as a participant?',
-        'How do I join?',
-        'When will I get my reward?',
-        "Why haven't I heard back yet?",
-        'Is my information safe?',
-        'Can you help me log in?',
-        'How do I unsubscribe?',
+      faqData: [
+        {
+          question: "What's a focus group?",
+          answer:
+            "A focus group is a round-table discussion on products and services that you use. The discussions are led by market research professionals and usually last between 1–2 hours. While focus groups are a common type of research study, we also conduct taste tests, product trials, in-home interviews, shop-along interviews, phone interviews, and online research.\nWhen you're done, you will receive an incentive for your contribution!",
+        },
+        {
+          question:
+            "Where are Thought Metrics' focus group facilities located?",
+          answer:
+            'Thought Metrics has focus group facilities across India. When you register, you can choose the one nearest to you. If you do not live close to any facility, you can register for our national database, and you will be eligible for phone or online interviews.',
+        },
+        {
+          question: 'What do you expect from participants?',
+          answer:
+            'To make research meaningful and accurate, we ask all participants to:\n• Be truthful when answering questions about yourself and your habits.\n• Arrive for your appointment on time and ready to participate in the discussion.\n• Notify Thought Metrics if you must cancel, with as much advance notice as possible.\n• Enjoy it! Focus groups are fun and engaging.',
+        },
+        {
+          question: 'How do I register?',
+          answer:
+            "Registering will add you to Thought Metrics' participant community, giving you access to various study opportunities. During the sign-up process, we will ask for:\n• Contact information\n• Demographic details\n• Household information\n\nThis helps us identify if you qualify for a particular project. Additional screening may be needed to confirm qualification.\nClick here to register.",
+        },
+        {
+          question: 'What incentives do you provide?',
+          answer:
+            "We offer incentives in multiple forms depending on the project, but most commonly through online prepaid solutions, gift vouchers, or direct transfers. Incentives are typically sent within 2 weeks of participation.\n\nIf it's been more than 2 weeks since you participated, please email contact@thoughtmetrics.com with the following details:\n• Name of participant\n• City or facility where you participated\n• Date of participation\n• Study reference number",
+        },
+        {
+          question: 'Is my information safe?',
+          answer:
+            'Yes! Thought Metrics adheres to the Insights Association Code of Standards and Ethics for Market Research and Data Analytics. Your information is kept completely confidential. We do not sell or share your information with any third party. For more information, please see our Privacy Policy.',
+        },
+        {
+          question: "I signed up but haven't heard from you. Why?",
+          answer:
+            'Phone and email communication depend on the information provided in your Dashboard Profile. If your profile is complete but you are not receiving communication from Thought Metrics:\n• Double-check your email preferences and contact information under the "Edit Profile" tab.\n• Add our email contact@thoughtmetrics.com to your contacts so our emails don\'t go to spam.',
+        },
+        {
+          question: "I can't log in to my account. Can you help?",
+          answer:
+            "Yes! Visit the login page to reset your password. Still having trouble? Email us at contact@thoughtmetrics.com and we'll help you regain access.",
+        },
+        {
+          question: 'How do I unsubscribe?',
+          answer:
+            'If you would like to unsubscribe from our database and no longer receive calls or emails about upcoming focus groups, please click unsubscribe from your account settings.',
+        },
       ],
     },
     signUpSection: {
