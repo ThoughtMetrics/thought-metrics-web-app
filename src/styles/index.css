@@ -25,7 +25,8 @@ body {
   overflow: hidden;
 
   color-scheme: light dark;
-  background: var(--color-surface) url('/images/background_image_1.png') no-repeat center;
+  background: var(--color-surface) url('/images/background_image_1.png')
+    no-repeat center;
   background-size: cover;
 
   font-synthesis: none;
@@ -51,6 +52,16 @@ body {
   ::-webkit-scrollbar-thumb:hover {
     background: var(--color-primary-dark);
   }
+
+  /* Input Styles Customization */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px var(--custom-grey-5) inset !important; /* Change 'white' to your desired background color */
+    -webkit-text-fill-color: black !important; /* Change 'black' to your desired text color */
+    transition: background-color 5000s ease-in-out 0s; /* Prevents immediate color change */
+  }
 }
 
 *,
@@ -74,12 +85,14 @@ body {
 }
 
 .brand-ad-component {
-  background: var(--color-surface) url('/images/background_image_5.png') no-repeat center;
+  background: var(--color-surface) url('/images/background_image_5.png')
+    no-repeat center;
   background-size: cover;
 }
 
 .industries-component {
-  background: var(--color-surface) url('/images/background_image_4.png') no-repeat center;
+  background: var(--color-surface) url('/images/background_image_4.png')
+    no-repeat center;
   background-size: cover;
 }
 
@@ -89,11 +102,12 @@ body {
 }
 
 .form-1-component {
-  background: var(--color-surface) url('/images/form_image_1.png') no-repeat center;
+  background: var(--color-surface) url('/images/form_image_1.png') no-repeat
+    center;
   background-size: cover;
 }
 
-input[type="checkbox"] {
+input[type='checkbox'] {
   flex-shrink: 0;
   appearance: none;
   -webkit-appearance: none;
@@ -105,8 +119,8 @@ input[type="checkbox"] {
   position: relative;
 }
 
-input[type="checkbox"]:checked::after {
-  content: "✔";
+input[type='checkbox']:checked::after {
+  content: '✔';
   /* custom tick */
   color: var(--primary);
   /* 🎨 tick color */

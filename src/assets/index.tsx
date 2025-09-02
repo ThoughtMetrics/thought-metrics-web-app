@@ -352,3 +352,9 @@ export {
 
 import RedTickIcon from './svgs/red-tick.svg?react';
 export { RedTickIcon };
+
+/* Auth */
+import GoogleOutlineIcon from './svgs/google-outline.svg?react';
+import FacebookOutlineIcon from './svgs/facebook-outline.svg?react';
+
+export { GoogleOutlineIcon, FacebookOutlineIcon };
