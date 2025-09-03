@@ -24,10 +24,7 @@ const TextInputAtom: React.FC<TextInputProps> = ({
 }) => {
   return (
     <div className={className}>
-      <label
-        htmlFor={id}
-        className="block text-sm font-medium text-black mb-2"
-      >
+      <label htmlFor={id} className="block text-sm font-medium text-black mb-2">
         {label}
         {required && '*'}
       </label>
@@ -62,10 +59,7 @@ const TextareaAtom: React.FC<TextareaProps> = ({
 }) => {
   return (
     <div className={className}>
-      <label
-        htmlFor={id}
-        className="block text-sm font-medium text-black mb-2"
-      >
+      <label htmlFor={id} className="block text-sm font-medium text-black mb-2">
         {label}
         {required && '*'}
       </label>
@@ -127,10 +121,7 @@ const PhoneInputAtom: React.FC<PhoneInputProps> = ({
 }) => {
   return (
     <div className={className}>
-      <label
-        htmlFor={id}
-        className="block text-sm font-medium text-black mb-2"
-      >
+      <label htmlFor={id} className="block text-sm font-medium text-black mb-2">
         {label}
       </label>
       <div className="flex">
@@ -172,10 +163,7 @@ const SelectAtom: React.FC<SelectProps> = ({
 }) => {
   return (
     <div className={className}>
-      <label
-        htmlFor={id}
-        className="block text-sm font-medium text-black mb-2"
-      >
+      <label htmlFor={id} className="block text-sm font-medium text-black mb-2">
         {label}
         {required && '*'}
       </label>
@@ -249,6 +237,55 @@ const CheckboxGroupAtom: React.FC<CheckboxGroupProps> = ({
   );
 };
 
+const CheckboxOutlineGroupAtom: React.FC<CheckboxGroupProps> = ({
+  label,
+  options,
+  selectedValues,
+  onChange,
+  className = '',
+  columns = 2,
+}) => {
+  const addOption = (optionId: string) => {
+    onChange([...selectedValues, optionId]);
+  };
+
+  const removeOption = (optionId: string) => {
+    onChange(selectedValues.filter((value) => value !== optionId));
+  };
+
+  const gridClass =
+    columns === 2 ? 'md:grid-cols-2' : `md:grid-cols-${String(columns)}`;
+
+  return (
+    <div className={className}>
+      <label className="block text-sm font-medium text-black mb-3">
+        {label}
+      </label>
+      <div className={`grid grid-cols-1 w-fit ${gridClass} gap-4`}>
+        {options.map((option) => (
+          <label
+            key={option.id}
+            className="flex space-x-8 border-1 border-custom-grey-2 px-4 py-3 rounded relative"
+          >
+            <div className="absolute justify-center left-0 top-0 bg-custom-grey-1 h-full w-12 rounded-l border-r-1 border-custom-grey-2"></div>
+            <input
+              type="checkbox"
+              checked={selectedValues.includes(option.id)}
+              onChange={(e) =>
+                e.target.checked
+                  ? addOption(option.id)
+                  : removeOption(option.id)
+              }
+              className="bg-white mt-0.5 h-4 w-4 text-primary focus:text-primary border-custom-grey-2 rounded"
+            />
+            <span className="text-sm text-black">{option.label}</span>
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export {
   TextInputAtom,
   TextareaAtom,
@@ -256,4 +293,5 @@ export {
   PhoneInputAtom,
   SelectAtom,
   CheckboxGroupAtom,
+  CheckboxOutlineGroupAtom,
 };

@@ -8,7 +8,7 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import {
   CheckboxAtom,
-  CheckboxGroupAtom,
+  CheckboxOutlineGroupAtom,
   PhoneInputAtom,
   SelectAtom,
   TextInputAtom,
@@ -584,7 +584,7 @@ const SignUpPage: React.FC = () => {
               </h2>
               <p className="text-gray-600 mb-6">{ui.preferences.description}</p>
 
-              <CheckboxGroupAtom
+              <CheckboxOutlineGroupAtom
                 label=""
                 options={participationOptions}
                 selectedValues={formData.participationPreferences}
