@@ -8,6 +8,7 @@ import LandingAboutUsSection from '../components/landing-about-us';
 import LandingJoinUsSection from '../components/join-us-section';
 import LandingQuestionarySection from '../components/landing-questionary-section';
 import LandingSignUpSection from '../components/landing-sign-section';
+import InteractionFooter from '@/shared/components/interaction-footer';
 
 const RespondentLandingPage: React.FC = () => {
   return (
@@ -36,6 +37,7 @@ const RespondentLandingPage: React.FC = () => {
         questionarySection={landing.respondent.questionarySection}
       />
       <LandingSignUpSection signUpSection={landing.respondent.signUpSection} />
+      <InteractionFooter />
     </>
   );
 };

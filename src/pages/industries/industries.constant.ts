@@ -28,6 +28,7 @@ import {
   UIPanelIcon,
   WorkerIcon,
 } from '@/assets';
+import { ROUTES } from '@/routes/routeConfig';
 
 export const industries = {
   advertising: {
@@ -35,7 +36,10 @@ export const industries = {
       title: 'Turn Audience Understanding Into Creative Impact',
       description:
         'From campaign concepts to media mix decisions, we help agencies, brands, and marketers unlock insights that inspire, resonate, and convert.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/industry_advertising_1.png',
         size: 'full',
@@ -209,7 +213,10 @@ export const industries = {
       img: '/images/industry_girl_1.png',
       illustration: SlideBrickIcon,
       title: 'Know what clicks before you create it!',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
   internet: {
@@ -217,7 +224,10 @@ export const industries = {
       title: 'Explore the Full Spectrum of Customer Insight',
       description:
         'From data to dialogue, uncover what truly drives your audience.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/industry_internet_1.png',
         size: 'full',
@@ -381,7 +391,10 @@ export const industries = {
       img: '/images/industry_girl_1.png',
       illustration: SlideBrickIcon,
       title: 'Stay in sync with what your audience actually wants.',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
   retail: {
@@ -389,7 +402,10 @@ export const industries = {
       title: 'Turning Shopping Moments into Lasting Impressions',
       description:
         'From store shelves to mobile screens, discover what influences buying decisions and build retail experiences that truly resonate.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/industry_retail_1.png',
         size: 'full',
@@ -558,7 +574,10 @@ export const industries = {
       illustration: SlideBrickIcon,
 
       title: 'See what drives shoppers—before they reach the shelf.',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
   healthcare: {
@@ -566,7 +585,10 @@ export const industries = {
       title: 'Bridge the Gap Between Science and Human Experience',
       description:
         'From clinical development to patient engagement, uncover insights that drive meaningful healthcare innovation and decision-making.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/industry_healthcare_1.png',
         size: 'full',
@@ -740,7 +762,10 @@ export const industries = {
 
       title:
         'Hear what patients and providers really think—when it matters most.',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
   hr: {
@@ -748,7 +773,10 @@ export const industries = {
       title: 'Unlock People-Centered Growth with Research That Listens',
       description:
         'From recruitment to retention, discover what your workforce really needs. Our research solutions help HR leaders design better policies, stronger cultures, and more meaningful employee experiences—at every stage of the talent lifecycle.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/industry_hr_1.png',
         size: 'full',
@@ -910,7 +938,10 @@ export const industries = {
       illustration: SlideBrickIcon,
 
       title: 'Build better workplaces with insights that matter.',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
   finance: {
@@ -918,7 +949,10 @@ export const industries = {
       title: 'Navigate the Future of Finance with Precision',
       description:
         'From trust to transformation, uncover insights that drive smarter decisions, stronger customer relationships, and real competitive advantage.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/industry_finance_1.png',
         size: 'full',
@@ -1090,7 +1124,10 @@ export const industries = {
       illustration: SlideBrickIcon,
 
       title: 'Make smarter decisions with the people who trust you most.',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
   automotive: {
@@ -1098,7 +1135,10 @@ export const industries = {
       title: 'Shift Gears with Precision: Insights That Accelerate Growth',
       description:
         'From combustion to connected, the automotive world is transforming at full throttle. At ThoughtMetrics, we decode the why behind the drive—helping you navigate shifting behaviors, leapfrog competition, and engineer what’s next.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/industry_automobile_1.png',
         size: 'full',
@@ -1263,7 +1303,10 @@ export const industries = {
       illustration: SlideBrickIcon,
 
       title: 'Drive decisions with insights from the people behind the wheel.',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
   education: {
@@ -1271,7 +1314,10 @@ export const industries = {
       title: 'Future-Proof Education with Human-Centered Intelligence',
       description:
         'At ThoughtMetrics, we empower institutions, ed-tech platforms, and education leaders to build with clarity—through insights that align with student needs, workforce demands, and future-ready learning models.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/industry_education_1.png',
         size: 'full',
@@ -1438,7 +1484,10 @@ export const industries = {
 
       title:
         'Shape learning experiences with insights from students, parents, and educators.',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
   fmcg: {
@@ -1446,7 +1495,10 @@ export const industries = {
       title: 'Explore What Moves Fast: Insights That Power FMCG Growth',
       description:
         'From shelf to screen to shopping cart, uncover what truly drives today’s consumer choices.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/industry_fmcg_1.png',
         size: 'full',
@@ -1613,7 +1665,10 @@ export const industries = {
       illustration: SlideBrickIcon,
       title:
         'Ready to fuel your next big decision with clarity and confidence?',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
   investor: {
@@ -1622,7 +1677,10 @@ export const industries = {
         'Invest with Confidence: Market Intelligence that Moves at the Speed of Capital',
       description:
         'From early diligence to post-deal growth, discover the real drivers behind business performance and consumer momentum.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/industry_investors_1.png',
         size: 'full',
@@ -1788,7 +1846,10 @@ export const industries = {
       illustration: SlideBrickIcon,
 
       title: 'Move from instinct to insight—and from insight to impact.',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
   technology: {
@@ -1796,7 +1857,10 @@ export const industries = {
       title: 'Uncover the Full Picture of Technology Decision-Making',
       description:
         'From product strategy to user experience, Thought Metrics helps you understand what drives tech adoption, innovation, and transformation.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/industry_technology_1.png',
         size: 'full',
@@ -1966,7 +2030,10 @@ export const industries = {
       illustration: SlideBrickIcon,
 
       title: 'Move from instinct to insight—and from insight to impact.',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
 } as const;

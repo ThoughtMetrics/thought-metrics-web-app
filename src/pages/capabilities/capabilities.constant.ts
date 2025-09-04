@@ -37,6 +37,7 @@ import {
   StackIllustration,
   UXResearchIllustration,
 } from '@/assets';
+import { ROUTES } from '@/routes/routeConfig';
 
 export const capabilities = {
   brand_advertising: {
@@ -44,7 +45,10 @@ export const capabilities = {
       title: 'Know What Works. And Why.',
       description:
         'Brand and advertising research that reveals the story behind the stats.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/capabilities_branding_advertising_1.png',
         size: 'full',
@@ -315,8 +319,8 @@ export const capabilities = {
           illustration: BrandAwarnessIllustration,
         },
         {
-          className: 'absolute right-26 bottom-14 w-[12%] h-[12%]',
-          className1: 'absolute left-20 bottom-5 w-[18%] h-[18%]',
+          className: 'absolute right-12 top-8 w-[12%] h-[12%]',
+          className1: 'absolute right-20 bottom-8 w-[18%] h-[18%]',
           title: 'Message Testing',
           description:
             'Message testing gauges responses to all your marking collaterals and tracks variables like abandonment rate, pate views, problems and frustrations, task success, task time, usability, attitude, conversions and NPS',
@@ -329,7 +333,10 @@ export const capabilities = {
       img: '/images/capabilities_girl_1.png',
       illustration: StackIllustration,
       title: 'Make every messaging count.',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
   market_opportunity: {
@@ -337,7 +344,10 @@ export const capabilities = {
       title: 'Spot the Gaps. Seize the Growth.',
       description:
         'Turn uncertainty into opportunity with research that moves markets.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/capabilities_market_opportunity_1.png',
         size: 'full',
@@ -583,7 +593,7 @@ export const capabilities = {
         },
         {
           className: 'absolute right-12 top-12 w-[12%] h-[12%]',
-          className1: 'absolute left-0 ml-12 bottom-10 w-[21%] h-[21%]',
+          className1: 'absolute right-18 ml-12 bottom-10 w-[21%] h-[21%]',
           title: 'Market Feasibility study',
           description:
             'Market analysis, target audience, technical feasibility, operational feasibility, financial analysis, risk assessment, economic factors.',
@@ -596,7 +606,10 @@ export const capabilities = {
       img: '/images/capabilities_girl_1.png',
       illustration: StackIllustration,
       title: 'Stay ahead of the market.',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
   product_research: {
@@ -604,7 +617,10 @@ export const capabilities = {
       title: 'Turn Ideas Into Market-Ready Products',
       description:
         'Deep product research powers smarter development, sharper messaging, and better customer experiences — from concept to launch and beyond.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/capabilities_product_research_1.png',
         size: 'full',
@@ -830,7 +846,7 @@ export const capabilities = {
     b2bServiceSection: {
       services: [
         {
-          className: 'absolute left-0 bottom-0 m-5 w-[20%] h-[20%] ml-12',
+          className: 'absolute right-0 top-0 m-5 w-[20%] h-[20%] ml-12',
           title: 'Conjoint Analysis',
           description:
             'Conjoint Analysis is based on the idea that consumers make trade-offs when selecting options, and it helps businesses determine which combination of attributes is most appealing to their target audience. Methods include, discrete choice, rating based, best-worst scaling, adaptive conjoint analysis',
@@ -855,7 +871,7 @@ export const capabilities = {
         },
         {
           className: 'absolute right-8 top-8 w-[16%] h-[16%]',
-          className1: 'absolute left-0 ml-8 bottom-4 w-[22%] h-[22%]',
+          className1: 'absolute right-8 ml-8 bottom-4 w-[22%] h-[22%]',
           title: 'UX Research',
           description:
             'Avoid unleashing a poor user experience that not only diminishes the product, but damages the brand trust you’ve worked so hard to build using UX mockup testing, tree testing, card sorting, usability studies',
@@ -868,7 +884,10 @@ export const capabilities = {
       img: '/images/capabilities_girl_1.png',
       illustration: StackIllustration,
       title: "Let's build smarter products.",
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
   customer_research: {
@@ -876,7 +895,10 @@ export const capabilities = {
       title: 'Customer-Centric Decisions Start Here',
       description:
         'Build lasting connections with your audience through meaningful insights.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/capabilities_customer_research_1.png',
         size: 'full',
@@ -1103,7 +1125,10 @@ export const capabilities = {
       img: '/images/capabilities_girl_1.png',
       illustration: StackIllustration,
       title: 'Ready for a simpler, more successful research?',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
 } as const;

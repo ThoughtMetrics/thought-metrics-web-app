@@ -202,13 +202,15 @@ const ContactUs: React.FC = () => {
 
   return (
     <div className="common-component bg-white text-black flex-col items-center">
-      <div className="form-1-component w-full min-h-[240px] md:min-h-[480px] xxl:p-0 z-1 flex items-center relative">
+      <div className="form-1-component w-full min-h-[240px] md:min-h-[480px] xxl:p-0 z-1 flex items-center relative justify-center">
         <div className="flex absolute w-full h-[95%] justify-end top-1/2 transform -translate-y-1/2">
           <IllustrationSquares2 className="h-full w-auto stroke-1" />
         </div>
-        <h2 className="pl-[15%] text-xl md:text-4xl font-semibold text-white">
-          {ui.pageTitle}
-        </h2>
+        <div className="common-container px-6 py-8 md:px-24 md:py-24 !max-w-[1336px]">
+          <h2 className="text-xl md:text-4xl font-semibold text-white">
+              {ui.pageTitle}
+          </h2>
+        </div>
         <div className="absolute top-0 w-full h-full bg-primary/65 -z-1" />
       </div>
 

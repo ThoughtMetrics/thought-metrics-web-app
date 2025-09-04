@@ -43,8 +43,8 @@ export const contentSecondData = {
       path: ROUTES.CAPABILITY_CUSTOMER_RESEARCH,
     },
     {
-      className: 'absolute right-8 top-8',
-      className1: 'absolute right-10 bottom-8 w-[25%] h-[25%]',
+      className: 'absolute right-16 bottom-8',
+      className1: 'absolute right-4 top-4 w-[25%] h-[25%]',
       title: 'Product Research',
       description:
         'Build products that solve real problems. From concept testing and feature prioritization to in-use feedback, we support every phase of product development. Our insights help you align innovation with user expectations — minimizing risk and maximizing relevance.',

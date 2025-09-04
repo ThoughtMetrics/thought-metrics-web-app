@@ -6,39 +6,37 @@ const QualityCaseStudySection: React.FC<any> = ({
   className,
 }: any) => {
   return (
-    <section className="common-component w-full h-full relative bg-white text-black quality-case-study-component">
-      <div className="hidden md:flex h-full w-full absolute justify-end">
-        <caseStudySection.illustrationComponent className="h-full w-fit" />
+    <section className="common-component w-full relative bg-white text-black quality-case-study-component items-center !grid grid-cols-2">
+      <div className="md:flex w-full min-h-[18rem] xl:min-h-[30rem] xxl:min-h-[40rem] wide:min-h-[45rem]">
+        <caseStudySection.illustrationComponent className="h-full w-full" />
       </div>
       <div
         className={cn(
-          'common-container px-6 pt-14 pb-8 md:p-0 !max-w-[1336px] !grid grid-cols-1 md:grid-cols-[47.5%_53%] items-center justify-between',
+          'common-container flex-col px-6 py-5 md:px-28 wide:px-48 gap-3',
           className
         )}
       >
-        <div className="w-full flex flex-col gap-3 md:pl-24 md:py-14">
-          <h2 className="flex flex-col gap-2">
-            <span className="text-xl md:text-3xl font-semibold">
-              {caseStudySection.head}
-            </span>
-            <div className="w-25 h-0.5 md:h-1 bg-primary rounded"></div>
-          </h2>
-          <p className="md:w-[83.5%] text-xl md:text-3xl">
-            {caseStudySection.title}
-          </p>
-          <p className="md:w-[83.5%] text-md md:text-base leading-5">
-            {caseStudySection.description}
-          </p>
-          <img
-            src="/images/research_methods_quality_1.png"
-            className="md:hidden w-full h-fit"
-          />
-          <ul className={cn('text-md md:text-base space-y-2', className)}>
-            {caseStudySection.list.map((value: string) => {
-              return <p className="leading-5">{value}</p>;
-            })}
-          </ul>
-        </div>
+        <h2 className="flex flex-col gap-2">
+          <span className="text-xl md:text-3xl font-semibold">
+            {caseStudySection.head}
+          </span>
+          <div className="w-25 h-0.5 md:h-1 bg-primary rounded"></div>
+        </h2>
+        <p className="md:w-[83.5%] text-xl md:text-3xl">
+          {caseStudySection.title}
+        </p>
+        <p className="text-md md:text-base leading-5">
+          {caseStudySection.description}
+        </p>
+        <img
+          src="/images/research_methods_quality_1.png"
+          className="md:hidden w-full h-fit"
+        />
+        <ul className={cn('text-md md:text-base space-y-2', className)}>
+          {caseStudySection.list.map((value: string) => {
+            return <p className="leading-5">{value}</p>;
+          })}
+        </ul>
       </div>
     </section>
   );

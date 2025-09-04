@@ -16,7 +16,7 @@ const LandingHeroSection: React.FC<any> = ({ heroSection, faqId }) => {
           <IllustrationSquares2 className="h-full w-auto stroke-1.75 stroke-primary" />
         </div>
         <div className="md:w-[43%] xxl:w-[50%] h-full flex flex-col gap-10 justify-center">
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6 text-white">
             <div className="flex flex-col gap-4">
               <h2 className="flex flex-col gap-2">
                 <span className="text-sm md:text-base">{heroSection.head}</span>

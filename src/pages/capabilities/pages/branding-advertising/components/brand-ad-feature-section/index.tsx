@@ -32,7 +32,7 @@ const BrandAdFeatureSection: React.FC<any> = ({
                 feature={feature}
                 index={index}
                 className={cn(
-                  'px-7 py-6 bg-primary/20 text-black',
+                  'px-7 py-6 bg-primary/20 text-black hover:shadow-xl transition-shadow duration-300',
                   index === featureSection.items.length - 1 && 'bg-primary',
                   cardClassName
                 )}

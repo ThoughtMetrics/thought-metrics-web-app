@@ -43,8 +43,9 @@ const OurPanelSection: React.FC = () => {
             }}
           />
           <CustomButtonAtom
+            path={pageContent.actionButton.path}
             className="p-3 font-medium text-md xl:text-xl"
-            label={pageContent.actionLabel}
+            label={pageContent.actionButton.label}
           />
         </div>
       </div>

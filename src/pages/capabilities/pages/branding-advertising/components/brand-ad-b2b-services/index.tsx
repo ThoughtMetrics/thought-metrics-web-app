@@ -1,4 +1,6 @@
+import { ArrowRight } from '@/assets';
 import React from 'react';
+import { Link } from 'react-router-dom';
 const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
   return (
     <section className="common-component bg-white">
@@ -6,7 +8,10 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
         {/* Desktop View */}
         <div className="hidden md:grid grid-cols-1 w-full md:grid-cols-3  md:grid-rows-2 gap-3 pt-6 text-black">
           {/* Service 1 */}
-          <div className="relative col-span-1 bg-success rounded-md flex flex-col justify-center py-24 px-12 overflow-hidden">
+          <Link
+            to="#"
+            className="relative col-span-1 bg-success rounded-md flex flex-col justify-center pb-18 pt-24 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
+          >
             {(() => {
               const IllustrationSlope =
                 b2bServiceSection.services[0].illustration;
@@ -16,39 +21,34 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
                 />
               ) : null;
             })()}
-            <div className="w-[88%] flex flex-col gap-2 z-1">
-              <h3 className="leading-[1.2] font-semibold">
-                {b2bServiceSection.services[0].title}
-              </h3>
-              <p className="tracking-tight leading-[1.2]">
-                {b2bServiceSection.services[0].description}
-              </p>
-              <div className="absolute bottom-0.5 right-0.5 w-[72px] h-[38px] rounded-tl-lg rounded-br-md bg-primary text-white border-none flex items-center justify-center">
-                <img
-                  src="/icons/right-arrow-white.svg"
-                  alt="Read more"
-                  className="w-[35px] h-[35px]"
-                />
+            <div className="flex flex-col justify-between h-[12rem]">
+              <div className="w-[88%] flex flex-col gap-2 z-1">
+                <h3 className="leading-[1.2] font-semibold">
+                  {b2bServiceSection.services[0].title}
+                </h3>
+                <p className="tracking-tight leading-[1.2]">
+                  {b2bServiceSection.services[0].description}
+                </p>
               </div>
+              <ArrowRight className="fill-current group-hover:text-[#AACF75]" />
             </div>
-          </div>
+          </Link>
 
           {/* Service 2 */}
-          <div className="relative col-span-2 bg-gradient-to-r from-custom-violet to-white rounded-md flex flex-col justify-center py-9 px-12 overflow-hidden">
-            <div className="w-[40%] flex flex-col gap-2">
-              <h3 className="leading-[1.2] font-semibold">
-                {b2bServiceSection.services[1].title}
-              </h3>
-              <p className="tracking-tight leading-[1.2]">
-                {b2bServiceSection.services[1].description}
-              </p>
-              <div className="absolute bottom-0.5 right-0.5 w-[72px] h-[38px] rounded-tl-lg rounded-br-md bg-primary text-white border-none flex items-center justify-center">
-                <img
-                  src="/icons/right-arrow-white.svg"
-                  alt="Read more"
-                  className="w-[35px] h-[35px]"
-                />
+          <Link
+            to="#"
+            className="relative col-span-2 bg-gradient-to-r from-custom-violet to-white rounded-md flex flex-col justify-center pb-18 pt-24 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
+          >
+            <div className="flex flex-col justify-between h-[12rem]">
+              <div className="w-[40%] flex flex-col gap-2">
+                <h3 className="leading-[1.2] font-semibold">
+                  {b2bServiceSection.services[1].title}
+                </h3>
+                <p className="tracking-tight leading-[1.2]">
+                  {b2bServiceSection.services[1].description}
+                </p>
               </div>
+              <ArrowRight className="fill-current group-hover:text-[#BA9CF3]" />
             </div>
             {(() => {
               const DoorPerson = b2bServiceSection.services[1].illustration;
@@ -58,24 +58,23 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
                 />
               ) : null;
             })()}
-          </div>
+          </Link>
 
           {/* Service 3 */}
-          <div className="relative col-span-2 bg-gradient-to-r from-custom-grey-1 to-white rounded-md flex flex-col justify-center py-9 px-12 overflow-hidden">
-            <div className="w-[40%] flex flex-col gap-2">
-              <h3 className="leading-[1.2] font-semibold">
-                {b2bServiceSection.services[2].title}
-              </h3>
-              <p className="tracking-tight leading-[1.2]">
-                {b2bServiceSection.services[2].description}
-              </p>
-              <div className="absolute bottom-0.5 right-0.5 w-[72px] h-[38px] rounded-tl-lg rounded-br-md bg-primary text-white border-none flex items-center justify-center">
-                <img
-                  src="/icons/right-arrow-white.svg"
-                  alt="Read more"
-                  className="w-[35px] h-[35px]"
-                />
+          <Link
+            to="#"
+            className="relative col-span-2 bg-gradient-to-r from-custom-grey-1 to-white rounded-md flex flex-col justify-center pb-18 pt-24 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
+          >
+            <div className="flex flex-col justify-between h-[12rem]">
+              <div className="w-[40%] flex flex-col gap-2">
+                <h3 className="leading-[1.2] font-semibold">
+                  {b2bServiceSection.services[2].title}
+                </h3>
+                <p className="tracking-tight leading-[1.2]">
+                  {b2bServiceSection.services[2].description}
+                </p>
               </div>
+              <ArrowRight />
             </div>
             {(() => {
               const Spiral = b2bServiceSection.services[2].illustration;
@@ -83,24 +82,23 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
                 <Spiral className={b2bServiceSection.services[2].className} />
               ) : null;
             })()}
-          </div>
+          </Link>
 
           {/* Service 4 */}
-          <div className="relative col-span-1 bg-custom-pink rounded-md flex flex-col justify-center py-9 px-12 overflow-hidden">
-            <div className="w-[90%] flex flex-col gap-2">
-              <h3 className="leading-[1.2] font-semibold">
-                {b2bServiceSection.services[3].title}
-              </h3>
-              <p className="tracking-tight leading-[1.2]">
-                {b2bServiceSection.services[3].description}
-              </p>
-              <div className="absolute bottom-0.5 right-0.5 w-[72px] h-[38px] rounded-tl-lg rounded-br-md bg-primary text-white border-none flex items-center justify-center">
-                <img
-                  src="/icons/right-arrow-white.svg"
-                  alt="Read more"
-                  className="w-[35px] h-[35px]"
-                />
+          <Link
+            to="#"
+            className="relative col-span-1 bg-custom-pink rounded-md flex flex-col justify-center pb-18 pt-24 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
+          >
+            <div className="flex flex-col justify-between h-[12rem]">
+              <div className="w-[90%] flex flex-col gap-2">
+                <h3 className="leading-[1.2] font-semibold">
+                  {b2bServiceSection.services[3].title}
+                </h3>
+                <p className="tracking-tight leading-[1.2]">
+                  {b2bServiceSection.services[3].description}
+                </p>
               </div>
+              <ArrowRight className="fill-current group-hover:text-[#F1959E]" />
             </div>
             {(() => {
               const BoxCluster = b2bServiceSection.services[3].illustration;
@@ -115,7 +113,7 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
                 </>
               ) : null;
             })()}
-          </div>
+          </Link>
         </div>
 
         {/* Mobile View */}

@@ -170,7 +170,7 @@ const CustomerResearchSection: React.FC<any> = ({ serviceSection }: any) => {
               <ServiceCard
                 service={service}
                 index={index}
-                className="p-4 gap-3 w-full h-full"
+                className="p-4 gap-3 w-full h-full hover:shadow-xl transition-shadow duration-300"
                 iconClassName="w-12 h-12 p-2"
                 contentClassName="text-md"
               />

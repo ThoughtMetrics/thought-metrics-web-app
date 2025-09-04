@@ -12,6 +12,7 @@ const LandingSignUpSection: React.FC<any> = ({ signUpSection }) => {
         <CustomButtonAtom
           className="py-2 px-12 font-semibold text-lg xl:text-xl bg-secondary hover:bg-custom-blue"
           label={signUpSection.signButton.label}
+          path={signUpSection.signButton.path}
         />
       </div>
     </section>

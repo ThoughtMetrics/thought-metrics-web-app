@@ -31,11 +31,11 @@ export const headerDropdownData = {
               label: 'Recruitment and Fieldwork',
               path: ROUTES.RESEARCH_METHODS_FIELDWORK,
             },
+            { label: 'Surveys', path: ROUTES.RESEARCH_METHODS_SURVEYS },
           ],
         },
         {
           items: [
-            { label: 'Surveys', path: ROUTES.RESEARCH_METHODS_SURVEYS },
             {
               label: 'Focus Group Discussions',
               path: ROUTES.RESEARCH_METHODS_FOCUS_GROUP,

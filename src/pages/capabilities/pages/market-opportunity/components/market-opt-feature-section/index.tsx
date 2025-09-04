@@ -37,21 +37,21 @@ const MarketOptFeatureSection: React.FC<any> = ({
                     />
                   </div>
                   {colIndex !== subitem.length - 1 && (
-                    <line className="absolute w-28 bg-black h-[2px] -right-18 top-1/2 transform -translate-y-1/2 -z-1" />
+                    <line className="absolute w-28 bg-black h-0.25 -right-18 top-1/2" />
                   )}
                 </div>
               ))}
               {rowIndex !== featureSection.items.length - 1 && (
-                <line className="absolute w-[65%] md:w-[95%] bg-black h-[2px] md:h-[2px] xxl:h-[1px] wide:h-[2px] left-1/2 -bottom-7.5 md:-bottom-3 transform -translate-x-1/2" />
+                <line className="absolute w-[65%] md:w-[95%] bg-black h-0.25 left-1/2 -bottom-7.5 md:-bottom-3 transform -translate-x-1/2" />
               )}
               {rowIndex !== featureSection.items.length - 1 && (
                 <div className="hidden md:block absolute -bottom-[.78rem] right-0">
-                  <div className="relative w-10 h-16.5 border-black border-y-2 border-r-2 rounded-tr-xl rounded-br-xl"></div>
+                  <div className="relative w-10 h-16.5 rounded-tr-xl rounded-br-xl border-y-1 border-r-1 border-black"></div>
                 </div>
               )}
               {rowIndex !== 0 && (
-                <div className="hidden md:block absolute -top-[.85rem] left-0">
-                  <div className="relative w-11.5 h-17 border-black border-y-2 border-l-2 rounded-tl-xl rounded-bl-xl"></div>
+                <div className="hidden md:block absolute -top-[.78rem] left-0">
+                  <div className="relative w-11.5 h-16.5 border-black border-y-1 border-l-1 rounded-tl-xl rounded-bl-xl"></div>
                 </div>
               )}
             </div>

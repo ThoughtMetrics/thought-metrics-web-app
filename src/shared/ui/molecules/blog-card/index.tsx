@@ -26,7 +26,7 @@ const BlogCard: React.FC<any> = ({ blog, className = '' }) => {
           <span className="text-sm font-medium text-gray-500 group-hover:text-white/80 transition-colors duration-300">
             {blog.type}
           </span>
-          <h2 className="font-semibold text-md mt-3 mb-4 leading-tight text-gray-900 group-hover:text-white transition-colors duration-300">
+          <h2 className="font-semibold text-md mt-3 mb-4 leading-tight text-gray-900 group-hover:text-white transition-colors duration-300 line-clamp-2">
             {blog.label}
           </h2>
           <p className="text-md mb-4 text-gray-600 group-hover:text-white/90 transition-colors duration-300 line-clamp-4">

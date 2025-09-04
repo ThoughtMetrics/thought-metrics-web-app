@@ -91,7 +91,7 @@ export const footerData = {
       title: 'Connect',
       links: [
         { label: 'Join Our Panel', path: ROUTES.SIGN_UP },
-        { label: 'Request a Bid', href: '#' },
+        { label: 'Request a Bid', path: ROUTES.START_YOUR_RESEARCH },
         { label: 'Careers', path: ROUTES.CAREERS },
         { label: 'Contact Us', path: ROUTES.CONTACT_US },
         { label: 'Our Panel', path: ROUTES.OUR_PANEL, isBold: true },

@@ -276,3 +276,6 @@ export const signUpFormConstant = {
     ],
   },
 };
+
+export const unsubscribeConstant = {};
+

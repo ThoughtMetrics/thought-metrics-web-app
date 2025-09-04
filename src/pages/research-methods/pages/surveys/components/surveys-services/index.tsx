@@ -20,7 +20,7 @@ const SurveyServices: React.FC<any> = ({ serviceSection }) => {
               <div
                 key={index + service.title}
                 className={cn(
-                  'w-full p-8 md:p-12 flex flex-col gap-3',
+                  'w-full p-8 md:p-12 flex flex-col gap-3 hover:shadow-xl transition-shadow duration-300',
                   index === 2 && 'md:col-span-2 md:px-12 md:py-18',
                   BG_COLORS[service.bgColor]
                 )}

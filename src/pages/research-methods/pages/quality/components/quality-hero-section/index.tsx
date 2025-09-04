@@ -14,14 +14,14 @@ const QualityHeroSection: React.FC<any> = ({
           <heroSection.illustrationComponent className="w-full h-full" />
         </div>
       </div>
-      <div className="z-1 common-container flex-col justify-start h-fit !max-w-[var(--breakpoint-2xl)] p-5 md:p-10 xxl:p-0 text-black">
+      <div className="z-1 common-container flex-col justify-start h-fit !max-w-[var(--breakpoint-2xl)] md:px-24 text-black">
         <div
           className={cn(
             'shrink-0 md:w-[43%] xxl:w-[37%] wide:w-[50%] h-full flex flex-col gap-3 justify-center',
             contentClassName
           )}
         >
-          <div className="h-[18rem] md:h-[8rem] wide:h-[14rem]"></div>
+          <div className="h-[18rem] md:h-18"></div>
           <PageTitle />
           <h1
             className={cn(

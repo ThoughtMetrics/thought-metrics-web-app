@@ -42,6 +42,7 @@ import {
   SurveyResearchIcon,
   UnderstandConsumerHabitsIcon,
 } from '@/assets';
+import { ROUTES } from '@/routes/routeConfig';
 
 export const researchMethods = {
   quantitative_research: {
@@ -49,7 +50,10 @@ export const researchMethods = {
       title: 'Cutting Edge Quantitative Solutions',
       description:
         'Powering understanding, confidence, bolder decisions through technology led quantitative services.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/research_methods_quantitative_1.png',
         size: 'full',
@@ -277,7 +281,10 @@ export const researchMethods = {
         'Make decisions backed by data. Explore our robust quantitative research solutions.',
       illustration: StackIllustration,
       img: '/images/research_method_girl_1.png',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
   qualitative_research: {
@@ -285,7 +292,10 @@ export const researchMethods = {
       title: 'Qualitative recruitment experts',
       description:
         'Uncover deep insights on your target audiences with qualitative services you can trust.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/research_methods_qualitative_1.png',
         size: 'full',
@@ -464,14 +474,20 @@ export const researchMethods = {
         "Uncover the 'why' behind behavior. Dive deeper with our qualitative expertise.",
       illustration: StackIllustration,
       img: '/images/research_method_girl_1.png',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
   fieldwork: {
     heroSection: {
       title: 'Pick A Location',
       description: 'And our fieldwork experts will get you there.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/research_methods_qualitative_1.png',
         size: 'full',
@@ -662,7 +678,10 @@ export const researchMethods = {
         'Leave the logistics to us. We deliver seamless, end-to-end fieldwork execution.',
       illustration: StackIllustration,
       img: '/images/research_method_girl_1.png',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
   focus_group: {
@@ -670,7 +689,10 @@ export const researchMethods = {
       title: "Get Inside Your Customer's Mind",
       description:
         'From candid conversations to breakthrough insights — uncover what truly drives decisions with expertly designed focus groups.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/research_methods_focus_group_1.png',
         size: 'full',
@@ -870,7 +892,10 @@ export const researchMethods = {
         'Get real insights, face-to-face. Run powerful focus groups with the right participants.',
       illustration: StackIllustration,
       img: '/images/research_method_girl_1.png',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
   surveys: {
@@ -878,7 +903,10 @@ export const researchMethods = {
       title: 'Survey Smarter. Decide Better.',
       description:
         'From survey design to insights delivery, we manage the entire process—online, by phone, or in-person—so you can reach the right respondents, collect high-quality data, and make confident, data-backed decisions.',
-      actionLabel: 'Request a Bid',
+      actionButton: {
+        label: 'Request a Bid',
+        path: ROUTES.START_YOUR_RESEARCH,
+      },
       illustration: {
         img: '/images/research_methods_surveys_1.png',
         size: 'full',
@@ -1043,7 +1071,10 @@ export const researchMethods = {
       title: 'Discover insights that drive smarter decisions.',
       illustration: StackIllustration,
       img: '/images/research_method_girl_1.png',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
   quality: {
@@ -1200,7 +1231,10 @@ export const researchMethods = {
         'Trust in every step. Our commitment to quality and security keeps your data safe.',
       illustration: StackIllustration,
       img: '/images/research_method_girl_1.png',
-      actionLabel: "Let's Connect",
+      actionButton: {
+        label: "Let's Connect",
+        path: ROUTES.CONTACT_US,
+      },
     },
   },
 } as const;

@@ -221,7 +221,7 @@ export const landing = {
         'Join our community today and help shape the world, one opinion at a time.',
       signButton: {
         label: 'Sign Me Up',
-        path: '#',
+        path: ROUTES.SIGN_UP,
       },
     },
   },

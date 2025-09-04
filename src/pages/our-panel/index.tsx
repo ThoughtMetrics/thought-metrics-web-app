@@ -163,6 +163,7 @@ const OurPanel: React.FC = () => {
             />
             <div className="py-4">
               <CustomButtonAtom
+                path={ourPanel.caseStudySection.actionButton.path}
                 label={ourPanel.caseStudySection.actionButton.label}
                 className="font-medium px-12 py-2 md:px-18 md:py-3 md:text-xl"
               />

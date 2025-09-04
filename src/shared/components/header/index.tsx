@@ -3,6 +3,7 @@ import { headerDropdownData, navigationItems } from './header.constant';
 import { CurveIcon, Logo, StackIllustration } from '@/assets';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/routes/routeConfig';
+import { cn } from '@/core/utils/cn';
 
 const Header: React.FC = () => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -195,8 +196,15 @@ const Header: React.FC = () => {
           onMouseEnter={handleDropdownEnter}
           onMouseLeave={handleDropdownLeave}
         >
-          <div className="relative flex px-7 py-8 xl:px-9 xxl:px-10 xl:py-10 xxl:py-12 items-center gap-8 xl:gap-11 xxl:gap-13">
-            <div className="flex flex-col gap-1 xl:gap-3.5">
+          <div
+            className={cn(
+              'relative flex items-center gap-8 xl:gap-11 xxl:gap-13',
+              'py-8 xl:py-10 xxl:py-12',
+              // 'px-7 xl:px-9 xxl:px-10',
+              'px-6 md:px-28'
+            )}
+          >
+            {/* <div className="flex flex-col gap-1 xl:gap-3.5">
               <p className="text-xxs xl:text-sm xxl:text-lg leading-[1.25] font-light whitespace-nowrap tracking-wider">
                 {headerDropdownData.description.split('\n').map((line, idx) => (
                   <React.Fragment key={idx + 'label'}>
@@ -208,9 +216,9 @@ const Header: React.FC = () => {
               <p className="text-xs xl:text-md xxl:text-lg font-medium underline tracking-wider">
                 {headerDropdownData.label}
               </p>
-            </div>
+            </div> */}
             {getActiveSection() && (
-              <div className="flex gap-7 xl:gap-10 xxl:gap-13">
+              <div className="flex gap-7 xl:gap-10 xxl:gap-13 ml-48">
                 {getActiveSection()!.columns.map((column, columnIndex) => (
                   <div
                     key={columnIndex + 'sub_title'}
@@ -243,7 +251,7 @@ const Header: React.FC = () => {
                 ))}
               </div>
             )}
-            <div className="absolute right-0 pr-13">
+            <div className="absolute left-0 pl-13">
               <StackIllustration className="w-21 xl:w-25 xxl:w-32 fill-current text-white" />
             </div>
           </div>

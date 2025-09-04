@@ -27,7 +27,7 @@ const HeroSection: React.FC<any> = ({
           />
         </div>
       </div>
-      <div className="z-1 common-container w-full !max-w-[var(--breakpoint-2xl)] md:min-h-[480px] xl:min-h-[580px] wide:min-h-[780px] items-center p-5 pb-8 md:p-10 xxl:p-0">
+      <div className="z-1 common-container w-full !max-w-[var(--breakpoint-2xl)] md:min-h-[480px] xl:min-h-[580px] wide:min-h-[780px] items-center p-5 pb-8 md:py-10 md:px-24">
         <div
           className={cn(
             'md:w-[43%] xxl:w-[43%] wide:w-[50%] h-full flex flex-col gap-3 justify-center',
@@ -54,12 +54,13 @@ const HeroSection: React.FC<any> = ({
           >
             {heroSection.title}
           </h1>
-          <p className="w-full text-black text-lg xl:text-[1.3rem] wide:text-[1.7rem] font-semibold">
+          <p className="w-full text-black text-lg xl:text-[1.3rem] wide:text-[1.7rem]">
             {heroSection.description}
           </p>
           <CustomButtonAtom
+            path={heroSection.actionButton.path}
             className="font-medium text-lg px-10 py-1 xl:text-xl xl:px-14 xl:py-2"
-            label={heroSection.actionLabel}
+            label={heroSection.actionButton.label}
           />
         </div>
       </div>

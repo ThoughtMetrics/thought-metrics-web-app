@@ -11,50 +11,53 @@ const B2BServices: React.FC = () => {
           {contentSecondData.mainTitle}
         </h2>
         {/* Desktop View */}
-        <div className="hidden md:grid grid-cols-1 w-full md:grid-cols-3  md:grid-rows-2 gap-3 pt-6 text-black">
+        <div className="hidden md:grid grid-cols-1 w-full md:grid-cols-3 md:grid-rows-2 gap-3 pt-6 text-black">
           {/* Service 1 */}
-          <div className="relative col-span-1 bg-success rounded-md flex flex-col justify-center py-9 px-12 overflow-hidden">
-            {(() => {
-              const IllustrationSlope =
-                contentSecondData.services[0].illustration;
-              return IllustrationSlope ? (
-                <IllustrationSlope
-                  className={contentSecondData.services[0].className}
-                />
-              ) : null;
-            })()}
-            <div className="w-[72%] flex flex-col gap-2 z-1">
-              <h3 className="w-[90%] leading-[1.2] font-semibold">
-                {contentSecondData.services[0].title}
-              </h3>
-              <p className="tracking-tight leading-[1.2]">
-                {contentSecondData.services[0].description}
-              </p>
-              <div className="py-2">
-                <Link to={contentSecondData.services[0].path} viewTransition={true}>
-                  <ArrowRight />
-                </Link>
+          <Link to={contentSecondData.services[0].path} viewTransition={true}>
+            <div className="relative col-span-1 bg-success rounded-md flex flex-col justify-center py-9 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300">
+              {(() => {
+                const IllustrationSlope =
+                  contentSecondData.services[0].illustration;
+                return IllustrationSlope ? (
+                  <IllustrationSlope
+                    className={contentSecondData.services[0].className}
+                  />
+                ) : null;
+              })()}
+              <div className="flex flex-col justify-between h-[18rem]">
+                <div className="w-[72%] flex flex-col gap-2 z-1">
+                  <h3 className="w-[90%] leading-[1.2] font-semibold">
+                    {contentSecondData.services[0].title}
+                  </h3>
+                  <p className="tracking-tight leading-[1.2]">
+                    {contentSecondData.services[0].description}
+                  </p>
+                </div>
+                <ArrowRight className="fill-current group-hover:text-[#AACF75]" />
               </div>
             </div>
-          </div>
+          </Link>
 
           {/* Service 2 */}
-          <div className="relative col-span-2 bg-gradient-to-r from-custom-violet to-white rounded-md flex flex-col py-9 px-12 overflow-hidden">
-            <div className="w-[52%] flex flex-col gap-2">
-              <h3 className="w-[50%] leading-[1.2] font-semibold">
-                {contentSecondData.services[1].title}
-              </h3>
-              <p className="tracking-tight leading-[1.2]">
-                {contentSecondData.services[1].description}
-              </p>
-              <div
-                className="py-2"
-                aria-label={`Learn more about ${contentSecondData.services[1].title}`}
-              >
-                <Link to={contentSecondData.services[1].path} viewTransition={true}>
-                  <ArrowRight />
-                </Link>
+          <Link
+            to={contentSecondData.services[1].path}
+            viewTransition={true}
+            className="relative col-span-2 bg-gradient-to-r from-custom-violet to-white rounded-md flex flex-col py-9 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
+          >
+            <div className="flex flex-col justify-between h-[18rem]">
+              <div className="w-[52%] flex flex-col gap-2">
+                <h3 className="w-[50%] leading-[1.2] font-semibold">
+                  {contentSecondData.services[1].title}
+                </h3>
+                <p className="tracking-tight leading-[1.2]">
+                  {contentSecondData.services[1].description}
+                </p>
+                <div
+                  className="py-2"
+                  aria-label={`Learn more about ${contentSecondData.services[1].title}`}
+                ></div>
               </div>
+              <ArrowRight className="fill-current group-hover:text-[#BA9CF3]" />
             </div>
             {(() => {
               const DoorPerson = contentSecondData.services[1].illustration;
@@ -64,25 +67,28 @@ const B2BServices: React.FC = () => {
                 />
               ) : null;
             })()}
-          </div>
+          </Link>
 
           {/* Service 3 */}
-          <div className="relative col-span-2 bg-gradient-to-r from-custom-grey-1 to-white rounded-md flex flex-col justify-center py-9 px-12 overflow-hidden">
-            <div className="w-[60%] flex flex-col gap-2">
-              <h3 className="w-[35%] leading-[1.2] font-semibold">
-                {contentSecondData.services[2].title}
-              </h3>
-              <p className="tracking-tight leading-[1.2]">
-                {contentSecondData.services[2].description}
-              </p>
-              <div
-                className="py-2"
-                aria-label={`Learn more about ${contentSecondData.services[2].title}`}
-              >
-                <Link to={contentSecondData.services[2].path} viewTransition={true}>
-                  <ArrowRight />
-                </Link>
+          <Link
+            to={contentSecondData.services[2].path}
+            viewTransition={true}
+            className="relative col-span-2 bg-gradient-to-r from-custom-grey-1 to-white rounded-md flex flex-col justify-center py-9 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
+          >
+            <div className="flex flex-col justify-between h-[14rem]">
+              <div className="w-[60%] flex flex-col gap-2">
+                <h3 className="w-[35%] leading-[1.2] font-semibold">
+                  {contentSecondData.services[2].title}
+                </h3>
+                <p className="tracking-tight leading-[1.2]">
+                  {contentSecondData.services[2].description}
+                </p>
+                <div
+                  className="py-2"
+                  aria-label={`Learn more about ${contentSecondData.services[2].title}`}
+                ></div>
               </div>
+              <ArrowRight />
             </div>
             {(() => {
               const Spiral = contentSecondData.services[2].illustration;
@@ -90,25 +96,28 @@ const B2BServices: React.FC = () => {
                 <Spiral className={contentSecondData.services[2].className} />
               ) : null;
             })()}
-          </div>
+          </Link>
 
           {/* Service 4 */}
-          <div className="relative col-span-1 bg-custom-pink rounded-md flex flex-col justify-center py-9 px-12 overflow-hidden">
-            <div className="w-[95%] flex flex-col gap-2">
-              <h3 className="leading-[1.2] font-semibold">
-                {contentSecondData.services[3].title}
-              </h3>
-              <p className="tracking-tight leading-[1.2]">
-                {contentSecondData.services[3].description}
-              </p>
-              <div
-                className="py-2"
-                aria-label={`Learn more about ${contentSecondData.services[3].title}`}
-              >
-                <Link to={contentSecondData.services[3].path} viewTransition={true}>
-                  <ArrowRight />
-                </Link>
+          <Link
+            to={contentSecondData.services[3].path}
+            viewTransition={true}
+            className="relative col-span-1 bg-custom-pink rounded-md flex flex-col justify-center py-9 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
+          >
+            <div className="flex flex-col justify-between h-[14rem]">
+              <div className="w-[95%] flex flex-col gap-2">
+                <h3 className="leading-[1.2] font-semibold">
+                  {contentSecondData.services[3].title}
+                </h3>
+                <p className="tracking-tight leading-[1.2]">
+                  {contentSecondData.services[3].description}
+                </p>
+                <div
+                  className="py-2"
+                  aria-label={`Learn more about ${contentSecondData.services[3].title}`}
+                ></div>
               </div>
+              <ArrowRight className="fill-current group-hover:text-[#F1959E]" />
             </div>
             {(() => {
               const BoxCluster = contentSecondData.services[3].illustration;
@@ -123,7 +132,7 @@ const B2BServices: React.FC = () => {
                 </>
               ) : null;
             })()}
-          </div>
+          </Link>
         </div>
 
         {/* Mobile View */}

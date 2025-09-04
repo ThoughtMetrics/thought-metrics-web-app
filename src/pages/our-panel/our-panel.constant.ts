@@ -11,6 +11,7 @@ import {
   RetailMerchandisingIcon,
   TechnologyIcon,
 } from '@/assets';
+import { ROUTES } from '@/routes/routeConfig';
 
 export const ourPanel = {
   heroSection: {
@@ -171,7 +172,7 @@ export const ourPanel = {
     },
     actionButton: {
       label: 'Sign Up',
-      path: '',
+      path: ROUTES.SIGN_UP,
     },
   },
 } as const;
