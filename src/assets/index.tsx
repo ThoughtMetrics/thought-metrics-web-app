@@ -343,11 +343,11 @@ import XIcon from './svgs/x.svg?react';
 
 export {
   ClipPinIcon,
+  MailIcon, 
   FacebookIcon,
   InstagramIcon,
-  LinkedinIcon,
-  MailIcon,
   XIcon,
+  LinkedinIcon,
 };
 
 import RedTickIcon from './svgs/red-tick.svg?react';

@@ -1,5 +1,5 @@
 const API_CONFIG = {
-  strapiURL: import.meta.env.STRAPI_API_URL || 'http://localhost:1338',
+  strapiURL: import.meta.env.STRAPI_API_URL || 'http://192.168.0.208:1338',
   apiPath: '/api',
   timeout: 10000,
   headers: {

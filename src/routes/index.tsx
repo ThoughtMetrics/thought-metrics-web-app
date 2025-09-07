@@ -53,36 +53,36 @@ import AuthPage from '@/pages/auth';
 import SignUpPage from '@/pages/auth/sign-up';
 import UnsubscribePage from '@/pages/auth/unsubscribe';
 import EditProfilePage from '@/pages/auth/edit-profile';
-// import ResourcePage from '@/pages/resources';
+import ResourcePage from '@/pages/resources';
 
-/* // Home loader - prefetches blog data
-const homeLoader = async () => {
-  await queryClient.prefetchQuery({
-    queryKey: contentKeys.blog({
-      type: [ContentType.ARTICLE, ContentType.INSIGHT],
-      limit: 4,
-    }),
-    queryFn: () =>
-      contentService.getBlogContents({
-        type: [ContentType.ARTICLE, ContentType.INSIGHT],
-        limit: 4,
-      }),
-  });
+// // Home loader - prefetches blog data
+// const homeLoader = async () => {
+//   await queryClient.prefetchQuery({
+//     queryKey: contentKeys.blog({
+//       type: [ContentType.ARTICLE, ContentType.INSIGHT],
+//       limit: 4,
+//     }),
+//     queryFn: () =>
+//       contentService.getBlogContents({
+//         type: [ContentType.ARTICLE, ContentType.INSIGHT],
+//         limit: 4,
+//       }),
+//   });
 
-  return null;
-};
+//   return null;
+// };
 
-// Resource loader - prefetches specific content
-const resourceLoader = async ({ params }: { params: any }) => {
-  if (!params.slug) return null;
+// // Resource loader - prefetches specific content
+// const resourceLoader = async ({ params }: { params: any }) => {
+//   if (!params.slug) return null;
 
-  const content = await queryClient.fetchQuery({
-    queryKey: contentKeys.slug(params.slug),
-    queryFn: () => contentService.getContentBySlug(params.slug),
-  });
+//   const content = await queryClient.fetchQuery({
+//     queryKey: contentKeys.slug(params.slug),
+//     queryFn: () => contentService.getContentBySlug(params.slug),
+//   });
 
-  return { content };
-}; */
+//   return { content };
+// };
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -144,7 +144,7 @@ export const router = createBrowserRouter(
 
         <Route path="our_panel" element={<OurPanel />} />
 
-        {/* <Route path="resources/:slug" element={<ResourcePage />}/> */}
+        <Route path="resources/:slug" element={<ResourcePage />}/>
         <Route path="careers" element={<Careers />} />
         <Route path="contact_us" element={<ContactUs />} />
         <Route path="site_disclaimer" element={<SiteDisclaimer />} />

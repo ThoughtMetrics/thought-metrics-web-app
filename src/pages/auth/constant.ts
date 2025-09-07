@@ -277,5 +277,43 @@ export const signUpFormConstant = {
   },
 };
 
-export const unsubscribeConstant = {};
-
+export const unsubscribeConstant = {
+  initialFormData: {
+    email: 'vijay.dpgc@gmail.com',
+    reasons: [],
+  },
+  unsubscribeReasonOptions: [
+    {
+      id: 'stopContactNotParticipate',
+      label: 'Please stop contacting me, I no longer wish to participate',
+    },
+    {
+      id: 'notReceiveMail',
+      label: 'I do not wish to receive any emails or texts, at all',
+    },
+    {
+      id: 'confirmationEmail',
+      label: 'I only wish to receive confirmation emails and texts',
+    },
+  ],
+  storeName: 'unsubscribe-store',
+  validationMessages: {
+    reasons: 'Please select at least one reason',
+    submitError: 'Unsubscribe failed. Please try again.',
+  },
+  formResetDelay: 3000,
+  apiSimulationDelay: 2000,
+  ui: {
+    pageTitle: 'Unsubscribe',
+    description:
+      'We are sorry to see you go. Please fill out the form below so we can have your record modified or removed. You may also',
+    buttons: {
+      submit: 'Submit',
+      submitting: 'Submitting...',
+    },
+    successMessage: {
+      title: 'Thank you for using our service!',
+      description: 'Your account has been unsubscribed successfully.',
+    },
+  },
+};
