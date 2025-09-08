@@ -265,7 +265,7 @@ const CheckboxOutlineGroupAtom: React.FC<CheckboxGroupProps> = ({
         {options.map((option) => (
           <label
             key={option.id}
-            className="flex space-x-8 border-1 border-custom-grey-2 px-4 py-3 rounded relative"
+            className="flex items-center space-x-8 border-1 border-custom-grey-2 px-4 py-3 rounded relative"
           >
             <div className="absolute justify-center left-0 top-0 bg-custom-grey-1 h-full w-12 rounded-l border-r-1 border-custom-grey-2"></div>
             <input
