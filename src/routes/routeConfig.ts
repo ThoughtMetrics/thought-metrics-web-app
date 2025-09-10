@@ -52,6 +52,7 @@ export const ROUTES = {
   SIGN_UP: '/sign_up',
   UNSUBSCRIBE: '/unsubscribe',
   EDIT_PROFILE: '/edit_profile',
+  SURVEY_PAGE: '/survey_page',
   NOT_FOUND: '*',
 } as const;
 
@@ -121,6 +122,7 @@ export const generateBreadcrumbsFromPath = (
       sign_up: 'Sign Up',
       unsubscribe: 'Unsubscribe',
       edit_profile: 'Edit Profile',
+      survey_page: 'Survey Page',
     };
 
     if (segmentLabels[segment]) {

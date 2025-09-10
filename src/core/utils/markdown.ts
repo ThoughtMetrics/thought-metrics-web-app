@@ -33,12 +33,15 @@ export const parseMarkdown = (markdown: string): string => {
     (_match: string, text: string) => `<strong>${text}</strong>`
   );
 
-  // Lists
+  // Convert markdown list syntax (- or *) to <li>
   html = html.replace(
     /^\s*[-*]\s+(.+)$/gm,
     (_match: string, item: string) => `<li>${item}</li>`
   );
-  html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+
+  // Wrap consecutive <li> elements in <ul>...</ul>
+  html = html.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>');
+  html = html.replace(/<\/ul>\s*<ul>/g, '');
 
   // Paragraphs
   return html

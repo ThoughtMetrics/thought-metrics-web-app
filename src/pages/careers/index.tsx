@@ -3,7 +3,7 @@ import { careers } from './careers.constant';
 import CustomImageAtom from '@/shared/ui/atoms/custom-image';
 const Careers: React.FC = () => {
   return (
-    <section className="common-component w-full h-full relative bg-primary-lighter text-black">
+    <section className="common-component w-full h-full relative text-black">
       <div className="common-container !max-w-[var(--breakpoint-2xl)] flex-col px-6 py-10 md:px-24 md:py-28">
         <div className="h-full flex flex-col gap-3">
           <h2 className="w-full text-2xl xl:text-3xl xxl:text-4xl font-semibold">
@@ -46,8 +46,12 @@ const Careers: React.FC = () => {
             })}
           </div>
         </div>
-        <div className="w-[120%] h-5 bg-gradient-to-r from-secondary to-primary"></div>
-        <div className="flex flex-col gap-6 pt-8">
+        <div className="absolute left-0 top-0 w-full h-full flex justify-center items-end">
+          <div className="max-w-[var(--breakpoint-2xl)] w-full">
+            <div className="ml-6 md:ml-24 mb-60 md:mb-78 h-1.5 md:h-2 w-[95%] lg:w-[97%] xxl:w-[110%] wide:w-[120%] bg-gradient-to-r from-secondary to-primary" />
+          </div>
+        </div>
+        <div className="flex flex-col gap-6 pt-8 md:pt-12">
           <h2 className="w-full text-2xl xl:text-3xl xxl:text-4xl font-semibold text-start tracking-tighter">
             <span>{careers.feedbackSection.head}</span>
           </h2>

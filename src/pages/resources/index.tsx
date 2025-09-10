@@ -6,23 +6,16 @@ import {
   XIcon,
   LinkedinIcon,
 } from '@/assets';
-import { seoContent } from '@/core/constants/seo.constants';
 import { contentKeys } from '@/core/lib/query-keys';
 import { contentService } from '@/services/api/content.service';
-import { SEOHead } from '@/shared/components/seo/SEOHead';
 import CustomImageAtom from '@/shared/ui/atoms/custom-image';
 import MarkDownOrganism from '@/shared/ui/organisms/markdown-organism';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { useLoaderData, useParams } from 'react-router-dom';
-import { Blogs } from '../home/components';
 import BlogOrganism from '@/shared/ui/organisms/blog-organism';
 import { blogPageData } from '../home/components/blogs/blogs.constant';
 import BlogCard from '@/shared/ui/molecules/blog-card';
-
-interface LoaderData {
-  content: any;
-}
 
 const ResourcePage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -100,7 +93,7 @@ const ResourcePage: React.FC = () => {
                 {content?.label}
               </h2>
               <CustomImageAtom
-                src="/images/background_image_3.png"
+                src={content?.img.url}
                 aspectRatio="auto"
                 objectFit="cover"
                 loading="lazy"
@@ -164,7 +157,6 @@ const ResourcePage: React.FC = () => {
         </div>
         <BlogOrganism data={blogData} bgColor="bg-primary-lighter" />
       </section>
-      ;
     </>
   );
 };

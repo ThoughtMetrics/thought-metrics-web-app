@@ -54,6 +54,7 @@ import SignUpPage from '@/pages/auth/sign-up';
 import UnsubscribePage from '@/pages/auth/unsubscribe';
 import EditProfilePage from '@/pages/auth/edit-profile';
 import ResourcePage from '@/pages/resources';
+import SurveyPage from '@/pages/survey-page';
 
 // // Home loader - prefetches blog data
 // const homeLoader = async () => {
@@ -144,7 +145,7 @@ export const router = createBrowserRouter(
 
         <Route path="our_panel" element={<OurPanel />} />
 
-        <Route path="resources/:slug" element={<ResourcePage />}/>
+        <Route path="resources/:slug" element={<ResourcePage />} />
         <Route path="careers" element={<Careers />} />
         <Route path="contact_us" element={<ContactUs />} />
         <Route path="site_disclaimer" element={<SiteDisclaimer />} />
@@ -176,6 +177,7 @@ export const router = createBrowserRouter(
         <Route path="sign_up" element={<SignUpPage />} />
         <Route path="unsubscribe" element={<UnsubscribePage />} />
         <Route path="edit_profile" element={<EditProfilePage />} />
+        <Route path="survey_page" element={<SurveyPage />} />
       </Route>
     </>
   )

@@ -28,7 +28,7 @@ const BlogsContent: React.FC = () => {
 
   const { blogData, loading, error } = useBlogData({
     title: blogPageData.title,
-    type: [ContentType.ARTICLE, ContentType.INSIGHT],
+    type: [],
     limit: 4,
   });
 
