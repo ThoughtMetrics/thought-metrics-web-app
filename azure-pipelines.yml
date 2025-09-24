@@ -1,27 +1,57 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
 trigger:
-  batch: true
-  branches:
-    include:
-      - main
-      - stage
+ batch: true
+ branches:
+  include:
+    - main
+    - stage
 
 pool:
   vmImage: ubuntu-latest
 
+name: $(date:yyyyMMdd)$(rev:r)
+
 steps:
-
-# Install dependencies
-- script: npm install --legacy-peer-deps
-  displayName: "Install dependencies"
-  condition: eq(variables['CacheRestored'], False)
-
-# Build Vite app (output → dist/)
-- script: npm run build
-  displayName: "Build Vite App"
-
-# Publish the build artifacts (dist folder)
-- task: PublishBuildArtifacts@1
-  displayName: "Publish dist folder"
+- task: PowerShell@2
   inputs:
-    pathtoPublish: "$(Build.SourcesDirectory)/dist"
-    artifactName: "vite-build"
+      targetType: 'inline'
+      script: |
+        # Write your PowerShell commands here.
+            
+            [string]$BranchName = "main";
+            [string]$Branch = "$(Build.SourceBranchName)"
+      
+            if ($Branch -eq $BranchName)
+              { 
+                $ImageTag = "prod_$(Build.BuildNumber)"
+                echo "##vso[task.setvariable variable=ImageTag]$ImageTag" 
+              }
+            else
+              {
+                $ImageTag = "stage_$(Build.BuildNumber)"
+                echo "##vso[task.setvariable variable=ImageTag]$ImageTag"
+              }
+
+- task: Docker@0
+  displayName: 'build image'
+  inputs:
+    containerregistrytype: 'Azure Container Registry'
+    azureSubscription: 'Thoughmetrics'
+    azureContainerRegistry: '{"loginServer":"thoughtmetrics.azurecr.io", "id" : "/subscriptions/ae8b413a-0911-44cc-ab98-67329edcafbc/resourceGroups/stagethoughtmetrics/providers/Microsoft.ContainerRegistry/registries/thoughtmetrics"}'
+    action: 'Build an image'
+    dockerFile: 'Dockerfile'
+    defaultContext: false
+    imageName: 'thoughtmetricsweb:$(ImageTag)'
+
+- task: Docker@0
+  displayName: 'push image'
+  inputs:
+    containerregistrytype: 'Azure Container Registry'
+    azureSubscription: 'Thoughmetrics'
+    azureContainerRegistry: '{"loginServer":"thoughtmetrics.azurecr.io", "id" : "/subscriptions/ae8b413a-0911-44cc-ab98-67329edcafbc/resourceGroups/stagethoughtmetrics/providers/Microsoft.ContainerRegistry/registries/thoughtmetrics"}'
+    action: 'Push an image'
+    imageName: 'thoughtmetricsweb:$(ImageTag)'
