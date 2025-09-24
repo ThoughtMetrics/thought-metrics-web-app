@@ -24,7 +24,7 @@ const SurveyPage: React.FC = () => {
             name={'Select Survey'}
             label={''}
             value={''}
-            onChange={function (e: React.ChangeEvent<HTMLSelectElement>): void {
+            onChange={function (_e: React.ChangeEvent<HTMLSelectElement>): void {
               throw new Error('Function not implemented.');
             }}
             options={[{ value: '10', label: '10 Filters Selected' }]}

@@ -1,8 +1,7 @@
-import { contentKeys } from "@/core/lib/query-keys";
-import { useContentStore } from "@/core/stores/content.store";
-import { contentService } from "@/services/api/content.service";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
+import { QueryKeys } from '@/core/lib/query-keys';
+import { useContentStore } from '@/core/stores/content.store';
+import { contentService } from '@/services/strapi-api/content.service';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 // Example mutation for content actions (if you have write permissions)
 export const useContentActions = () => {
@@ -19,7 +18,7 @@ export const useContentActions = () => {
       setSelectedContent(content);
       // Optionally invalidate related queries
       queryClient.invalidateQueries({
-        queryKey: contentKeys.related(content.documentId),
+        queryKey: QueryKeys.contentKeys.related(content.documentId),
       });
     },
   });

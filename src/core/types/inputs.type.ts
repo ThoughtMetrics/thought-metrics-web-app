@@ -28,6 +28,8 @@ export interface CheckboxProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   label: string;
   className?: string;
+  error?: string;
+  required?: boolean;
 }
 
 export interface CountryCode {

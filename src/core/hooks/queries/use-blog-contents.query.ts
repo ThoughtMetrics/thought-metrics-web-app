@@ -1,8 +1,8 @@
 // src/hooks/queries/useBlogContentsQuery.ts
 
-import { contentKeys } from '@/core/lib/query-keys';
+import { QueryKeys } from '@/core/lib/query-keys';
 import type { ContentTypeValue } from '@/core/types/content.type';
-import { contentService } from '@/services/api/content.service';
+import { contentService } from '@/services/strapi-api/content.service';
 import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
 
 export interface BlogContentOptions {
@@ -28,7 +28,7 @@ export const useBlogContentsQuery = (
   >
 ) => {
   return useQuery({
-    queryKey: contentKeys.blog(options),
+    queryKey: QueryKeys.contentKeys.blog(options),
     queryFn: () => contentService.getBlogContents(options),
     ...queryOptions,
   });

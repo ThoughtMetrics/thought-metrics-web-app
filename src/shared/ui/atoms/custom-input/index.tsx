@@ -87,19 +87,27 @@ const CheckboxAtom: React.FC<CheckboxProps> = ({
   onChange,
   label,
   className = '',
+  error,
+  required = false,
 }) => {
   return (
-    <label className={`flex items-start space-x-3 ${className}`}>
-      <input
-        type="checkbox"
-        id={id}
-        name={name}
-        checked={checked}
-        onChange={onChange}
-        className="mt-1 h-4 w-4 text-primary focus:text-primary border-custom-grey-2 rounded"
-      />
-      <span className="text-sm text-black">{label}</span>
-    </label>
+    <div className="">
+      <label className={`flex items-start space-x-3 ${className}`}>
+        <input
+          type="checkbox"
+          id={id}
+          name={name}
+          checked={checked}
+          onChange={onChange}
+          className="mt-1 h-4 w-4 text-primary focus:text-primary border-custom-grey-2 rounded"
+        />
+        <span className="text-sm text-black">
+          {required && '* '}
+          {label}
+        </span>
+      </label>
+      {error && <p className="mt-1 text-sm text-primary">{error}</p>}
+    </div>
   );
 };
 

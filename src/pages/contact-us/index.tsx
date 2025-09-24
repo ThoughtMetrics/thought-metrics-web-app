@@ -1,8 +1,6 @@
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { IllustrationSquares2 } from '@/assets';
-import type {
-  ContactFormData,
-  ContactFormStore,
-} from '@/core/types/contact-us.type';
 import { ROUTES } from '@/routes/routeConfig';
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
 import {
@@ -11,166 +9,64 @@ import {
   TextareaAtom,
   TextInputAtom,
 } from '@/shared/ui/atoms/custom-input';
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
 import { contactUsConstants } from './contact-us.constants';
+import { useContactFormStore } from '@/core/stores/contact-us.store';
+import { useContactFormValidation } from '@/core/hooks/validation/use-contact-us-form-validation';
+import { useSubmitContactForm } from '@/core/hooks/queries/contact-us/index.queries';
 
-// Destructure constants for cleaner usage
-const {
-  initialFormData,
-  countryCodes,
-  defaultCountryCode,
-  storeName,
-  validationMessages,
-  emailRegex,
-  formResetDelay,
-  apiSimulationDelay,
-  ui,
-} = contactUsConstants;
-
-// Convert string regex to RegExp object
-const emailRegexPattern = new RegExp(emailRegex);
-
-// Zustand store for contact form
-const useContactFormStore = create<ContactFormStore>()(
-  devtools(
-    (set, get) => ({
-      formData: initialFormData as ContactFormData,
-      isSubmitting: false,
-      isSubmitted: false,
-      errors: {},
-      countryCode: defaultCountryCode,
-
-      updateField: (field, value) =>
-        set(
-          (state) => ({
-            formData: { ...state.formData, [field]: value },
-            errors: { ...state.errors, [field]: undefined },
-          }),
-          false,
-          `updateField_${field}`
-        ),
-
-      updateCountryCode: (code) =>
-        set({ countryCode: code }, false, 'updateCountryCode'),
-
-      resetForm: () =>
-        set(
-          {
-            formData: initialFormData as ContactFormData,
-            isSubmitting: false,
-            isSubmitted: false,
-            errors: {},
-            countryCode: defaultCountryCode,
-          },
-          false,
-          'resetForm'
-        ),
-
-      validateForm: () => {
-        const { formData } = get();
-        const errors: Partial<ContactFormData> = {};
-
-        if (!formData.firstName.trim())
-          errors.firstName = validationMessages.firstName;
-        if (!formData.lastName.trim())
-          errors.lastName = validationMessages.lastName;
-        if (!formData.email.trim())
-          errors.email = validationMessages.email.required;
-        else if (!emailRegexPattern.test(formData.email))
-          errors.email = validationMessages.email.invalid;
-        if (!formData.subject.trim())
-          errors.subject = validationMessages.subject;
-        if (!formData.message.trim())
-          errors.message = validationMessages.message;
-
-        set({ errors }, false, 'validateForm');
-        return Object.keys(errors).length === 0;
-      },
-
-      submitForm: async () => {
-        const { formData, validateForm } = get();
-        console.log(formData);
-
-        if (!validateForm()) return;
-
-        set({ isSubmitting: true }, false, 'submitForm_start');
-
-        try {
-          // Simulate API call using constant delay
-          await new Promise((resolve) =>
-            setTimeout(resolve, apiSimulationDelay)
-          );
-
-          console.log('Form submitted:', formData);
-
-          set(
-            {
-              isSubmitting: false,
-              isSubmitted: true,
-            },
-            false,
-            'submitForm_success'
-          );
-
-          // Reset form after configured delay
-          setTimeout(() => {
-            get().resetForm();
-          }, formResetDelay);
-        } catch {
-          set(
-            {
-              isSubmitting: false,
-              errors: { email: validationMessages.submitError },
-            },
-            false,
-            'submitForm_error'
-          );
-        }
-      },
-    }),
-    {
-      name: storeName,
-    }
-  )
-);
+const { countryCodes, defaultCountryCode, ui } = contactUsConstants;
 
 const ContactUs: React.FC = () => {
-  const {
-    formData,
-    isSubmitting,
-    isSubmitted,
-    errors,
-    countryCode,
-    updateField,
-    updateCountryCode,
-    submitForm,
-  } = useContactFormStore();
+  const { formData, updateField, resetForm } = useContactFormStore();
+  const { errors, validate, clearError, clearAllErrors } =
+    useContactFormValidation();
+  const submitMutation = useSubmitContactForm();
+  const [countryCode, setCountryCode] = React.useState(defaultCountryCode);
+
+  // Reset form on successful submission
+  useEffect(() => {
+    if (submitMutation.isSuccess) {
+      const timer = setTimeout(() => {
+        resetForm();
+        clearAllErrors();
+        submitMutation.reset();
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [
+    submitMutation.isSuccess,
+    resetForm,
+    clearAllErrors,
+    submitMutation.reset,
+  ]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value, type } = e.target;
-    if (type === 'checkbox') {
-      const { checked } = e.target as HTMLInputElement;
-      updateField(name as keyof ContactFormData, checked);
-    } else {
-      updateField(name as keyof ContactFormData, value);
-    }
+    const finalValue =
+      type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
+
+    updateField(name as keyof typeof formData, finalValue);
+    clearError(name);
   };
 
-  const handleCountryCodeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateCountryCode(e.target.value);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    void submitForm();
+
+    if (!validate(formData)) return;
+
+    // Prepare data for submission
+    const submitData = {
+      ...formData,
+      phone: countryCode + formData.phone,
+    };
+
+    submitMutation.mutate(submitData);
   };
 
-  if (isSubmitted) {
+  // Show success state
+  if (submitMutation.isSuccess) {
     return (
       <div className="max-w-4xl mx-auto p-6 bg-white">
         <div className="text-center py-12">
@@ -202,25 +98,26 @@ const ContactUs: React.FC = () => {
 
   return (
     <div className="common-component bg-white text-black flex-col items-center">
-      <div className="form-1-component w-full min-h-[240px] md:min-h-[480px] xxl:p-0 z-1 flex items-center relative justify-center">
+      {/* Header Section */}
+      <div className="form-1-component w-full min-h-[240px] md:min-h-[480px] z-1 flex items-center relative justify-center">
         <div className="flex absolute w-full h-[95%] justify-end top-1/2 transform -translate-y-1/2">
           <IllustrationSquares2 className="h-full w-auto stroke-1" />
         </div>
         <div className="common-container px-6 py-8 md:px-24 md:py-24 !max-w-[1336px]">
           <h2 className="text-xl md:text-4xl font-semibold text-white">
-              {ui.pageTitle}
+            {ui.pageTitle}
           </h2>
         </div>
         <div className="absolute top-0 w-full h-full bg-primary/65 -z-1" />
       </div>
 
+      {/* Form Section */}
       <div className="common-container px-6 py-8 md:px-24 md:py-12 !max-w-[var(--breakpoint-2xl)] flex-col">
         <h1 className="text-3xl font-semibold text-gray-900 mb-4">
           {ui.mainHeading}
         </h1>
 
         <div className="flex flex-wrap md:flex-nowrap gap-12 md:gap-28">
-          {/* Form Section */}
           <div className="lg:w-2/3">
             <p className="text-gray-600 mb-8">{ui.description}</p>
 
@@ -266,17 +163,17 @@ const ContactUs: React.FC = () => {
                   value={formData.phone}
                   onChange={handleInputChange}
                   countryCode={countryCode}
-                  onCountryCodeChange={handleCountryCodeChange}
+                  onCountryCodeChange={(e) => setCountryCode(e.target.value)}
                   countryCodes={countryCodes}
                 />
               </div>
 
               {/* Reference Number */}
               <TextInputAtom
-                id="referenceNumber"
-                name="referenceNumber"
-                label={ui.fieldLabels.referenceNumber}
-                value={formData.referenceNumber}
+                id="caseStudyRefNumber"
+                name="caseStudyRefNumber"
+                label={ui.fieldLabels.caseStudyRefNumber}
+                value={formData.caseStudyRefNumber}
                 onChange={handleInputChange}
               />
 
@@ -305,8 +202,6 @@ const ContactUs: React.FC = () => {
                 rows={6}
               />
 
-              <p className="text-sm text-gray-600">{ui.referenceNumberNote}</p>
-
               {/* Consent Section */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-900">
@@ -323,8 +218,9 @@ const ContactUs: React.FC = () => {
                     checked={formData.consentCommunication}
                     onChange={handleInputChange}
                     label={ui.checkboxLabels.consentCommunication}
+                    required
+                    error={errors.consentCommunication}
                   />
-
                   <CheckboxAtom
                     id="consentMarketing"
                     name="consentMarketing"
@@ -332,7 +228,6 @@ const ContactUs: React.FC = () => {
                     onChange={handleInputChange}
                     label={ui.checkboxLabels.consentMarketing}
                   />
-
                   <CheckboxAtom
                     id="consentSubscribe"
                     name="consentSubscribe"
@@ -344,21 +239,13 @@ const ContactUs: React.FC = () => {
 
                 <p className="text-xs">
                   You may{' '}
-                  <Link
-                    to={ROUTES.UNSUBSCRIBE}
-                    viewTransition={true}
-                    className="underline"
-                  >
+                  <Link to={ROUTES.UNSUBSCRIBE} className="underline">
                     {ui.buttons.unsubscribe}
                   </Link>{' '}
                   from these communications anytime. For information on how to
                   unsubscribe, as well as our privacy practices and commitment
                   to protecting your privacy, check out our{' '}
-                  <Link
-                    to={ROUTES.PRIVACY_POLICY}
-                    viewTransition={true}
-                    className="underline"
-                  >
+                  <Link to={ROUTES.PRIVACY_POLICY} className="underline">
                     {ui.buttons.privacyPolicy}
                   </Link>
                   .
@@ -367,9 +254,15 @@ const ContactUs: React.FC = () => {
 
               {/* Submit Button */}
               <CustomButtonAtom
-                label={isSubmitting ? ui.buttons.submitting : ui.buttons.submit}
+                type="submit"
+                label={
+                  submitMutation.isPending
+                    ? ui.buttons.submitting
+                    : ui.buttons.submit
+                }
                 className="py-2 px-14"
-                disabled={isSubmitting}
+                disabled={submitMutation.isPending}
+                loading={submitMutation.isPending}
               />
             </form>
           </div>

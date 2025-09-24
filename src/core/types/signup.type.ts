@@ -8,6 +8,7 @@ export interface RegistrationFormData {
   phone: string;
   city: string;
   state: string;
+  countryOrRegion: string;
   password: string;
   confirmPassword: string;
   zipCode: string;

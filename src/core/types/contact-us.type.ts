@@ -4,7 +4,7 @@ export interface ContactFormData {
   lastName: string;
   email: string;
   phone: string;
-  referenceNumber: string;
+  caseStudyRefNumber: string;
   subject: string;
   message: string;
   consentCommunication: boolean;
