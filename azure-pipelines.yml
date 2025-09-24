@@ -9,12 +9,6 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-# Cache node_modules for faster builds
-- task: Cache@2
-  inputs:
-    key: 'npm | "$(Agent.OS)" | package-lock.json'
-    path: 'node_modules'
-    cacheHitVar: 'CacheRestored'
 
 # Install dependencies
 - script: npm install --legacy-peer-deps
