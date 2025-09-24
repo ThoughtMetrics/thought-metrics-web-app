@@ -1,0 +1,33 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - main
+      - stage
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+# Cache node_modules for faster builds
+- task: Cache@2
+  inputs:
+    key: 'npm | "$(Agent.OS)" | package-lock.json'
+    path: 'node_modules'
+    cacheHitVar: 'CacheRestored'
+
+# Install dependencies
+- script: npm install --legacy-peer-deps
+  displayName: "Install dependencies"
+  condition: eq(variables['CacheRestored'], False)
+
+# Build Vite app (output → dist/)
+- script: npm run build
+  displayName: "Build Vite App"
+
+# Publish the build artifacts (dist folder)
+- task: PublishBuildArtifacts@1
+  displayName: "Publish dist folder"
+  inputs:
+    pathtoPublish: "$(Build.SourcesDirectory)/dist"
+    artifactName: "vite-build"
