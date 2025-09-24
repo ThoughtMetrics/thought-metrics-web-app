@@ -23,6 +23,7 @@ const {
   participationOptions,
   months,
   states,
+  countries,
   countryCodes,
   defaultCountryCode,
   storeName,
@@ -137,6 +138,8 @@ const useRegistrationFormStore = create<RegistrationFormStore>()(
             errors.address1 = validationMessages.address1;
           if (!formData.city.trim()) errors.city = validationMessages.city;
           if (!formData.state.trim()) errors.state = validationMessages.state;
+          if (!formData.countryOrRegion.trim())
+            errors.countryOrRegion = validationMessages.countryOrRegion;
           if (!formData.zipCode.trim())
             errors.zipCode = validationMessages.zipCode;
           if (
@@ -452,6 +455,15 @@ const SignUpPage: React.FC = () => {
                 />
                 {/* City, State, Zip */}
                 <TextInputAtom
+                  id="zipCode"
+                  name="zipCode"
+                  label={ui.fieldLabels.zipCode}
+                  value={formData.zipCode}
+                  onChange={handleInputChange}
+                  error={errors.zipCode}
+                  required
+                />
+                <TextInputAtom
                   id="city"
                   name="city"
                   label={ui.fieldLabels.city}
@@ -471,14 +483,16 @@ const SignUpPage: React.FC = () => {
                   required
                   placeholder="Select state"
                 />
-                <TextInputAtom
-                  id="zipCode"
-                  name="zipCode"
-                  label={ui.fieldLabels.zipCode}
-                  value={formData.zipCode}
+                <SelectAtom
+                  id="countryOrRegion"
+                  name="countryOrRegion"
+                  label={ui.fieldLabels.countryOrRegion}
+                  value={formData.countryOrRegion}
                   onChange={handleInputChange}
-                  error={errors.zipCode}
+                  options={countries}
+                  error={errors.countryOrRegion}
                   required
+                  placeholder="Select country/region"
                 />
                 {/* Password Fields */}
                 <TextInputAtom

@@ -1,8 +1,8 @@
 // src/hooks/queries/useContentBySlugQuery.ts
 
-import { contentKeys } from '@/core/lib/query-keys';
+import { QueryKeys } from '@/core/lib/query-keys';
 import type { Content } from '@/core/types/content.type';
-import { contentService } from '@/services/api/content.service';
+import { contentService } from '@/services/strapi-api/content.service';
 import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
 
 export const useContentBySlugQuery = (
@@ -13,7 +13,7 @@ export const useContentBySlugQuery = (
   >
 ) => {
   return useQuery({
-    queryKey: contentKeys.slug(slug),
+    queryKey: QueryKeys.contentKeys.slug(slug),
     queryFn: () => contentService.getContentBySlug(slug),
     enabled: !!slug,
     ...queryOptions,

@@ -46,7 +46,7 @@ const staticRoutes = [
 async function fetchDynamicRoutes() {
   try {
     const response = await fetch(
-      `${process.env.STRAPI_API_URL}/api/contents?pagination[limit]=1000`
+      `${process.env.VITE_STRAPI_API_URL}/api/contents?pagination[limit]=1000`
     );
     const data = await response.json();
     return data.data.map((content) => `/resources/${content.slug}`);
@@ -145,7 +145,7 @@ async function generateSitemap(routes) {
 ${routes
   .map(
     (route) => `  <url>
-    <loc>${process.env.SITE_URL}${route}</loc>
+    <loc>${process.env.VITE_SITE_URL}${route}</loc>
     <changefreq>${route === '/' ? 'weekly' : 'monthly'}</changefreq>
     <priority>${route === '/' ? '1.0' : '0.8'}</priority>
   </url>`

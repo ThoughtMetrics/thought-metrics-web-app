@@ -41,7 +41,10 @@ const MarkDownOrganism: React.FC<{ content: string; showTOC: boolean }> = ({
           });
 
           const mostProminentEntry = intersectingEntries[0];
-          if (mostProminentEntry.target.id) {
+          if (
+            mostProminentEntry.target.id &&
+            ['H1', 'H2'].includes(mostProminentEntry.target.tagName)
+          ) {
             setActiveHeading(mostProminentEntry.target.id);
           }
         }

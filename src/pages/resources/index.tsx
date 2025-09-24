@@ -6,8 +6,7 @@ import {
   XIcon,
   LinkedinIcon,
 } from '@/assets';
-import { contentKeys } from '@/core/lib/query-keys';
-import { contentService } from '@/services/api/content.service';
+import { contentService } from '@/services/strapi-api/content.service';
 import CustomImageAtom from '@/shared/ui/atoms/custom-image';
 import MarkDownOrganism from '@/shared/ui/organisms/markdown-organism';
 import { useQuery } from '@tanstack/react-query';
@@ -16,6 +15,9 @@ import { useLoaderData, useParams } from 'react-router-dom';
 import BlogOrganism from '@/shared/ui/organisms/blog-organism';
 import { blogPageData } from '../home/components/blogs/blogs.constant';
 import BlogCard from '@/shared/ui/molecules/blog-card';
+import { QueryKeys } from '@/core/lib/query-keys';
+import { SEOHead } from '@/shared/components/seo/SEOHead';
+import { seoContent } from '@/core/constants/seo.constants';
 
 const ResourcePage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -26,7 +28,7 @@ const ResourcePage: React.FC = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: contentKeys.slug(slug!),
+    queryKey: QueryKeys.contentKeys.slug(slug!),
     queryFn: () => contentService.getContentBySlug(slug!),
     initialData: initialData?.content,
     enabled: !!slug,
@@ -65,7 +67,7 @@ const ResourcePage: React.FC = () => {
 
   return (
     <>
-      {/* <SEOHead
+      <SEOHead
         title={`${content.label} - ${seoContent.title}`}
         description={content.description}
         ogImage={content.img?.url}
@@ -84,7 +86,7 @@ const ResourcePage: React.FC = () => {
           dateModified: content.updatedAt,
           image: content.img?.url,
         }}
-      /> */}
+      />
       <section className="common-component text-black flex-col items-center">
         <div className="common-container px-4 py-8 md:px-24 md:py-24 flex-col !max-w-[1336px]">
           <div className="grid md:grid-cols-[75%_25%] gap-6">

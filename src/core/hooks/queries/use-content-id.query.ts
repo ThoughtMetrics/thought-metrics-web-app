@@ -1,7 +1,7 @@
-import { contentKeys } from '@/core/lib/query-keys';
+import { QueryKeys } from '@/core/lib/query-keys';
 import type { Content } from '@/core/types/content.type';
 import type { StrapiSingleResponse } from '@/core/types/strapi.type';
-import { contentService } from '@/services/api/content.service';
+import { contentService } from '@/services/strapi-api/content.service';
 import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
 
 export const useContentByIdQuery = (
@@ -12,7 +12,7 @@ export const useContentByIdQuery = (
   >
 ) => {
   return useQuery({
-    queryKey: contentKeys.detail(documentId),
+    queryKey: QueryKeys.contentKeys.detail(documentId),
     queryFn: () => contentService.getContentById(documentId),
     enabled: !!documentId,
     ...queryOptions,
