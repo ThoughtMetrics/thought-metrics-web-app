@@ -1,6 +1,6 @@
 // @/services/api.service.ts
 
-import API_CONFIG from '@/core/configs/api-config';
+import { getAPIConfig } from '@/core/configs/api-config';
 
 export interface ApiResponse<T = any> {
   success: boolean;
@@ -13,13 +13,14 @@ export interface ApiResponse<T = any> {
 }
 
 class ApiService {
+  private API_CONFIG = getAPIConfig();
   private baseURL: string;
   private defaultHeaders: Record<string, string>;
 
   constructor() {
-    this.baseURL = `${API_CONFIG.baseURL}${API_CONFIG.apiPath}/${API_CONFIG.baseAPIVersion}`;
+    this.baseURL = `${this.API_CONFIG.baseURL}${this.API_CONFIG.apiPath}/${this.API_CONFIG.baseAPIVersion}`;
     this.defaultHeaders = {
-      ...API_CONFIG.headers,
+      ...this.API_CONFIG.headers,
     };
   }
 
@@ -102,7 +103,10 @@ class ApiService {
 
     // Create abort controller for timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.timeout);
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      this.API_CONFIG.timeout
+    );
 
     const config: RequestInit = {
       ...options,
