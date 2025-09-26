@@ -1,31 +1,22 @@
-# Stage 1: Build the React application
+# Stage 1: Build Vite app
 FROM node:20-alpine AS builder
-
 WORKDIR /app
 
-# Copy package.json and yarn.lock first to leverage Docker cache
 COPY package.json yarn.lock ./
-
-# Install dependencies
 RUN yarn install --frozen-lockfile
-
-# Copy the rest of the application code
 COPY . .
-
-# Build the Vite application for production
 RUN yarn build
 
-# Stage 2: Serve the application with Nginx
+# Stage 2: Serve with Nginx
 FROM nginx:stable-alpine AS production
+WORKDIR /usr/share/nginx/html
 
-# Copy the built assets from the builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Optional: Copy a custom Nginx configuration if needed
+COPY --from=builder /app/dist ./
+COPY public/config.js ./config.js
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 80 for web traffic
 EXPOSE 4200
-
-# Start Nginx
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

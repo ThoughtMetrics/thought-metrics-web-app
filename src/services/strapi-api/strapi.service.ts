@@ -1,16 +1,17 @@
 // src/services/base/strapi.service.ts
-import API_CONFIG from '@/core/configs/api-config';
+import { getAPIConfig } from '@/core/configs/api-config';
 import axios, { AxiosError, type AxiosInstance } from 'axios';
 import qs from 'qs';
 
 export class StrapiService {
+  private API_CONFIG = getAPIConfig();
   protected client: AxiosInstance;
 
   constructor() {
     this.client = axios.create({
-      baseURL: `${API_CONFIG.strapiURL}${API_CONFIG.apiPath}`,
-      timeout: API_CONFIG.timeout,
-      headers: API_CONFIG.headers,
+      baseURL: `${this.API_CONFIG.strapiURL}${this.API_CONFIG.apiPath}`,
+      timeout: this.API_CONFIG.timeout,
+      headers: this.API_CONFIG.headers,
     });
 
     this.setupInterceptors();
