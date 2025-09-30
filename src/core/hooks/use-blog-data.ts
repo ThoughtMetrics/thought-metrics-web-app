@@ -1,11 +1,15 @@
 // src/hooks/useBlogData.ts
 
-import type { ContentTypeValue } from '../types/content.type';
-import { useBlogContentsQuery, type BlogItem } from './queries/use-blog-contents.query';
+import type { ContentCategoryValue, ContentTypeValue } from '../types/content.type';
+import {
+  useBlogContentsQuery,
+  type BlogItem,
+} from './queries/use-blog-contents.query';
 
 interface UseBlogDataOptions {
   title: string;
   type?: ContentTypeValue[];
+  category?: ContentCategoryValue[];
   limit?: number;
   tags?: string[];
 }
@@ -22,6 +26,7 @@ export const useBlogData = (options: UseBlogDataOptions) => {
     error,
   } = useBlogContentsQuery({
     type: options.type,
+    category: options.category,
     limit: options.limit,
     tags: options.tags,
   });

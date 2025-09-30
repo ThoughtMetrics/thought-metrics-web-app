@@ -1,12 +1,13 @@
 // src/hooks/queries/useBlogContentsQuery.ts
 
 import { QueryKeys } from '@/core/lib/query-keys';
-import type { ContentTypeValue } from '@/core/types/content.type';
+import type { ContentTypeValue, ContentCategoryValue } from '@/core/types/content.type';
 import { contentService } from '@/services/strapi-api/content.service';
 import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
 
 export interface BlogContentOptions {
   type?: ContentTypeValue[];
+  category?: ContentCategoryValue[];
   limit?: number;
   tags?: string[];
 }
@@ -14,6 +15,7 @@ export interface BlogContentOptions {
 export interface BlogItem {
   id: number;
   type: string;
+  category: string;
   label: string;
   description: string;
   link: string;

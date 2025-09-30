@@ -1,5 +1,5 @@
 {
-  "name": "thought-metrics",
+  "name": "thought-metrics-web",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,12 +10,15 @@
     "preview": "vite preview",
     "test": "vitest run --reporter=verbose",
     "build:ssg": "npm run build && node scripts/prerender.mjs",
-    "serve": "npx serve dist -p 4200"
+    "serve": "npx serve dist -p 4200",
+    "docker:build": "docker build -t thought-metrics-web-app:v1 .",
+    "docker:run": "docker run -d -p 4200:4200 --name thought-metrics-web-app --env-file .env.docker thought-metrics-web-app:v1"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.85.5",
     "axios": "^1.11.0",
     "clsx": "^2.1.1",
+    "firebase": "^11.2.0",
     "qs": "^6.14.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

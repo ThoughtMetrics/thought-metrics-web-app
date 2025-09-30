@@ -1,5 +1,5 @@
 // src/services/content/content.service.ts
-import type { Content, ContentQueryOptions, ContentTypeValue } from "@/core/types/content.type";
+import type { Content, ContentQueryOptions, ContentTypeValue, ContentCategoryValue } from "@/core/types/content.type";
 import { StrapiService } from "./strapi.service";
 import type { StrapiResponse, StrapiSingleResponse } from "@/core/types/strapi.type";
 
@@ -36,6 +36,15 @@ export class ContentService extends StrapiService {
         strapiFilters.type = { $in: filters.type };
       } else {
         strapiFilters.type = { $eq: filters.type };
+      }
+    }
+
+    // Category filter
+    if (filters.category) {
+      if (Array.isArray(filters.category)) {
+        strapiFilters.category = { $in: filters.category };
+      } else {
+        strapiFilters.category = { $eq: filters.category };
       }
     }
 
@@ -137,6 +146,19 @@ export class ContentService extends StrapiService {
   }
 
   /**
+   * Get contents by category
+   */
+  async getContentsByCategory(
+    category: ContentCategoryValue | ContentCategoryValue[],
+    limit?: number
+  ): Promise<StrapiResponse<Content[]>> {
+    return this.getContents({
+      filters: { category },
+      limit,
+    });
+  }
+
+  /**
    * Get contents by tags
    */
   async getContentsByTags(
@@ -150,13 +172,13 @@ export class ContentService extends StrapiService {
   }
 
   /**
-   * Get related contents (same type or tags)
+   * Get related contents (same type, category, or tags)
    */
   async getRelatedContents(
     content: Content,
     limit: number = 4
   ): Promise<Content[]> {
-    // Get contents with matching tags or same type
+    // Get contents with matching tags or same type/category
     const tags =
       content.tags
         ?.split(',')
@@ -167,6 +189,7 @@ export class ContentService extends StrapiService {
       filters: {
         tags: tags.length > 0 ? tags : undefined,
         type: tags.length === 0 ? content.type : undefined,
+        category: tags.length === 0 ? content.category : undefined,
       },
       limit: limit + 1, // Get one extra to exclude current
     });
@@ -195,12 +218,14 @@ export class ContentService extends StrapiService {
    */
   async getBlogContents(options?: {
     type?: ContentTypeValue[];
+    category?: ContentCategoryValue[];
     limit?: number;
     tags?: string[];
   }): Promise<
     Array<{
       id: number;
       type: string;
+      category: string;
       label: string;
       description: string;
       link: string;
@@ -210,6 +235,7 @@ export class ContentService extends StrapiService {
     const response = await this.getContents({
       filters: {
         type: options?.type,
+        category: options?.category,
         tags: options?.tags,
       },
       limit: options?.limit || 8,
@@ -218,6 +244,7 @@ export class ContentService extends StrapiService {
     return response.data.map((content) => ({
       id: content.id,
       type: content.type,
+      category: content.category,
       label: content.label,
       description: content.description,
       link: `/resources/${content.slug}`,

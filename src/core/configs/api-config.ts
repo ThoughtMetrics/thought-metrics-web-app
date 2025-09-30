@@ -22,9 +22,12 @@ export const getAPIConfig = (): {
       : {};
 
   return {
-    baseURL: runtimeConfig.VITE_BASE_URL ?? 'http://localhost:4201',
-    baseAPIVersion: runtimeConfig.VITE_BASE_API_VERSION ?? 'v1',
-    strapiURL: runtimeConfig.VITE_STRAPI_API_URL ?? 'http://localhost:1337',
+    baseURL: import.meta.env.VITE_BASE_URL ?? runtimeConfig.VITE_BASE_URL,
+    baseAPIVersion:
+      import.meta.env.VITE_BASE_API_VERSION ??
+      runtimeConfig.VITE_BASE_API_VERSION,
+    strapiURL:
+      import.meta.env.VITE_STRAPI_API_URL ?? runtimeConfig.VITE_STRAPI_API_URL,
     apiPath: '/api',
     timeout: 10000,
     headers: {
