@@ -5,9 +5,21 @@ import { ResearchMethodActionSection } from '@/shared/ui/templates/action-sectio
 import { ResearchMethodQuestionarySection } from '@/shared/ui/templates/questionary-section';
 import { ProductResearchSection } from '@/shared/ui/templates/service-section';
 import AboutUsSection from './components/about-us';
+import { Suspense } from 'react';
+import BlogSkeleton from '@/shared/components/blog-skeleton';
+import { ContentCategory } from '@/core/types/content.type';
+import { useBlogData } from '@/core/hooks/use-blog-data';
 
 const ResearchMethodFieldwork: React.FC = () => {
   const pageContent = researchMethods.fieldwork;
+
+  const { blogData } = useBlogData({
+    title: pageContent.blogData.title,
+    type: [],
+    category: [ContentCategory.FIELDWORK],
+    limit: 4,
+  });
+
   return (
     <>
       <HeroSection
@@ -25,10 +37,9 @@ const ResearchMethodFieldwork: React.FC = () => {
         className=""
         imgClassName="!h-[65%] w-full"
       />
-      <BlogOrganism
-        data={pageContent.blogData}
-        bgColor="bg-custom-blue-light"
-      />
+      <Suspense fallback={<BlogSkeleton />}>
+        <BlogOrganism data={blogData} bgColor="bg-custom-blue-light" />
+      </Suspense>
       <ResearchMethodActionSection actionSection={pageContent.actionSection} />
     </>
   );

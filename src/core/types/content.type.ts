@@ -12,6 +12,17 @@ export const ContentType = {
 
 export type ContentTypeValue = (typeof ContentType)[keyof typeof ContentType];
 
+export const ContentCategory = {
+  QUANTITATIVE_RESEARCH: 'Quantitative Research',
+  QUALITATIVE_RESEARCH: 'Qualitative Research',
+  FIELDWORK: 'Fieldwork',
+  FOCUS_GROUP: 'Focus Group',
+  PARTICIPANT_EXPERIENCE: 'Participant Experience',
+} as const;
+
+export type ContentCategoryValue =
+  (typeof ContentCategory)[keyof typeof ContentCategory];
+
 export interface Content {
   id: number;
   documentId: string;
@@ -22,6 +33,7 @@ export interface Content {
   updatedAt: string;
   publishedAt: string;
   type: ContentTypeValue;
+  category: ContentCategoryValue;
   content: string;
   tags: string | null;
   publishedDate: string | null;
@@ -30,6 +42,7 @@ export interface Content {
 
 export interface ContentFilters {
   type?: ContentTypeValue | ContentTypeValue[];
+  category?: ContentCategoryValue | ContentCategoryValue[];
   tags?: string | string[];
   dateFrom?: string | Date;
   dateTo?: string | Date;

@@ -9,8 +9,17 @@ import LandingJoinUsSection from '../components/join-us-section';
 import LandingQuestionarySection from '../components/landing-questionary-section';
 import LandingSignUpSection from '../components/landing-sign-section';
 import InteractionFooter from '@/shared/components/interaction-footer';
+import { useBlogData } from '@/core/hooks/use-blog-data';
+import { ContentCategory } from '@/core/types/content.type';
 
 const RespondentLandingPage: React.FC = () => {
+  const { blogData } = useBlogData({
+    title: landing.respondent.blogSection.title,
+    type: [],
+    category: [ContentCategory.PARTICIPANT_EXPERIENCE],
+    limit: 4,
+  });
+
   return (
     <>
       <LandingHeroSection
@@ -23,10 +32,7 @@ const RespondentLandingPage: React.FC = () => {
       <LandingWorkingFlowSection
         workingFlowSection={landing.respondent.workingFlowSection}
       />
-      <BlogOrganism
-        data={landing.respondent.blogSection}
-        titleClassName="w-[60%] md:w-[30%]"
-      />
+      <BlogOrganism data={blogData} titleClassName="w-[60%] md:w-[30%]" />
       <LandingAboutUsSection
         aboutUsSection={landing.respondent.aboutUsSection}
       />
