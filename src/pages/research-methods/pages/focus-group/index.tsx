@@ -5,9 +5,21 @@ import AboutUsSection from './components/about-us';
 import BlogOrganism from '@/shared/ui/organisms/blog-organism';
 import { ResearchMethodActionSection } from '@/shared/ui/templates/action-section';
 import RightPathSection from './components/right-path';
+import { useBlogData } from '@/core/hooks/use-blog-data';
+import { ContentCategory } from '@/core/types/content.type';
+import { Suspense } from 'react';
+import BlogSkeleton from '@/shared/components/blog-skeleton';
 
 const ResearchMethodFocusGroup: React.FC = () => {
   const pageContent = researchMethods.focus_group;
+
+  const { blogData } = useBlogData({
+    title: pageContent.blogData.title,
+    type: [],
+    category: [ContentCategory.FOCUS_GROUP],
+    limit: 4,
+  });
+
   return (
     <>
       <HeroSection
@@ -18,10 +30,9 @@ const ResearchMethodFocusGroup: React.FC = () => {
       <CustomerResearchSection serviceSection={pageContent.serviceSection} />
       <RightPathSection rightPathSection={pageContent.questionarySection} />
       <AboutUsSection questionarySection={pageContent.aboutUsSection} />
-      <BlogOrganism
-        data={pageContent.blogData}
-        bgColor="bg-custom-blue-light"
-      />
+      <Suspense fallback={<BlogSkeleton />}>
+        <BlogOrganism data={blogData} bgColor="bg-custom-blue-light" />
+      </Suspense>
       <ResearchMethodActionSection actionSection={pageContent.actionSection} />
     </>
   );

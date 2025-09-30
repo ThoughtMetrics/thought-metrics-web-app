@@ -74,7 +74,7 @@ const ResourcePage: React.FC = () => {
         ogType="article"
         canonicalUrl={`${seoContent.canonicalUrl}/resources/${slug}`}
         meta={[
-          { property: 'article:published_time', content: content.publishedAt },
+          { property: 'article:published_time', content: content.publishedDate },
           { property: 'article:modified_time', content: content.updatedAt },
         ]}
         structuredData={{
@@ -82,7 +82,7 @@ const ResourcePage: React.FC = () => {
           '@type': 'Article',
           headline: content.label,
           description: content.description,
-          datePublished: content.publishedAt,
+          datePublished: content.publishedDate,
           dateModified: content.updatedAt,
           image: content.img?.url,
         }}
@@ -116,7 +116,7 @@ const ResourcePage: React.FC = () => {
               </div>
               <div className="flex flex-col border-t-1 border-custom-grey-1 pt-2 py-3">
                 <p className="font-medium">
-                  {new Date(content.publishedAt).toLocaleDateString('en-GB', {
+                  {new Date(content.publishedDate).toLocaleDateString('en-GB', {
                     day: '2-digit',
                     month: 'long',
                     year: 'numeric',
