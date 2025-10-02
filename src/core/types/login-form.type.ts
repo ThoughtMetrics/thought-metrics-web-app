@@ -15,6 +15,6 @@ export interface LoginFormStore {
 
   updateField: (field: keyof LoginFormData, value: string | boolean) => void;
   resetForm: () => void;
-  submitForm: () => Promise<void>;
+  submitForm: (onSubmit: (email: string, password: string) => Promise<void>) => Promise<void>;
   validateForm: () => boolean;
 }
