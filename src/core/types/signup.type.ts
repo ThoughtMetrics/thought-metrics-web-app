@@ -36,6 +36,6 @@ export interface RegistrationFormStore {
   nextStep: () => void;
   previousStep: () => void;
   resetForm: () => void;
-  submitForm: () => Promise<void>;
+  submitForm: (onSubmit: (formData: RegistrationFormData) => Promise<void>) => Promise<void>;
   validateStep: (step: number) => boolean;
 }

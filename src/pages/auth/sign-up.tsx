@@ -13,9 +13,10 @@ import {
   SelectAtom,
   TextInputAtom,
 } from '@/shared/ui/atoms/custom-input';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRed, FacebookOutlineIcon, GoogleOutlineIcon } from '@/assets';
 import FaqOrganism from '@/shared/ui/organisms/faq-organism';
+import { useSignUpMutation } from '@/core/hooks/mutations/use-sign-up.mutation';
 
 // Destructure constants
 const {
@@ -30,7 +31,6 @@ const {
   validationMessages,
   emailRegex,
   formResetDelay,
-  apiSimulationDelay,
   ui,
 } = signUpFormConstant;
 
@@ -159,17 +159,15 @@ const useRegistrationFormStore = create<RegistrationFormStore>()(
         return Object.keys(errors).length === 0;
       },
 
-      submitForm: async () => {
+      submitForm: async (
+        onSubmit: (formData: RegistrationFormData) => Promise<void>
+      ) => {
         const { formData } = get();
 
         set({ isSubmitting: true }, false, 'submitForm_start');
 
         try {
-          await new Promise((resolve) =>
-            setTimeout(resolve, apiSimulationDelay)
-          );
-
-          console.log('Registration form submitted:', formData);
+          await onSubmit(formData);
 
           set(
             {
@@ -183,11 +181,14 @@ const useRegistrationFormStore = create<RegistrationFormStore>()(
           setTimeout(() => {
             get().resetForm();
           }, formResetDelay);
-        } catch {
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : validationMessages.submitError;
           set(
             {
               isSubmitting: false,
-              errors: { general: validationMessages.submitError },
+              errors: {
+                general: errorMessage,
+              },
             },
             false,
             'submitForm_error'
@@ -202,6 +203,9 @@ const useRegistrationFormStore = create<RegistrationFormStore>()(
 );
 
 const SignUpPage: React.FC = () => {
+  const navigate = useNavigate();
+  const signUpMutation = useSignUpMutation();
+
   const {
     formData,
     currentStep,
@@ -235,10 +239,53 @@ const SignUpPage: React.FC = () => {
     updateField('participationPreferences', selectedValues);
   };
 
+  const handleFirebaseSignUp = async (formData: RegistrationFormData) => {
+    const result = await signUpMutation.mutateAsync({
+      type: 'email',
+      data: {
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phoneNumber: formData.phone,
+      },
+    });
+
+    if (result) {
+      setTimeout(() => {
+        void navigate('/');
+      }, 2000);
+    }
+  };
+
+  const handleGoogleSignUp = () => {
+    void signUpMutation.mutateAsync({ type: 'google' })
+      .then((result) => {
+        if (result) {
+          void navigate('/');
+        }
+      })
+      .catch((error) => {
+        console.error('Google sign-up failed:', error);
+      });
+  };
+
+  const handleFacebookSignUp = () => {
+    void signUpMutation.mutateAsync({ type: 'facebook' })
+      .then((result) => {
+        if (result) {
+          void navigate('/');
+        }
+      })
+      .catch((error) => {
+        console.error('Facebook sign-up failed:', error);
+      });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (currentStep === 2) {
-      void submitForm();
+      void submitForm(handleFirebaseSignUp);
     } else {
       nextStep();
     }
@@ -293,12 +340,22 @@ const SignUpPage: React.FC = () => {
 
         {/* Social Login Buttons */}
         <div className="mb-8 space-y-3 grid grid-cols-1 w-full md:w-fit">
-          <button className="relative col-span-1 flex items-center pl-4 pr-12 py-2 bg-[#1877F2] text-white rounded hover:bg-blue-700 transition-colors">
+          <button
+            type="button"
+            onClick={handleFacebookSignUp}
+            disabled={signUpMutation.isPending}
+            className="relative col-span-1 flex items-center pl-4 pr-12 py-2 bg-[#1877F2] text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             <FacebookOutlineIcon className="w-5 h-5 mr-8" />
             <div className="left-13 absolute w-0.25 h-full bg-white"></div>
             {ui.socialButtons.facebook}
           </button>
-          <button className="relative col-span-1 flex items-center pl-4 pr-12 py-2 bg-[#1877F2] text-white rounded hover:bg-red-700 transition-colors">
+          <button
+            type="button"
+            onClick={handleGoogleSignUp}
+            disabled={signUpMutation.isPending}
+            className="relative col-span-1 flex items-center pl-4 pr-12 py-2 bg-[#DB4437] text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             <GoogleOutlineIcon className="w-5 h-5 mr-8" />
             <div className="left-13 absolute w-0.25 h-full bg-white"></div>
             {ui.socialButtons.google}
