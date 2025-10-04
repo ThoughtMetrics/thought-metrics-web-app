@@ -1,8 +1,8 @@
 import type React from 'react';
 import { reportDownloadConstant } from './constant';
 import type {
-  WhitepaperFormData,
-  WhitepaperFormStore,
+  DownloadReportFormData,
+  DownloadReportFormStore,
 } from '@/core/types/report-download-form.type';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
@@ -33,10 +33,10 @@ const {
 const emailRegexPattern = new RegExp(emailRegex);
 
 // Zustand store
-const useReportDownloadFormStore = create<WhitepaperFormStore>()(
+const useReportDownloadFormStore = create<DownloadReportFormStore>()(
   devtools(
     (set, get) => ({
-      formData: initialFormData as WhitepaperFormData,
+      formData: initialFormData as DownloadReportFormData,
       isSubmitting: false,
       isSubmitted: false,
       errors: {},
@@ -58,7 +58,7 @@ const useReportDownloadFormStore = create<WhitepaperFormStore>()(
       resetForm: () =>
         set(
           {
-            formData: initialFormData as WhitepaperFormData,
+            formData: initialFormData as DownloadReportFormData,
             isSubmitting: false,
             isSubmitted: false,
             errors: {},
@@ -70,7 +70,7 @@ const useReportDownloadFormStore = create<WhitepaperFormStore>()(
 
       validateForm: () => {
         const { formData } = get();
-        const errors: Partial<WhitepaperFormData> = {};
+        const errors: Partial<DownloadReportFormData> = {};
 
         if (!formData.firstName.trim())
           errors.firstName = validationMessages.firstName;
@@ -151,9 +151,9 @@ const ReportDownloadPage: React.FC = () => {
     const { name, value, type } = e.target;
     if (type === 'checkbox') {
       const { checked } = e.target as HTMLInputElement;
-      updateField(name as keyof WhitepaperFormData, checked);
+      updateField(name as keyof DownloadReportFormData, checked);
     } else {
-      updateField(name as keyof WhitepaperFormData, value);
+      updateField(name as keyof DownloadReportFormData, value);
     }
   };
 

@@ -212,7 +212,7 @@ class ApiService {
    * Set authentication token
    */
   setAuthToken(token: string) {
-    this.defaultHeaders['Authorization'] = `Bearer ${token}`;
+    this.defaultHeaders['Authorization'] = `Bearer firebase:${token}`;
   }
 
   /**

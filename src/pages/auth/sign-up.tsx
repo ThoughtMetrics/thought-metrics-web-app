@@ -17,6 +17,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRed, FacebookOutlineIcon, GoogleOutlineIcon } from '@/assets';
 import FaqOrganism from '@/shared/ui/organisms/faq-organism';
 import { useSignUpMutation } from '@/core/hooks/mutations/use-sign-up.mutation';
+import { ROUTES } from '@/routes/routeConfig';
 
 // Destructure constants
 const {
@@ -182,7 +183,10 @@ const useRegistrationFormStore = create<RegistrationFormStore>()(
             get().resetForm();
           }, formResetDelay);
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : validationMessages.submitError;
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : validationMessages.submitError;
           set(
             {
               isSubmitting: false,
@@ -248,21 +252,24 @@ const SignUpPage: React.FC = () => {
         firstName: formData.firstName,
         lastName: formData.lastName,
         phoneNumber: formData.phone,
+        termsAccepted: false,
+        privacyAccepted: false,
       },
     });
 
     if (result) {
       setTimeout(() => {
-        void navigate('/');
+        void navigate('/survey_page');
       }, 2000);
     }
   };
 
   const handleGoogleSignUp = () => {
-    void signUpMutation.mutateAsync({ type: 'google' })
+    void signUpMutation
+      .mutateAsync({ type: 'google' })
       .then((result) => {
         if (result) {
-          void navigate('/');
+          void navigate(ROUTES.SURVEY_PAGE);
         }
       })
       .catch((error) => {
@@ -271,10 +278,11 @@ const SignUpPage: React.FC = () => {
   };
 
   const handleFacebookSignUp = () => {
-    void signUpMutation.mutateAsync({ type: 'facebook' })
+    void signUpMutation
+      .mutateAsync({ type: 'facebook' })
       .then((result) => {
         if (result) {
-          void navigate('/');
+          void navigate(ROUTES.SURVEY_PAGE);
         }
       })
       .catch((error) => {

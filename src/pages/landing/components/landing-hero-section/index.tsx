@@ -3,8 +3,19 @@ import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
 import type React from 'react';
 import '../../landing.style.css';
 import { ROUTES } from '@/routes/routeConfig';
+import { useEffect, useState } from 'react';
+import { auth } from '@/core/configs/firebase-config';
 
 const LandingHeroSection: React.FC<any> = ({ heroSection, faqId }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setIsAuthenticated(!!user);
+    });
+
+    return () => unsubscribe();
+  }, []);
   return (
     <section className="common-component w-full h-full relative md:pt-0 landing_hero_section">
       <div className="absolute top-0 w-full h-full bg-primary/65" />
@@ -35,7 +46,11 @@ const LandingHeroSection: React.FC<any> = ({ heroSection, faqId }) => {
               <CustomButtonAtom
                 path={ROUTES.SIGN_UP}
                 className="font-semibold py-1 xl:py-2 px-6 text-lg xl:text-xl bg-secondary hover:bg-custom-blue w-full"
-                label={heroSection.signButton.label}
+                label={
+                  isAuthenticated
+                    ? heroSection.signButton.signedInLabel
+                    : heroSection.signButton.label
+                }
               />
             </div>
             {heroSection.faqButton && (

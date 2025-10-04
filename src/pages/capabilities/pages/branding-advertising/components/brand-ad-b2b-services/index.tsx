@@ -9,7 +9,7 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
         <div className="hidden md:grid grid-cols-1 w-full md:grid-cols-3  md:grid-rows-2 gap-3 pt-6 text-black">
           {/* Service 1 */}
           <Link
-            to="#"
+            to={b2bServiceSection.services[0].link || '#'}
             className="relative col-span-1 bg-success rounded-md flex flex-col justify-center pb-18 pt-24 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
           >
             {(() => {
@@ -36,7 +36,7 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
 
           {/* Service 2 */}
           <Link
-            to="#"
+            to={b2bServiceSection.services[1].link || '#'}
             className="relative col-span-2 bg-gradient-to-r from-custom-violet to-white rounded-md flex flex-col justify-center pb-18 pt-24 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
           >
             <div className="flex flex-col justify-between h-[12rem]">
@@ -62,7 +62,7 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
 
           {/* Service 3 */}
           <Link
-            to="#"
+            to={b2bServiceSection.services[2].link || '#'}
             className="relative col-span-2 bg-gradient-to-r from-custom-grey-1 to-white rounded-md flex flex-col justify-center pb-18 pt-24 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
           >
             <div className="flex flex-col justify-between h-[12rem]">
@@ -86,7 +86,7 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
 
           {/* Service 4 */}
           <Link
-            to="#"
+            to={b2bServiceSection.services[3].link || '#'}
             className="relative col-span-1 bg-custom-pink rounded-md flex flex-col justify-center pb-18 pt-24 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
           >
             <div className="flex flex-col justify-between h-[12rem]">
@@ -118,7 +118,10 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
 
         {/* Mobile View */}
         <div className="w-full h-auto flex overflow-y-hidden overflow-x-scroll md:hidden gap-3 pt-6 text-black">
-          <div className="shrink-0 w-70 h-80 relative col-span-1 bg-success rounded-md flex flex-col justify-center py-10 px-7">
+          <Link
+            to={b2bServiceSection.services[0].link || '#'}
+            className="shrink-0 w-70 h-80 relative col-span-1 bg-success rounded-md flex flex-col justify-center py-10 px-7"
+          >
             <div className="w-full flex flex-col gap-2 z-1">
               <h3 className="w-[90%] leading-[1.2] font-semibold">
                 {b2bServiceSection.services[0].title}
@@ -134,8 +137,11 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
                 />
               </div>
             </div>
-          </div>
-          <div className="shrink-0 w-70 h-80 relative col-span-1 bg-gradient-to-r from-custom-violet to-white rounded-md flex flex-col justify-center py-10 px-7">
+          </Link>
+          <Link
+            to={b2bServiceSection.services[1].link || '#'}
+            className="shrink-0 w-70 h-80 relative col-span-1 bg-gradient-to-r from-custom-violet to-white rounded-md flex flex-col justify-center py-10 px-7"
+          >
             <div className="w-full flex flex-col gap-2 z-1">
               <h3 className="w-[90%] leading-[1.2] font-semibold">
                 {b2bServiceSection.services[1].title}
@@ -151,8 +157,11 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
                 />
               </div>
             </div>
-          </div>
-          <div className="shrink-0 w-70 h-80 relative col-span-1 bg-gradient-to-r from-custom-grey-1 to-white rounded-md flex flex-col justify-center py-10 px-7">
+          </Link>
+          <Link
+            to={b2bServiceSection.services[2].link || '#'}
+            className="shrink-0 w-70 h-80 relative col-span-1 bg-gradient-to-r from-custom-grey-1 to-white rounded-md flex flex-col justify-center py-10 px-7"
+          >
             <div className="w-full flex flex-col gap-2 z-1">
               <h3 className="w-[90%] leading-[1.2] font-semibold">
                 {b2bServiceSection.services[2].title}
@@ -168,8 +177,11 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
                 />
               </div>
             </div>
-          </div>
-          <div className="shrink-0 w-70 h-80 relative col-span-1 bg-custom-pink rounded-md flex flex-col justify-center py-10 px-7">
+          </Link>
+          <Link
+            to={b2bServiceSection.services[3].link || '#'}
+            className="shrink-0 w-70 h-80 relative col-span-1 bg-custom-pink rounded-md flex flex-col justify-center py-10 px-7"
+          >
             <div className="w-full flex flex-col gap-2 z-1">
               <h3 className="w-[90%] leading-[1.2] font-semibold">
                 {b2bServiceSection.services[3].title}
@@ -185,7 +197,7 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
                 />
               </div>
             </div>
-          </div>
+          </Link>
         </div>
       </div>
     </section>

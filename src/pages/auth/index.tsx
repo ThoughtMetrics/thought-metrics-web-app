@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
@@ -9,16 +9,17 @@ import type {
   LoginFormData,
   LoginFormStore,
 } from '@/core/types/login-form.type';
-import { ArrowRight, Logo, FacebookOutlineIcon, GoogleOutlineIcon } from '@/assets';
+import {
+  ArrowRight,
+  Logo,
+  FacebookOutlineIcon,
+  GoogleOutlineIcon,
+} from '@/assets';
 import { useSignInMutation } from '@/core/hooks/mutations/use-sign-in.mutation';
+import { auth } from '@/core/configs/firebase-config';
 
-const {
-  initialFormData,
-  storeName,
-  validationMessages,
-  formResetDelay,
-  ui,
-} = loginFormConstant;
+const { initialFormData, storeName, validationMessages, formResetDelay, ui } =
+  loginFormConstant;
 
 // Zustand store
 const useLoginFormStore = create<LoginFormStore>()(
@@ -67,7 +68,9 @@ const useLoginFormStore = create<LoginFormStore>()(
         return Object.keys(errors).length === 0;
       },
 
-      submitForm: async (onSubmit: (email: string, password: string) => Promise<void>) => {
+      submitForm: async (
+        onSubmit: (email: string, password: string) => Promise<void>
+      ) => {
         const { formData, validateForm } = get();
 
         if (!validateForm()) return;
@@ -90,7 +93,10 @@ const useLoginFormStore = create<LoginFormStore>()(
             get().resetForm();
           }, formResetDelay);
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : validationMessages.submitError;
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : validationMessages.submitError;
           set(
             {
               isSubmitting: false,
@@ -111,6 +117,7 @@ const useLoginFormStore = create<LoginFormStore>()(
 const AuthPage: React.FC = () => {
   const navigate = useNavigate();
   const signInMutation = useSignInMutation();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const {
     formData,
@@ -121,6 +128,19 @@ const AuthPage: React.FC = () => {
     updateField,
     submitForm,
   } = useLoginFormStore();
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setIsAuthenticated(true);
+        void navigate(ROUTES.SURVEY_PAGE);
+      } else {
+        setIsAuthenticated(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
@@ -141,16 +161,17 @@ const AuthPage: React.FC = () => {
 
     if (result) {
       setTimeout(() => {
-        void navigate('/');
+        void navigate(ROUTES.SURVEY_PAGE);
       }, 1500);
     }
   };
 
   const handleGoogleSignIn = () => {
-    void signInMutation.mutateAsync({ type: 'google' })
+    void signInMutation
+      .mutateAsync({ type: 'google' })
       .then((result) => {
         if (result) {
-          void navigate('/');
+          void navigate(ROUTES.SURVEY_PAGE);
         }
       })
       .catch((error) => {
@@ -159,10 +180,11 @@ const AuthPage: React.FC = () => {
   };
 
   const handleFacebookSignIn = () => {
-    void signInMutation.mutateAsync({ type: 'facebook' })
+    void signInMutation
+      .mutateAsync({ type: 'facebook' })
       .then((result) => {
         if (result) {
-          void navigate('/');
+          void navigate(ROUTES.SURVEY_PAGE);
         }
       })
       .catch((error) => {
@@ -174,6 +196,10 @@ const AuthPage: React.FC = () => {
     e.preventDefault();
     void submitForm(handleFirebaseSignIn);
   };
+
+  if (isAuthenticated) {
+    return null;
+  }
 
   if (isSubmitted) {
     return (
@@ -297,7 +323,9 @@ const AuthPage: React.FC = () => {
                 className="w-full bg-primary text-white text-nowrap hover:bg-secondary hover:text-white transition-all duration-300 ease-in-out font-medium px-6 py-2 flex items-center justify-between gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <label className="text-lg">
-                  {isSubmitting || signInMutation.isPending ? ui.buttons.continuing : ui.buttons.continue}
+                  {isSubmitting || signInMutation.isPending
+                    ? ui.buttons.continuing
+                    : ui.buttons.continue}
                 </label>
                 <ArrowRight className="w-8 r-8 fill-current text-white" />
               </button>

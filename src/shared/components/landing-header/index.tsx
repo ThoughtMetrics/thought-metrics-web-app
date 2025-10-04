@@ -1,10 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Logo } from '@/assets';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/routes/routeConfig';
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
+import { auth } from '@/core/configs/firebase-config';
 
 const LandingHeader: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setIsAuthenticated(!!user);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <div className="relative">
       <header className="common-component bg-white">
@@ -17,8 +28,8 @@ const LandingHeader: React.FC = () => {
             </Link>
             <div className="flex items-center justify-end">
               <CustomButtonAtom
-                path={ROUTES.SIGN_UP}
-                label="Sign Up"
+                path={isAuthenticated ? ROUTES.SURVEY_PAGE : ROUTES.SIGN_UP}
+                label={isAuthenticated ? 'Take a Survey' : 'Sign Up'}
                 className="rounded font-medium text-sm md:text-lg px-6 py-2 md:px-13 bg-secondary hover:bg-custom-blue"
               />
             </div>

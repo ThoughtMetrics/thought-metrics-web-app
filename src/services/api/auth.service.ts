@@ -41,9 +41,20 @@ export interface AuthUser {
   providerId: string;
 }
 
+export interface UserProfile {
+  firebaseUid: string;
+  email: string | null;
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string;
+  displayName: string | null;
+  photoURL: string | null;
+  providerId: string;
+}
+
 class AuthService {
-  private googleProvider: GoogleAuthProvider;
-  private facebookProvider: FacebookAuthProvider;
+  private readonly googleProvider: GoogleAuthProvider;
+  private readonly facebookProvider: FacebookAuthProvider;
 
   constructor() {
     this.googleProvider = new GoogleAuthProvider();
@@ -66,7 +77,10 @@ class AuthService {
   /**
    * Send user data to backend API
    */
-  private async syncUserToBackend(user: AuthUser, additionalData?: Partial<SignUpData>) {
+  private async syncUserToBackend(
+    user: AuthUser,
+    additionalData?: Partial<SignUpData>
+  ) {
     try {
       const token = await auth.currentUser?.getIdToken();
       if (token) {
@@ -184,6 +198,20 @@ class AuthService {
     const user = auth.currentUser;
     if (!user) return null;
     return await user.getIdToken();
+  }
+
+  /**
+   * Get user profile from backend
+   */
+  async getUserProfile(): Promise<UserProfile> {
+    const user = this.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+
+    const token = await user.getIdToken();
+    ApiService.setAuthToken(token);
+
+    const response = await ApiService.get(`/users/${user.uid}`);
+    return response.data as UserProfile;
   }
 }
 
