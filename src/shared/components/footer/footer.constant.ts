@@ -2,6 +2,8 @@ import { ROUTES } from '@/routes/routeConfig';
 
 export interface FooterLinkData {
   label: string;
+  signedInLabel?: string;
+  signedInPath?: string;
   path: string;
   isBold?: string;
 }
@@ -90,7 +92,12 @@ export const footerData = {
     {
       title: 'Connect',
       links: [
-        { label: 'Join Our Panel', path: ROUTES.SIGN_UP },
+        {
+          label: 'Join Our Panel',
+          signedInLabel: 'Take a Survey',
+          signedInPath: ROUTES.SURVEY_PAGE,
+          path: ROUTES.SIGN_UP,
+        },
         { label: 'Request a Bid', path: ROUTES.START_YOUR_RESEARCH },
         { label: 'Careers', path: ROUTES.CAREERS },
         { label: 'Contact Us', path: ROUTES.CONTACT_US },

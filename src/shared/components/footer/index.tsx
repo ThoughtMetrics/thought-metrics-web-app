@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { footerData } from './footer.constant';
 import { LogoWhite } from '@/assets';
 import { Link } from 'react-router-dom';
+import { auth } from '@/core/configs/firebase-config';
 
 const Footer: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setIsAuthenticated(!!user);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   const scrollToTop = () => {
     const rootElement = document.getElementById('root');
 
@@ -43,18 +54,27 @@ const Footer: React.FC = () => {
             <nav key={section.title} className="flex flex-col gap-1">
               <h4 className="font-semibold m-0">{section.title}</h4>
               <ul className="list-none p-0 m-0 flex flex-col gap-1 xl:gap-1 xxl:gap-1.5 wide:gap-2">
-                {section.links.map((link, index) => (
-                  <li key={link.label}>
-                    <Link
-                      viewTransition={true}
-                      key={index + link.label}
-                      to={'path' in link ? link.path : '#'}
-                      className="text-sm md:text-base xxl:text-xl hover:underline cursor-pointer"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
+                {section.links.map((link, index) => {
+                  let routePath =
+                    isAuthenticated && link.label == 'Join Our Panel'
+                      ? link.signedInPath
+                      : link.path;
+                  routePath = routePath ?? '#';
+                  return (
+                    <li key={link.label}>
+                      <Link
+                        viewTransition={true}
+                        key={index + link.label}
+                        to={routePath}
+                        className="text-sm md:text-base xxl:text-xl hover:underline cursor-pointer"
+                      >
+                        {isAuthenticated && link.label == 'Join Our Panel'
+                          ? link.signedInLabel
+                          : link.label}
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </nav>
           ))}

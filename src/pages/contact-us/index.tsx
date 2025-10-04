@@ -38,6 +38,7 @@ const ContactUs: React.FC = () => {
     resetForm,
     clearAllErrors,
     submitMutation.reset,
+    submitMutation,
   ]);
 
   const handleInputChange = (
@@ -51,7 +52,7 @@ const ContactUs: React.FC = () => {
     clearError(name);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validate(formData)) return;

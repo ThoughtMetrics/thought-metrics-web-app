@@ -298,9 +298,10 @@ export const capabilities = {
           className: 'absolute right-0 top-0 m-5 w-[23%] h-[23%]',
           title: 'Brand Perception Research',
           description:
-            'Understand how customer experience, service levels, advertising, reputation, price branding and competitors affect your brand perception. ',
+            'Understand how customer experience, service levels, advertising, reputation, price branding and competitors affect your brand perception.',
           backgroundColor: 'green',
           illustration: CubicCaptureIllustration,
+          link: '/resources/boosting-client-loyalty-with-brand-perception',
         },
         {
           className: 'absolute -bottom-5 right-20 w-[20rem] h-full',
@@ -309,6 +310,7 @@ export const capabilities = {
             'Quantify brand efforts, improve brand messaging, prove ROI, customize KPI tracking, monitor competitors',
           backgroundColor: 'purple',
           illustration: EyeTrackingIllustration,
+          link: '/resources/brand-insights-that-matter',
         },
         {
           className: 'absolute top-8 right-0 h-[70%]',
@@ -317,6 +319,7 @@ export const capabilities = {
             'Enhance brand visibility, improve competitive edge, engage in targeted marketing, have consistent branding, improve decision making, refine the message, achieve long term brand equity, mitigate risk and allocate resources efficiently.',
           backgroundColor: 'gray',
           illustration: BrandAwarnessIllustration,
+          link: '/resources/brand-awareness-uncovered-know-your-impact',
         },
         {
           className: 'absolute right-12 top-8 w-[12%] h-[12%]',
@@ -326,6 +329,7 @@ export const capabilities = {
             'Message testing gauges responses to all your marking collaterals and tracks variables like abandonment rate, pate views, problems and frustrations, task success, task time, usability, attitude, conversions and NPS',
           backgroundColor: 'pink',
           illustration: MessageKiteIllustration,
+          link: '/resources/sharpen-your-story-with-message-testing',
         },
       ],
     },
@@ -572,6 +576,7 @@ export const capabilities = {
             "Competitive landscape analysis framework assessments include SWOT analysis, Porter's Five Forces Analysis, PESTEL Analysis, competitive benchmarking, value chain analysis, customer analysis, product and service analysis, market share analysis, price and cost analysis, trend analysis, scenario planning and competitive mapping.",
           backgroundColor: 'green',
           illustration: CompetitiveAnalysisIllustration,
+          link: '/resources/crafting-an-effective-competitive-landscape-strategy',
         },
         {
           className:
@@ -581,6 +586,7 @@ export const capabilities = {
             'New product launch, market expansion, business changes, rebranding or repositioning, competitive analysis, customer feedback, sales performance concerns, product or service enhancements, marketing strategy review, continuous improvement.',
           backgroundColor: 'purple',
           illustration: GotoIllustration,
+          link: '/resources/decoding-your-market-the-gtm-research-edge',
         },
         {
           className:
@@ -590,6 +596,7 @@ export const capabilities = {
             'Cultural and language barriers, regulatory complexity, competitive dynamics, dynamic market conditions, resource constraints, time sensitivity, consumer behavior, distribution channels, risk assessment, customer feedback and market perception, partnership and alliances, entry strategy.',
           backgroundColor: 'gray',
           illustration: MarketEntryIllustration,
+          link: '/resources/step-in-smart-a-deep-dive-into-market-entry-research',
         },
         {
           className: 'absolute right-12 top-12 w-[12%] h-[12%]',
@@ -599,6 +606,7 @@ export const capabilities = {
             'Market analysis, target audience, technical feasibility, operational feasibility, financial analysis, risk assessment, economic factors.',
           backgroundColor: 'pink',
           illustration: FeasibilityIllustration,
+          link: '/resources/blueprint-for-success-navigating-market-feasibility',
         },
       ],
     },
@@ -852,6 +860,7 @@ export const capabilities = {
             'Conjoint Analysis is based on the idea that consumers make trade-offs when selecting options, and it helps businesses determine which combination of attributes is most appealing to their target audience. Methods include, discrete choice, rating based, best-worst scaling, adaptive conjoint analysis',
           backgroundColor: 'green',
           illustration: ConjointAnalysisIllustration,
+          link: '/resources/uncovering-consumer-preferences',
         },
         {
           className: 'absolute -bottom-5 right-14 w-[20rem] h-full',
@@ -860,6 +869,7 @@ export const capabilities = {
             'MaxDiff allows researchers to determine the relative importance of various attributes or features by presenting respondents with sets of choices and asking them to indicate their most and least preferred options. MaxDiff analysis is particularly useful for attribute prioritization, market segmentation, and understanding the key factors that influence consumer preferences',
           backgroundColor: 'purple',
           illustration: MountainIllustration,
+          link: '/resources/from-basics-to-business-solutions',
         },
         {
           className: 'absolute top-8 right-12 h-[80%]',
@@ -868,6 +878,7 @@ export const capabilities = {
             'Product validation testing is a way to check that your new product, service or feature meets a real-life need of your clients and prospects – before you go into development. It includes feasibility testing and user validation testing.',
           backgroundColor: 'gray',
           illustration: ProductValidationIllustration,
+          link: '/resources/a-comprehensive-guide-to-product-validation',
         },
         {
           className: 'absolute right-8 top-8 w-[16%] h-[16%]',
@@ -877,6 +888,7 @@ export const capabilities = {
             'Avoid unleashing a poor user experience that not only diminishes the product, but damages the brand trust you’ve worked so hard to build using UX mockup testing, tree testing, card sorting, usability studies',
           backgroundColor: 'pink',
           illustration: UXResearchIllustration,
+          link: '/resources/partnering-with-a-ux-research-agency',
         },
       ],
     },
@@ -1092,6 +1104,7 @@ export const capabilities = {
           description:
             'Customer journey research insights help you understand each member of your buyer teams at a granular level. Create delightful customer experiences and customer centric products and services. With the right data, your product development and marketing strategies practically write themselves.',
           backgroundColor: 'green',
+          link: '/resources/turning-customers-loyal-for-life',
         },
         {
           className: 'absolute -bottom-5 right-20 w-[20rem] h-full',
@@ -1100,24 +1113,28 @@ export const capabilities = {
             'Find out how your customers really feel about your brand and products or services with Thought Metrix customer loyalty research. These insights help you make strategic decisions that promote customer satisfaction, retention, loyalty and advocacy – and boost your bottom line.',
           backgroundColor: 'purple',
           illustration: CustomerLoyaltyIllustration,
+          link: '/resources/turning-customers-loyal-for-life',
         },
         {
           title: 'Customer Satisfaction Research',
           description:
             'Strengthen your brand and boost client loyalty by using customer satisfaction research insights to continuously improve your customer experience. Quickly identify any downward trend in customer satisfaction and resolve the cause before there’s any churn.',
           backgroundColor: 'gray',
+          link: '/resources/the-nuances-of-customer-satisfaction',
         },
         {
           title: 'Persona Research',
           description:
             'You can leverage actionable buyer persona research to understand all the members of each purchase team. With precise characterizations, you can focus your energy, time and budget across your organization with absolute clarity.',
           backgroundColor: 'pink',
+          link: '/resources/understanding-your-audience',
         },
         {
           title: 'Pricing Research',
           description:
             'Pricing market research helps you define exactly the right pricing model for your company, with an evidence-based strategy for each product or service. Pricing research helps you set the optimal price point to reflect value, maximize sales potential and sustain business growth—without leaving any money on the table.',
           backgroundColor: 'blue',
+          link: '/resources/key-elements-of-pricing-research',
         },
       ],
     },

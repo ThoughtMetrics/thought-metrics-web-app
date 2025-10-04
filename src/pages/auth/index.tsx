@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { ROUTES } from '@/routes/routeConfig';
@@ -9,16 +9,17 @@ import type {
   LoginFormData,
   LoginFormStore,
 } from '@/core/types/login-form.type';
-import { ArrowRight, Logo } from '@/assets';
+import {
+  ArrowRight,
+  Logo,
+  FacebookOutlineIcon,
+  GoogleOutlineIcon,
+} from '@/assets';
+import { useSignInMutation } from '@/core/hooks/mutations/use-sign-in.mutation';
+import { auth } from '@/core/configs/firebase-config';
 
-const {
-  initialFormData,
-  storeName,
-  validationMessages,
-  formResetDelay,
-  apiSimulationDelay,
-  ui,
-} = loginFormConstant;
+const { initialFormData, storeName, validationMessages, formResetDelay, ui } =
+  loginFormConstant;
 
 // Zustand store
 const useLoginFormStore = create<LoginFormStore>()(
@@ -67,7 +68,9 @@ const useLoginFormStore = create<LoginFormStore>()(
         return Object.keys(errors).length === 0;
       },
 
-      submitForm: async () => {
+      submitForm: async (
+        onSubmit: (email: string, password: string) => Promise<void>
+      ) => {
         const { formData, validateForm } = get();
 
         if (!validateForm()) return;
@@ -75,45 +78,29 @@ const useLoginFormStore = create<LoginFormStore>()(
         set({ isSubmitting: true, loginError: '' }, false, 'submitForm_start');
 
         try {
-          await new Promise((resolve) =>
-            setTimeout(resolve, apiSimulationDelay)
-          );
+          await onSubmit(formData.thoughtMetricsId, formData.password);
 
-          // Simulate login validation (replace with actual API call)
-          if (
-            formData.thoughtMetricsId.toLowerCase() === 'demo' &&
-            formData.password === 'password'
-          ) {
-            console.log('Login successful:', formData);
-
-            set(
-              {
-                isSubmitting: false,
-                isSubmitted: true,
-              },
-              false,
-              'submitForm_success'
-            );
-
-            setTimeout(() => {
-              get().resetForm();
-            }, formResetDelay);
-          } else {
-            // Simulate invalid credentials
-            set(
-              {
-                isSubmitting: false,
-                loginError: validationMessages.loginError,
-              },
-              false,
-              'submitForm_invalid'
-            );
-          }
-        } catch {
           set(
             {
               isSubmitting: false,
-              loginError: validationMessages.submitError,
+              isSubmitted: true,
+            },
+            false,
+            'submitForm_success'
+          );
+
+          setTimeout(() => {
+            get().resetForm();
+          }, formResetDelay);
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : validationMessages.submitError;
+          set(
+            {
+              isSubmitting: false,
+              loginError: errorMessage,
             },
             false,
             'submitForm_error'
@@ -128,6 +115,10 @@ const useLoginFormStore = create<LoginFormStore>()(
 );
 
 const AuthPage: React.FC = () => {
+  const navigate = useNavigate();
+  const signInMutation = useSignInMutation();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   const {
     formData,
     isSubmitting,
@@ -137,6 +128,20 @@ const AuthPage: React.FC = () => {
     updateField,
     submitForm,
   } = useLoginFormStore();
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setIsAuthenticated(true);
+        void navigate(ROUTES.SURVEY_PAGE);
+      } else {
+        setIsAuthenticated(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [navigate]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
     if (type === 'checkbox') {
@@ -147,10 +152,54 @@ const AuthPage: React.FC = () => {
     }
   };
 
+  const handleFirebaseSignIn = async (email: string, password: string) => {
+    const result = await signInMutation.mutateAsync({
+      type: 'email',
+      email,
+      password,
+    });
+
+    if (result) {
+      setTimeout(() => {
+        void navigate(ROUTES.SURVEY_PAGE);
+      }, 1500);
+    }
+  };
+
+  const handleGoogleSignIn = () => {
+    void signInMutation
+      .mutateAsync({ type: 'google' })
+      .then((result) => {
+        if (result) {
+          void navigate(ROUTES.SURVEY_PAGE);
+        }
+      })
+      .catch((error) => {
+        console.error('Google sign-in failed:', error);
+      });
+  };
+
+  const handleFacebookSignIn = () => {
+    void signInMutation
+      .mutateAsync({ type: 'facebook' })
+      .then((result) => {
+        if (result) {
+          void navigate(ROUTES.SURVEY_PAGE);
+        }
+      })
+      .catch((error) => {
+        console.error('Facebook sign-in failed:', error);
+      });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    void submitForm();
+    void submitForm(handleFirebaseSignIn);
   };
+
+  if (isAuthenticated) {
+    return null;
+  }
 
   if (isSubmitted) {
     return (
@@ -203,6 +252,36 @@ const AuthPage: React.FC = () => {
               </h1>
             </div>
 
+            {/* Social Login Buttons */}
+            <div className="mb-6 space-y-3 w-full max-w-[380px]">
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                disabled={signInMutation.isPending}
+                className="relative w-full flex items-center pl-4 pr-12 py-2 bg-[#DB4437] text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <GoogleOutlineIcon className="w-5 h-5 mr-8" />
+                <div className="left-13 absolute w-0.25 h-full bg-white"></div>
+                Sign in with Google
+              </button>
+              <button
+                type="button"
+                onClick={handleFacebookSignIn}
+                disabled={signInMutation.isPending}
+                className="relative w-full flex items-center pl-4 pr-12 py-2 bg-[#1877F2] text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <FacebookOutlineIcon className="w-5 h-5 mr-8" />
+                <div className="left-13 absolute w-0.25 h-full bg-white"></div>
+                Sign in with Facebook
+              </button>
+            </div>
+
+            <div className="w-full max-w-[380px] flex items-center mb-6">
+              <div className="flex-1 border-t border-gray-300"></div>
+              <span className="px-4 text-sm text-gray-500">OR</span>
+              <div className="flex-1 border-t border-gray-300"></div>
+            </div>
+
             <form
               onSubmit={handleSubmit}
               className="space-y-6 border-y-1 border-y-custom-grey py-4 max-w-[380px] shrink-0 w-full"
@@ -238,16 +317,16 @@ const AuthPage: React.FC = () => {
               />
 
               {/* Continue Button */}
-              <button className="w-full bg-primary text-white text-nowrap hover:bg-secondary hover:text-white transition-all duration-300 ease-in-out font-medium px-6 py-2 flex items-center gap-3">
-                <Link
-                  to={ROUTES.HOME}
-                  viewTransition={true}
-                  className="flex justify-between w-full"
-                >
-                  <label className="text-lg">
-                    {isSubmitting ? ui.buttons.continuing : ui.buttons.continue}
-                  </label>
-                </Link>
+              <button
+                type="submit"
+                disabled={isSubmitting || signInMutation.isPending}
+                className="w-full bg-primary text-white text-nowrap hover:bg-secondary hover:text-white transition-all duration-300 ease-in-out font-medium px-6 py-2 flex items-center justify-between gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <label className="text-lg">
+                  {isSubmitting || signInMutation.isPending
+                    ? ui.buttons.continuing
+                    : ui.buttons.continue}
+                </label>
                 <ArrowRight className="w-8 r-8 fill-current text-white" />
               </button>
 

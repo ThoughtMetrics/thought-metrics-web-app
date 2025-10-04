@@ -1,6 +1,11 @@
 import type { ContentQueryOptions } from '../types/content.type';
 
 export const QueryKeys = {
+  // Auth related queries
+  auth: {
+    all: ['auth'] as const,
+    userProfile: () => [...QueryKeys.auth.all, 'profile'] as const,
+  },
   // Contact Us related queries
   contactUs: {
     all: ['contact-us'] as const,

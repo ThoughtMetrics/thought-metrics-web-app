@@ -14,6 +14,7 @@ export const landing = {
       description: 'Join in. Be heard. See the difference you make.',
       signButton: {
         label: 'Sign Me Up',
+        signedInLabel: 'Take a Survey',
         path: '#',
       },
       faqButton: {
@@ -179,7 +180,7 @@ export const landing = {
       description:
         'Join our community today and help shape the world, one opinion at a time.',
       signButton: {
-        label: 'Sign Me Up',
+        label: 'Take a Survey',
         path: ROUTES.SIGN_UP,
       },
     },
@@ -191,6 +192,7 @@ export const landing = {
       description: 'Bring voice to our platform. Get paid.',
       signButton: {
         label: 'Sign Me Up',
+        signedInLabel: 'Take a Survey',
         path: '#',
       },
     },
