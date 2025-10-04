@@ -125,16 +125,21 @@ const PhoneInputAtom: React.FC<PhoneInputProps> = ({
     { code: '+1', country: 'USA' },
     { code: '+44', country: 'UK' },
   ],
+  error,
+  required = false,
   className = '',
 }) => {
   return (
     <div className={className}>
       <label htmlFor={id} className="block text-sm font-medium text-black mb-2">
         {label}
+        {required && '*'}
       </label>
       <div className="flex">
         <select
-          className="px-2 py-2 border-b-2 border-custom-grey-2 bg-custom-grey-5 focus:border-primary focus:bg-white focus:outline-none border-r-2"
+          className={`px-2 py-2 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none border-r-2 ${
+            error ? 'border-primary' : 'border-custom-grey-2 focus:border-primary'
+          }`}
           value={countryCode}
           onChange={onCountryCodeChange}
         >
@@ -150,9 +155,12 @@ const PhoneInputAtom: React.FC<PhoneInputProps> = ({
           name={name}
           value={value}
           onChange={onChange}
-          className="flex-1 px-3 py-2 border-b-2 border-custom-grey-2 bg-custom-grey-5 focus:border-primary focus:bg-white focus:outline-none transition-colors"
+          className={`flex-1 px-3 py-2 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors ${
+            error ? 'border-primary' : 'border-custom-grey-2 focus:border-primary'
+          }`}
         />
       </div>
+      {error && <p className="mt-1 text-sm text-primary">{error}</p>}
     </div>
   );
 };

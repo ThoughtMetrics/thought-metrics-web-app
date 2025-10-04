@@ -327,7 +327,7 @@ export const landing = {
             firstName: 'First name',
             lastName: 'Last name',
             email: 'Email',
-            phone: 'Phone (Optional)',
+            phone: 'Phone',
             instagramHandle: 'Instagram handle',
             instagramFollowers: 'Instagram followers',
             xHandle: 'X handle',

@@ -1,7 +1,4 @@
-import type {
-  ResearchFormData,
-  ResearchFormStore,
-} from '@/core/types/start-research-item.type';
+import type { ResearchFormData } from '@/core/types/start-research-item.type';
 import { startYourResearchConstants } from './constant';
 import { IllustrationSquares2 } from '@/assets';
 import {
@@ -15,143 +12,44 @@ import {
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/routes/routeConfig';
-import { devtools } from 'zustand/middleware';
-import React from 'react';
-import { create } from 'zustand';
+import React, { useEffect, useState } from 'react';
+import { useResearchFormStore } from '@/core/stores/research.store';
+import { useResearchFormValidation } from '@/core/hooks/validation/use-research-form-validation';
+import { useSubmitResearch } from '@/core/hooks/queries/research/index.queries';
 
 const {
-  initialFormData,
   countries,
   countryCodes,
   helpOptions,
   researchTypes,
   defaultCountryCode,
-  storeName,
-  validationMessages,
-  emailRegex,
-  formResetDelay,
-  apiSimulationDelay,
   ui,
 } = startYourResearchConstants;
 
-const emailRegexPattern = new RegExp(emailRegex);
-
-// Zustand store
-const useResearchFormStore = create<ResearchFormStore>()(
-  devtools(
-    (set, get) => ({
-      formData: initialFormData as ResearchFormData,
-      isSubmitting: false,
-      isSubmitted: false,
-      errors: {},
-      countryCode: defaultCountryCode,
-
-      updateField: (field, value) =>
-        set(
-          (state) => ({
-            formData: { ...state.formData, [field]: value },
-            errors: { ...state.errors, [field]: undefined },
-          }),
-          false,
-          `updateField_${field}`
-        ),
-
-      updateCountryCode: (code) =>
-        set({ countryCode: code }, false, 'updateCountryCode'),
-
-      resetForm: () =>
-        set(
-          {
-            formData: initialFormData as ResearchFormData,
-            isSubmitting: false,
-            isSubmitted: false,
-            errors: {},
-            countryCode: defaultCountryCode,
-          },
-          false,
-          'resetForm'
-        ),
-
-      validateForm: () => {
-        const { formData } = get();
-        const errors: Partial<ResearchFormData> = {};
-
-        if (!formData.firstName.trim())
-          errors.firstName = validationMessages.firstName;
-        if (!formData.lastName.trim())
-          errors.lastName = validationMessages.lastName;
-        if (!formData.businessEmail.trim())
-          errors.businessEmail = validationMessages.businessEmail.required;
-        else if (!emailRegexPattern.test(formData.businessEmail))
-          errors.businessEmail = validationMessages.businessEmail.invalid;
-        if (!formData.countryOrRegion.trim())
-          errors.countryOrRegion = validationMessages.countryOrRegion;
-        if (!formData.company.trim())
-          errors.company = validationMessages.company;
-        if (!formData.researchTopic.trim())
-          errors.researchTopic = validationMessages.researchTopic;
-        if (!formData.projectDetails.trim())
-          errors.projectDetails = validationMessages.projectDetails;
-
-        set({ errors }, false, 'validateForm');
-        return Object.keys(errors).length === 0;
-      },
-
-      submitForm: async () => {
-        const { formData, validateForm } = get();
-
-        if (!validateForm()) return;
-
-        set({ isSubmitting: true }, false, 'submitForm_start');
-
-        try {
-          await new Promise((resolve) =>
-            setTimeout(resolve, apiSimulationDelay)
-          );
-
-          console.log('Research form submitted:', formData);
-
-          set(
-            {
-              isSubmitting: false,
-              isSubmitted: true,
-            },
-            false,
-            'submitForm_success'
-          );
-
-          setTimeout(() => {
-            get().resetForm();
-          }, formResetDelay);
-        } catch {
-          set(
-            {
-              isSubmitting: false,
-              errors: { businessEmail: validationMessages.submitError },
-            },
-            false,
-            'submitForm_error'
-          );
-        }
-      },
-    }),
-    {
-      name: storeName,
-    }
-  )
-);
-
 const ResearchForm: React.FC = () => {
-  const {
-    formData,
-    isSubmitting,
-    isSubmitted,
-    errors,
-    countryCode,
-    updateField,
-    updateCountryCode,
-    submitForm,
-  } = useResearchFormStore();
+  const { formData, updateField, resetForm } = useResearchFormStore();
+  const { errors, validate, clearError, clearAllErrors } =
+    useResearchFormValidation();
+  const submitMutation = useSubmitResearch();
+  const [countryCode, setCountryCode] = useState(defaultCountryCode);
+
+  // Reset form on successful submission
+  useEffect(() => {
+    if (submitMutation.isSuccess) {
+      const timer = setTimeout(() => {
+        resetForm();
+        clearAllErrors();
+        submitMutation.reset();
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [
+    submitMutation.isSuccess,
+    resetForm,
+    clearAllErrors,
+    submitMutation.reset,
+    submitMutation,
+  ]);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -165,10 +63,11 @@ const ResearchForm: React.FC = () => {
     } else {
       updateField(name as keyof ResearchFormData, value);
     }
+    clearError(name);
   };
 
   const handleCountryCodeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateCountryCode(e.target.value);
+    setCountryCode(e.target.value);
   };
 
   const handleCheckboxGroupChange =
@@ -178,10 +77,28 @@ const ResearchForm: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    void submitForm();
+
+    // Validate with original data (phone without country code)
+    if (!validate(formData)) return;
+
+    // Prepare data for submission - clean up empty strings
+    const submitData: any = {
+      ...formData,
+      countryCode,
+      phone: countryCode + formData.phone,
+    };
+
+    // Replace empty strings with null or remove them
+    Object.keys(submitData).forEach((key) => {
+      if (submitData[key] === '') {
+        delete submitData[key];
+      }
+    });
+
+    submitMutation.mutate(submitData);
   };
 
-  if (isSubmitted) {
+  if (submitMutation.isSuccess) {
     return (
       <div className="max-w-4xl mx-auto p-6 bg-white">
         <div className="text-center py-12">
@@ -278,6 +195,8 @@ const ResearchForm: React.FC = () => {
                   countryCode={countryCode}
                   onCountryCodeChange={handleCountryCodeChange}
                   countryCodes={countryCodes}
+                  error={errors.phone}
+                  required
                 />
               </div>
 
@@ -312,6 +231,8 @@ const ResearchForm: React.FC = () => {
                   label={ui.fieldLabels.jobTitle}
                   value={formData.jobTitle}
                   onChange={handleInputChange}
+                  error={errors.jobTitle}
+                  required
                 />
                 <TextInputAtom
                   id="researchTopic"
@@ -370,6 +291,8 @@ const ResearchForm: React.FC = () => {
                     checked={formData.consentCommunication}
                     onChange={handleInputChange}
                     label={ui.checkboxLabels.consentCommunication}
+                    error={errors.consentCommunication}
+                    required
                   />
 
                   <CheckboxAtom
@@ -414,9 +337,15 @@ const ResearchForm: React.FC = () => {
 
               {/* Submit Button */}
               <CustomButtonAtom
-                label={isSubmitting ? ui.buttons.submitting : ui.buttons.submit}
+                type="submit"
+                label={
+                  submitMutation.isPending
+                    ? ui.buttons.submitting
+                    : ui.buttons.submit
+                }
                 className="py-2 px-14"
-                disabled={!isSubmitting}
+                disabled={submitMutation.isPending}
+                loading={submitMutation.isPending}
               />
             </form>
           </div>

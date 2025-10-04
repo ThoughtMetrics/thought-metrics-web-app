@@ -46,6 +46,8 @@ export interface PhoneInputProps {
   countryCode?: string;
   onCountryCodeChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   countryCodes?: CountryCode[];
+  error?: string;
+  required?: boolean;
   className?: string;
 }
 

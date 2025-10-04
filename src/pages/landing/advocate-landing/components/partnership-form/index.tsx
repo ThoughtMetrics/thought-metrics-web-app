@@ -1,6 +1,4 @@
-import React from 'react';
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import React, { useEffect, useState } from 'react';
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
 import {
   TextInputAtom,
@@ -8,160 +6,79 @@ import {
   PhoneInputAtom,
 } from '@/shared/ui/atoms/custom-input';
 import { landing } from '@/pages/landing/landing.constant';
-import type {
-  PartnershipFormData,
-  PartnershipFormStore,
-} from '@/core/types/partnership-form.type';
 import InteractionFooter from '@/shared/components/interaction-footer';
+import { usePartnershipFormStore } from '@/core/stores/partnership.store';
+import { usePartnershipFormValidation } from '@/core/hooks/validation/use-partnership-form-validation';
+import { useSubmitPartnership } from '@/core/hooks/queries/partnership/index.queries';
 
 // Destructure constants
 const {
-  initialFormData,
   countryCodes,
   defaultCountryCode,
-  storeName,
-  validationMessages,
-  emailRegex,
-  formResetDelay,
-  apiSimulationDelay,
   ui,
 } = landing.advocate.formsSection.inputForm;
 
-const emailRegexPattern = new RegExp(emailRegex);
-
-const usePartnershipFormStore = create<PartnershipFormStore>()(
-  devtools(
-    (set, get) => ({
-      formData: initialFormData as PartnershipFormData,
-      isSubmitting: false,
-      isSubmitted: false,
-      errors: {},
-      countryCode: defaultCountryCode,
-
-      updateField: (field, value) =>
-        set(
-          (state) => ({
-            formData: { ...state.formData, [field]: value },
-            errors: { ...state.errors, [field]: undefined },
-          }),
-          false,
-          `updateField_${field}`
-        ),
-
-      updateCountryCode: (code) =>
-        set({ countryCode: code }, false, 'updateCountryCode'),
-
-      resetForm: () =>
-        set(
-          {
-            formData: initialFormData as PartnershipFormData,
-            isSubmitting: false,
-            isSubmitted: false,
-            errors: {},
-            countryCode: defaultCountryCode,
-          },
-          false,
-          'resetForm'
-        ),
-
-      validateForm: () => {
-        const { formData } = get();
-        const errors: Partial<PartnershipFormData> = {};
-
-        if (!formData.firstName.trim())
-          errors.firstName = validationMessages.firstName;
-        if (!formData.lastName.trim())
-          errors.lastName = validationMessages.lastName;
-        if (!formData.email.trim())
-          errors.email = validationMessages.email.required;
-        else if (!emailRegexPattern.test(formData.email))
-          errors.email = validationMessages.email.invalid;
-        if (!formData.instagramHandle.trim())
-          errors.instagramHandle = validationMessages.instagramHandle;
-        if (!formData.supportGroups.trim())
-          errors.supportGroups = validationMessages.supportGroups;
-        if (!formData.audienceDescription.trim())
-          errors.audienceDescription = validationMessages.audienceDescription;
-        if (!formData.partnershipReason.trim())
-          errors.partnershipReason = validationMessages.partnershipReason;
-
-        set({ errors }, false, 'validateForm');
-        return Object.keys(errors).length === 0;
-      },
-
-      submitForm: async () => {
-        const { formData, validateForm } = get();
-
-        if (!validateForm()) return;
-
-        set({ isSubmitting: true }, false, 'submitForm_start');
-
-        try {
-          await new Promise((resolve) =>
-            setTimeout(resolve, apiSimulationDelay)
-          );
-
-          console.log('Partnership form submitted:', formData);
-
-          set(
-            {
-              isSubmitting: false,
-              isSubmitted: true,
-            },
-            false,
-            'submitForm_success'
-          );
-
-          setTimeout(() => {
-            get().resetForm();
-          }, formResetDelay);
-        } catch {
-          set(
-            {
-              isSubmitting: false,
-              errors: { email: validationMessages.submitError },
-            },
-            false,
-            'submitForm_error'
-          );
-        }
-      },
-    }),
-    {
-      name: storeName,
-    }
-  )
-);
-
 const PartnershipForm: React.FC = () => {
-  const {
-    formData,
-    isSubmitting,
-    isSubmitted,
-    errors,
-    countryCode,
-    updateField,
-    updateCountryCode,
-    submitForm,
-  } = usePartnershipFormStore();
+  const { formData, updateField, resetForm } = usePartnershipFormStore();
+  const { errors, validate, clearError, clearAllErrors } =
+    usePartnershipFormValidation();
+  const submitMutation = useSubmitPartnership();
+  const [countryCode, setCountryCode] = useState(defaultCountryCode);
+
+  // Reset form on successful submission
+  useEffect(() => {
+    if (submitMutation.isSuccess) {
+      const timer = setTimeout(() => {
+        resetForm();
+        clearAllErrors();
+        submitMutation.reset();
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [
+    submitMutation.isSuccess,
+    resetForm,
+    clearAllErrors,
+    submitMutation.reset,
+    submitMutation,
+  ]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    updateField(name as keyof PartnershipFormData, value);
+    updateField(name as keyof typeof formData, value);
+    clearError(name);
   };
 
   const handleCountryCodeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateCountryCode(e.target.value);
+    setCountryCode(e.target.value);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    void submitForm();
+
+    // Validate with original data (phone without country code)
+    if (!validate(formData)) return;
+
+    // Prepare data for submission - clean up empty strings
+    const submitData: any = {
+      ...formData,
+      countryCode,
+      phone: countryCode + formData.phone,
+    };
+
+    // Replace empty strings with null or remove them
+    Object.keys(submitData).forEach((key) => {
+      if (submitData[key] === '') {
+        delete submitData[key];
+      }
+    });
+
+    submitMutation.mutate(submitData);
   };
 
-  if (isSubmitted) {
+  if (submitMutation.isSuccess) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center p-6">
         <div className="max-w-md text-center bg-white rounded-lg shadow-lg p-8">
@@ -245,6 +162,8 @@ const PartnershipForm: React.FC = () => {
                     countryCode={countryCode}
                     onCountryCodeChange={handleCountryCodeChange}
                     countryCodes={countryCodes}
+                    error={errors.phone}
+                    required
                   />
                   <TextInputAtom
                     id="instagramHandle"
@@ -252,6 +171,7 @@ const PartnershipForm: React.FC = () => {
                     label={ui.fieldLabels.instagramHandle}
                     value={formData.instagramHandle}
                     onChange={handleInputChange}
+                    error={errors.instagramHandle}
                   />
                   <TextInputAtom
                     id="instagramFollowers"
@@ -259,6 +179,7 @@ const PartnershipForm: React.FC = () => {
                     label={ui.fieldLabels.instagramFollowers}
                     value={formData.instagramFollowers}
                     onChange={handleInputChange}
+                    error={errors.instagramFollowers}
                   />
                   <TextInputAtom
                     id="xHandle"
@@ -266,6 +187,7 @@ const PartnershipForm: React.FC = () => {
                     label={ui.fieldLabels.xHandle}
                     value={formData.xHandle}
                     onChange={handleInputChange}
+                    error={errors.xHandle}
                   />
                   <TextInputAtom
                     id="xFollowers"
@@ -273,6 +195,7 @@ const PartnershipForm: React.FC = () => {
                     label={ui.fieldLabels.xFollowers}
                     value={formData.xFollowers}
                     onChange={handleInputChange}
+                    error={errors.xFollowers}
                   />
                   <TextInputAtom
                     id="linkedinUrl"
@@ -280,6 +203,7 @@ const PartnershipForm: React.FC = () => {
                     label={ui.fieldLabels.linkedinUrl}
                     value={formData.linkedinUrl}
                     onChange={handleInputChange}
+                    error={errors.linkedinUrl}
                   />
                   <TextInputAtom
                     id="linkedinConnections"
@@ -287,6 +211,7 @@ const PartnershipForm: React.FC = () => {
                     label={ui.fieldLabels.linkedinConnections}
                     value={formData.linkedinConnections}
                     onChange={handleInputChange}
+                    error={errors.linkedinConnections}
                   />
                   <TextInputAtom
                     id="youtubeChannel"
@@ -294,6 +219,7 @@ const PartnershipForm: React.FC = () => {
                     label={ui.fieldLabels.youtubeChannel}
                     value={formData.youtubeChannel}
                     onChange={handleInputChange}
+                    error={errors.youtubeChannel}
                   />
                   <TextInputAtom
                     id="youtubeFollowers"
@@ -301,6 +227,7 @@ const PartnershipForm: React.FC = () => {
                     label={ui.fieldLabels.youtubeFollowers}
                     value={formData.youtubeFollowers}
                     onChange={handleInputChange}
+                    error={errors.youtubeFollowers}
                   />
                 </div>
                 {/* Partnership Details */}
@@ -315,6 +242,7 @@ const PartnershipForm: React.FC = () => {
                     label={ui.placeholders.supportGroups}
                     value={formData.supportGroups}
                     onChange={handleInputChange}
+                    error={errors.supportGroups}
                     rows={1}
                   />
                   <TextareaAtom
@@ -323,6 +251,7 @@ const PartnershipForm: React.FC = () => {
                     label={ui.fieldLabels.audienceDescription}
                     value={formData.audienceDescription}
                     onChange={handleInputChange}
+                    error={errors.audienceDescription}
                     rows={1}
                   />
                   <TextareaAtom
@@ -331,6 +260,7 @@ const PartnershipForm: React.FC = () => {
                     label={ui.fieldLabels.partnershipReason}
                     value={formData.partnershipReason}
                     onChange={handleInputChange}
+                    error={errors.partnershipReason}
                     rows={1}
                   />
                 </div>
@@ -340,11 +270,15 @@ const PartnershipForm: React.FC = () => {
                 </p>
                 {/* Submit Button */}
                 <CustomButtonAtom
+                  type="submit"
                   label={
-                    isSubmitting ? ui.buttons.submitting : ui.buttons.submit
+                    submitMutation.isPending
+                      ? ui.buttons.submitting
+                      : ui.buttons.submit
                   }
                   className="py-2 px-12 font-semibold bg-secondary hover:bg-custom-blue"
-                  disabled={isSubmitting}
+                  disabled={submitMutation.isPending}
+                  loading={submitMutation.isPending}
                 />
               </form>
             </div>

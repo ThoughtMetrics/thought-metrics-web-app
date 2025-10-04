@@ -7,6 +7,7 @@ export interface DownloadReportFormData {
   countryOrRegion: string;
   company: string;
   jobTitle: string;
+  countryCode?: string;
   subscribeNewsletter: boolean;
   dataUsageConsent: boolean;
 }
