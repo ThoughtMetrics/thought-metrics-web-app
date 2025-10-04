@@ -15,6 +15,34 @@ export const QueryKeys = {
     details: () => [...QueryKeys.contactUs.all, 'detail'] as const,
     detail: (id: string) => [...QueryKeys.contactUs.details(), id] as const,
   },
+  // Download Report related queries
+  downloadReport: {
+    all: ['download-report'] as const,
+    lists: () => [...QueryKeys.downloadReport.all, 'list'] as const,
+    list: (filters: Record<string, any>) =>
+      [...QueryKeys.downloadReport.lists(), filters] as const,
+    details: () => [...QueryKeys.downloadReport.all, 'detail'] as const,
+    detail: (id: string) =>
+      [...QueryKeys.downloadReport.details(), id] as const,
+  },
+  // Partnership related queries
+  partnership: {
+    all: ['partnership'] as const,
+    lists: () => [...QueryKeys.partnership.all, 'list'] as const,
+    list: (filters: Record<string, any>) =>
+      [...QueryKeys.partnership.lists(), filters] as const,
+    details: () => [...QueryKeys.partnership.all, 'detail'] as const,
+    detail: (id: string) => [...QueryKeys.partnership.details(), id] as const,
+  },
+  // Research related queries
+  research: {
+    all: ['research'] as const,
+    lists: () => [...QueryKeys.research.all, 'list'] as const,
+    list: (filters: Record<string, any>) =>
+      [...QueryKeys.research.lists(), filters] as const,
+    details: () => [...QueryKeys.research.all, 'detail'] as const,
+    detail: (id: string) => [...QueryKeys.research.details(), id] as const,
+  },
   contentKeys: {
     all: ['contents'] as const,
     lists: () => [...QueryKeys.contentKeys.all, 'list'] as const,

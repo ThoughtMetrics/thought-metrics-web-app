@@ -1,11 +1,6 @@
 import type React from 'react';
+import { useEffect, useState } from 'react';
 import { reportDownloadConstant } from './constant';
-import type {
-  DownloadReportFormData,
-  DownloadReportFormStore,
-} from '@/core/types/report-download-form.type';
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/routes/routeConfig';
 import {
@@ -16,157 +11,88 @@ import {
 } from '@/shared/ui/atoms/custom-input';
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
 import { IllustrationLoginIcon, Logo } from '@/assets';
+import { useDownloadReportFormStore } from '@/core/stores/download-report.store';
+import { useDownloadReportFormValidation } from '@/core/hooks/validation/use-download-report-form-validation';
+import { useSubmitDownloadReport } from '@/core/hooks/queries/download-report/index.queries';
 
 const {
-  initialFormData,
   countries,
   countryCodes,
   defaultCountryCode,
-  storeName,
-  validationMessages,
-  emailRegex,
-  formResetDelay,
-  apiSimulationDelay,
   ui,
 } = reportDownloadConstant;
 
-const emailRegexPattern = new RegExp(emailRegex);
-
-// Zustand store
-const useReportDownloadFormStore = create<DownloadReportFormStore>()(
-  devtools(
-    (set, get) => ({
-      formData: initialFormData as DownloadReportFormData,
-      isSubmitting: false,
-      isSubmitted: false,
-      errors: {},
-      countryCode: defaultCountryCode,
-
-      updateField: (field, value) =>
-        set(
-          (state) => ({
-            formData: { ...state.formData, [field]: value },
-            errors: { ...state.errors, [field]: undefined },
-          }),
-          false,
-          `updateField_${field}`
-        ),
-
-      updateCountryCode: (code) =>
-        set({ countryCode: code }, false, 'updateCountryCode'),
-
-      resetForm: () =>
-        set(
-          {
-            formData: initialFormData as DownloadReportFormData,
-            isSubmitting: false,
-            isSubmitted: false,
-            errors: {},
-            countryCode: defaultCountryCode,
-          },
-          false,
-          'resetForm'
-        ),
-
-      validateForm: () => {
-        const { formData } = get();
-        const errors: Partial<DownloadReportFormData> = {};
-
-        if (!formData.firstName.trim())
-          errors.firstName = validationMessages.firstName;
-        if (!formData.lastName.trim())
-          errors.lastName = validationMessages.lastName;
-        if (!formData.businessEmail.trim())
-          errors.businessEmail = validationMessages.businessEmail.required;
-        else if (!emailRegexPattern.test(formData.businessEmail))
-          errors.businessEmail = validationMessages.businessEmail.invalid;
-        if (!formData.countryOrRegion.trim())
-          errors.countryOrRegion = validationMessages.countryOrRegion;
-        if (!formData.company.trim())
-          errors.company = validationMessages.company;
-
-        set({ errors }, false, 'validateForm');
-        return Object.keys(errors).length === 0;
-      },
-
-      submitForm: async () => {
-        const { formData, validateForm } = get();
-
-        if (!validateForm()) return;
-
-        set({ isSubmitting: true }, false, 'submitForm_start');
-
-        try {
-          await new Promise((resolve) =>
-            setTimeout(resolve, apiSimulationDelay)
-          );
-
-          console.log('Whitepaper form submitted:', formData);
-
-          set(
-            {
-              isSubmitting: false,
-              isSubmitted: true,
-            },
-            false,
-            'submitForm_success'
-          );
-
-          setTimeout(() => {
-            get().resetForm();
-          }, formResetDelay);
-        } catch {
-          set(
-            {
-              isSubmitting: false,
-              errors: { businessEmail: validationMessages.submitError },
-            },
-            false,
-            'submitForm_error'
-          );
-        }
-      },
-    }),
-    {
-      name: storeName,
-    }
-  )
-);
-
 const ReportDownloadPage: React.FC = () => {
-  const {
-    formData,
-    isSubmitting,
-    isSubmitted,
-    errors,
-    countryCode,
-    updateField,
-    updateCountryCode,
-    submitForm,
-  } = useReportDownloadFormStore();
+  const { formData, updateField, resetForm } = useDownloadReportFormStore();
+  const { errors, validate, clearError, clearAllErrors } =
+    useDownloadReportFormValidation();
+  const submitMutation = useSubmitDownloadReport();
+  const [countryCode, setCountryCode] = useState(defaultCountryCode);
+
+  // Reset form on successful submission
+  useEffect(() => {
+    if (submitMutation.isSuccess) {
+      const timer = setTimeout(() => {
+        resetForm();
+        clearAllErrors();
+        submitMutation.reset();
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [
+    submitMutation.isSuccess,
+    resetForm,
+    clearAllErrors,
+    submitMutation.reset,
+    submitMutation,
+  ]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
-    if (type === 'checkbox') {
-      const { checked } = e.target as HTMLInputElement;
-      updateField(name as keyof DownloadReportFormData, checked);
-    } else {
-      updateField(name as keyof DownloadReportFormData, value);
-    }
+    const finalValue =
+      type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
+
+    updateField(name as keyof typeof formData, finalValue);
+    clearError(name);
   };
 
   const handleCountryCodeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    updateCountryCode(e.target.value);
+    setCountryCode(e.target.value);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    void submitForm();
+
+    // Add countryCode to formData before validation
+    const dataToValidate = {
+      ...formData,
+      countryCode,
+      phone: countryCode + formData.phone,
+    };
+
+    if (!validate(dataToValidate)) return;
+
+    // Prepare data for submission - clean up empty strings
+    const submitData: any = {
+      ...formData,
+      countryCode,
+      phone: countryCode + formData.phone,
+    };
+
+    // Replace empty strings with null or remove them
+    Object.keys(submitData).forEach((key) => {
+      if (submitData[key] === '') {
+        delete submitData[key];
+      }
+    });
+
+    submitMutation.mutate(submitData);
   };
 
-  if (isSubmitted) {
+  // Show success state
+  if (submitMutation.isSuccess) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
         <div className="max-w-md text-center bg-white rounded-lg shadow-lg p-8">
@@ -195,6 +121,7 @@ const ReportDownloadPage: React.FC = () => {
       </div>
     );
   }
+
   return (
     <div className="common-component w-full relative bg-white text-black z-1 overflow-scroll flex-col items-center !justify-start hide-scrollbar">
       <header className="common-container bg-white !max-w-[var(--breakpoint-2xl)] h-[3.5rem]">
@@ -222,7 +149,7 @@ const ReportDownloadPage: React.FC = () => {
               understand the real-world power of AI in shaping better
               experiences.
             </span>
-            In this report, you’ll learn:
+            In this report, you'll learn:
             <ul className="list-disc list-inside">
               <li>
                 How AI is streamlining qualitative and quantitative data
@@ -300,6 +227,8 @@ const ReportDownloadPage: React.FC = () => {
                   countryCode={countryCode}
                   onCountryCodeChange={handleCountryCodeChange}
                   countryCodes={countryCodes}
+                  error={errors.phone}
+                  required
                 />
               </div>
 
@@ -333,6 +262,7 @@ const ReportDownloadPage: React.FC = () => {
                 label={ui.fieldLabels.jobTitle}
                 value={formData.jobTitle}
                 onChange={handleInputChange}
+                error={errors.jobTitle}
               />
 
               {/* Consent Checkboxes */}
@@ -351,27 +281,21 @@ const ReportDownloadPage: React.FC = () => {
                   checked={formData.dataUsageConsent}
                   onChange={handleInputChange}
                   label={ui.checkboxLabels.dataUsageConsent}
-                  // className={
-                  //   errors.dataUsageConsent
-                  //     ? 'border-l-2 border-primary pl-3'
-                  //     : ''
-                  // }
                 />
-                {/* {errors.dataUsageConsent && (
-                <p className="text-sm text-primary ml-7">
-                  {errors.dataUsageConsent}
-                </p>
-              )} */}
               </div>
 
               {/* Submit Button */}
               <div className="pt-6">
                 <CustomButtonAtom
+                  type="submit"
                   label={
-                    isSubmitting ? ui.buttons.downloading : ui.buttons.download
+                    submitMutation.isPending
+                      ? ui.buttons.downloading
+                      : ui.buttons.download
                   }
                   className="w-full md:w-fit py-4 md:py-6 md:px-24 rounded-none text-white font-semibold"
-                  disabled={isSubmitting}
+                  disabled={submitMutation.isPending}
+                  loading={submitMutation.isPending}
                 />
               </div>
             </form>
