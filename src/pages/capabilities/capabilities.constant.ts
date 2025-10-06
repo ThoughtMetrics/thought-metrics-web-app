@@ -1104,7 +1104,7 @@ export const capabilities = {
           description:
             'Customer journey research insights help you understand each member of your buyer teams at a granular level. Create delightful customer experiences and customer centric products and services. With the right data, your product development and marketing strategies practically write themselves.',
           backgroundColor: 'green',
-          link: '/resources/turning-customers-loyal-for-life',
+          link: '/resources/the-customer-journey-research-process',
         },
         {
           className: 'absolute -bottom-5 right-20 w-[20rem] h-full',
