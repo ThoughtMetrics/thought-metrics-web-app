@@ -94,9 +94,9 @@ export const footerData = {
       links: [
         {
           label: 'Join Our Panel',
+          path: ROUTES.SIGN_UP,
           signedInLabel: 'Take a Survey',
           signedInPath: ROUTES.SURVEY_PAGE,
-          path: ROUTES.SIGN_UP,
         },
         { label: 'Request a Bid', path: ROUTES.START_YOUR_RESEARCH },
         { label: 'Careers', path: ROUTES.CAREERS },

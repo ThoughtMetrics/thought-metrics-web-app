@@ -14,8 +14,9 @@ export const landing = {
       description: 'Join in. Be heard. See the difference you make.',
       signButton: {
         label: 'Sign Me Up',
+        path: ROUTES.SIGN_UP,
         signedInLabel: 'Take a Survey',
-        path: '#',
+        signedInPath: ROUTES.SURVEY_PAGE,
       },
       faqButton: {
         label: 'FAQs',
@@ -111,7 +112,9 @@ export const landing = {
         "We're always running studies and focus groups in different places (and online). Get involved, share your thoughts, and enjoy a little extra cash in the process.",
       actionButton: {
         label: 'Get Started',
-        path: '#',
+        path: ROUTES.SIGN_UP,
+        signedInLabel: 'Take a Survey',
+        signedInPath: ROUTES.SURVEY_PAGE,
       },
     },
     joinUsSection: {
@@ -180,8 +183,10 @@ export const landing = {
       description:
         'Join our community today and help shape the world, one opinion at a time.',
       signButton: {
-        label: 'Take a Survey',
+        label: 'Sign Me Up',
         path: ROUTES.SIGN_UP,
+        signedInLabel: 'Take a Survey',
+        signedInPath: ROUTES.SURVEY_PAGE,
       },
     },
   },
@@ -192,8 +197,9 @@ export const landing = {
       description: 'Bring voice to our platform. Get paid.',
       signButton: {
         label: 'Sign Me Up',
+        path: ROUTES.SIGN_UP,
         signedInLabel: 'Take a Survey',
-        path: '#',
+        signedInPath: ROUTES.SURVEY_PAGE,
       },
     },
     caseStudySection: {

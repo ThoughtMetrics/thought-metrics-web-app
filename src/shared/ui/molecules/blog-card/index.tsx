@@ -4,13 +4,14 @@ import { Link } from 'react-router-dom';
 
 const BlogCard: React.FC<any> = ({ blog, className = '' }) => {
   return (
-    <Link to={blog.link}>
-      <article
-        className={cn(
-          'snap-start snap-always w-[85%] relative shrink-0 backdrop-blur-[40px] overflow-hidden group hover:shadow-xl transition-shadow duration-300 md:w-auto',
-          className
-        )}
-      >
+    <Link
+      to={blog.link}
+      className={cn(
+        'snap-start snap-always w-[85%] relative shrink-0 backdrop-blur-[40px] overflow-hidden group hover:shadow-xl transition-shadow duration-300 md:w-auto',
+        className
+      )}
+    >
+      <article>
         <ResourcesIllustration className="absolute w-full h-full" />
         {/* Image overlay */}
         <div className="w-full h-full absolute inset-0 overflow-hidden">

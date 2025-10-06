@@ -171,8 +171,10 @@ export const ourPanel = {
       loading: 'lazy',
     },
     actionButton: {
-      label: 'Take a Survey',
+      label: 'Sign Up',
       path: ROUTES.SIGN_UP,
+      signedInLabel: 'Take a Survey',
+      signedInPath: ROUTES.SURVEY_PAGE,
     },
   },
 } as const;
