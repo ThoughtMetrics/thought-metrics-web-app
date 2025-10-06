@@ -5,7 +5,18 @@ import CustomImageAtom from '@/shared/ui/atoms/custom-image';
 import ServiceCard from '@/shared/ui/molecules/service-card';
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
 import { PageTitle } from '@/shared/components/page-title';
+import { useEffect, useState } from 'react';
+import { auth } from '@/core/configs/firebase-config';
 const OurPanel: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setIsAuthenticated(!!user);
+    });
+
+    return () => unsubscribe();
+  }, []);
   return (
     <div className="text-black">
       {/* Section 1 */}
@@ -163,8 +174,16 @@ const OurPanel: React.FC = () => {
             />
             <div className="py-4">
               <CustomButtonAtom
-                path={ourPanel.caseStudySection.actionButton.path}
-                label={ourPanel.caseStudySection.actionButton.label}
+                path={
+                  isAuthenticated
+                    ? ourPanel.caseStudySection.actionButton.signedInPath
+                    : ourPanel.caseStudySection.actionButton.path
+                }
+                label={
+                  isAuthenticated
+                    ? ourPanel.caseStudySection.actionButton.signedInLabel
+                    : ourPanel.caseStudySection.actionButton.label
+                }
                 className="font-medium px-12 py-2 md:px-18 md:py-3 md:text-xl"
               />
             </div>

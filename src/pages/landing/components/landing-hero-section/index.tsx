@@ -44,7 +44,11 @@ const LandingHeroSection: React.FC<any> = ({ heroSection, faqId }) => {
           <div className="flex gap-5 w-[90%] md:w-[85%] z-1">
             <div className="max-w-[13rem] w-full">
               <CustomButtonAtom
-                path={ROUTES.SIGN_UP}
+                path={
+                  isAuthenticated
+                    ? heroSection.signButton.signedInPath
+                    : heroSection.signButton.path
+                }
                 className="font-semibold py-1 xl:py-2 px-6 text-lg xl:text-xl bg-secondary hover:bg-custom-blue w-full"
                 label={
                   isAuthenticated
