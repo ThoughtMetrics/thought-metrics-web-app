@@ -2,7 +2,6 @@ import { IllustrationSquares2 } from '@/assets';
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
 import type React from 'react';
 import '../../landing.style.css';
-import { ROUTES } from '@/routes/routeConfig';
 import { useEffect, useState } from 'react';
 import { auth } from '@/core/configs/firebase-config';
 

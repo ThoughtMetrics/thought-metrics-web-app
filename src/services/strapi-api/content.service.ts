@@ -1,7 +1,15 @@
 // src/services/content/content.service.ts
-import type { Content, ContentQueryOptions, ContentTypeValue, ContentCategoryValue } from "@/core/types/content.type";
-import { StrapiService } from "./strapi.service";
-import type { StrapiResponse, StrapiSingleResponse } from "@/core/types/strapi.type";
+import type {
+  Content,
+  ContentQueryOptions,
+  ContentTypeValue,
+  ContentCategoryValue,
+} from '@/core/types/content.type';
+import { StrapiService } from './strapi.service';
+import type {
+  StrapiResponse,
+  StrapiSingleResponse,
+} from '@/core/types/strapi.type';
 
 export class ContentService extends StrapiService {
   private readonly endpoint = '/contents';
@@ -174,16 +182,13 @@ export class ContentService extends StrapiService {
   /**
    * Get related contents (same type, category, or tags)
    */
-  async getRelatedContents(
-    content: Content,
-    limit: number = 4
-  ): Promise<Content[]> {
+  async getRelatedContents(content: Content, limit = 4): Promise<Content[]> {
     // Get contents with matching tags or same type/category
     const tags =
       content.tags
         ?.split(',')
         .map((t) => t.trim())
-        .filter(Boolean) || [];
+        .filter(Boolean) ?? [];
 
     const response = await this.getContents({
       filters: {
@@ -222,7 +227,7 @@ export class ContentService extends StrapiService {
     limit?: number;
     tags?: string[];
   }): Promise<
-    Array<{
+    {
       id: number;
       type: string;
       category: string;
@@ -230,7 +235,7 @@ export class ContentService extends StrapiService {
       description: string;
       link: string;
       src: string;
-    }>
+    }[]
   > {
     const response = await this.getContents({
       filters: {
@@ -238,7 +243,7 @@ export class ContentService extends StrapiService {
         category: options?.category,
         tags: options?.tags,
       },
-      limit: options?.limit || 8,
+      limit: options?.limit ?? 8,
     });
 
     return response.data.map((content) => ({

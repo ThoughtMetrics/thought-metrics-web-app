@@ -118,16 +118,11 @@ export const headerDropdownData = {
       columns: [
         {
           items: [
-            { label: 'Articles' },
-            { label: 'Reports' },
-            { label: 'Case Studies' },
-            { label: 'Webinars' },
+            { label: 'Our Panel', path: ROUTES.OUR_PANEL },
+            { label: 'Articles', path: ROUTES.ARTICLES },
+            { label: '' },
+            { label: '' },
           ],
-        },
-        {
-          sub_title: 'Our Panel',
-          path: ROUTES.OUR_PANEL,
-          items: [],
         },
       ],
     },
