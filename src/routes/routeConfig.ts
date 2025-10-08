@@ -39,6 +39,7 @@ export const ROUTES = {
   ADVOCATE_LANDING: '/advocate_landing',
   /* Resource Route (Blog, Article, Insights, Report, etc) */
   RESOURCES: '/resources',
+  ARTICLES: '/resources/articles',
   /* Other Routes */
   CAREERS: '/careers',
   CONTACT_US: '/contact_us',
@@ -109,6 +110,7 @@ export const generateBreadcrumbsFromPath = (
       advocate_landing: 'Advocate Landing',
       /* Resource Route (Blog, Article, Insights, Report, etc) */
       resources: 'Resources',
+      articles: 'Articles',
       /* Other */
       contact_us: 'Contact Us',
       careers: 'Careers',

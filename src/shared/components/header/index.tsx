@@ -224,7 +224,7 @@ const Header: React.FC = () => {
                     key={columnIndex + 'sub_title'}
                     className="flex flex-col gap-0.5 xl:gap-2"
                   >
-                    {'sub_title' in column && column.sub_title != null && (
+                    {/* {'sub_title' in column && column.sub_title != null && (
                       <Link
                         viewTransition={true}
                         key={columnIndex}
@@ -234,19 +234,28 @@ const Header: React.FC = () => {
                       >
                         {column.sub_title}
                       </Link>
-                    )}
+                    )} */}
                     {column.items.length > 0 &&
-                      column.items.map((item, itemIndex) => (
-                        <Link
-                          viewTransition={true}
-                          onClick={() => handleDropdownLeave()}
-                          key={itemIndex + item.label}
-                          to={'path' in item ? item.path : '#'}
-                          className="text-xxs xl:text-sm xxl:text-lg font-medium hover:underline cursor-pointer tracking-wider"
-                        >
-                          {item.label}
-                        </Link>
-                      ))}
+                      column.items.map((item, itemIndex) => {
+                        const itemPath =
+                          'path' in item ? (item.path as string) : '#';
+
+                        return (
+                          <Link
+                            viewTransition={true}
+                            onClick={() => handleDropdownLeave()}
+                            key={itemIndex + item.label}
+                            to={itemPath}
+                            className="text-xxs xl:text-sm xxl:text-lg font-medium hover:underline cursor-pointer tracking-wider"
+                          >
+                            {item.label ? (
+                              item.label
+                            ) : (
+                              <span className="opacity-0">Thought Metrics</span>
+                            )}
+                          </Link>
+                        );
+                      })}
                   </div>
                 ))}
               </div>
@@ -307,7 +316,7 @@ const Header: React.FC = () => {
                       <div className="pb-4">
                         {section.columns.map((column, columnIndex) => (
                           <div key={columnIndex}>
-                            {'sub_title' in column && column.sub_title && (
+                            {/* {'sub_title' in column && column.sub_title && (
                               <Link
                                 viewTransition={true}
                                 key={columnIndex}
@@ -317,18 +326,27 @@ const Header: React.FC = () => {
                               >
                                 {column.sub_title}
                               </Link>
-                            )}
-                            {column.items.map((subItem, subIndex) => (
-                              <Link
-                                viewTransition={true}
-                                key={subIndex}
-                                to={'path' in subItem ? subItem.path : '#'}
-                                onClick={() => handleDropdownLeave()}
-                                className="block px-4 py-2 text-white/70 hover:text-white text-sm"
-                              >
-                                {subItem.label}
-                              </Link>
-                            ))}
+                            )} */}
+                            {column.items.map((subItem, subIndex) => {
+                              const isSubItemVisible = subItem.label !== '';
+                              const subItemPath =
+                                'path' in subItem
+                                  ? (subItem.path as string)
+                                  : '#';
+                              return (
+                                isSubItemVisible && (
+                                  <Link
+                                    viewTransition={true}
+                                    key={subIndex}
+                                    to={subItemPath}
+                                    onClick={() => handleDropdownLeave()}
+                                    className="block px-4 py-2 text-white/70 hover:text-white text-sm"
+                                  >
+                                    {subItem.label}
+                                  </Link>
+                                )
+                              );
+                            })}
                           </div>
                         ))}
                       </div>
