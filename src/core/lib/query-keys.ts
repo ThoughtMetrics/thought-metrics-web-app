@@ -6,6 +6,12 @@ export const QueryKeys = {
     all: ['auth'] as const,
     userProfile: () => [...QueryKeys.auth.all, 'profile'] as const,
   },
+  // User related queries
+  user: {
+    all: ['user'] as const,
+    profile: () => [...QueryKeys.user.all, 'profile'] as const,
+    byFirebaseUid: (uid: string) => [...QueryKeys.user.all, 'firebaseUid', uid] as const,
+  },
   // Contact Us related queries
   contactUs: {
     all: ['contact-us'] as const,
@@ -56,6 +62,8 @@ export const QueryKeys = {
       [...QueryKeys.contentKeys.all, 'related', documentId] as const,
     blog: (options?: any) =>
       [...QueryKeys.contentKeys.all, 'blog', options] as const,
+    infiniteBlog: (options?: any) =>
+      [...QueryKeys.contentKeys.all, 'infiniteBlog', options] as const,
   },
 } as const;
 
