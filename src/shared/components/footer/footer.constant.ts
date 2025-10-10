@@ -19,12 +19,12 @@ export const footerData = {
     {
       name: 'LinkedIn',
       icon: '/icons/linkedin.svg',
-      path: 'https://linkedin.com/company/thoughtmetrics',
+      path: 'https://www.linkedin.com/company/the-thought-metrics-company',
     },
     {
       name: 'Twitter',
       icon: '/icons/space-x.svg',
-      path: 'https://twitter.com/thoughtmetrics',
+      path: 'https://x.com/thoughtmetrics',
     },
     {
       name: 'Vimeo',

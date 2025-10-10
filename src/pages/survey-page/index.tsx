@@ -17,6 +17,9 @@ const SurveyPage: React.FC = () => {
           </h1>
           <label className="flex flex-col md:flex-row gap-6 relative font-medium text-md md:text-2xl w-fit">
             <span className="">{userProfile?.profile?.phone}</span>
+            {userProfile?.profile?.phone && (
+              <div className="hidden md:block absolute h-full w-0.25 bg-black left-22 md:left-34"></div>
+            )}
             <span
               className="underline"
               onClick={() => {
@@ -37,7 +40,9 @@ const SurveyPage: React.FC = () => {
             name={'Select Survey'}
             label={''}
             value={''}
-            onChange={() => { /* empty */ }}
+            onChange={() => {
+              /* empty */
+            }}
             options={[{ value: '10', label: '10 Filters Selected' }]}
           />
         </div>

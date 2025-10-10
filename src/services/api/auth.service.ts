@@ -10,107 +10,7 @@ import {
 } from 'firebase/auth';
 import { auth } from '@/core/configs/firebase-config';
 import ApiService from './api.service';
-
-export interface SignUpData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  phone?: string;
-  dateOfBirth?: Date;
-  gender?: string;
-  location?: {
-    doorNumberOrStreetName?: string;
-    city?: string;
-    zipCode?: string;
-    district?: string;
-    state?: string;
-    countryOrRegion?: string;
-  };
-  participationPreferences?: string[];
-  termsAccepted: boolean;
-  privacyAccepted: boolean;
-}
-
-export interface CompleteProfileData {
-  profile?: {
-    firstName?: string;
-    lastName?: string;
-    phone?: string;
-  };
-  respondentInfo?: {
-    address1?: string;
-    address2?: string;
-    city?: string;
-    state?: string;
-    countryOrRegion?: string;
-    zipCode?: string;
-    dateOfBirth?: {
-      month: string;
-      day: string;
-      year: string;
-    };
-    participationPreferences?: string[];
-  };
-}
-
-export interface AuthUser {
-  uid: string;
-  email: string | null;
-  displayName: string | null;
-  photoURL: string | null;
-  providerId: string;
-}
-
-export interface UserProfile {
-  _id: string;
-  firebaseUid: string;
-  email: string;
-  profile: {
-    firstName: string;
-    lastName: string;
-    displayName?: string;
-    avatar?: string;
-    phone?: string;
-    dateOfBirth?: Date;
-    gender?: string;
-    location?: {
-      doorNumberOrStreetName?: string;
-      city?: string;
-      zipCode?: string;
-      district?: string;
-      state?: string;
-      countryOrRegion?: string;
-    };
-  };
-  respondentInfo?: {
-    participationPreferences?: string[];
-  };
-  settings?: {
-    notifications?: {
-      email?: boolean;
-      push?: boolean;
-      sms?: boolean;
-      researchInvites?: boolean;
-      newsletters?: boolean;
-    };
-    privacy?: {
-      profileVisibility?: 'public' | 'private' | 'clients-only';
-      showEmail?: boolean;
-      showPhone?: boolean;
-      dataSharing?: boolean;
-    };
-    preferences?: {
-      language?: string;
-      theme?: 'light' | 'dark' | 'auto';
-      currency?: string;
-      dateFormat?: string;
-    };
-  };
-  providerId: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import type { UserProfile, SignUpData } from '@/core/types/user.type';
 
 class AuthService {
   private readonly googleProvider: GoogleAuthProvider;
@@ -122,27 +22,10 @@ class AuthService {
   }
 
   /**
-   * Convert Firebase User to AuthUser
-   */
-  private mapFirebaseUser(user: User): AuthUser {
-    return {
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName,
-      photoURL: user.photoURL,
-      providerId: user.providerData[0]?.providerId || 'password',
-    };
-  }
-
-  /**
    * Send user data to backend API using /users/profile/sync
    * This endpoint creates or updates user profile in MongoDB
    */
-  private async syncUserToBackend(
-    user: AuthUser,
-    additionalData?: Partial<SignUpData>,
-    completeProfileData?: CompleteProfileData
-  ) {
+  private async syncUserToBackend(user: User, additionalData?: SignUpData) {
     try {
       const token = await auth.currentUser?.getIdToken();
       if (token) {
@@ -150,17 +33,19 @@ class AuthService {
       }
 
       // Build sync data according to backend profileSyncSchema
-      const syncData: any = {
+      const syncData: UserProfile = {
         firebaseUid: user.uid,
         providerId: user.providerId,
         email: user.email,
+      } as UserProfile;
+
+      syncData.respondentInfo = {
+        participationPreferences: additionalData?.participationPreferences,
+        termsAccepted: additionalData?.termsAccepted ?? true,
+        privacyAccepted: additionalData?.privacyAccepted ?? true,
       };
 
-      // Add complete profile data if provided
-      if (completeProfileData) {
-        syncData.profile = completeProfileData.profile;
-        syncData.respondentInfo = completeProfileData.respondentInfo;
-      } else if (additionalData) {
+      if (additionalData) {
         // Map SignUpData to backend structure
         syncData.profile = {
           firstName: additionalData.firstName,
@@ -170,21 +55,10 @@ class AuthService {
           dateOfBirth: additionalData.dateOfBirth,
           location: additionalData.location,
         };
-
-        // Only add respondentInfo if there are participation preferences
-        if (additionalData.participationPreferences && additionalData.participationPreferences.length > 0) {
-          syncData.respondentInfo = {
-            participationPreferences: additionalData.participationPreferences,
-          };
-        }
       } else {
-        // For OAuth sign-in without additional data, extract names from displayName
-        const displayName = user.displayName || '';
-        const nameParts = displayName.split(' ');
-
         syncData.profile = {
-          firstName: nameParts[0] || '',
-          lastName: nameParts.slice(1).join(' ') || '',
+          displayName: user.displayName ?? undefined,
+          avatar: user.photoURL ?? undefined,
         };
       }
 
@@ -205,10 +79,8 @@ class AuthService {
       data.password
     );
 
-    const authUser = this.mapFirebaseUser(userCredential.user);
-
     // Sync to backend with full signup data
-    await this.syncUserToBackend(authUser, data);
+    await this.syncUserToBackend(userCredential.user, data);
 
     // Fetch and return the full user profile from backend
     return await this.getUserProfile();
@@ -224,14 +96,12 @@ class AuthService {
       password
     );
 
-    const authUser = this.mapFirebaseUser(userCredential.user);
-
     // Update token in API service
     const token = await userCredential.user.getIdToken();
     ApiService.setAuthToken(token);
 
     // Sync with backend (will create if not exists, or update if exists)
-    await this.syncUserToBackend(authUser);
+    await this.syncUserToBackend(userCredential.user);
 
     // Fetch and return the full user profile from backend
     return await this.getUserProfile();
@@ -247,10 +117,8 @@ class AuthService {
         this.googleProvider
       );
 
-      const authUser = this.mapFirebaseUser(userCredential.user);
-
       // Sync to backend
-      await this.syncUserToBackend(authUser);
+      await this.syncUserToBackend(userCredential.user);
 
       // Fetch and return the full user profile from backend
       return await this.getUserProfile();
@@ -277,10 +145,8 @@ class AuthService {
         this.facebookProvider
       );
 
-      const authUser = this.mapFirebaseUser(userCredential.user);
-
       // Sync to backend
-      await this.syncUserToBackend(authUser);
+      await this.syncUserToBackend(userCredential.user);
 
       // Fetch and return the full user profile from backend
       return await this.getUserProfile();
@@ -332,7 +198,7 @@ class AuthService {
     const token = await user.getIdToken();
     ApiService.setAuthToken(token);
 
-    const response = await ApiService.get('/users/profile');
+    const response = await ApiService.get('/users/profile/get');
     return response.data as UserProfile;
   }
 

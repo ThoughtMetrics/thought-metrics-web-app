@@ -2,70 +2,14 @@ import ApiService from '@/services/api/api.service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { QueryKeys } from '@/core/lib/query-keys';
-
-export interface UpdateProfileData {
-  profile?: {
-    firstName?: string;
-    lastName?: string;
-    displayName?: string;
-    avatar?: string;
-    bio?: string;
-    phone?: string;
-    dateOfBirth?: Date;
-    gender?: string;
-    location?: {
-      city?: string;
-      state?: string;
-      country?: string;
-      timezone?: string;
-    };
-    company?: string;
-    position?: string;
-    industry?: string;
-  };
-  respondentInfo?: {
-    address1?: string;
-    address2?: string;
-    city?: string;
-    state?: string;
-    countryOrRegion?: string;
-    zipCode?: string;
-    dateOfBirth?: {
-      month: string;
-      day: string;
-      year: string;
-    };
-    participationPreferences?: string[];
-  };
-  settings?: {
-    notifications?: {
-      email?: boolean;
-      push?: boolean;
-      sms?: boolean;
-      researchInvites?: boolean;
-      newsletters?: boolean;
-    };
-    privacy?: {
-      profileVisibility?: 'public' | 'private' | 'clients-only';
-      showEmail?: boolean;
-      showPhone?: boolean;
-      dataSharing?: boolean;
-    };
-    preferences?: {
-      language?: string;
-      theme?: 'light' | 'dark' | 'auto';
-      currency?: string;
-      dateFormat?: string;
-    };
-  };
-}
+import type { UpdateProfileData } from '@/core/types/user.type';
 
 export const useUpdateProfileMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (data: UpdateProfileData) => {
-      const response = await ApiService.patch('/users/profile', data);
+      const response = await ApiService.patch('/users/profile/patch', data);
       return response.data;
     },
     onSuccess: () => {

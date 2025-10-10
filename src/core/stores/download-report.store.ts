@@ -21,18 +21,19 @@ const initialFormData: DownloadReportFormData = {
   dataUsageConsent: false,
 };
 
+const storeImplementation = (set: any) => ({
+  formData: initialFormData,
+  updateField: (field: keyof DownloadReportFormData, value: any) =>
+    set(
+      (state: DownloadReportFormStore) => ({ formData: { ...state.formData, [field]: value } }),
+      false,
+      `updateField_${field}`
+    ),
+  resetForm: () => set({ formData: initialFormData }, false, 'resetForm'),
+});
+
 export const useDownloadReportFormStore = create<DownloadReportFormStore>()(
-  devtools(
-    (set) => ({
-      formData: initialFormData,
-      updateField: (field, value) =>
-        set(
-          (state) => ({ formData: { ...state.formData, [field]: value } }),
-          false,
-          `updateField_${field}`
-        ),
-      resetForm: () => set({ formData: initialFormData }, false, 'resetForm'),
-    }),
-    { name: 'download-report-form' }
-  )
+  import.meta.env.DEV
+    ? devtools(storeImplementation, { name: 'download-report-form' })
+    : storeImplementation
 );

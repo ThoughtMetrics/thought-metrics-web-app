@@ -10,18 +10,55 @@ import { contentService } from '@/services/strapi-api/content.service';
 import CustomImageAtom from '@/shared/ui/atoms/custom-image';
 import MarkDownOrganism from '@/shared/ui/organisms/markdown-organism';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
-import { useLoaderData, useParams } from 'react-router-dom';
+import React, { Suspense } from 'react';
+import { Link, useLoaderData, useParams } from 'react-router-dom';
 import BlogOrganism from '@/shared/ui/organisms/blog-organism';
-import { blogPageData } from '../home/components/blogs/blogs.constant';
 import BlogCard from '@/shared/ui/molecules/blog-card';
 import { QueryKeys } from '@/core/lib/query-keys';
 import { SEOHead } from '@/shared/components/seo/SEOHead';
 import { seoContent } from '@/core/constants/seo.constants';
+import { useBlogData } from '@/core/hooks/use-blog-data';
+import BlogSkeleton from '@/shared/components/blog-skeleton';
+import { footerData } from '@/shared/components/footer/footer.constant';
+import { toast } from 'sonner';
 
 const ResourcePage: React.FC = () => {
+  const { blogData } = useBlogData({
+    title: 'Resources',
+    type: [],
+    category: [],
+    limit: 4,
+  });
+
   const { slug } = useParams<{ slug: string }>();
   const initialData = useLoaderData();
+
+  const handleCopyUrl = async () => {
+    try {
+      const currentUrl = window.location.href;
+      await navigator.clipboard.writeText(currentUrl);
+      toast.success('Link copied!', {
+        description: 'URL has been copied to clipboard',
+      });
+    } catch (error) {
+      console.error('Failed to copy URL:', error);
+      toast.error('Failed to copy link', {
+        description: 'Please try again',
+      });
+    }
+  };
+
+  const handleEmailShare = () => {
+    if (!content) return;
+
+    const subject = encodeURIComponent(content.label);
+    const body = encodeURIComponent(
+      `I thought you might find this interesting:\n\n${content.label}\n\n${content.description}\n\nRead more: ${window.location.href}`
+    );
+    const mailtoLink = `mailto:?subject=${subject}&body=${body}`;
+
+    window.location.href = mailtoLink;
+  };
 
   const {
     data: content,
@@ -60,11 +97,6 @@ const ResourcePage: React.FC = () => {
     );
   }
 
-  const blogData = {
-    ...blogPageData,
-    title: 'Resources',
-  };
-
   return (
     <>
       <SEOHead
@@ -74,7 +106,10 @@ const ResourcePage: React.FC = () => {
         ogType="article"
         canonicalUrl={`${seoContent.canonicalUrl}/resources/${slug}`}
         meta={[
-          { property: 'article:published_time', content: content.publishedDate },
+          {
+            property: 'article:published_time',
+            content: content.publishedDate,
+          },
           { property: 'article:modified_time', content: content.updatedAt },
         ]}
         structuredData={{
@@ -125,24 +160,48 @@ const ResourcePage: React.FC = () => {
                 <p className=" ">{content.type}</p>
               </div>
               <div className="flex gap-2 border-t-1 border-custom-grey-1 pt-2 py-3">
-                <div className="bg-secondary w-10 h-10 p-2">
+                <button
+                  onClick={handleCopyUrl}
+                  className="bg-secondary w-10 h-10 p-2 hover:bg-primary transition-colors duration-200 cursor-pointer"
+                  title="Copy link to clipboard"
+                  aria-label="Copy link to clipboard"
+                >
                   <ClipPinIcon className="w-full h-full" />
-                </div>
-                <div className="bg-secondary w-10 h-10 p-2">
+                </button>
+                <button
+                  onClick={handleEmailShare}
+                  className="bg-secondary w-10 h-10 p-2 hover:bg-primary transition-colors duration-200 cursor-pointer"
+                  title="Share via email"
+                  aria-label="Share via email"
+                >
                   <MailIcon className="w-full h-full" />
-                </div>
-                <div className="bg-secondary w-10 h-10 p-2">
+                </button>
+                <Link
+                  to={
+                    'https://www.facebook.com/people/Thought-Metrics/61581686835321'
+                  }
+                  className="bg-secondary w-10 h-10 p-2 hover:bg-primary transition-colors duration-200"
+                >
                   <FacebookIcon className="w-full h-full" />
-                </div>
-                <div className="bg-secondary w-10 h-10 p-2">
+                </Link>
+                <Link
+                  to={'https://www.instagram.com/thethoughtmetricscompany'}
+                  className="bg-secondary w-10 h-10 p-2 hover:bg-primary transition-colors duration-200"
+                >
                   <InstagramIcon className="w-full h-full" />
-                </div>
-                <div className="bg-secondary w-10 h-10 p-2">
+                </Link>
+                <Link
+                  to={footerData.socialLinks[1].path}
+                  className="bg-secondary w-10 h-10 p-2 hover:bg-primary transition-colors duration-200"
+                >
                   <XIcon className="w-full h-full" />
-                </div>
-                <div className="bg-secondary w-10 h-10 p-2">
+                </Link>
+                <Link
+                  to={footerData.socialLinks[0].path}
+                  className="bg-secondary w-10 h-10 p-2 hover:bg-primary transition-colors duration-200"
+                >
                   <LinkedinIcon className="w-full h-full" />
-                </div>
+                </Link>
               </div>
             </div>
           </div>
@@ -157,7 +216,9 @@ const ResourcePage: React.FC = () => {
             </div>
           </div>
         </div>
-        <BlogOrganism data={blogData} bgColor="bg-primary-lighter" />
+        <Suspense fallback={<BlogSkeleton />}>
+          <BlogOrganism data={blogData} bgColor="bg-white" />
+        </Suspense>
       </section>
     </>
   );

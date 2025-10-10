@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { ArrowRed, Logo } from '@/assets';
 import { Link, useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/routes/routeConfig';
@@ -7,13 +7,31 @@ import authService from '@/services/api/auth.service';
 
 const InteractionHeader: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsAuthenticated(!!user);
     });
 
     return () => unsubscribe();
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleLogout = async () => {
@@ -75,12 +93,64 @@ const InteractionHeader: React.FC = () => {
                 </button>
               )}
             </div>
-            <button className="md:hidden bg-primary text-white text-nowrap w-auto hover:bg-secondary hover:text-white transition-all duration-300 ease-in-out rounded font-medium px-6 py-1 flex items-center gap-3">
-              <Link to={ROUTES.AUTH} viewTransition={true}>
-                <label>Sign In</label>
-              </Link>
-              <ArrowRed className="fill-current text-white" />
-            </button>
+            {isAuthenticated ? (
+              <div className="md:hidden relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="relative w-8 h-8 flex flex-col justify-center items-center z-[1001]"
+                  aria-label="Toggle menu"
+                >
+                  <span
+                    className={`block w-6 h-0.5  transition-all duration-300 ease-in-out ${
+                      isDropdownOpen
+                        ? 'rotate-45 translate-y-1.5 bg-black'
+                        : 'bg-gray-800'
+                    }`}
+                  />
+                  <span
+                    className={`block w-6 h-0.5 bg-gray-800 transition-all duration-300 ease-in-out my-1 ${
+                      isDropdownOpen ? 'opacity-0' : ''
+                    }`}
+                  />
+                  <span
+                    className={`block w-6 h-0.5 transition-all duration-300 ease-in-out ${
+                      isDropdownOpen
+                        ? '-rotate-45 -translate-y-1.5 bg-black'
+                        : 'bg-gray-800'
+                    }`}
+                  />
+                </button>
+
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-[1000] border border-gray-200">
+                    <Link
+                      to={ROUTES.EDIT_PROFILE}
+                      viewTransition={true}
+                      onClick={() => setIsDropdownOpen(false)}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                    >
+                      Edit Profile
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        handleLogout();
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button className="md:hidden bg-primary text-white text-nowrap w-auto hover:bg-secondary hover:text-white transition-all duration-300 ease-in-out rounded font-medium px-6 py-1 flex items-center gap-3">
+                <Link to={ROUTES.AUTH} viewTransition={true}>
+                  <label>Sign In</label>
+                </Link>
+                <ArrowRed className="fill-current text-white" />
+              </button>
+            )}
           </nav>
         </div>
       </header>

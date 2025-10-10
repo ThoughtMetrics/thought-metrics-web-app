@@ -20,39 +20,41 @@ interface ContentState {
   setViewMode: (mode: 'grid' | 'list') => void;
 }
 
+const storeImplementation = (set: any) => ({
+  // Initial State
+  selectedContent: null,
+  contentFilters: {},
+  viewMode: 'grid' as const,
+
+  // Actions
+  setSelectedContent: (content: Content | null) =>
+    set({ selectedContent: content }, false, 'setSelectedContent'),
+
+  setContentFilters: (filters: ContentFilters) =>
+    set({ contentFilters: filters }, false, 'setContentFilters'),
+
+  updateContentFilter: <K extends keyof ContentFilters>(
+    key: K,
+    value: ContentFilters[K]
+  ) =>
+    set(
+      (state: ContentState) => ({
+        contentFilters: {
+          ...state.contentFilters,
+          [key]: value,
+        },
+      }),
+      false,
+      'updateContentFilter'
+    ),
+
+  clearFilters: () => set({ contentFilters: {} }, false, 'clearFilters'),
+
+  setViewMode: (mode: 'grid' | 'list') => set({ viewMode: mode }, false, 'setViewMode'),
+});
+
 export const useContentStore = create<ContentState>()(
-  devtools(
-    (set) => ({
-      // Initial State
-      selectedContent: null,
-      contentFilters: {},
-      viewMode: 'grid',
-
-      // Actions
-      setSelectedContent: (content) =>
-        set({ selectedContent: content }, false, 'setSelectedContent'),
-
-      setContentFilters: (filters) =>
-        set({ contentFilters: filters }, false, 'setContentFilters'),
-
-      updateContentFilter: (key, value) =>
-        set(
-          (state) => ({
-            contentFilters: {
-              ...state.contentFilters,
-              [key]: value,
-            },
-          }),
-          false,
-          'updateContentFilter'
-        ),
-
-      clearFilters: () => set({ contentFilters: {} }, false, 'clearFilters'),
-
-      setViewMode: (mode) => set({ viewMode: mode }, false, 'setViewMode'),
-    }),
-    {
-      name: 'content-store',
-    }
-  )
+  import.meta.env.DEV
+    ? devtools(storeImplementation, { name: 'content-store' })
+    : storeImplementation
 );

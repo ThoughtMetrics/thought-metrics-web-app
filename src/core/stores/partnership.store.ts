@@ -27,18 +27,19 @@ export const initialFormData: PartnershipFormData = {
   partnershipReason: '',
 };
 
+const storeImplementation = (set: any) => ({
+  formData: initialFormData,
+  updateField: (field: keyof PartnershipFormData, value: any) =>
+    set(
+      (state: PartnershipFormStore) => ({ formData: { ...state.formData, [field]: value } }),
+      false,
+      `updateField_${field}`
+    ),
+  resetForm: () => set({ formData: initialFormData }, false, 'resetForm'),
+});
+
 export const usePartnershipFormStore = create<PartnershipFormStore>()(
-  devtools(
-    (set) => ({
-      formData: initialFormData,
-      updateField: (field, value) =>
-        set(
-          (state) => ({ formData: { ...state.formData, [field]: value } }),
-          false,
-          `updateField_${field}`
-        ),
-      resetForm: () => set({ formData: initialFormData }, false, 'resetForm'),
-    }),
-    { name: 'partnership-form' }
-  )
+  import.meta.env.DEV
+    ? devtools(storeImplementation, { name: 'partnership-form' })
+    : storeImplementation
 );

@@ -41,12 +41,19 @@ const Footer: React.FC = () => {
             <LogoWhite className="w-full" />
             <div className="flex justify-between">
               {footerData.socialLinks.map((social) => (
-                <img
+                <Link
+                  to={social.path}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   key={social.name}
-                  src={social.icon}
-                  alt={social.name}
-                  className="w-10 wide:w-12"
-                />
+                >
+                  <img
+                    key={social.name}
+                    src={social.icon}
+                    alt={social.name}
+                    className="w-10 wide:w-12"
+                  />
+                </Link>
               ))}
             </div>
           </div>

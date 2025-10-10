@@ -1,4 +1,4 @@
-import type { UserProfile } from '@/services/api/auth.service';
+import type { UserProfile } from '@/core/types/user.type';
 import authService from '@/services/api/auth.service';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -111,9 +111,8 @@ export const useSignInMutation = () => {
       return failureCount < 2;
     },
     onSuccess: (data) => {
-      const username = data.profile?.displayName ?? data.profile?.firstName ?? data.email;
       toast.success('Sign in successful!', {
-        description: `Welcome back, ${username}!`,
+        description: `Welcome back, ${data.profile?.username}!`,
       });
     },
     onError: (error: Error) => {

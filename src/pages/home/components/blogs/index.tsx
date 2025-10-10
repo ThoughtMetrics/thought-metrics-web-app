@@ -3,14 +3,13 @@ import { useContentStore } from '@/core/stores/content.store';
 import { ContentType } from '@/core/types/content.type';
 import { useBlogData } from '@/core/hooks/use-blog-data';
 import { Suspense } from 'react';
-import { blogPageData } from './blogs.constant';
 import BlogSkeleton from '@/shared/components/blog-skeleton';
 
 const BlogsContent: React.FC = () => {
   const { updateContentFilter, clearFilters } = useContentStore();
 
   const { blogData, loading, error } = useBlogData({
-    title: blogPageData.title,
+    title: 'Fresh Ideas to Help You Reach New Heights.',
     type: [],
     category: [],
     limit: 4,

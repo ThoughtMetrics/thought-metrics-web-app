@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { editProfileFormConstant } from './constant';
 import {
-  CheckboxAtom,
   CheckboxOutlineGroupAtom,
   PhoneInputAtom,
   SelectAtom,
   TextInputAtom,
 } from '@/shared/ui/atoms/custom-input';
-import { Link } from 'react-router-dom';
 import { ArrowRed } from '@/assets';
 import { useProfileQuery } from '@/core/hooks/queries/use-profile.query';
 import { useUpdateProfileMutation } from '@/core/hooks/mutations/use-update-profile.mutation';
 import { LoaderOverlay } from '@/shared/ui/atoms/loader';
 import { toast } from 'sonner';
+import type { UpdateProfileData } from '@/core/types/user.type';
 
 // Destructure constants
 const {
   participationOptions,
+  genders,
   months,
   states,
+  countries,
   countryCodes,
   defaultCountryCode,
   validationMessages,
@@ -46,14 +47,17 @@ const EditProfilePage: React.FC = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    address1: '',
-    address2: '',
     email: '',
     phone: '',
-    city: '',
-    state: '',
-    countryOrRegion: 'India',
-    zipCode: '',
+    gender: '',
+    location: {
+      doorNumberOrStreetName: '',
+      city: '',
+      district: '',
+      state: '',
+      countryOrRegion: 'India',
+      zipCode: '',
+    },
     password: '',
     confirmPassword: '',
     dateOfBirth: {
@@ -72,27 +76,39 @@ const EditProfilePage: React.FC = () => {
   // Populate form with existing profile data
   useEffect(() => {
     if (profile) {
+      // Parse dateOfBirth from Date object to {month, day, year}
+      let dobParts = { month: '', day: '', year: '' };
+      if (profile.profile?.dateOfBirth) {
+        const dob = new Date(profile.profile.dateOfBirth);
+        dobParts = {
+          month: String(dob.getMonth() + 1).padStart(2, '0'),
+          day: String(dob.getDate()).padStart(2, '0'),
+          year: String(dob.getFullYear()),
+        };
+      }
+
       setFormData((prev) => ({
         ...prev,
-        firstName: profile.profile?.firstName || '',
-        lastName: profile.profile?.lastName || '',
-        address1: profile.respondentInfo?.address1 || '',
-        address2: profile.respondentInfo?.address2 || '',
-        email: profile.email || '',
-        phone: profile.profile?.phone || '',
-        city: profile.respondentInfo?.city || '',
-        state: profile.respondentInfo?.state || '',
-        countryOrRegion: profile.respondentInfo?.countryOrRegion || 'India',
-        zipCode: profile.respondentInfo?.zipCode || '',
-        dateOfBirth: {
-          month: profile.respondentInfo?.dateOfBirth?.month || '',
-          day: profile.respondentInfo?.dateOfBirth?.day || '',
-          year: profile.respondentInfo?.dateOfBirth?.year || '',
+        firstName: profile.profile?.firstName ?? '',
+        lastName: profile.profile?.lastName ?? '',
+        email: profile.email ?? '',
+        phone: profile.profile?.phone ?? '',
+        gender: profile.profile?.gender ?? '',
+        location: {
+          doorNumberOrStreetName:
+            profile.profile?.location?.doorNumberOrStreetName ?? '',
+          city: profile.profile?.location?.city ?? '',
+          district: profile.profile?.location?.district ?? '',
+          state: profile.profile?.location?.state ?? '',
+          countryOrRegion:
+            profile.profile?.location?.countryOrRegion ?? 'India',
+          zipCode: profile.profile?.location?.zipCode ?? '',
         },
+        dateOfBirth: dobParts,
         participationPreferences:
-          profile.respondentInfo?.participationPreferences || [],
-        termsAccepted: true,
-        privacyAccepted: true,
+          profile.respondentInfo?.participationPreferences ?? [],
+        termsAccepted: profile.respondentInfo?.termsAccepted ?? true,
+        privacyAccepted: profile.respondentInfo?.privacyAccepted ?? true,
       }));
     }
   }, [profile]);
@@ -164,14 +180,18 @@ const EditProfilePage: React.FC = () => {
     } else if (!emailRegexPattern.test(formData.email)) {
       newErrors.email = validationMessages.email.invalid;
     }
-    if (!formData.address1.trim())
-      newErrors.address1 = validationMessages.address1;
-    if (!formData.city.trim()) newErrors.city = validationMessages.city;
-    if (!formData.state.trim()) newErrors.state = validationMessages.state;
-    if (!formData.countryOrRegion.trim())
-      newErrors.countryOrRegion = validationMessages.countryOrRegion;
-    if (!formData.zipCode.trim())
-      newErrors.zipCode = validationMessages.zipCode;
+    if (!formData.location.doorNumberOrStreetName?.trim())
+      newErrors['location.doorNumberOrStreetName'] =
+        validationMessages.doorNumberOrStreetName;
+    if (!formData.location.city?.trim())
+      newErrors['location.city'] = validationMessages.city;
+    if (!formData.location.state?.trim())
+      newErrors['location.state'] = validationMessages.state;
+    if (!formData.location.countryOrRegion?.trim())
+      newErrors['location.countryOrRegion'] =
+        validationMessages.countryOrRegion;
+    if (!formData.location.zipCode?.trim())
+      newErrors['location.zipCode'] = validationMessages.zipCode;
     if (
       !formData.dateOfBirth.month ||
       !formData.dateOfBirth.day ||
@@ -200,28 +220,39 @@ const EditProfilePage: React.FC = () => {
     }
 
     try {
-      await updateProfileMutation.mutateAsync({
+      // Convert dateOfBirth from {month, day, year} to Date object
+      let dateOfBirth: Date | undefined;
+      if (
+        formData.dateOfBirth.month &&
+        formData.dateOfBirth.day &&
+        formData.dateOfBirth.year
+      ) {
+        dateOfBirth = new Date(
+          parseInt(formData.dateOfBirth.year),
+          parseInt(formData.dateOfBirth.month) - 1, // Month is 0-indexed
+          parseInt(formData.dateOfBirth.day)
+        );
+      }
+
+      const updateData: UpdateProfileData = {
         profile: {
           firstName: formData.firstName,
           lastName: formData.lastName,
           phone: formData.phone,
+          gender: formData.gender,
+          dateOfBirth,
+          location: formData.location,
         },
         respondentInfo: {
-          address1: formData.address1,
-          address2: formData.address2,
-          city: formData.city,
-          state: formData.state,
-          countryOrRegion: formData.countryOrRegion,
-          zipCode: formData.zipCode,
-          dateOfBirth: formData.dateOfBirth,
           participationPreferences: formData.participationPreferences,
+          termsAccepted: formData.termsAccepted,
+          privacyAccepted: formData.privacyAccepted,
         },
-      });
+      };
 
-      toast.success('Profile updated successfully!');
+      await updateProfileMutation.mutateAsync(updateData);
     } catch (error) {
       console.error('Update profile error:', error);
-      toast.error('Failed to update profile');
     }
   };
 
@@ -240,14 +271,14 @@ const EditProfilePage: React.FC = () => {
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-4xl font-medium tracking-tighter text-gray-900 mb-2">
-              Manage
+              {ui.pageTitle || 'Manage Profile'}
             </h1>
-            <Link
+            {/* <Link
               to="#"
               className="text-black font-medium hover:font-semibold underline text-sm"
             >
               Add/Manage Children
-            </Link>
+            </Link> */}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -276,22 +307,6 @@ const EditProfilePage: React.FC = () => {
                 required
               />
               <TextInputAtom
-                id="address1"
-                name="address1"
-                label={ui.fieldLabels.address1}
-                value={formData.address1}
-                onChange={handleInputChange}
-                error={errors.address1}
-                required
-              />
-              <TextInputAtom
-                id="address2"
-                name="address2"
-                label={ui.fieldLabels.address2}
-                value={formData.address2}
-                onChange={handleInputChange}
-              />
-              <TextInputAtom
                 id="email"
                 name="email"
                 label={ui.fieldLabels.email}
@@ -311,30 +326,89 @@ const EditProfilePage: React.FC = () => {
                 onCountryCodeChange={handleCountryCodeChange}
                 countryCodes={countryCodes}
               />
+              {/* Gender */}
+              <SelectAtom
+                id="gender"
+                name="gender"
+                label={ui.fieldLabels.gender}
+                value={formData.gender}
+                onChange={handleInputChange}
+                options={genders}
+                error={errors.gender}
+                placeholder="Select gender"
+              />
+              {/* Location Fields */}
+              <TextInputAtom
+                id="doorNumberOrStreetName"
+                name="location.doorNumberOrStreetName"
+                label={ui.fieldLabels.doorNumberOrStreetName}
+                value={formData.location.doorNumberOrStreetName}
+                onChange={(e) =>
+                  updateField('location.doorNumberOrStreetName', e.target.value)
+                }
+                error={errors['location.doorNumberOrStreetName']}
+                required
+              />
               <TextInputAtom
                 id="city"
-                name="city"
+                name="location.city"
                 label={ui.fieldLabels.city}
-                value={formData.city}
-                onChange={handleInputChange}
-                error={errors.city}
+                value={formData.location.city}
+                onChange={(e) => updateField('location.city', e.target.value)}
+                error={errors['location.city']}
                 required
+              />
+              <TextInputAtom
+                id="district"
+                name="location.district"
+                label={ui.fieldLabels.district}
+                value={formData.location.district}
+                onChange={(e) =>
+                  updateField('location.district', e.target.value)
+                }
+                error={errors['location.district']}
               />
               <SelectAtom
                 id="state"
-                name="state"
+                name="location.state"
                 label={ui.fieldLabels.state}
-                value={formData.state}
-                onChange={handleInputChange}
+                value={formData.location.state}
+                onChange={(e) => updateField('location.state', e.target.value)}
                 options={states}
-                error={errors.state}
+                error={errors['location.state']}
                 required
                 placeholder="Select state"
               />
+              <SelectAtom
+                id="countryOrRegion"
+                name="location.countryOrRegion"
+                label={ui.fieldLabels.countryOrRegion}
+                value={formData.location.countryOrRegion}
+                onChange={(e) =>
+                  updateField('location.countryOrRegion', e.target.value)
+                }
+                options={countries}
+                error={errors['location.countryOrRegion']}
+                required
+                placeholder="Select country/region"
+              />
               <TextInputAtom
+                id="zipCode"
+                name="location.zipCode"
+                label={ui.fieldLabels.zipCode}
+                value={formData.location.zipCode}
+                onChange={(e) =>
+                  updateField('location.zipCode', e.target.value)
+                }
+                error={errors['location.zipCode']}
+                required
+                placeholder="Enter ZIP/PIN code"
+              />
+              {/* Password Fields (Optional) */}
+              {/* <TextInputAtom
                 id="password"
                 name="password"
-                label="Password"
+                label="Password (Optional)"
                 type="password"
                 value={formData.password}
                 onChange={handleInputChange}
@@ -348,16 +422,7 @@ const EditProfilePage: React.FC = () => {
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 error={errors.confirmPassword}
-              />
-              <TextInputAtom
-                id="zipCode"
-                name="zipCode"
-                label={ui.fieldLabels.zipCode}
-                value={formData.zipCode}
-                onChange={handleInputChange}
-                error={errors.zipCode}
-                required
-              />
+              /> */}
             </div>
 
             {/* Date of Birth */}
@@ -421,25 +486,6 @@ const EditProfilePage: React.FC = () => {
               />
             </div>
 
-            {/* Terms and Privacy */}
-            <div className="space-y-4">
-              <CheckboxAtom
-                id="termsAccepted"
-                name="termsAccepted"
-                checked={formData.termsAccepted}
-                onChange={handleInputChange}
-                label="I have read and understand my responsibilities as a participant and I agree to the TERMS AND CONDITIONS"
-              />
-
-              <CheckboxAtom
-                id="privacyAccepted"
-                name="privacyAccepted"
-                checked={formData.privacyAccepted}
-                onChange={handleInputChange}
-                label={`By clicking "Next", you are agreeing to Thought Metrics PRIVACY POLICY for receiving survey invitations for purposes of collection, compilation of demographic and attitudinal information and length of data retention. If you have provided your phone number to Thought Metrics, you agree to that Thought Metrics and its clients may call and send text messages for project-related purposes. You may revise your consent at any time.`}
-              />
-            </div>
-
             {/* Submit Button */}
             <button
               type="submit"
@@ -447,7 +493,9 @@ const EditProfilePage: React.FC = () => {
               disabled={updateProfileMutation.isPending}
             >
               <label className="text-white text-nowrap font-medium cursor-pointer">
-                {updateProfileMutation.isPending ? ui.buttons.saving : 'Saved'}
+                {updateProfileMutation.isPending
+                  ? ui.buttons?.saving || 'Saving...'
+                  : ui.buttons?.save || 'Save Changes'}
               </label>
               <ArrowRed className="fill-current text-white" />
             </button>
