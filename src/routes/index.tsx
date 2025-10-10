@@ -50,7 +50,7 @@ import ReportDownloadPage from '@/pages/report-download';
 import LandingLayout from '@/shared/components/landing-layout';
 import InteractionLayout from '@/shared/components/intraction-layout';
 import AuthPage from '@/pages/auth';
-import SignUpPage from '@/pages/auth/sign-up';
+import RespondentSignUpPage from '@/pages/auth/respondent-sign-up';
 import UnsubscribePage from '@/pages/auth/unsubscribe';
 import EditProfilePage from '@/pages/auth/edit-profile';
 import ResourcePage from '@/pages/resources';
@@ -178,7 +178,7 @@ export const router = createBrowserRouter(
 
       {/* Authed Content Routes */}
       <Route path="/" element={<InteractionLayout />}>
-        <Route path="sign_up" element={<SignUpPage />} />
+        <Route path="sign_up" element={<RespondentSignUpPage />} />
         <Route path="unsubscribe" element={<UnsubscribePage />} />
         <Route path="edit_profile" element={<EditProfilePage />} />
         <Route path="survey_page" element={<SurveyPage />} />

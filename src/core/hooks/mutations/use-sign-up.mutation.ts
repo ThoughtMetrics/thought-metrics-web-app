@@ -1,4 +1,4 @@
-import type { AuthUser, SignUpData } from '@/services/api/auth.service';
+import type { UserProfile, SignUpData } from '@/services/api/auth.service';
 import authService from '@/services/api/auth.service';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -23,7 +23,7 @@ type SignUpParams =
 
 export const useSignUpMutation = () => {
   return useMutation({
-    mutationFn: async (params: SignUpParams): Promise<AuthUser> => {
+    mutationFn: async (params: SignUpParams): Promise<UserProfile> => {
       switch (params.type) {
         case 'email':
           return await authService.signUpWithEmail(params.data);
@@ -35,9 +35,23 @@ export const useSignUpMutation = () => {
           throw new Error('Invalid sign-up type');
       }
     },
+    retry: (failureCount, error: any) => {
+      // Don't retry on popup cancellation or user errors
+      if (
+        error.code === 'auth/popup-closed-by-user' ||
+        error.code === 'auth/cancelled-popup-request' ||
+        error.code === 'auth/email-already-in-use' ||
+        error.code === 'auth/invalid-email'
+      ) {
+        return false;
+      }
+      // Retry other errors up to 2 times
+      return failureCount < 2;
+    },
     onSuccess: (data) => {
+      const username = data.profile?.displayName ?? data.profile?.firstName ?? data.email;
       toast.success('Account created successfully!', {
-        description: `Welcome, ${data.displayName ?? data.email}!`,
+        description: `Welcome, ${username}!`,
       });
     },
     onError: (error: Error) => {
@@ -58,10 +72,13 @@ export const useSignUpMutation = () => {
         toast.error('Invalid email', {
           description: 'Please enter a valid email address.',
         });
-      } else if (errorCode === 'auth/popup-closed-by-user') {
-        toast.error('Sign-up cancelled', {
-          description: 'The sign-up popup was closed.',
-        });
+      } else if (
+        errorCode === 'auth/popup-closed-by-user' ||
+        errorCode === 'auth/cancelled-popup-request'
+      ) {
+        // Don't show error toast for user-initiated cancellation
+        // This is expected behavior when user closes the popup
+        console.log('Authentication popup was cancelled by user');
       } else {
         toast.error('Sign-up failed', {
           description: errorMessage,

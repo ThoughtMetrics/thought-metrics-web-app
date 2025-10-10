@@ -1,3 +1,8 @@
+import {
+  addressConstants,
+  phoneConstants,
+} from '@/core/constants/forms.constants';
+
 export const startYourResearchConstants = {
   initialFormData: {
     firstName: '',
@@ -15,21 +20,8 @@ export const startYourResearchConstants = {
     consentMarketing: false,
     consentSubscribe: false,
   },
-  countries: [
-    { code: 'IN', name: 'India' },
-    { code: 'US', name: 'United States' },
-    { code: 'GB', name: 'United Kingdom' },
-    { code: 'CA', name: 'Canada' },
-    { code: 'AU', name: 'Australia' },
-    { code: 'DE', name: 'Germany' },
-    { code: 'FR', name: 'France' },
-    { code: 'SG', name: 'Singapore' },
-  ],
-  countryCodes: [
-    { code: '+91', country: 'India' },
-    { code: '+1', country: 'USA' },
-    { code: '+44', country: 'UK' },
-  ],
+  countries: addressConstants.countries,
+  countryCodes: phoneConstants.countryCodes,
   helpOptions: [
     { id: 'focusGroup', label: 'Focus Group Discussions' },
     { id: 'telephonic', label: 'Telephonic surveys' },
