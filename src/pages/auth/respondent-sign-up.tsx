@@ -50,180 +50,174 @@ const years = Array.from({ length: currentYear - 1900 + 1 }, (_, i) => ({
   label: String(currentYear - i),
 }));
 
-// Zustand store
-const useRespondentRegistrationFormStore =
-  create<RespondentRegistrationFormStore>()(
-    devtools(
-      (set, get) => ({
+// Zustand store implementation
+const storeImplementation = (set: any, get: any) => ({
+  formData: initialFormData as RespondentRegistrationFormData,
+  currentStep: 1,
+  isSubmitting: false,
+  isSubmitted: false,
+  errors: {},
+  countryCode: defaultCountryCode,
+
+  updateField: (field: string, value: any) =>
+    set(
+      (state: RespondentRegistrationFormStore) => {
+        const newFormData: any = { ...state.formData };
+        if (field.includes('.')) {
+          const [parent, child] = field.split('.');
+          const parentKey = parent as keyof RespondentRegistrationFormData;
+          const currentParent = newFormData[parentKey];
+          if (typeof currentParent === 'object' && currentParent !== null) {
+            newFormData[parentKey] = {
+              ...currentParent,
+              [child]: value,
+            };
+          }
+        } else {
+          const fieldKey = field as keyof RespondentRegistrationFormData;
+          (newFormData[fieldKey]) = value;
+        }
+
+        const newErrors = { ...state.errors };
+        delete newErrors[field];
+
+        return {
+          ...state,
+          formData: newFormData,
+          errors: newErrors,
+        };
+      },
+      false,
+      `updateField_${field}`
+    ),
+
+  updateCountryCode: (code: string) =>
+    set({ countryCode: code }, false, 'updateCountryCode'),
+
+  nextStep: () => {
+    const { currentStep, validateStep } = get();
+    if (validateStep(currentStep)) {
+      set({ currentStep: currentStep + 1 }, false, 'nextStep');
+    }
+  },
+
+  previousStep: () =>
+    set(
+      (state: RespondentRegistrationFormStore) => ({
+        currentStep: Math.max(1, state.currentStep - 1),
+      }),
+      false,
+      'previousStep'
+    ),
+
+  resetForm: () =>
+    set(
+      {
         formData: initialFormData as RespondentRegistrationFormData,
         currentStep: 1,
         isSubmitting: false,
         isSubmitted: false,
         errors: {},
         countryCode: defaultCountryCode,
+      },
+      false,
+      'resetForm'
+    ),
 
-        updateField: (field, value) =>
-          set(
-            (state) => {
-              const newFormData: any = { ...state.formData };
-              if (field.includes('.')) {
-                const [parent, child] = field.split('.');
-                const parentKey =
-                  parent as keyof RespondentRegistrationFormData;
-                const currentParent = newFormData[parentKey];
-                if (
-                  typeof currentParent === 'object' &&
-                  currentParent !== null
-                ) {
-                  newFormData[parentKey] = {
-                    ...currentParent,
-                    [child]: value,
-                  } as any;
-                }
-              } else {
-                const fieldKey = field as keyof RespondentRegistrationFormData;
-                (newFormData[fieldKey] as any) = value;
-              }
+  validateStep: (step: number) => {
+    const { formData } = get();
+    const errors: Record<string, string> = {};
 
-              const newErrors = { ...state.errors };
-              delete newErrors[field];
-
-              return {
-                ...state,
-                formData: newFormData,
-                errors: newErrors,
-              };
-            },
-            false,
-            `updateField_${field}`
-          ),
-
-        updateCountryCode: (code) =>
-          set({ countryCode: code }, false, 'updateCountryCode'),
-
-        nextStep: () => {
-          const { currentStep, validateStep } = get();
-          if (validateStep(currentStep)) {
-            set({ currentStep: currentStep + 1 }, false, 'nextStep');
-          }
-        },
-
-        previousStep: () =>
-          set(
-            (state) => ({ currentStep: Math.max(1, state.currentStep - 1) }),
-            false,
-            'previousStep'
-          ),
-
-        resetForm: () =>
-          set(
-            {
-              formData: initialFormData as RespondentRegistrationFormData,
-              currentStep: 1,
-              isSubmitting: false,
-              isSubmitted: false,
-              errors: {},
-              countryCode: defaultCountryCode,
-            },
-            false,
-            'resetForm'
-          ),
-
-        validateStep: (step) => {
-          const { formData } = get();
-          const errors: Record<string, string> = {};
-
-          if (step === 1) {
-            if (!formData.firstName.trim())
-              errors.firstName = validationMessages.firstName;
-            if (!formData.lastName.trim())
-              errors.lastName = validationMessages.lastName;
-            if (!formData.email.trim())
-              errors.email = validationMessages.email.required;
-            else if (!emailRegexPattern.test(formData.email))
-              errors.email = validationMessages.email.invalid;
-            if (!formData.password.trim())
-              errors.password = validationMessages.password;
-            if (!formData.confirmPassword.trim())
-              errors.confirmPassword =
-                validationMessages.confirmPassword.required;
-            else if (formData.password !== formData.confirmPassword)
-              errors.confirmPassword =
-                validationMessages.confirmPassword.mismatch;
-            if (!formData.location?.doorNumberOrStreetName?.trim())
-              errors['location.doorNumberOrStreetName'] =
-                validationMessages.doorNumberOrStreetName;
-            if (!formData.location?.city?.trim())
-              errors['location.city'] = validationMessages.city;
-            if (!formData.location?.state?.trim())
-              errors['location.state'] = validationMessages.state;
-            if (!formData.location?.countryOrRegion?.trim())
-              errors['location.countryOrRegion'] =
-                validationMessages.countryOrRegion;
-            if (!formData.location?.zipCode?.trim())
-              errors['location.zipCode'] = validationMessages.zipCode;
-            if (
-              formData.dateOfBirth &&
-              (!formData.dateOfBirth.month ||
-                !formData.dateOfBirth.day ||
-                !formData.dateOfBirth.year)
-            ) {
-              errors.dateOfBirth = validationMessages.dateOfBirth;
-            }
-            if (!formData.termsAccepted)
-              errors.termsAccepted = validationMessages.termsAccepted;
-            if (!formData.privacyAccepted)
-              errors.privacyAccepted = validationMessages.privacyAccepted;
-          }
-
-          set({ errors }, false, 'validateStep');
-          return Object.keys(errors).length === 0;
-        },
-
-        submitForm: async (
-          onSubmit: (formData: RespondentRegistrationFormData) => Promise<void>
-        ) => {
-          const { formData } = get();
-
-          set({ isSubmitting: true }, false, 'submitForm_start');
-
-          try {
-            await onSubmit(formData);
-
-            set(
-              {
-                isSubmitting: false,
-                isSubmitted: true,
-              },
-              false,
-              'submitForm_success'
-            );
-
-            setTimeout(() => {
-              get().resetForm();
-            }, formResetDelay);
-          } catch (error) {
-            const errorMessage =
-              error instanceof Error
-                ? error.message
-                : validationMessages.submitError;
-            set(
-              {
-                isSubmitting: false,
-                errors: {
-                  general: errorMessage,
-                },
-              },
-              false,
-              'submitForm_error'
-            );
-          }
-        },
-      }),
-      {
-        name: storeName,
+    if (step === 1) {
+      if (!formData.firstName.trim())
+        errors.firstName = validationMessages.firstName;
+      if (!formData.lastName.trim())
+        errors.lastName = validationMessages.lastName;
+      if (!formData.email.trim())
+        errors.email = validationMessages.email.required;
+      else if (!emailRegexPattern.test(formData.email))
+        errors.email = validationMessages.email.invalid;
+      if (!formData.password.trim())
+        errors.password = validationMessages.password;
+      if (!formData.confirmPassword.trim())
+        errors.confirmPassword = validationMessages.confirmPassword.required;
+      else if (formData.password !== formData.confirmPassword)
+        errors.confirmPassword = validationMessages.confirmPassword.mismatch;
+      if (!formData.location?.doorNumberOrStreetName?.trim())
+        errors['location.doorNumberOrStreetName'] =
+          validationMessages.doorNumberOrStreetName;
+      if (!formData.location?.city?.trim())
+        errors['location.city'] = validationMessages.city;
+      if (!formData.location?.state?.trim())
+        errors['location.state'] = validationMessages.state;
+      if (!formData.location?.countryOrRegion?.trim())
+        errors['location.countryOrRegion'] =
+          validationMessages.countryOrRegion;
+      if (!formData.location?.zipCode?.trim())
+        errors['location.zipCode'] = validationMessages.zipCode;
+      if (
+        formData.dateOfBirth &&
+        (!formData.dateOfBirth.month ||
+          !formData.dateOfBirth.day ||
+          !formData.dateOfBirth.year)
+      ) {
+        errors.dateOfBirth = validationMessages.dateOfBirth;
       }
-    )
+      if (!formData.termsAccepted)
+        errors.termsAccepted = validationMessages.termsAccepted;
+      if (!formData.privacyAccepted)
+        errors.privacyAccepted = validationMessages.privacyAccepted;
+    }
+
+    set({ errors }, false, 'validateStep');
+    return Object.keys(errors).length === 0;
+  },
+
+  submitForm: async (
+    onSubmit: (formData: RespondentRegistrationFormData) => Promise<void>
+  ) => {
+    const { formData } = get();
+
+    set({ isSubmitting: true }, false, 'submitForm_start');
+
+    try {
+      await onSubmit(formData);
+
+      set(
+        {
+          isSubmitting: false,
+          isSubmitted: true,
+        },
+        false,
+        'submitForm_success'
+      );
+
+      setTimeout(() => {
+        get().resetForm();
+      }, formResetDelay);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : validationMessages.submitError;
+      set(
+        {
+          isSubmitting: false,
+          errors: {
+            general: errorMessage,
+          },
+        },
+        false,
+        'submitForm_error'
+      );
+    }
+  },
+});
+
+// Zustand store with conditional devtools
+const useRespondentRegistrationFormStore =
+  create<RespondentRegistrationFormStore>()(
+    import.meta.env.DEV
+      ? devtools(storeImplementation, { name: storeName })
+      : storeImplementation
   );
 
 const RespondentSignUpPage: React.FC = () => {

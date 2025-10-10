@@ -69,8 +69,8 @@ export const signUpFormConstant = {
       countryOrRegion: 'India',
     },
     participationPreferences: [],
-    termsAccepted: false,
-    privacyAccepted: false,
+    termsAccepted: true,
+    privacyAccepted: true,
   },
   participationOptions: [
     {
@@ -332,6 +332,7 @@ export const editProfileFormConstant = {
     { id: 'interviewsAtHome', label: 'Interviews at my home' },
     { id: 'localBusinesses', label: 'Interviews at local businesses' },
   ],
+  genders: formsConstants.genders,
   countries: addressConstants.countries,
   months: dateConstants.months,
   states: [
@@ -395,7 +396,7 @@ export const editProfileFormConstant = {
       required: 'Email is required',
       invalid: 'Email is invalid',
     },
-    address1: 'Address is required',
+    doorNumberOrStreetName: 'Street address is required',
     city: 'City is required',
     state: 'State is required',
     countryOrRegion: 'Country or region is required',
@@ -409,8 +410,8 @@ export const editProfileFormConstant = {
     fieldLabels: {
       firstName: 'First name',
       lastName: 'Last name',
-      address1: 'Address 1',
-      address2: 'Address 2',
+      doorNumberOrStreetName: 'Door No/ Street Address',
+      district: 'District (Optional)',
       email: 'Email',
       phone: 'Phone (Optional)',
       city: 'City',
@@ -418,6 +419,7 @@ export const editProfileFormConstant = {
       countryOrRegion: 'Country Or Region',
       zipCode: 'Zip Code',
       dateOfBirth: 'Date of Birth',
+      gender: 'Gender (Optional)',
     },
     preferences: {
       title: 'Participation Preferences',

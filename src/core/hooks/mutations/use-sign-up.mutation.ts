@@ -1,4 +1,4 @@
-import type { UserProfile, SignUpData } from '@/services/api/auth.service';
+import type { SignUpData, UserProfile } from '@/core/types/user.type';
 import authService from '@/services/api/auth.service';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -49,9 +49,8 @@ export const useSignUpMutation = () => {
       return failureCount < 2;
     },
     onSuccess: (data) => {
-      const username = data.profile?.displayName ?? data.profile?.firstName ?? data.email;
       toast.success('Account created successfully!', {
-        description: `Welcome, ${username}!`,
+        description: `Welcome, ${data.profile?.username}!`,
       });
     },
     onError: (error: Error) => {

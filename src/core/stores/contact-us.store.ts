@@ -21,18 +21,19 @@ const initialFormData: ContactFormData = {
   consentSubscribe: false,
 };
 
+const storeImplementation = (set: any) => ({
+  formData: initialFormData,
+  updateField: (field: keyof ContactFormData, value: any) =>
+    set(
+      (state: ContactUsFormStore) => ({ formData: { ...state.formData, [field]: value } }),
+      false,
+      `updateField_${field}`
+    ),
+  resetForm: () => set({ formData: initialFormData }, false, 'resetForm'),
+});
+
 export const useContactFormStore = create<ContactUsFormStore>()(
-  devtools(
-    (set) => ({
-      formData: initialFormData,
-      updateField: (field, value) =>
-        set(
-          (state) => ({ formData: { ...state.formData, [field]: value } }),
-          false,
-          `updateField_${field}`
-        ),
-      resetForm: () => set({ formData: initialFormData }, false, 'resetForm'),
-    }),
-    { name: 'contact-form' }
-  )
+  import.meta.env.DEV
+    ? devtools(storeImplementation, { name: 'contact-form' })
+    : storeImplementation
 );

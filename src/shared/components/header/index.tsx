@@ -4,8 +4,10 @@ import { CurveIcon, Logo, StackIllustration } from '@/assets';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/routes/routeConfig';
 import { cn } from '@/core/utils/cn';
+import { auth } from '@/core/configs/firebase-config';
 
 const Header: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [activeMobileDropdown, setActiveMobileDropdown] = useState<
@@ -17,6 +19,10 @@ const Header: React.FC = () => {
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setIsAuthenticated(!!user);
+    });
+
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
@@ -34,6 +40,7 @@ const Header: React.FC = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      unsubscribe();
     };
   }, []);
 
@@ -146,11 +153,13 @@ const Header: React.FC = () => {
               Start Your Research
             </Link>
             <Link
-              to={ROUTES.RESPONDENT_LANDING}
+              to={
+                isAuthenticated ? ROUTES.SURVEY_PAGE : ROUTES.RESPONDENT_LANDING
+              }
               viewTransition={true}
               className="py-0.5 xl:py-[3px] xxl:py-1 px-4 text-[11px] xl:text-sm xxl:text-base font-medium cursor-pointer transition-all duration-300 ease-in-out whitespace-nowrap bg-primary text-white hover:bg-custom-blue hover:border-custom-blue"
             >
-              Join a Paid Focus Group
+              {isAuthenticated ? 'Take a Paid Survey' : 'Join a Paid Survey'}
             </Link>
           </nav>
 
@@ -366,11 +375,15 @@ const Header: React.FC = () => {
                 Start Your Research
               </Link>
               <Link
-                to={ROUTES.RESPONDENT_LANDING}
+                to={
+                  isAuthenticated
+                    ? ROUTES.SURVEY_PAGE
+                    : ROUTES.RESPONDENT_LANDING
+                }
                 viewTransition={true}
                 className="w-full py-3 px-4 bg-white text-primary font-medium rounded hover:bg-white/90 transition-colors text-center"
               >
-                Join a Paid Focus Group
+                {isAuthenticated ? 'Take a Paid Survey' : 'Join a Paid Survey'}
               </Link>
             </div>
 

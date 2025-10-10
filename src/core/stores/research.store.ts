@@ -29,18 +29,19 @@ export const initialFormData: ResearchFormData = {
   consentSubscribe: false,
 };
 
+const storeImplementation = (set: any) => ({
+  formData: initialFormData,
+  updateField: (field: keyof ResearchFormData, value: string | boolean | string[]) =>
+    set(
+      (state: ResearchFormStore) => ({ formData: { ...state.formData, [field]: value } }),
+      false,
+      `updateField_${field}`
+    ),
+  resetForm: () => set({ formData: initialFormData }, false, 'resetForm'),
+});
+
 export const useResearchFormStore = create<ResearchFormStore>()(
-  devtools(
-    (set) => ({
-      formData: initialFormData,
-      updateField: (field, value) =>
-        set(
-          (state) => ({ formData: { ...state.formData, [field]: value } }),
-          false,
-          `updateField_${field}`
-        ),
-      resetForm: () => set({ formData: initialFormData }, false, 'resetForm'),
-    }),
-    { name: 'research-form' }
-  )
+  import.meta.env.DEV
+    ? devtools(storeImplementation, { name: 'research-form' })
+    : storeImplementation
 );

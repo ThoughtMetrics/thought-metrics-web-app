@@ -1,0 +1,108 @@
+/**
+ * User Type Definitions
+ * Based on backend API user model structure
+ */
+
+export type UserRole =
+  | 'super-admin'
+  | 'admin'
+  | 'employee'
+  | 'client'
+  | 'respondent'
+  | 'partner';
+
+// Location Interface - Aligned with backend ILocation
+export interface Location {
+  doorNumberOrStreetName?: string;
+  city?: string;
+  zipCode?: string;
+  district?: string;
+  state?: string;
+  countryOrRegion?: string;
+}
+
+// Settings Interface - Aligned with backend ISettings
+export interface UserSettings {
+  notifications?: {
+    email?: boolean;
+    push?: boolean;
+    sms?: boolean;
+    researchInvites?: boolean;
+    newsletters?: boolean;
+  };
+  privacy?: {
+    profileVisibility?: 'public' | 'private' | 'clients-only';
+    showEmail?: boolean;
+    showPhone?: boolean;
+    dataSharing?: boolean;
+  };
+  preferences?: {
+    language?: string;
+    theme?: 'light' | 'dark' | 'auto';
+    currency?: string;
+    dateFormat?: string;
+  };
+}
+
+// Respondent Info Interface - Aligned with backend IRespondentInfo
+export interface RespondentInfo {
+  termsAccepted: boolean;
+  privacyAccepted: boolean;
+  participationPreferences?: string[];
+}
+
+// Profile Interface - Aligned with backend IProfile
+export interface UserProfileData {
+  firstName?: string;
+  lastName?: string;
+  displayName?: string;
+  avatar?: string;
+  bio?: string;
+  phone?: string;
+  gender?: string;
+  dateOfBirth?: Date; // ISO date string
+  location?: Location;
+  username?: string;
+}
+
+// Complete User Profile from Backend - Aligned with backend User model
+export interface UserProfile {
+  _id: string;
+  firebaseUid: string;
+  email?: string;
+  profile: UserProfileData;
+  respondentInfo?: RespondentInfo;
+  settings?: UserSettings;
+  providerId: string;
+  role?:
+    | 'super-admin'
+    | 'admin'
+    | 'employee'
+    | 'client'
+    | 'respondent'
+    | 'partner';
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Sign Up Data Interface - For registration
+export interface SignUpData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  phone?: string;
+  dateOfBirth?: Date;
+  gender?: string;
+  location?: Location;
+  participationPreferences?: string[];
+  termsAccepted: boolean;
+  privacyAccepted: boolean;
+}
+
+// Update Profile Data Interface - For profile updates (PATCH /users/profile)
+export interface UpdateProfileData {
+  profile?: Partial<UserProfileData>;
+  respondentInfo: Partial<RespondentInfo>;
+  settings?: Partial<UserSettings>;
+}

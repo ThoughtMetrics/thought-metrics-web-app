@@ -1,10 +1,14 @@
 import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
 import { QueryKeys } from '@/core/lib/query-keys';
-import authService, { type UserProfile } from '@/services/api/auth.service';
+import authService from '@/services/api/auth.service';
 import { useAuth } from '@/shared/providers/auth-provider';
+import type { UserProfile } from '@/core/types/user.type';
 
 export const useUserProfileQuery = (
-  queryOptions?: Omit<UseQueryOptions<UserProfile, Error>, 'queryKey' | 'queryFn'>
+  queryOptions?: Omit<
+    UseQueryOptions<UserProfile, Error>,
+    'queryKey' | 'queryFn'
+  >
 ) => {
   const { user, isAuthReady } = useAuth();
 
