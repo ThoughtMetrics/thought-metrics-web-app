@@ -9,6 +9,7 @@ import type {
 } from '@/core/types/unsubscribe.type';
 import { devtools } from 'zustand/middleware';
 import { create } from 'zustand';
+import { useProfileQuery } from '@/core/hooks/queries/use-profile.query';
 
 // Destructure constants
 const {
@@ -109,13 +110,10 @@ const useUnsubscribeFormStore = create<UnsubscribeFormStore>()(
 );
 
 const UnsubscribePage: React.FC = () => {
-  const {
-    formData,
-    isSubmitting,
-    isSubmitted,
-    updateField,
-    submitForm,
-  } = useUnsubscribeFormStore();
+  const { data: userProfile } = useProfileQuery();
+
+  const { formData, isSubmitting, isSubmitted, updateField, submitForm } =
+    useUnsubscribeFormStore();
 
   const handleReasonChange = (selectedValues: string[]) => {
     updateField('reasons', selectedValues);
@@ -169,7 +167,7 @@ const UnsubscribePage: React.FC = () => {
         </p>
         <p>
           <span className="font-medium">Your Email: </span>
-          <span>{formData.email}</span>
+          <span>{userProfile?.email}</span>
         </p>
         <p>Please let us know you would like to change.</p>
         <form onSubmit={handleSubmit} className="space-y-6">

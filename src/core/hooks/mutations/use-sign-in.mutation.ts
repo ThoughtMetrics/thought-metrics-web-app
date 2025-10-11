@@ -112,7 +112,7 @@ export const useSignInMutation = () => {
     },
     onSuccess: (data) => {
       toast.success('Sign in successful!', {
-        description: `Welcome back, ${data.profile?.username}!`,
+        description: `Welcome back, ${data.profile?.displayName ?? data.profile?.firstName}!`,
       });
     },
     onError: (error: Error) => {
