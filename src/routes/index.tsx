@@ -56,6 +56,7 @@ import EditProfilePage from '@/pages/auth/edit-profile';
 import ResourcePage from '@/pages/resources';
 import SurveyPage from '@/pages/survey-page';
 import ArticlesPage from '@/pages/resources/pages/articles';
+import TermsAndConditions from '@/pages/terms-condition';
 
 // // Home loader - prefetches blog data
 // const homeLoader = async () => {
@@ -159,6 +160,7 @@ export const router = createBrowserRouter(
           element={<BusinessConductEthics />}
         />
         <Route path="ai_policy" element={<AIPolicy />} />
+        <Route path="terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="start_your_research" element={<ResearchForm />} />
         {/* 404 Route */}
         <Route path="*" element={<NotFound />} />

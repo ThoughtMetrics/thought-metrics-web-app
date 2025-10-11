@@ -75,7 +75,7 @@ const storeImplementation = (set: any, get: any) => ({
           }
         } else {
           const fieldKey = field as keyof RespondentRegistrationFormData;
-          (newFormData[fieldKey]) = value;
+          newFormData[fieldKey] = value;
         }
 
         const newErrors = { ...state.errors };
@@ -151,8 +151,7 @@ const storeImplementation = (set: any, get: any) => ({
       if (!formData.location?.state?.trim())
         errors['location.state'] = validationMessages.state;
       if (!formData.location?.countryOrRegion?.trim())
-        errors['location.countryOrRegion'] =
-          validationMessages.countryOrRegion;
+        errors['location.countryOrRegion'] = validationMessages.countryOrRegion;
       if (!formData.location?.zipCode?.trim())
         errors['location.zipCode'] = validationMessages.zipCode;
       if (
@@ -739,26 +738,39 @@ const RespondentSignUpPage: React.FC = () => {
                     name="termsAccepted"
                     checked={formData.termsAccepted}
                     onChange={handleInputChange}
-                    label={ui.checkboxLabels.termsAccepted}
+                    error={errors.termsAccepted}
+                    customLabelComponent={
+                      <div>
+                        {ui.checkboxLabels.termsAccepted}{' '}
+                        <Link
+                          to={ui.checkboxLabels.termsItem.path}
+                          className="hover:text-primary underline"
+                        >
+                          {ui.checkboxLabels.termsItem.terms}
+                        </Link>
+                      </div>
+                    }
                   />
-                  {errors.termsAccepted && (
-                    <p className="text-sm text-primary">
-                      {errors.termsAccepted}
-                    </p>
-                  )}
 
                   <CheckboxAtom
                     id="privacyAccepted"
                     name="privacyAccepted"
                     checked={formData.privacyAccepted}
                     onChange={handleInputChange}
-                    label={ui.checkboxLabels.privacyAccepted}
+                    customLabelComponent={
+                      <div>
+                        {ui.checkboxLabels.privacyAccepted.prefix}{' '}
+                        <Link
+                          to={ui.checkboxLabels.privacyItem.path}
+                          className="hover:text-primary underline"
+                        >
+                          {ui.checkboxLabels.privacyItem.privacy}
+                        </Link>{' '}
+                        {ui.checkboxLabels.privacyAccepted.suffix}
+                      </div>
+                    }
+                    error={errors.privacyAccepted}
                   />
-                  {errors.privacyAccepted && (
-                    <p className="text-sm text-primary">
-                      {errors.privacyAccepted}
-                    </p>
-                  )}
                 </div>
               </>
             )}

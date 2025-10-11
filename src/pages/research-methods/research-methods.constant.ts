@@ -407,7 +407,7 @@ export const researchMethods = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: '/images/research_methods_qualitative_1.png',
+        img: '/images/research_methods_fieldwork_1.png',
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'br',

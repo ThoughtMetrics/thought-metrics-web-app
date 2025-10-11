@@ -14,7 +14,7 @@ const QualityHeroSection: React.FC<any> = ({
           <heroSection.illustrationComponent className="w-full h-full" />
         </div>
       </div>
-      <div className="z-1 common-container flex-col justify-start h-fit !max-w-[var(--breakpoint-2xl)] md:px-24 text-black">
+      <div className="z-1 common-container flex-col justify-start h-fit !max-w-[var(--breakpoint-2xl)] px-6 md:px-24 text-black">
         <div
           className={cn(
             'shrink-0 md:w-[43%] xxl:w-[37%] wide:w-[50%] h-full flex flex-col gap-3 justify-center',

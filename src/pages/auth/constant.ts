@@ -4,6 +4,7 @@ import {
   formsConstants,
   phoneConstants,
 } from '@/core/constants/forms.constants';
+import { ROUTES } from '@/routes/routeConfig';
 
 export const loginFormConstant = {
   initialFormData: {
@@ -218,9 +219,20 @@ export const signUpFormConstant = {
     },
     checkboxLabels: {
       termsAccepted:
-        'I have read and understand my responsibilities as a participant and I agree to the TERMS AND CONDITIONS',
-      privacyAccepted:
-        'By clicking "Next", you are agreeing to Thought Metrics PRIVACY POLICY for receiving survey invitations for purposes of collection, compilation of demographic and attitudinal information and length of data retention. If you have provided your phone number to Thought Metrics, you agree to that Thought Metrics and its clients may call and send text messages for project-related purposes. You may revise your consent at any time.',
+        'I have read and understand my responsibilities as a participant and I agree to the',
+      termsItem: {
+        terms: 'TERMS AND CONDITIONS',
+        path: ROUTES.TERMS_AND_CONDITIONS,
+      },
+      privacyAccepted: {
+        prefix: 'By clicking "Next", you are agreeing to Thought Metrics',
+        suffix:
+          'for receiving survey invitations for purposes of collection, compilation of demographic and attitudinal information and length of data retention. If you have provided your phone number to Thought Metrics, you agree to that Thought Metrics and its clients may call and send text messages for project-related purposes. You may revise your consent at any time.',
+      },
+      privacyItem: {
+        privacy: 'PRIVACY POLICY',
+        path: ROUTES.PRIVACY_POLICY,
+      },
     },
     buttons: {
       next: 'Next',

@@ -25,11 +25,11 @@ const B2BServices: React.FC = () => {
                 ) : null;
               })()}
               <div className="flex flex-col justify-between h-[18rem]">
-                <div className="w-[72%] flex flex-col gap-2 z-1">
-                  <h3 className="w-[90%] leading-[1.2] font-semibold">
+                <div className="w-[90%] flex flex-col gap-2 z-1">
+                  <h3 className="leading-[1.2] font-semibold">
                     {contentSecondData.services[0].title}
                   </h3>
-                  <p className="tracking-tight leading-[1.2]">
+                  <p className="tracking-tight leading-[1.2] line-clamp-9">
                     {contentSecondData.services[0].description}
                   </p>
                 </div>
@@ -77,7 +77,7 @@ const B2BServices: React.FC = () => {
           >
             <div className="flex flex-col justify-between h-[14rem]">
               <div className="w-[60%] flex flex-col gap-2">
-                <h3 className="w-[35%] leading-[1.2] font-semibold">
+                <h3 className="w-[40%] leading-[1.2] font-semibold">
                   {contentSecondData.services[2].title}
                 </h3>
                 <p className="tracking-tight leading-[1.2]">
