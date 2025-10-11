@@ -50,7 +50,7 @@ export const useSignUpMutation = () => {
     },
     onSuccess: (data) => {
       toast.success('Account created successfully!', {
-        description: `Welcome, ${data.profile?.username}!`,
+        description: `Welcome, ${data.profile?.displayName ?? data.profile?.firstName}!`,
       });
     },
     onError: (error: Error) => {

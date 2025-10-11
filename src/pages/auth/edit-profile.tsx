@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { editProfileFormConstant } from './constant';
 import {
   CheckboxOutlineGroupAtom,
@@ -41,6 +42,7 @@ const years = Array.from({ length: currentYear - 1900 + 1 }, (_, i) => ({
 }));
 
 const EditProfilePage: React.FC = () => {
+  const navigate = useNavigate();
   const { data: profile, isLoading: isLoadingProfile } = useProfileQuery();
   const updateProfileMutation = useUpdateProfileMutation();
 
@@ -251,6 +253,9 @@ const EditProfilePage: React.FC = () => {
       };
 
       await updateProfileMutation.mutateAsync(updateData);
+
+      // Redirect to survey page after successful update
+      await navigate('/survey_page');
     } catch (error) {
       console.error('Update profile error:', error);
     }
