@@ -44,7 +44,9 @@ const SolutionInsights: React.FC = () => {
 
         <div className="grid md:grid-cols-2 px-6 gap-4 md:gap-6">
           {solutionsInsights.cards.map((card, index) => (
-            <button
+            <Link
+              to={card.path}
+              viewTransition={true}
               key={index + card.title}
               className={cn(
                 'w-full md:w-65 md:h-80 text-start border-1 border-black rounded-[0.3rem] p-[0.8rem] pb-12 relative cursor-pointer transition-all duration-300 ease-in-out flex flex-col',
@@ -80,9 +82,7 @@ const SolutionInsights: React.FC = () => {
               >
                 {card.description}
               </p>
-              <Link
-                to={card.path}
-                viewTransition={true}
+              <div
                 className={cn(
                   'absolute bottom-0 right-0 w-[72px] h-[38px] rounded-tl-[4px] rounded-br-[3px] bg-primary text-white border-none flex items-center justify-center cursor-pointer transition-all duration-300 ease-in-out',
                   hoveredCard === index && 'bg-white text-primary'
@@ -95,8 +95,8 @@ const SolutionInsights: React.FC = () => {
                     hoveredCard === index ? 'text-black' : ''
                   )}
                 />
-              </Link>
-            </button>
+              </div>
+            </Link>
           ))}
         </div>
       </div>

@@ -32,7 +32,7 @@ const AboutUsSection: React.FC<any> = ({
             className={cn('md:hidden', imgClassName)}
           />
           <p
-            className="md:w-[90%] text-text-dark font-medium xl:text-lg xxl:text-xl [&>*]:pt-2"
+            className="md:w-[90%] xl:text-lg xxl:text-xl [&>*]:pt-2"
             dangerouslySetInnerHTML={{
               __html: questionarySection.description,
             }}

@@ -86,6 +86,7 @@ const CheckboxAtom: React.FC<CheckboxProps> = ({
   checked,
   onChange,
   label,
+  customLabelComponent,
   className = '',
   error,
   required = false,
@@ -103,7 +104,7 @@ const CheckboxAtom: React.FC<CheckboxProps> = ({
         />
         <span className="text-sm text-black">
           {required && '* '}
-          {label}
+          {label ?? customLabelComponent}
         </span>
       </label>
       {error && <p className="mt-1 text-sm text-primary">{error}</p>}
@@ -138,7 +139,9 @@ const PhoneInputAtom: React.FC<PhoneInputProps> = ({
       <div className="flex">
         <select
           className={`px-2 py-2 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none border-r-2 ${
-            error ? 'border-primary' : 'border-custom-grey-2 focus:border-primary'
+            error
+              ? 'border-primary'
+              : 'border-custom-grey-2 focus:border-primary'
           }`}
           value={countryCode}
           onChange={onCountryCodeChange}
@@ -156,7 +159,9 @@ const PhoneInputAtom: React.FC<PhoneInputProps> = ({
           value={value}
           onChange={onChange}
           className={`flex-1 px-3 py-2 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors ${
-            error ? 'border-primary' : 'border-custom-grey-2 focus:border-primary'
+            error
+              ? 'border-primary'
+              : 'border-custom-grey-2 focus:border-primary'
           }`}
         />
       </div>

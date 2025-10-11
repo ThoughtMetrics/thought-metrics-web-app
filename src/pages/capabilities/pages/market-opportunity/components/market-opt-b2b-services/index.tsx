@@ -26,7 +26,7 @@ const MarketOptB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
                 <h3 className="leading-[1.2] font-semibold">
                   {b2bServiceSection.services[0].title}
                 </h3>
-                <p className="tracking-tight leading-[1.2]">
+                <p className="tracking-tight leading-[1.2] line-clamp-9">
                   {b2bServiceSection.services[0].description}
                 </p>
               </div>

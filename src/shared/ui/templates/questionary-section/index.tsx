@@ -23,7 +23,7 @@ const QuestionarySection: React.FC<any> = ({
             <div className="w-25 h-1 bg-primary rounded"></div>
           </h2>
           <p
-            className="leading-5 text-text-dark font-medium text-md md:text-lg pb-5"
+            className="leading-5 text-md md:text-lg pb-5"
             dangerouslySetInnerHTML={{
               __html: questionarySection.description,
             }}

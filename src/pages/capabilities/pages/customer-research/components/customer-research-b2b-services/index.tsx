@@ -40,7 +40,7 @@ const CustomerResearchB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
             className="relative col-span-2 bg-gradient-to-r from-custom-violet to-white rounded-md flex flex-col justify-center pt-16 pb-14 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
           >
             <div className="flex flex-col justify-between h-[15rem]">
-              <div className="w-[50%] flex flex-col gap-2">
+              <div className="w-[45%] flex flex-col gap-2">
                 <h3 className="leading-[1.2] font-semibold">
                   {b2bServiceSection.services[1].title}
                 </h3>
