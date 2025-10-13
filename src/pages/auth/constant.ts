@@ -430,7 +430,7 @@ export const editProfileFormConstant = {
       state: 'State',
       countryOrRegion: 'Country Or Region',
       zipCode: 'Zip Code',
-      dateOfBirth: 'Date of Birth',
+      dateOfBirth: 'Date of Birth (Optional)',
       gender: 'Gender (Optional)',
     },
     preferences: {
