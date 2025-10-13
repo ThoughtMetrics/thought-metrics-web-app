@@ -154,6 +154,8 @@ const storeImplementation = (set: any, get: any) => ({
         errors['location.countryOrRegion'] = validationMessages.countryOrRegion;
       if (!formData.location?.zipCode?.trim())
         errors['location.zipCode'] = validationMessages.zipCode;
+      if (!formData.gender?.trim())
+        newErrors.gender = validationMessages.gender;
       // if (
       //   formData.dateOfBirth &&
       //   (!formData.dateOfBirth.month ||
