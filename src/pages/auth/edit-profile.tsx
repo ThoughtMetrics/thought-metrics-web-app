@@ -194,6 +194,7 @@ const EditProfilePage: React.FC = () => {
         validationMessages.countryOrRegion;
     if (!formData.location.zipCode?.trim())
       newErrors['location.zipCode'] = validationMessages.zipCode;
+    if (!formData.gender?.trim()) newErrors.gender = validationMessages.gender;
     // if (
     //   !formData.dateOfBirth.month ||
     //   !formData.dateOfBirth.day ||
