@@ -154,14 +154,14 @@ const storeImplementation = (set: any, get: any) => ({
         errors['location.countryOrRegion'] = validationMessages.countryOrRegion;
       if (!formData.location?.zipCode?.trim())
         errors['location.zipCode'] = validationMessages.zipCode;
-      if (
-        formData.dateOfBirth &&
-        (!formData.dateOfBirth.month ||
-          !formData.dateOfBirth.day ||
-          !formData.dateOfBirth.year)
-      ) {
-        errors.dateOfBirth = validationMessages.dateOfBirth;
-      }
+      // if (
+      //   formData.dateOfBirth &&
+      //   (!formData.dateOfBirth.month ||
+      //     !formData.dateOfBirth.day ||
+      //     !formData.dateOfBirth.year)
+      // ) {
+      //   errors.dateOfBirth = validationMessages.dateOfBirth;
+      // }
       if (!formData.termsAccepted)
         errors.termsAccepted = validationMessages.termsAccepted;
       if (!formData.privacyAccepted)

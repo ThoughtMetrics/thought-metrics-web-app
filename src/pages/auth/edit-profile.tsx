@@ -194,13 +194,13 @@ const EditProfilePage: React.FC = () => {
         validationMessages.countryOrRegion;
     if (!formData.location.zipCode?.trim())
       newErrors['location.zipCode'] = validationMessages.zipCode;
-    if (
-      !formData.dateOfBirth.month ||
-      !formData.dateOfBirth.day ||
-      !formData.dateOfBirth.year
-    ) {
-      newErrors.dateOfBirth = validationMessages.dateOfBirth;
-    }
+    // if (
+    //   !formData.dateOfBirth.month ||
+    //   !formData.dateOfBirth.day ||
+    //   !formData.dateOfBirth.year
+    // ) {
+    //   newErrors.dateOfBirth = validationMessages.dateOfBirth;
+    // }
 
     // Password validation only if password is provided
     if (formData.password || formData.confirmPassword) {
@@ -433,7 +433,7 @@ const EditProfilePage: React.FC = () => {
             {/* Date of Birth */}
             <div className="space-y-2">
               <label className="block text-sm font-medium">
-                {ui.fieldLabels.dateOfBirth}*
+                {ui.fieldLabels.dateOfBirth}
               </label>
               <div className="grid grid-cols-3 gap-4 w-fit">
                 <SelectAtom
