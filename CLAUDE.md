@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 ### Primary Commands
+
 ```bash
 # Start development server (runs on http://localhost:4200)
 yarn dev
@@ -29,6 +30,7 @@ yarn build:ssg
 ```
 
 ### Docker Commands
+
 ```bash
 # Build Docker image
 yarn docker:build
@@ -42,6 +44,7 @@ yarn docker:run
 ### Project Structure
 
 **Core Directory (`src/core/`)**
+
 - `configs/` - Runtime API configuration with dual support for build-time env vars and runtime `window.__APP_CONFIG__`
 - `hooks/` - React hooks organized by purpose:
   - `queries/` - TanStack Query hooks for data fetching
@@ -54,15 +57,18 @@ yarn docker:run
 
 **Services Layer (`src/services/`)**
 Two separate service architectures:
+
 - `api/` - Custom API service using native `fetch` API (for backend at `VITE_BASE_URL`)
 - `strapi-api/` - Strapi CMS service using Axios (for CMS at `VITE_STRAPI_API_URL`)
 
 **Pages (`src/pages/`)**
+
 - Each page directory contains page components and sub-pages
 - Nested routes use React Router's outlet pattern
 - Major sections: home, industries, capabilities, research-methods, resources, contact-us, landing pages
 
 **Shared (`src/shared/`)**
+
 - `components/` - Reusable components including Layout, LandingLayout, InteractionLayout
 - `providers/` - React context providers (AppProvider wraps app with QueryClientProvider)
 - `ui/` - Base UI components organized by atomic design pattern
@@ -70,6 +76,7 @@ Two separate service architectures:
 ### Routing Architecture
 
 Routes are defined in `src/routes/index.tsx` using `createBrowserRouter`:
+
 - Main layout routes (`<Layout />`) - Standard pages with header/footer
 - Landing layout routes (`<LandingLayout />`) - Special landing pages (respondent_landing, advocate_landing)
 - Interaction layout routes (`<InteractionLayout />`) - Auth-related pages
@@ -80,12 +87,13 @@ Routes are defined in `src/routes/index.tsx` using `createBrowserRouter`:
 **Dual API System:**
 
 1. **Backend API** (`ApiService` in `src/services/api/api.service.ts`):
+
    - Uses native Fetch API
    - Base URL: `{VITE_BASE_URL}/api/{VITE_BASE_API_VERSION}`
    - Custom error handling with `ApiError` class
    - Used for contact-us and other backend operations
-
 2. **Strapi CMS API** (`StrapiService` in `src/services/strapi-api/strapi.service.ts`):
+
    - Uses Axios with interceptors
    - Base URL: `{VITE_STRAPI_API_URL}/api`
    - Handles authentication tokens from localStorage or env
@@ -93,6 +101,7 @@ Routes are defined in `src/routes/index.tsx` using `createBrowserRouter`:
    - Used for content management (blogs, resources)
 
 **Content Service** (`ContentService` extends `StrapiService`):
+
 - Comprehensive filtering: type, category, tags, date ranges, search
 - Blog content transformation for UI consumption
 - Optimal image format selection (medium > small > thumbnail > original)
@@ -101,17 +110,20 @@ Routes are defined in `src/routes/index.tsx` using `createBrowserRouter`:
 ### State Management
 
 **TanStack Query (React Query)**:
+
 - Primary data fetching and server state management
 - Query keys organized in `src/core/lib/query-keys.ts` using factory pattern
 - DevTools enabled in development mode
 - Example query key structure: `['contents', 'list', { filters }]`
 
 **Zustand Stores**:
+
 - Used for client-side global state
 - Located in `src/core/stores/`
 - Examples: content.store.ts, contact-us.store.ts
 
 ### Path Aliases (Configured in vite.config.ts and tsconfig)
+
 ```
 @/ → src/
 @assets → src/assets/
@@ -131,6 +143,7 @@ Routes are defined in `src/routes/index.tsx` using `createBrowserRouter`:
 The app supports runtime environment variable injection via `window.__APP_CONFIG__` (see `src/core/configs/api-config.ts`). This allows environment variables to be set at container startup via Docker's `entrypoint.sh`.
 
 **Required Environment Variables:**
+
 ```env
 PORT=4200                                    # Dev server port
 NODE_ENV=development                         # Environment
@@ -157,6 +170,7 @@ VITE_SITE_URL=https://thoughtmetrics.com    # Production site URL
 ### Build Configuration
 
 **Vite Build:**
+
 - Output directory: `dist/`
 - Source maps enabled for debugging
 - Manual chunking strategy:
@@ -164,6 +178,7 @@ VITE_SITE_URL=https://thoughtmetrics.com    # Production site URL
   - `router` chunk: react-router-dom
 
 **Docker Multi-stage Build:**
+
 1. Builder stage: Node 20 Alpine, installs deps with `yarn install --frozen-lockfile`, builds app
 2. Production stage: Nginx Alpine, copies built assets and config, runs entrypoint.sh for runtime env injection
 
@@ -171,6 +186,7 @@ VITE_SITE_URL=https://thoughtmetrics.com    # Production site URL
 
 **Content Fetching Pattern:**
 When fetching blog/resource content, use the `useBlogContentsQuery` hook which returns pre-formatted data with:
+
 - Transformed image URLs (optimal format selection)
 - Resource links (`/resources/{slug}`)
 - Structured blog items ready for UI rendering
@@ -184,20 +200,24 @@ Always use `QueryKeys` from `src/core/lib/query-keys.ts` for consistent cache ke
 ## Development Guidelines
 
 ### When Adding New API Endpoints:
+
 1. Determine if it belongs to backend API or Strapi CMS
 2. Extend appropriate service class (ApiService or StrapiService)
 3. Create corresponding query hooks in `src/core/hooks/queries/`
 4. Add query keys to `QueryKeys` factory
 
 ### When Adding New Routes:
+
 1. Create page component in `src/pages/`
 2. Add route definition in `src/routes/index.tsx`
 3. Choose appropriate layout (Layout, LandingLayout, or InteractionLayout)
 
 ### When Adding New Global State:
+
 1. Use TanStack Query for server state
 2. Use Zustand stores (in `src/core/stores/`) for client-side state
 3. Avoid prop drilling by leveraging React Query's cache
 
 ### Package Manager:
+
 Always use **Yarn** for package management (not npm). Lock file: `yarn.lock`

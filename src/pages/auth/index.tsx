@@ -15,12 +15,10 @@ import {
   FacebookOutlineIcon,
   GoogleOutlineIcon,
 } from '@/assets';
-import {
-  getSignInErrorDetails,
-  useSignInMutation,
-} from '@/core/hooks/mutations/use-sign-in.mutation';
+import { useSignInMutation } from '@/core/hooks/mutations/use-sign-in.mutation';
 import { auth } from '@/core/configs/firebase-config';
 import { LoaderOverlay } from '@/shared/ui/atoms/loader';
+import { getSignInErrorDetails } from '@/core/utils/firebase-error-handler';
 
 const { initialFormData, storeName, validationMessages, formResetDelay, ui } =
   loginFormConstant;
@@ -183,12 +181,21 @@ const AuthPage: React.FC = () => {
       if (result) {
         void navigate(ROUTES.SURVEY_PAGE);
       }
-    } catch (error: any) {
+    } catch (error) {
+      let errorCode = '';
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'code' in error &&
+        typeof (error as { code?: unknown }).code === 'string'
+      ) {
+        errorCode = (error as { code: string }).code;
+      }
       console.error('Google sign-in failed:', error);
       // Check if it's a user cancellation
       if (
-        error.code === 'auth/popup-closed-by-user' ||
-        error.code === 'auth/cancelled-popup-request'
+        errorCode === 'auth/popup-closed-by-user' ||
+        errorCode === 'auth/cancelled-popup-request'
       ) {
         // Immediately re-enable button on cancellation
         setSocialAuthLoading(null);
@@ -208,12 +215,21 @@ const AuthPage: React.FC = () => {
       if (result) {
         void navigate(ROUTES.SURVEY_PAGE);
       }
-    } catch (error: any) {
+    } catch (error) {
+      let errorCode = '';
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'code' in error &&
+        typeof (error as { code?: unknown }).code === 'string'
+      ) {
+        errorCode = (error as { code: string }).code;
+      }
       console.error('Facebook sign-in failed:', error);
       // Check if it's a user cancellation
       if (
-        error.code === 'auth/popup-closed-by-user' ||
-        error.code === 'auth/cancelled-popup-request'
+        errorCode === 'auth/popup-closed-by-user' ||
+        errorCode === 'auth/cancelled-popup-request'
       ) {
         // Immediately re-enable button on cancellation
         setSocialAuthLoading(null);
