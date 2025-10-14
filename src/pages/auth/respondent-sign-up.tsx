@@ -154,8 +154,7 @@ const storeImplementation = (set: any, get: any) => ({
         errors['location.countryOrRegion'] = validationMessages.countryOrRegion;
       if (!formData.location?.zipCode?.trim())
         errors['location.zipCode'] = validationMessages.zipCode;
-      if (!formData.gender?.trim())
-        errors.gender = validationMessages.gender;
+      if (!formData.gender?.trim()) errors.gender = validationMessages.gender;
       // if (
       //   formData.dateOfBirth &&
       //   (!formData.dateOfBirth.month ||
@@ -313,12 +312,21 @@ const RespondentSignUpPage: React.FC = () => {
       if (result) {
         void navigate(ROUTES.SURVEY_PAGE);
       }
-    } catch (error: any) {
+    } catch (error) {
+      let errorCode = '';
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'code' in error &&
+        typeof (error as { code?: unknown }).code === 'string'
+      ) {
+        errorCode = (error as { code: string }).code;
+      }
       console.error('Google sign-up failed:', error);
       // Check if it's a user cancellation
       if (
-        error.code === 'auth/popup-closed-by-user' ||
-        error.code === 'auth/cancelled-popup-request'
+        errorCode === 'auth/popup-closed-by-user' ||
+        errorCode === 'auth/cancelled-popup-request'
       ) {
         // Immediately re-enable button on cancellation
         setSocialAuthLoading(null);
@@ -338,12 +346,21 @@ const RespondentSignUpPage: React.FC = () => {
       if (result) {
         void navigate(ROUTES.SURVEY_PAGE);
       }
-    } catch (error: any) {
+    } catch (error) {
+      let errorCode = '';
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'code' in error &&
+        typeof (error as { code?: unknown }).code === 'string'
+      ) {
+        errorCode = (error as { code: string }).code;
+      }
       console.error('Facebook sign-up failed:', error);
       // Check if it's a user cancellation
       if (
-        error.code === 'auth/popup-closed-by-user' ||
-        error.code === 'auth/cancelled-popup-request'
+        errorCode === 'auth/popup-closed-by-user' ||
+        errorCode === 'auth/cancelled-popup-request'
       ) {
         // Immediately re-enable button on cancellation
         setSocialAuthLoading(null);
