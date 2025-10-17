@@ -4,7 +4,7 @@ export const careers = {
     description:
       'Have a zeal to contribute to the real world and create a visible impact in businesses and lives of consumers? We are transforming businesses and consumer experience everyday using technology.',
     illustration: {
-      img: '/images/careers_1.png',
+      img: 'images/careers_1.png',
       size: 'default',
       aspectRatio: 'landscape',
       shadowPosition: 'br',

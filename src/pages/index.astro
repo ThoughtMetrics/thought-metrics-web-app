@@ -8,11 +8,29 @@ import {
   Industries,
   SolutionInsights,
 } from "./home/components";
+import { contentService } from "@/services/strapi-api/content.service";
+
 const seoContent = {
   title: "Home - Thought Metrics",
   description: "Welcome to our platform",
   keywords: "research, analytics, insights",
 };
+
+// Fetch blog data on the server for SSR
+let blogData = null;
+try {
+  const blogItems = await contentService.getBlogContents({
+    type: [],
+    category: [],
+    limit: 4,
+  });
+  blogData = {
+    title: 'Fresh Ideas to Help You Reach New Heights.',
+    items: blogItems,
+  };
+} catch (error) {
+  console.error('Failed to fetch blog data:', error);
+}
 ---
 
 <PresentationLayout
@@ -20,9 +38,9 @@ const seoContent = {
   description={seoContent.description}
   keywords={seoContent.keywords}
 >
-  <HeroCarousel />
-  <SolutionInsights />
+  <HeroCarousel client:load />
+  <SolutionInsights client:load/>
   <B2BServices />
-  <Industries />
-  <Blogs />
+  <Industries client:load/>
+  <Blogs blogData={blogData} client:load />
 </PresentationLayout>

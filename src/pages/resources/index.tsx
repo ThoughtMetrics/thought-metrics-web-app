@@ -11,7 +11,6 @@ import CustomImageAtom from '@/shared/ui/atoms/custom-image';
 import MarkDownOrganism from '@/shared/ui/organisms/markdown-organism';
 import { useQuery } from '@tanstack/react-query';
 import React, { Suspense } from 'react';
-import { Link, useLoaderData, useParams } from 'react-router-dom';
 import BlogOrganism from '@/shared/ui/organisms/blog-organism';
 import BlogCard from '@/shared/ui/molecules/blog-card';
 import { QueryKeys } from '@/core/lib/query-keys';
@@ -31,13 +30,13 @@ const ResourcePage: React.FC = () => {
   });
 
   const { slug } = useParams<{ slug: string }>();
-  const initialData = useLoaderData();
+  const initialData: any = {};
 
   const handleCopyUrl = async () => {
     try {
       const currentUrl = window.location.href;
       await navigator.clipboard.writeText(currentUrl);
-      toast.success('Link copied!', {
+      toast.success('a copied!', {
         description: 'URL has been copied to clipboard',
       });
     } catch (error) {
@@ -176,32 +175,32 @@ const ResourcePage: React.FC = () => {
                 >
                   <MailIcon className="w-full h-full" />
                 </button>
-                <Link
-                  to={
+                <a
+                  href={
                     'https://www.facebook.com/people/Thought-Metrics/61581686835321'
                   }
                   className="bg-secondary w-10 h-10 p-2 hover:bg-primary transition-colors duration-200"
                 >
                   <FacebookIcon className="w-full h-full" />
-                </Link>
-                <Link
-                  to={'https://www.instagram.com/thethoughtmetricscompany'}
+                </a>
+                <a
+                  href={'https://www.instagram.com/thethoughtmetricscompany'}
                   className="bg-secondary w-10 h-10 p-2 hover:bg-primary transition-colors duration-200"
                 >
                   <InstagramIcon className="w-full h-full" />
-                </Link>
-                <Link
-                  to={footerData.socialLinks[1].path}
+                </a>
+                <a
+                  href={footerData.socialLinks[1].path}
                   className="bg-secondary w-10 h-10 p-2 hover:bg-primary transition-colors duration-200"
                 >
                   <XIcon className="w-full h-full" />
-                </Link>
-                <Link
-                  to={footerData.socialLinks[0].path}
+                </a>
+                <a
+                  href={footerData.socialLinks[0].path}
                   className="bg-secondary w-10 h-10 p-2 hover:bg-primary transition-colors duration-200"
                 >
                   <LinkedinIcon className="w-full h-full" />
-                </Link>
+                </a>
               </div>
             </div>
           </div>

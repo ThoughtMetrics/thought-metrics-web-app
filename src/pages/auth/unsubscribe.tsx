@@ -1,6 +1,5 @@
 import { ROUTES } from '@/routes/routeConfig';
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
-import { Link } from 'react-router-dom';
 import { unsubscribeConstant } from './constant';
 import { CheckboxOutlineGroupAtom } from '@/shared/ui/atoms/custom-input';
 import type {
@@ -160,9 +159,9 @@ const UnsubscribePage: React.FC = () => {
         <h1 className="text-4xl font-medium">Unsubscribe</h1>
         <p className="text-md md:w-[70%]">
           {ui.description}{' '}
-          <Link to={ROUTES.CONTACT_US} className="underline ">
+          <a href={ROUTES.CONTACT_US} className="underline ">
             contact us here
-          </Link>
+          </a>
           , if you prefer.
         </p>
         <p>

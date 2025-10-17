@@ -1,46 +1,57 @@
 // @ts-check
 import { defineConfig } from "astro/config";
-import node from "@astrojs/node";
-import sitemap from "@astrojs/sitemap";
-import icon from "astro-icon";
 import react from "@astrojs/react";
-import svgr from "vite-plugin-svgr";
-
+import partytown from "@astrojs/partytown";
 import tailwindcss from "@tailwindcss/vite";
+import sitemap from "@astrojs/sitemap";
+import node from "@astrojs/node";
+import mdx from "@astrojs/mdx";
+import icon from "astro-icon";
+import svgr from "vite-plugin-svgr";
 
 // https://astro.build/config
 export default defineConfig({
-  output: "server",
-  adapter: node({ mode: "standalone" }),
-  integrations: [
-    icon({ iconDir: "public/icons" }),
-    sitemap(),
-    react(),
-  ],
   site: import.meta.env.SITE_URL ?? "https://www.thoughtmetrics.com",
+  integrations: [
+    react(),
+    partytown(),
+    sitemap(),
+    mdx(),
+    icon({ iconDir: "public/icons" }),
+  ],
+
   vite: {
-    ssr: {
-      noExternal: ['swiper']
-    },
-    plugins: [svgr({
-      include: "**/*.svg?react",
-      svgrOptions: {
-        exportType: "default",
-        ref: true,
-        svgo: true,
-        titleProp: true,
-        svgoConfig: {
-          plugins: [
-            {
-              name: "removeDimensions",
-            },
-            {
-              name: "removeAttrs",
-              params: { attrs: "(fill|stroke)" },
-            },
-          ],
+    plugins: [
+      tailwindcss(),
+      svgr({
+        include: "**/*.svg?react",
+        svgrOptions: {
+          exportType: "default",
+          ref: true,
+          svgo: true,
+          titleProp: true,
+          svgoConfig: {
+            plugins: [
+              {
+                name: "removeDimensions",
+              },
+              {
+                name: "removeAttrs",
+                params: { attrs: "(fill|stroke)" },
+              },
+            ],
+          },
         },
-      },
-    }), tailwindcss()],
+      }),
+    ],
+    ssr: {
+      noExternal: ["swiper"],
+    },
   },
+
+  adapter: node({
+    mode: "standalone",
+  }),
+
+  output: "server",
 });

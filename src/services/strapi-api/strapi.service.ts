@@ -43,25 +43,32 @@ export class StrapiService {
   }
 
   protected getAuthToken(): string | null {
-    return (
-      localStorage.getItem('authToken') ||
-      import.meta.env.STRAPI_API_TOKEN ||
-      null
-    );
+    // Check if we're in a browser environment before accessing localStorage
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      return localStorage.getItem('authToken') || import.meta.env.STRAPI_API_TOKEN || null;
+    }
+    // In SSR, only use environment variable
+    return import.meta.env.STRAPI_API_TOKEN || null;
   }
 
   protected setAuthToken(token: string): void {
-    localStorage.setItem('authToken', token);
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      localStorage.setItem('authToken', token);
+    }
   }
 
   protected removeAuthToken(): void {
-    localStorage.removeItem('authToken');
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      localStorage.removeItem('authToken');
+    }
   }
 
   private handleUnauthorized(): void {
     this.removeAuthToken();
-    // Optionally redirect to login
-    // window.location.href = '/login';
+    // Optionally redirect to login (only in browser)
+    if (typeof window !== 'undefined') {
+      // window.location.href = '/login';
+    }
   }
 
   protected buildQueryString(params: any): string {

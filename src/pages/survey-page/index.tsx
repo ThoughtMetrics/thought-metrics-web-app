@@ -1,7 +1,7 @@
 import { useProfileQuery } from '@/core/hooks/queries/use-profile.query';
 import { ROUTES } from '@/routes/routeConfig';
 import { SelectAtom } from '@/shared/ui/atoms/custom-input';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '';
 const SurveyPage: React.FC = () => {
   const navigate = useNavigate();
   const { data: userProfile } = useProfileQuery();

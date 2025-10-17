@@ -1,7 +1,6 @@
 import React from 'react';
 import { contentSecondData } from './b2bservices.constant';
 import { ArrowRight } from '@/assets';
-import { Link } from 'react-router-dom';
 
 const B2BServices: React.FC = () => {
   return (
@@ -13,7 +12,7 @@ const B2BServices: React.FC = () => {
         {/* Desktop View */}
         <div className="hidden md:grid grid-cols-1 w-full md:grid-cols-3 md:grid-rows-2 gap-3 pt-6 text-black">
           {/* Service 1 */}
-          <Link to={contentSecondData.services[0].path} viewTransition={true}>
+          <a href={contentSecondData.services[0].path}>
             <div className="relative col-span-1 bg-success rounded-md flex flex-col justify-center py-9 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300">
               {(() => {
                 const IllustrationSlope =
@@ -36,12 +35,11 @@ const B2BServices: React.FC = () => {
                 <ArrowRight className="fill-current group-hover:text-[#AACF75]" />
               </div>
             </div>
-          </Link>
+          </a>
 
           {/* Service 2 */}
-          <Link
-            to={contentSecondData.services[1].path}
-            viewTransition={true}
+          <a
+            href={contentSecondData.services[1].path}
             className="relative col-span-2 bg-gradient-to-r from-custom-violet to-white rounded-md flex flex-col py-9 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
           >
             <div className="flex flex-col justify-between h-[18rem]">
@@ -67,12 +65,11 @@ const B2BServices: React.FC = () => {
                 />
               ) : null;
             })()}
-          </Link>
+          </a>
 
           {/* Service 3 */}
-          <Link
-            to={contentSecondData.services[2].path}
-            viewTransition={true}
+          <a
+            href={contentSecondData.services[2].path}
             className="relative col-span-2 bg-gradient-to-r from-custom-grey-1 to-white rounded-md flex flex-col justify-center py-9 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
           >
             <div className="flex flex-col justify-between h-[14rem]">
@@ -96,12 +93,11 @@ const B2BServices: React.FC = () => {
                 <Spiral className={contentSecondData.services[2].className} />
               ) : null;
             })()}
-          </Link>
+          </a>
 
           {/* Service 4 */}
-          <Link
-            to={contentSecondData.services[3].path}
-            viewTransition={true}
+          <a
+            href={contentSecondData.services[3].path}
             className="relative col-span-1 bg-custom-pink rounded-md flex flex-col justify-center py-9 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
           >
             <div className="flex flex-col justify-between h-[14rem]">
@@ -132,7 +128,7 @@ const B2BServices: React.FC = () => {
                 </>
               ) : null;
             })()}
-          </Link>
+          </a>
         </div>
 
         {/* Mobile View */}

@@ -111,7 +111,7 @@ const PartnershipForm: React.FC = () => {
   return (
     <div>
       <div className="common-component bg-custom-pink text-black flex-col items-center relative">
-        <div className="absolute right-0 hidden lg:block h-full w-[45%] bg-[url('/images/landing_page_6.png')] bg-cover bg-no-repeat bg-center"></div>
+        <div className="absolute right-0 hidden lg:block h-full w-[45%] bg-[url('images/landing_page_6.png')] bg-cover bg-no-repeat bg-center"></div>
         <div className="container px-6 lg:px-0 py-12 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-18">
             {/* Form Section */}

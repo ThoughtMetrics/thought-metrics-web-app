@@ -41,7 +41,7 @@ export const industries = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: '/images/industry_advertising_1.png',
+        img: 'images/industry_advertising_1.png',
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'tl',
@@ -99,7 +99,7 @@ export const industries = {
       description:
         'Crafting impactful brands, campaigns, and advertisements is both an art and a science. An advertising market research company can help you validate your intuitions or illuminate a new path forward. Whether you’re in a creative agency trying to demonstrate your added value to clients or part of an in-house marketing team driving your company’s brand, high quality advertising market research insights can help you answer key strategy-driving questions.',
       illustration: {
-        img: '/images/industry_advertising_2.png',
+        img: 'images/industry_advertising_2.png',
         size: 'full',
         aspectRatio: 'landscape',
         objectFit: 'cover',
@@ -207,10 +207,10 @@ export const industries = {
         'Heads of HR',
         'Users of particular product or service',
       ],
-      img: '/images/industry_advertising_3.png',
+      img: 'images/industry_advertising_3.png',
     },
     actionSection: {
-      img: '/images/industry_girl_1.png',
+      img: 'images/industry_girl_1.png',
       illustration: SlideBrickIcon,
       title: 'Know what clicks before you create it!',
       actionButton: {
@@ -229,7 +229,7 @@ export const industries = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: '/images/industry_internet_1.png',
+        img: 'images/industry_internet_1.png',
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'tl',
@@ -288,7 +288,7 @@ export const industries = {
       description:
         'Understanding your audience is key to creating the right platforms, tools, and offerings for long-term business success. These insights are especially important when juggling the needs of several players in a multi-sided marketplace—a common trait of media and internet companies.',
       illustration: {
-        img: '/images/industry_internet_2.png',
+        img: 'images/industry_internet_2.png',
         size: 'full',
         aspectRatio: 'landscape',
         objectFit: 'cover',
@@ -385,10 +385,10 @@ export const industries = {
         'C-suite executives',
         'Users of particular product or service',
       ],
-      img: '/images/industry_internet_3.png',
+      img: 'images/industry_internet_3.png',
     },
     actionSection: {
-      img: '/images/industry_girl_1.png',
+      img: 'images/industry_girl_1.png',
       illustration: SlideBrickIcon,
       title: 'Stay in sync with what your audience actually wants.',
       actionButton: {
@@ -407,7 +407,7 @@ export const industries = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: '/images/industry_retail_1.png',
+        img: 'images/industry_retail_1.png',
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'tl',
@@ -465,7 +465,7 @@ export const industries = {
       description:
         "Crafting compelling retail experiences requires both creativity and insight. Our research helps validate your strategies or reveal new opportunities. Whether you're a brand aiming to enhance in-store engagement or an e-commerce platform optimizing user experience, high-quality retail insights are crucial for strategic decision-making.",
       illustration: {
-        img: '/images/industry_retail_2.png',
+        img: 'images/industry_retail_2.png',
         size: 'full',
         aspectRatio: 'landscape',
         objectFit: 'cover',
@@ -567,10 +567,10 @@ export const industries = {
         'Heads of HR and training',
         'Consumers and end-users of specific products or services',
       ],
-      img: '/images/industry_retail_3.png',
+      img: 'images/industry_retail_3.png',
     },
     actionSection: {
-      img: '/images/industry_girl_1.png',
+      img: 'images/industry_girl_1.png',
       illustration: SlideBrickIcon,
 
       title: 'See what drives shoppers—before they reach the shelf.',
@@ -590,7 +590,7 @@ export const industries = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: '/images/industry_healthcare_1.png',
+        img: 'images/industry_healthcare_1.png',
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'tl',
@@ -648,7 +648,7 @@ export const industries = {
       description:
         "The healthcare landscape is complex — spanning patients, providers, payers, regulators, and caregivers. Market research tailored to life sciences helps you cut through that complexity and make confident, human-centered decisions. Whether you're working on clinical innovation or market access, the right insights can guide your next move.",
       illustration: {
-        img: '/images/industry_healthcare_2.png',
+        img: 'images/industry_healthcare_2.png',
         size: 'full',
         aspectRatio: 'landscape',
         objectFit: 'cover',
@@ -754,10 +754,10 @@ export const industries = {
         'Public health officials and NGOs',
         'C-suite healthcare executives',
       ],
-      img: '/images/industry_healthcare_3.png',
+      img: 'images/industry_healthcare_3.png',
     },
     actionSection: {
-      img: '/images/industry_girl_1.png',
+      img: 'images/industry_girl_1.png',
       illustration: SlideBrickIcon,
 
       title:
@@ -778,7 +778,7 @@ export const industries = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: '/images/industry_hr_1.png',
+        img: 'images/industry_hr_1.png',
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'tl',
@@ -836,7 +836,7 @@ export const industries = {
       description:
         'HR is more strategic than ever. Our research helps you answer the questions that matter—from hiring to offboarding, and every moment in between.',
       illustration: {
-        img: '/images/industry_hr_2.png',
+        img: 'images/industry_hr_2.png',
         size: 'full',
         aspectRatio: 'landscape',
         objectFit: 'cover',
@@ -931,10 +931,10 @@ export const industries = {
         'HR business partners',
         'Total rewards and benefits managers',
       ],
-      img: '/images/industry_advertising_3.png',
+      img: 'images/industry_advertising_3.png',
     },
     actionSection: {
-      img: '/images/industry_girl_1.png',
+      img: 'images/industry_girl_1.png',
       illustration: SlideBrickIcon,
 
       title: 'Build better workplaces with insights that matter.',
@@ -954,7 +954,7 @@ export const industries = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: '/images/industry_finance_1.png',
+        img: 'images/industry_finance_1.png',
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'tl',
@@ -1012,7 +1012,7 @@ export const industries = {
       description:
         "Whether you're a digital-first startup or a legacy institution undergoing transformation, ThoughtMetrics gives you the research power to stay customer-first, compliant, and competitive.",
       illustration: {
-        img: '/images/industry_finance_2.png',
+        img: 'images/industry_finance_2.png',
         size: 'full',
         aspectRatio: 'landscape',
         objectFit: 'cover',
@@ -1117,10 +1117,10 @@ export const industries = {
         'Credit analysts',
         'HR & payroll decision-makers',
       ],
-      img: '/images/industry_internet_3.png',
+      img: 'images/industry_internet_3.png',
     },
     actionSection: {
-      img: '/images/industry_girl_1.png',
+      img: 'images/industry_girl_1.png',
       illustration: SlideBrickIcon,
 
       title: 'Make smarter decisions with the people who trust you most.',
@@ -1140,7 +1140,7 @@ export const industries = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: '/images/industry_automobile_1.png',
+        img: 'images/industry_automobile_1.png',
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'tl',
@@ -1198,7 +1198,7 @@ export const industries = {
       description:
         'Automotive innovation is as much about emotion as engineering. We help you understand both.',
       illustration: {
-        img: '/images/industry_automobile_2.png',
+        img: 'images/industry_automobile_2.png',
         size: 'full',
         aspectRatio: 'landscape',
         objectFit: 'cover',
@@ -1296,10 +1296,10 @@ export const industries = {
         'Charging infrastructure partners',
         'City planners and policymakers',
       ],
-      img: '/images/industry_retail_3.png',
+      img: 'images/industry_retail_3.png',
     },
     actionSection: {
-      img: '/images/industry_girl_1.png',
+      img: 'images/industry_girl_1.png',
       illustration: SlideBrickIcon,
 
       title: 'Drive decisions with insights from the people behind the wheel.',
@@ -1319,7 +1319,7 @@ export const industries = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: '/images/industry_education_1.png',
+        img: 'images/industry_education_1.png',
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'tl',
@@ -1377,7 +1377,7 @@ export const industries = {
       description:
         'Build more impactful programs, policies, and platforms with evidence-led direction. We help education providers and edtech leaders answer big, future-facing questions.',
       illustration: {
-        img: '/images/industry_education_2.png',
+        img: 'images/industry_education_2.png',
         size: 'full',
         aspectRatio: 'landscape',
         objectFit: 'cover',
@@ -1476,10 +1476,10 @@ export const industries = {
         'Funds',
         'Institutional Decision-Makers.',
       ],
-      img: '/images/industry_healthcare_3.png',
+      img: 'images/industry_healthcare_3.png',
     },
     actionSection: {
-      img: '/images/industry_girl_1.png',
+      img: 'images/industry_girl_1.png',
       illustration: SlideBrickIcon,
 
       title:
@@ -1500,7 +1500,7 @@ export const industries = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: '/images/industry_fmcg_1.png',
+        img: 'images/industry_fmcg_1.png',
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'tl',
@@ -1558,7 +1558,7 @@ export const industries = {
       description:
         'ThoughtMetrics helps FMCG teams answer big questions that matter to the bottom line.',
       illustration: {
-        img: '/images/industry_fmcg_2.png',
+        img: 'images/industry_fmcg_2.png',
         size: 'full',
         aspectRatio: 'landscape',
         objectFit: 'cover',
@@ -1658,10 +1658,10 @@ export const industries = {
         'Value vs premium product buyers',
         'International market testers.',
       ],
-      img: '/images/industry_advertising_3.png',
+      img: 'images/industry_advertising_3.png',
     },
     actionSection: {
-      img: '/images/industry_girl_1.png',
+      img: 'images/industry_girl_1.png',
       illustration: SlideBrickIcon,
       title:
         'Ready to fuel your next big decision with clarity and confidence?',
@@ -1682,7 +1682,7 @@ export const industries = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: '/images/industry_investors_1.png',
+        img: 'images/industry_investors_1.png',
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'tl',
@@ -1740,7 +1740,7 @@ export const industries = {
       description:
         'ThoughtMetrics equips investment professionals with powerful answers to pressing strategic questions.',
       illustration: {
-        img: '/images/industry_investors_2.png',
+        img: 'images/industry_investors_2.png',
         size: 'full',
         aspectRatio: 'landscape',
         objectFit: 'cover',
@@ -1839,10 +1839,10 @@ export const industries = {
         'Operational partners',
         'Secondary market specialists.',
       ],
-      img: '/images/industry_internet_3.png',
+      img: 'images/industry_internet_3.png',
     },
     actionSection: {
-      img: '/images/industry_girl_1.png',
+      img: 'images/industry_girl_1.png',
       illustration: SlideBrickIcon,
 
       title: 'Move from instinct to insight—and from insight to impact.',
@@ -1862,7 +1862,7 @@ export const industries = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: '/images/industry_technology_1.png',
+        img: 'images/industry_technology_1.png',
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'tl',
@@ -1920,7 +1920,7 @@ export const industries = {
       description:
         "The best tech products and services come from understanding the market as deeply as you understand the code. Whether you're shipping software, improving cloud infrastructure, or crafting next-gen interfaces, our insights guide confident decision-making.",
       illustration: {
-        img: '/images/industry_technology_2.png',
+        img: 'images/industry_technology_2.png',
         size: 'full',
         aspectRatio: 'landscape',
         objectFit: 'cover',
@@ -2023,10 +2023,10 @@ export const industries = {
         'Early adopters and beta users',
         'Tech journalists & influencer',
       ],
-      img: '/images/industry_retail_3.png',
+      img: 'images/industry_retail_3.png',
     },
     actionSection: {
-      img: '/images/industry_girl_1.png',
+      img: 'images/industry_girl_1.png',
       illustration: SlideBrickIcon,
 
       title: 'Move from instinct to insight—and from insight to impact.',

@@ -1,18 +1,14 @@
 ---
-import Footer from "@components/footer";
-import ScrollToTop from "@components/scroll-to-top";
-import Header from "@components/header";
-import Layout from "@layouts/Layout.astro";
-import AppWrapper from "@/shared/components/AppWrapper";
+import Footer from '@components/footer';
+import Header from '@components/header';
+import Layout from '@layouts/Layout.astro';
+import AppWrapper from '@/shared/components/AppWrapper';
 
-const { formatter } = Astro.props;
+const { title, description } = Astro.props;
 ---
 
-<Layout title={formatter.title}>
-  <AppWrapper client:load>
-    <Header client:load />
-    <ScrollToTop />
-    <slot />
-    <Footer client:load />
-  </AppWrapper>
+<Layout title={title} description={description.description}>
+  <Header client:load />
+  <slot />
+  <Footer client:load />
 </Layout>

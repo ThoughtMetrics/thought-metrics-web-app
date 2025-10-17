@@ -1,7 +1,7 @@
 // pages/NotFound/index.tsx
 import { ROUTES } from '@/routes/routeConfig';
 import React from 'react';
-import { Link } from 'react-router-dom';
+
 
 const NotFound: React.FC = () => {
   return (
@@ -18,38 +18,38 @@ const NotFound: React.FC = () => {
         </div>
 
         <div className="space-y-4">
-          <Link
-            viewTransition={true}
-            to={ROUTES.HOME}
+          <a
+            
+            href={ROUTES.HOME}
             className="inline-block px-6 py-3 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors font-bold"
           >
             Go Home
-          </Link>
+          </a>
 
           <div className="text-sm text-gray-500">
             <p>Or try one of these links:</p>
             <div className="mt-2 space-x-4">
-              <Link
-                viewTransition={true}
-                to="/industries/fmcg"
+              <a
+                
+                href="/industries/fmcg"
                 className="text-primary hover:underline"
               >
                 FMCG
-              </Link>
-              <Link
-                viewTransition={true}
-                to="/industries/advertising"
+              </a>
+              <a
+                
+                href="/industries/advertising"
                 className="text-primary hover:underline"
               >
                 Advertising
-              </Link>
-              <Link
-                viewTransition={true}
-                to="/industries/technology"
+              </a>
+              <a
+                
+                href="/industries/technology"
                 className="text-primary hover:underline"
               >
                 Technology
-              </Link>
+              </a>
             </div>
           </div>
         </div>

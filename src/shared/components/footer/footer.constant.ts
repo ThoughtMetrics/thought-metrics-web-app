@@ -14,21 +14,21 @@ export interface FooterSectionData {
 }
 
 export const footerData = {
-  logo: '/icons/logo_white.svg',
+  logo: 'public/icons/logo_white.svg',
   socialLinks: [
     {
       name: 'LinkedIn',
-      icon: '/icons/linkedin.svg',
+      icon: 'public/icons/linkedin.svg',
       path: 'https://www.linkedin.com/company/the-thought-metrics-company',
     },
     {
       name: 'Twitter',
-      icon: '/icons/space-x.svg',
+      icon: 'public/icons/space-x.svg',
       path: 'https://x.com/thoughtmetrics',
     },
     {
       name: 'Vimeo',
-      icon: '/icons/vimeo.svg',
+      icon: 'public/icons/vimeo.svg',
       path: 'https://vimeo.com/thoughtmetrics',
     },
   ],
@@ -106,5 +106,5 @@ export const footerData = {
     },
   ] as FooterSectionData[],
   copyright: '© Copyright 2025. All Rights Reserved.',
-  backToTopIcon: '/icons/up-arrow.svg',
+  backToTopIcon: 'public/icons/up-arrow.svg',
 };

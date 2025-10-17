@@ -1,6 +1,6 @@
 import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '';
 
 interface BreadcrumbProps {
   className?: string;

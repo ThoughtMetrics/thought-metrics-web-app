@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { editProfileFormConstant } from './constant';
 import {
   CheckboxOutlineGroupAtom,
@@ -42,7 +41,7 @@ const years = Array.from({ length: currentYear - 1900 + 1 }, (_, i) => ({
 }));
 
 const EditProfilePage: React.FC = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { data: profile, isLoading: isLoadingProfile } = useProfileQuery();
   const updateProfileMutation = useUpdateProfileMutation();
 
@@ -256,7 +255,8 @@ const EditProfilePage: React.FC = () => {
       await updateProfileMutation.mutateAsync(updateData);
 
       // Redirect to survey page after successful update
-      await navigate('/survey_page');
+      /* NOTE: Issues need to fix */
+      // await navigate('/survey_page');
     } catch (error) {
       console.error('Update profile error:', error);
     }
@@ -279,12 +279,12 @@ const EditProfilePage: React.FC = () => {
             <h1 className="text-4xl font-medium tracking-tighter text-gray-900 mb-2">
               {ui.pageTitle || 'Manage Profile'}
             </h1>
-            {/* <Link
-              to="#"
+            {/* <a
+              href="#"
               className="text-black font-medium hover:font-semibold underline text-sm"
             >
               Add/Manage Children
-            </Link> */}
+            </a> */}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">

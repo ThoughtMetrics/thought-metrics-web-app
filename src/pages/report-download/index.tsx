@@ -1,7 +1,7 @@
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import { reportDownloadConstant } from './constant';
-import { Link } from 'react-router-dom';
+
 import { ROUTES } from '@/routes/routeConfig';
 import {
   CheckboxAtom,
@@ -126,15 +126,15 @@ const ReportDownloadPage: React.FC = () => {
     <div className="common-component w-full relative bg-white text-black z-1 overflow-scroll flex-col items-center !justify-start hide-scrollbar">
       <header className="common-container bg-white !max-w-[var(--breakpoint-2xl)] h-[3.5rem]">
         <nav className="px-6 py-3 xxl:px-0 flex items-center justify-between w-full">
-          <Link viewTransition={true} to={ROUTES.HOME}>
+          <a  href={ROUTES.HOME}>
             <div className="w-45 pt-1">
               <Logo className="w-full h-full" />
             </div>
-          </Link>
+          </a>
         </nav>
       </header>
       <div className="relative md:h-[calc(100vh-3.5rem)] w-full">
-        <div className="lg:block md:absolute left-0 w-[full%] md:w-[50%] h-full bg-[url('/images/background_image_5.png')] bg-cover bg-center bg-no-repeat -z-1 text-black px-6 py-10 md:px-18 md:py-16">
+        <div className="lg:block md:absolute left-0 w-[full%] md:w-[50%] h-full bg-[url('images/background_image_5.png')] bg-cover bg-center bg-no-repeat -z-1 text-black px-6 py-10 md:px-18 md:py-16">
           <p className="flex flex-col">
             <span className="text-xl font-medium">
               Use of AI in User Experience Research
@@ -175,12 +175,12 @@ const ReportDownloadPage: React.FC = () => {
             </h1>
             <p className="text-gray-600 mb-6">
               {ui.loginPrompt}{' '}
-              <Link
-                to={ROUTES.AUTH}
+              <a
+                href={ROUTES.AUTH}
                 className="text-blue-600 hover:text-blue-800 hover:underline"
               >
                 {ui.loginLink}
-              </Link>
+              </a>
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-6">

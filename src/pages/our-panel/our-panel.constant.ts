@@ -20,7 +20,7 @@ export const ourPanel = {
     description:
       "With our unmatched capabilities, seamless processes, and commitment to quality, we're the ideal fieldwork partner to bring your research to life.",
     illustration: {
-      img: '/images/our_panel_2.png',
+      img: 'images/our_panel_2.png',
       size: 'default',
       aspectRatio: 'landscape',
       shadowPosition: 'br',
@@ -164,7 +164,7 @@ export const ourPanel = {
     description:
       'Ready to get involved?<br>Sign up today and help influence the products, services, and experiences of tomorrow.',
     illustration: {
-      img: '/images/our_panel_3.png',
+      img: 'images/our_panel_3.png',
       size: 'full',
       aspectRatio: 'landscape',
       objectFit: 'cover',

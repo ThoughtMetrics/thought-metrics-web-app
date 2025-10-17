@@ -7,7 +7,7 @@ const ContentHeroSection: React.FC<any> = ({
   titleClassName,
 }: any) => {
   return (
-    <section className="common-component w-full h-full relative bg-[url('/images/blog_background_image.png')] bg-cover bg-center">
+    <section className="common-component w-full h-full relative bg-[url('images/blog_background_image.png')] bg-cover bg-center">
       {/* Opacity overlay */}
       <div className="absolute inset-0 bg-white opacity-50"></div>
 

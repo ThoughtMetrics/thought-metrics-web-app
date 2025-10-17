@@ -1,40 +1,35 @@
 import BlogOrganism from '@/shared/ui/organisms/blog-organism';
 import { useContentStore } from '@/core/stores/content.store';
 import { ContentType } from '@/core/types/content.type';
-import { useBlogData } from '@/core/hooks/use-blog-data';
-import { Suspense } from 'react';
 import BlogSkeleton from '@/shared/components/blog-skeleton';
 
-const BlogsContent: React.FC = () => {
-  const { updateContentFilter, clearFilters } = useContentStore();
+interface BlogData {
+  title: string;
+  items: {
+    id: number;
+    type: string;
+    category: string;
+    label: string;
+    description: string;
+    link: string;
+    src: string;
+  }[];
+}
 
-  const { blogData, loading, error } = useBlogData({
-    title: 'Fresh Ideas to Help You Reach New Heights.',
-    type: [],
-    category: [],
-    limit: 4,
-  });
+interface BlogsProps {
+  blogData?: BlogData | null;
+}
+
+const Blogs: React.FC<BlogsProps> = ({ blogData }) => {
+  const { updateContentFilter, clearFilters } = useContentStore();
 
   const handleFilterChange = () => {
     updateContentFilter('type', ContentType.BLOG);
   };
 
-  if (loading) return <BlogSkeleton />;
-
-  if (error) {
-    return (
-      <div className="bg-primary-lighter py-12">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-red-500">Failed to load resources</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 bg-primary text-white rounded"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
+  // If no blog data provided (SSR failed or not available), show skeleton
+  if (!blogData) {
+    return <BlogSkeleton />;
   }
 
   return (
@@ -52,22 +47,4 @@ const BlogsContent: React.FC = () => {
   );
 };
 
-const Blogs: React.FC = () => {
-  return (
-    <Suspense fallback={<BlogSkeleton />}>
-      <BlogsContent />
-    </Suspense>
-  );
-};
-
 export default Blogs;
-
-// import React from 'react';
-// import { blogPageData } from './blogs.constant';
-// import BlogOrganism from '@/shared/ui/organisms/blog-organism';
-
-// const Blogs: React.FC = () => {
-//   return <BlogOrganism data={blogPageData} bgColor="bg-primary-lighter" />;
-// };
-
-// export default Blogs;

@@ -1,7 +1,7 @@
 import { cn } from '@/core/utils/cn';
 import BentoGridCard, { type BentoCardSize } from '../../atoms/bento-grid-card';
 import { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+
 
 interface BlogItem {
   id: number;
@@ -139,9 +139,9 @@ const BentoGridOrganism: React.FC<BentoGridOrganismProps> = ({
           <div className="mt-8 md:mt-12">
             <div className="grid grid-cols-1 gap-4">
               {listItems.map((blog) => (
-                <Link
+                <a
                   key={blog.id}
-                  to={blog.link}
+                  href={blog.link}
                   className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
                 >
                   <div className="flex-1">
@@ -159,7 +159,7 @@ const BentoGridOrganism: React.FC<BentoGridOrganismProps> = ({
                       {blog.type}
                     </span>
                   </div>
-                </Link>
+                </a>
               ))}
             </div>
           </div>

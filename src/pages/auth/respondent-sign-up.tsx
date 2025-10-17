@@ -13,7 +13,6 @@ import {
   SelectAtom,
   TextInputAtom,
 } from '@/shared/ui/atoms/custom-input';
-import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRed, FacebookOutlineIcon, GoogleOutlineIcon } from '@/assets';
 import FaqOrganism from '@/shared/ui/organisms/faq-organism';
 import { useSignUpMutation } from '@/core/hooks/mutations/use-sign-up.mutation';
@@ -431,12 +430,12 @@ const RespondentSignUpPage: React.FC = () => {
             <h1 className="text-4xl font-medium tracking-tighter text-gray-900 mb-2">
               {ui.pageTitle}
             </h1>
-            <Link
-              to="#"
+            <a
+              href="#"
               className="text-black font-medium hover:font-semibold underline text-sm"
             >
               {ui.whyRegister}
-            </Link>
+            </a>
             <p className="text-black mt-2 text-sm">{ui.registerDescription}</p>
           </div>
 
@@ -761,12 +760,12 @@ const RespondentSignUpPage: React.FC = () => {
                     customLabelComponent={
                       <div>
                         {ui.checkboxLabels.termsAccepted}{' '}
-                        <Link
-                          to={ui.checkboxLabels.termsItem.path}
+                        <a
+                          href={ui.checkboxLabels.termsItem.path}
                           className="hover:text-primary underline"
                         >
                           {ui.checkboxLabels.termsItem.terms}
-                        </Link>
+                        </a>
                       </div>
                     }
                   />
@@ -779,12 +778,12 @@ const RespondentSignUpPage: React.FC = () => {
                     customLabelComponent={
                       <div>
                         {ui.checkboxLabels.privacyAccepted.prefix}{' '}
-                        <Link
-                          to={ui.checkboxLabels.privacyItem.path}
+                        <a
+                          href={ui.checkboxLabels.privacyItem.path}
                           className="hover:text-primary underline"
                         >
                           {ui.checkboxLabels.privacyItem.privacy}
-                        </Link>{' '}
+                        </a>{' '}
                         {ui.checkboxLabels.privacyAccepted.suffix}
                       </div>
                     }

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { ROUTES } from '@/routes/routeConfig';
@@ -296,15 +295,15 @@ const AuthPage: React.FC = () => {
       <div className="common-component w-full relative bg-white text-black z-1 overflow-scroll flex-col items-center !justify-start hide-scrollbar">
         <header className="common-container bg-white !max-w-[var(--breakpoint-2xl)] h-[3.5rem]">
           <nav className="px-6 py-3 xxl:px-0 flex items-center justify-between w-full">
-            <Link viewTransition={true} to={ROUTES.HOME}>
+            <a href={ROUTES.HOME}>
               <div className="w-45 pt-1">
                 <Logo className="w-full h-full" />
               </div>
-            </Link>
+            </a>
           </nav>
         </header>
         <div className="relative md:h-[calc(100vh-3.5rem)] w-full">
-          <div className="lg:block md:absolute right-0 w-[full%] md:w-[50%] h-full bg-[url('/images/login_background_image.png')] bg-cover bg-center bg-no-repeat -z-1 text-black px-6 py-10 md:px-18 md:py-16" />
+          <div className="lg:block md:absolute right-0 w-[full%] md:w-[50%] h-full bg-[url('publicimages/login_background_image.png')] bg-cover bg-center bg-no-repeat -z-1 text-black px-6 py-10 md:px-18 md:py-16" />
           <div className="common-container h-full !grid grid-cols-1 md:grid-cols-[50%_50%] inset-ring-custom-grey-1 inset-ring-1">
             <div className="bg-white shadow-sm border border-gray-200 rounded-lg px-8 py-10 wide:py-28 flex flex-col items-center justify-center">
               <div className="mb-8 w-full max-w-[380px]">
@@ -414,26 +413,26 @@ const AuthPage: React.FC = () => {
                   {ui.links.noAccount}
                 </div>
 
-                <Link
-                  to={ROUTES.SIGN_UP}
+                <a
+                  href={ROUTES.SIGN_UP}
                   className="w-full inline-flex items-center justify-between px-4 py-2 border border-primary shadow-sm bg-transparent font-medium text-primary hover:bg-primary-50 transition-colors rounded-none"
                 >
                   <label>{ui.buttons.createAccount}</label>
                   <ArrowRight className="w-8 r-8 fill-current text-primary" />
-                </Link>
+                </a>
               </div>
               <div className="flex items-center max-w-[380px] shrink-0 w-full mt-5">
-                <Link
-                  to={ROUTES.SIGN_UP}
+                <a
+                  href={ROUTES.SIGN_UP}
                   //NOTE: Uncomment the line below to enable the reset password link
-                  // to={ROUTES.RESET_PASSWORD}
+                  // href={ROUTES.RESET_PASSWORD}
                   className="border-t-1 border-t-custom-grey w-full pt-3"
                 >
                   <span className="text-blue-600 hover:text-blue-800 text-sm hover:underline w-full">
                     {ui.links.resetPassword}
                   </span>
                   <span className="font-medium">{' to reset password.'}</span>
-                </Link>
+                </a>
               </div>
 
               {/* Demo Credentials Helper

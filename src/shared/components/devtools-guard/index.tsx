@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDevToolsDetector } from '@/core/hooks/use-devtools-detector';
-import styles from './styles.module.scss';
+import './styles.css';
 
 /**
  * DevToolsGuard Component
@@ -51,9 +51,9 @@ export const DevToolsGuard: React.FC = () => {
   }
 
   return (
-    <div className={styles.devtoolsOverlay}>
-      <div className={styles.content}>
-        <div className={styles.icon}>
+    <div className="devtoolsOverlay">
+      <div className="content">
+        <div className="icon">
           <svg
             width="64"
             height="64"
@@ -69,15 +69,15 @@ export const DevToolsGuard: React.FC = () => {
             <line x1="12" y1="16" x2="12.01" y2="16" />
           </svg>
         </div>
-        <h1 className={styles.title}>DevTools Detected</h1>
-        <p className={styles.message}>
+        <h1 className="title">DevTools Detected</h1>
+        <p className="message">
           For security and privacy reasons, this application cannot be accessed with browser
           developer tools open.
         </p>
-        <p className={styles.instruction}>
+        <p className="instruction">
           Please close the developer tools to continue using the application.
         </p>
-        <div className={styles.hint}>
+        <div className="hint">
           <small>Press F12 or close the DevTools panel</small>
         </div>
       </div>

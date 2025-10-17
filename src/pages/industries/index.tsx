@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from '';
 
 const IndustriesPage: React.FC = () => {
   const location = useLocation();
@@ -118,9 +118,9 @@ const IndustriesPage: React.FC = () => {
           {/* Industries Grid */}
           {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {industries.map((industries) => (
-              <Link
+              <a
                 key={industries.id}
-                to={industries.path}
+                href={industries.path}
                 className="group bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 hover:border-gray-300"
               >
                 <div className="p-6">
@@ -154,7 +154,7 @@ const IndustriesPage: React.FC = () => {
                     </svg>
                   </div>
                 </div>
-              </Link>
+              </a>
             ))}
           </div> */}
 

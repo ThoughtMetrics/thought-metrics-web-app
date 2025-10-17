@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet } from '';
 import ScrollToTop from '../scroll-to-top';
 import InteractionHeader from '../interaction-header';
 import InteractionFooter from '../interaction-footer';

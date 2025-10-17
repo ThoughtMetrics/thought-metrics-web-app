@@ -2,6 +2,8 @@ import React from 'react';
 import { carouselData } from './hero-carousel.constant';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectFade, Pagination } from 'swiper/modules';
+
+// Import custom styles
 import './hero-carousel.style.css';
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
 

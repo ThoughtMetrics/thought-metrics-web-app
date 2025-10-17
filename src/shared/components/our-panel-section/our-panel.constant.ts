@@ -11,7 +11,7 @@ export const ourPanelConstants = {
     path: ROUTES.OUR_PANEL,
   },
   illustration: {
-    img: '/images/our_panel_1.png',
+    img: 'images/our_panel_1.png',
     size: 'full',
     aspectRatio: 'auto',
     shadowPosition: 'br',

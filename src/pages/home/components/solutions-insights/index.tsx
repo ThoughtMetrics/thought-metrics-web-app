@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { solutionsInsights } from './solutions-insights.constant';
 import { ArrowRight, PersonWithPhone } from '@/assets';
 import { cn } from '@/core/utils/cn';
-import { Link } from 'react-router-dom';
+
 
 const SolutionInsights: React.FC = () => {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
@@ -44,9 +44,9 @@ const SolutionInsights: React.FC = () => {
 
         <div className="grid md:grid-cols-2 px-6 gap-4 md:gap-6">
           {solutionsInsights.cards.map((card, index) => (
-            <Link
-              to={card.path}
-              viewTransition={true}
+            <a
+              href={card.path}
+              
               key={index + card.title}
               className={cn(
                 'w-full md:w-65 md:h-80 text-start border-1 border-black rounded-[0.3rem] p-[0.8rem] pb-12 relative cursor-pointer transition-all duration-300 ease-in-out flex flex-col',
@@ -96,7 +96,7 @@ const SolutionInsights: React.FC = () => {
                   )}
                 />
               </div>
-            </Link>
+            </a>
           ))}
         </div>
       </div>

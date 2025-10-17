@@ -1,6 +1,5 @@
 import { ArrowRight } from '@/assets';
 import React from 'react';
-import { Link } from 'react-router-dom';
 const CustomerResearchB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
   return (
     <section className="common-component bg-white">
@@ -8,8 +7,8 @@ const CustomerResearchB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
         {/* Desktop View */}
         <div className="hidden w-full md:grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-3 pt-6 text-black">
           {/* Service 1 */}
-          <Link
-            to={b2bServiceSection.services[0].link || '#'}
+          <a
+            href={b2bServiceSection.services[0].link || '#'}
             className="relative col-span-1 bg-success rounded-md flex flex-col justify-center pt-16 pb-14 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
           >
             {(() => {
@@ -32,11 +31,11 @@ const CustomerResearchB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
               </div>
               <ArrowRight className="fill-current group-hover:text-[#AACF75]" />
             </div>
-          </Link>
+          </a>
 
           {/* Service 2 */}
-          <Link
-            to={b2bServiceSection.services[1].link || '#'}
+          <a
+            href={b2bServiceSection.services[1].link || '#'}
             className="relative col-span-2 bg-gradient-to-r from-custom-violet to-white rounded-md flex flex-col justify-center pt-16 pb-14 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
           >
             <div className="flex flex-col justify-between h-[15rem]">
@@ -58,11 +57,11 @@ const CustomerResearchB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
                 />
               ) : null;
             })()}
-          </Link>
+          </a>
 
           {/* Service 3 */}
-          <Link
-            to={b2bServiceSection.services[2].link || '#'}
+          <a
+            href={b2bServiceSection.services[2].link || '#'}
             className="relative col-span-1 bg-gradient-to-r from-custom-grey-1 to-white rounded-md flex flex-col justify-center pt-16 pb-14 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
           >
             <div className="flex flex-col justify-between h-[15rem]">
@@ -82,11 +81,11 @@ const CustomerResearchB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
                 <Spiral className={b2bServiceSection.services[2].className} />
               ) : null;
             })()}
-          </Link>
+          </a>
 
           {/* Service 4 */}
-          <Link
-            to={b2bServiceSection.services[3].link || '#'}
+          <a
+            href={b2bServiceSection.services[3].link || '#'}
             className="relative col-span-1 bg-custom-pink rounded-md flex flex-col justify-center pt-16 pb-14 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
           >
             <div className="flex flex-col justify-between h-[15rem]">
@@ -113,10 +112,10 @@ const CustomerResearchB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
                 </>
               ) : null;
             })()}
-          </Link>
+          </a>
           {/* Service 5 */}
-          <Link
-            to={b2bServiceSection.services[4].link || '#'}
+          <a
+            href={b2bServiceSection.services[4].link || '#'}
             className="relative col-span-1 bg-custom-violet-light rounded-md flex flex-col justify-center pt-16 pb-14 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
           >
             <div className="flex flex-col justify-between h-[15rem]">
@@ -143,13 +142,13 @@ const CustomerResearchB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
                 </>
               ) : null;
             })()}
-          </Link>
+          </a>
         </div>
 
         {/* Mobile View */}
         <div className="w-full h-auto flex overflow-y-hidden overflow-x-scroll md:hidden gap-3 pt-6 text-black">
-          <Link
-            to={b2bServiceSection.services[0].link || '#'}
+          <a
+            href={b2bServiceSection.services[0].link || '#'}
             className="shrink-0 w-70 h-80 relative col-span-1 bg-success rounded-md flex flex-col justify-center py-10 px-7"
           >
             <div className="w-full flex flex-col gap-2 z-1">
@@ -167,9 +166,9 @@ const CustomerResearchB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
                 />
               </div>
             </div>
-          </Link>
-          <Link
-            to={b2bServiceSection.services[1].link || '#'}
+          </a>
+          <a
+            href={b2bServiceSection.services[1].link || '#'}
             className="shrink-0 w-70 h-80 relative col-span-1 bg-gradient-to-r from-custom-violet to-white rounded-md flex flex-col justify-center py-10 px-7"
           >
             <div className="w-full flex flex-col gap-2 z-1">
@@ -187,9 +186,9 @@ const CustomerResearchB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
                 />
               </div>
             </div>
-          </Link>
-          <Link
-            to={b2bServiceSection.services[2].link || '#'}
+          </a>
+          <a
+            href={b2bServiceSection.services[2].link || '#'}
             className="shrink-0 w-70 h-80 relative col-span-1 bg-gradient-to-r from-custom-grey-1 to-white rounded-md flex flex-col justify-center py-10 px-7"
           >
             <div className="w-full flex flex-col gap-2 z-1">
@@ -207,9 +206,9 @@ const CustomerResearchB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
                 />
               </div>
             </div>
-          </Link>
-          <Link
-            to={b2bServiceSection.services[3].link || '#'}
+          </a>
+          <a
+            href={b2bServiceSection.services[3].link || '#'}
             className="shrink-0 w-70 h-80 relative col-span-1 bg-custom-pink rounded-md flex flex-col justify-center py-10 px-7"
           >
             <div className="w-full flex flex-col gap-2 z-1">
@@ -227,9 +226,9 @@ const CustomerResearchB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
                 />
               </div>
             </div>
-          </Link>
-          <Link
-            to={b2bServiceSection.services[4].link || '#'}
+          </a>
+          <a
+            href={b2bServiceSection.services[4].link || '#'}
             className="shrink-0 w-70 h-80 relative col-span-1 bg-custom-violet-light rounded-md flex flex-col justify-center py-10 px-7"
           >
             <div className="w-full flex flex-col gap-2 z-1">
@@ -247,7 +246,7 @@ const CustomerResearchB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
                 />
               </div>
             </div>
-          </Link>
+          </a>
         </div>
       </div>
     </section>

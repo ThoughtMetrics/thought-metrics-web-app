@@ -1,6 +1,6 @@
 // src/shared/ui/atoms/custom-button/index.tsx
 import { cn } from '@/core/utils/cn';
-import { Link } from 'react-router-dom';
+
 import React from 'react';
 
 interface CustomButtonProps {
@@ -62,13 +62,13 @@ const CustomButtonAtom: React.FC<CustomButtonProps> = ({
     </button>
   );
 
-  // Only wrap in Link if path is provided and it's not a submit/reset button
+  // Only wrap in a if path is provided and it's not a submit/reset button
   if (path && type === 'button') {
     return (
       <div className="w-full">
-        <Link to={path} viewTransition={true}>
+        <a href={path}>
           {buttonContent}
-        </Link>
+        </a>
       </div>
     );
   }

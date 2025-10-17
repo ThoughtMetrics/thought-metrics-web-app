@@ -10,7 +10,7 @@ import {
   TextInputAtom,
 } from '@/shared/ui/atoms/custom-input';
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
-import { Link } from 'react-router-dom';
+
 import { ROUTES } from '@/routes/routeConfig';
 import React, { useEffect, useState } from 'react';
 import { useResearchFormStore } from '@/core/stores/research.store';
@@ -314,23 +314,23 @@ const ResearchForm: React.FC = () => {
 
                 <p className="text-xs">
                   You may{' '}
-                  <Link
-                    to={ROUTES.UNSUBSCRIBE}
-                    viewTransition={true}
+                  <a
+                    href={ROUTES.UNSUBSCRIBE}
+                    
                     className="underline"
                   >
                     {ui.buttons.unsubscribe}
-                  </Link>{' '}
+                  </a>{' '}
                   from these communications anytime. For information on how to
                   unsubscribe, as well as our privacy practices and commitment
                   to protecting your privacy, check out our{' '}
-                  <Link
-                    to={ROUTES.PRIVACY_POLICY}
-                    viewTransition={true}
+                  <a
+                    href={ROUTES.PRIVACY_POLICY}
+                    
                     className="underline"
                   >
                     {ui.buttons.privacyPolicy}
-                  </Link>
+                  </a>
                   .
                 </p>
               </div>

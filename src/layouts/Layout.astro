@@ -1,8 +1,10 @@
 ---
-import RuntimeConfig from "@components/RuntimeConfig.astro";
-import "@styles/index.css";
-import "@styles/animations.css";
-import "@styles/variables.css";
+import RuntimeConfig from '@components/RuntimeConfig.astro';
+import '@styles/global.css';
+import '@styles/animations.css';
+import '@styles/variables.css';
+import { ClientRouter } from 'astro:transitions';
+import AppWrapper from '@/shared/components/AppWrapper';
 
 export interface Props {
   title?: string;
@@ -12,8 +14,8 @@ export interface Props {
 }
 
 const {
-  title = "Thought Metrics",
-  description = "Thought Metrics Website",
+  title = 'Thought Metrics',
+  description = 'Thought Metrics Website',
   keywords,
   ogImage,
 } = Astro.props;
@@ -32,11 +34,58 @@ const {
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
 
+    <!-- Enable ClientRouter for SPA-like navigation -->
+    <ClientRouter />
+
+    <!-- Scroll handling script -->
+    <!-- <script>
+      // Handle scroll restoration and hash navigation
+      document.addEventListener('astro:after-swap', () => {
+        // Check for hash in URL
+        if (window.location.hash) {
+          const targetElement = document.querySelector(window.location.hash);
+          if (targetElement) {
+            setTimeout(() => {
+              targetElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+              });
+            }, 100);
+          }
+        } else {
+          // Scroll to top on page navigation
+          window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        }
+      });
+
+      // Handle initial page load with hash
+      document.addEventListener('DOMContentLoaded', () => {
+        if (window.location.hash) {
+          const targetElement = document.querySelector(window.location.hash);
+          if (targetElement) {
+            setTimeout(() => {
+              targetElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+              });
+            }, 100);
+          }
+        }
+      });
+
+      // Handle page load complete
+      document.addEventListener('astro:page-load', () => {
+        // Additional scroll handling if needed after full page load
+        console.log('Page fully loaded');
+      });
+    </script> -->
+
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+      href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css"
     />
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"
     ></script>
 
     <!-- Status bar styling for iOS -->
@@ -57,7 +106,9 @@ const {
     <!-- Allow additional head content from pages -->
     <slot name="head" />
   </head>
-  <body>
-    <slot />
+  <body id="root">
+    <AppWrapper client:only="react">
+      <slot />
+    </AppWrapper>
   </body>
 </html>

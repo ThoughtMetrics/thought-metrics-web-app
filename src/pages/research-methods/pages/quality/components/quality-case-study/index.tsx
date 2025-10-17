@@ -29,7 +29,7 @@ const QualityCaseStudySection: React.FC<any> = ({
           {caseStudySection.description}
         </p>
         <img
-          src="/images/research_methods_quality_1.png"
+          src="images/research_methods_quality_1.png"
           className="md:hidden w-full h-fit"
         />
         <ul className={cn('text-md md:text-base space-y-2', className)}>

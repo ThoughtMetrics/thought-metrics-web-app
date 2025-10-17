@@ -45,15 +45,18 @@ const Header: React.FC = () => {
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
-    if (isDropdownOpen && window.innerWidth < 768) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
 
-    return () => {
-      document.body.style.overflow = "unset";
-    };
+    //NOTE: Need to work on it
+    
+    // if (isDropdownOpen && window.innerWidth < 768) {
+    //   document.body.style.overflow = "scroll";
+    // } else {
+    //   document.body.style.overflow = "unset";
+    // }
+
+    // return () => {
+    //   document.body.style.overflow = "unset";
+    // };
   }, [isDropdownOpen]);
 
   // Clear timeout on unmount
@@ -232,7 +235,7 @@ const Header: React.FC = () => {
                   >
                     {/* {'sub_title' in column && column.sub_title != null && (
                       <a
-                        viewTransition={true}
+                        
                         key={columnIndex}
                         href={'path' in column ? column.path : '#'}
                         onClick={() => handleDropdownLeave()}
@@ -323,7 +326,7 @@ const Header: React.FC = () => {
                           <div key={columnIndex}>
                             {/* {'sub_title' in column && column.sub_title && (
                               <a
-                                viewTransition={true}
+                                
                                 key={columnIndex}
                                 href={'path' in column ? column.path : '#'}
                                 onClick={() => handleDropdownLeave()}
@@ -364,7 +367,7 @@ const Header: React.FC = () => {
             <div className="px-6 mt-8 flex flex-col gap-3">
               <a
                 href={ROUTES.START_YOUR_RESEARCH}
-                viewTransition={true}
+                
                 className="w-full py-3 px-4 border border-white text-white font-medium rounded hover:bg-white/10 transition-colors text-center"
               >
                 Start Your Research
@@ -375,7 +378,7 @@ const Header: React.FC = () => {
                     ? ROUTES.SURVEY_PAGE
                     : ROUTES.RESPONDENT_LANDING
                 }
-                viewTransition={true}
+                
                 className="w-full py-3 px-4 bg-white text-primary font-medium rounded hover:bg-white/90 transition-colors text-center"
               >
                 {isAuthenticated ? "Take a Paid Survey" : "Join a Paid Survey"}
