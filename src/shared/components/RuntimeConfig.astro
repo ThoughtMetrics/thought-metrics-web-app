@@ -1,0 +1,32 @@
+---
+// This component injects runtime environment variables into the HTML
+// MUST be placed as the FIRST script in <head> to prevent hydration errors
+// SECURITY: Only PUBLIC_ prefixed variables are exposed to the browser
+
+// Helper to get env var (works in both local dev and Docker)
+const getEnv = (key: string): string => {
+  // Priority 1: import.meta.env (works in local dev with .env files)
+  // Priority 2: process.env (works in Docker runtime)
+  return import.meta.env[key] || process.env[key] || "";
+};
+
+const runtimeConfig = {
+  // Only expose PUBLIC_ prefixed variables to the client
+  PUBLIC_BASE_URL: getEnv("PUBLIC_BASE_URL"),
+  PUBLIC_BASE_API_VERSION: getEnv("PUBLIC_BASE_API_VERSION"),
+  PUBLIC_SITE_URL: getEnv("PUBLIC_SITE_URL"),
+  PUBLIC_FIREBASE_API_KEY: getEnv("PUBLIC_FIREBASE_API_KEY"),
+  PUBLIC_FIREBASE_AUTH_DOMAIN: getEnv("PUBLIC_FIREBASE_AUTH_DOMAIN"),
+  PUBLIC_FIREBASE_PROJECT_ID: getEnv("PUBLIC_FIREBASE_PROJECT_ID"),
+  PUBLIC_FIREBASE_STORAGE_BUCKET: getEnv("PUBLIC_FIREBASE_STORAGE_BUCKET"),
+  PUBLIC_FIREBASE_MESSAGING_SENDER_ID: getEnv("PUBLIC_FIREBASE_MESSAGING_SENDER_ID"),
+  PUBLIC_FIREBASE_APP_ID: getEnv("PUBLIC_FIREBASE_APP_ID"),
+  // IMPORTANT: STRAPI_API_URL is NOT included here - it's server-only
+};
+
+// Serialize to JSON, escaping to prevent XSS
+const runtimeConfigJSON = JSON.stringify(runtimeConfig).replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
+---
+
+<!-- CRITICAL: This must be the FIRST script in head, before any React code -->
+<script is:inline set:html={`window.__APP_CONFIG__ = ${runtimeConfigJSON};`}></script>

@@ -1,9 +1,7 @@
 // shared/components/layout/scroll-to-top.tsx
 import { useEffect, useLayoutEffect } from 'react';
-import { useLocation } from 'react-router-dom';
 
 const ScrollToTop: React.FC = () => {
-  const location = useLocation();
   useLayoutEffect(() => {
     if (location.hash) {
       const targetElement = document.getElementById(location.hash.substring(1));

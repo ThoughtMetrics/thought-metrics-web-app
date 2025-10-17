@@ -1,0 +1,241 @@
+.csr-component {
+  padding: 2rem;
+  border: 3px solid #ef4444;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  margin-bottom: 2rem;
+}
+
+.csr-component h2 {
+  color: #991b1b;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1.8rem;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+  background-color: white;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.logo {
+  width: 180px;
+  height: auto;
+  transition: all 0.3s ease;
+}
+
+.logo.large {
+  width: 250px;
+  transform: rotate(5deg);
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+.interaction {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.btn {
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(239, 68, 68, 0.4);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.counter {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #991b1b;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.explanation {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.explanation h3 {
+  color: #991b1b;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.explanation ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+}
+
+.explanation li {
+  padding: 0.5rem 0;
+  color: #374151;
+  font-size: 1rem;
+}
+
+.code-example {
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 6px;
+  border-left: 4px solid #ef4444;
+}
+
+.code-example strong {
+  color: #991b1b;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.code-example pre {
+  background-color: #1f2937;
+  color: #10b981;
+  padding: 0.75rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+}
+
+.code-example code {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+}
+
+.code-example p {
+  margin: 0.5rem 0 0 0;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.code-example p code {
+  background-color: #e5e7eb;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  color: #374151;
+  font-size: 0.85rem;
+}
+
+/* Environment Variables Styles */
+.env-section {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.env-section h3 {
+  color: #991b1b;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.env-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.env-item {
+  display: grid;
+  grid-template-columns: 180px 1fr auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+}
+
+.env-item.blocked {
+  background-color: #fee2e2;
+  border: 2px solid #ef4444;
+}
+
+.env-item.public {
+  background-color: #d1fae5;
+  border: 2px solid #10b981;
+}
+
+.env-label {
+  font-weight: bold;
+  color: #374151;
+}
+
+.env-value {
+  color: #059669;
+  word-break: break-all;
+}
+
+.env-item.blocked .env-value {
+  color: #dc2626;
+  font-weight: bold;
+}
+
+.env-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.env-item.blocked .env-badge {
+  background-color: #fca5a5;
+  color: #7f1d1d;
+}
+
+.env-item.public .env-badge {
+  background-color: #6ee7b7;
+  color: #064e3b;
+}
+
+.env-note {
+  margin: 0;
+  padding: 0.75rem;
+  background-color: #fee2e2;
+  border-left: 4px solid #ef4444;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #991b1b;
+}
+
+@media (max-width: 640px) {
+  .env-item {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}

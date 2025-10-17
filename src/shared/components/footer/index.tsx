@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { footerData } from './footer.constant';
-import { LogoWhite } from '@/assets';
-import { Link } from 'react-router-dom';
-import { auth } from '@/core/configs/firebase-config';
+import React, { useEffect, useState } from "react";
+import { footerData } from "./footer.constant";
+import { LogoWhite } from "@/assets";
+import { auth } from "@/core/configs/firebase-config";
 
 const Footer: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -16,17 +15,17 @@ const Footer: React.FC = () => {
   }, []);
 
   const scrollToTop = () => {
-    const rootElement = document.getElementById('root');
+    const rootElement = document.getElementById("root");
 
     if (rootElement) {
       rootElement.scrollTo({
         top: 0,
-        behavior: 'smooth',
+        behavior: "smooth",
       });
     } else {
       window.scrollTo({
         top: 0,
-        behavior: 'smooth',
+        behavior: "smooth",
       });
     }
   };
@@ -41,8 +40,8 @@ const Footer: React.FC = () => {
             <LogoWhite className="w-full" />
             <div className="flex justify-between">
               {footerData.socialLinks.map((social) => (
-                <Link
-                  to={social.path}
+                <a
+                  href={social.path}
                   target="_blank"
                   rel="noopener noreferrer"
                   key={social.name}
@@ -53,7 +52,7 @@ const Footer: React.FC = () => {
                     alt={social.name}
                     className="w-10 wide:w-12"
                   />
-                </Link>
+                </a>
               ))}
             </div>
           </div>
@@ -63,22 +62,21 @@ const Footer: React.FC = () => {
               <ul className="list-none p-0 m-0 flex flex-col gap-1 xl:gap-1 xxl:gap-1.5 wide:gap-2">
                 {section.links.map((link, index) => {
                   let routePath =
-                    isAuthenticated && link.label == 'Join Our Panel'
+                    isAuthenticated && link.label == "Join Our Panel"
                       ? link.signedInPath
                       : link.path;
-                  routePath = routePath ?? '#';
+                  routePath = routePath ?? "#";
                   return (
                     <li key={link.label}>
-                      <Link
-                        viewTransition={true}
+                      <a
                         key={index + link.label}
-                        to={routePath}
+                        href={routePath}
                         className="text-sm md:text-base xxl:text-xl hover:underline cursor-pointer"
                       >
-                        {isAuthenticated && link.label == 'Join Our Panel'
+                        {isAuthenticated && link.label == "Join Our Panel"
                           ? link.signedInLabel
                           : link.label}
-                      </Link>
+                      </a>
                     </li>
                   );
                 })}

@@ -1,0 +1,261 @@
+---
+// Server-Side Rendered Component using astro-icon
+import { getAPIConfig } from '@configs/api-config';
+import { Icon } from 'astro-icon/components';
+
+const API_CONFIG = getAPIConfig();
+
+// This component renders on the SERVER
+// The icon is loaded and converted to HTML during build/server render
+
+// 🔐 ENVIRONMENT VARIABLES IN SSR
+// SSR can access ALL environment variables (both PUBLIC_ and non-PUBLIC_)
+const serverOnlySecret = API_CONFIG.strapiURL;
+const publicApiUrl = API_CONFIG.baseURL ?? '';
+const publicAppName = API_CONFIG.firebaseConfig.projectId ?? '';
+
+// ⚠️ SECURITY: Server-only vars (without PUBLIC_ prefix) are NEVER sent to the client
+// They are only available during server-side rendering
+console.log('🖥️ SSR - Server Secret:', serverOnlySecret); // Only visible in server logs
+---
+
+<div class="ssr-component">
+  <h2>🖥️ Server-Side Rendering (SSR)</h2>
+
+  <div class="logo-container">
+    <!--
+      Using astro-icon to load logo.svg from src/assets/icons/logo.svg
+      The 'logo' name matches the file name (without .svg extension)
+      This is rendered on the server and sent as static HTML
+    -->
+    <Icon name="logo" />
+  </div>
+
+  <!-- Environment Variables Section -->
+  <div class="env-section">
+    <h3>🔐 Environment Variables (SSR)</h3>
+    <div class="env-grid">
+      <div class="env-item secure">
+        <span class="env-label">SECRET_API_KEY:</span>
+        <span class="env-value">{serverOnlySecret}</span>
+        <span class="env-badge">🔒 Server Only</span>
+      </div>
+      <div class="env-item public">
+        <span class="env-label">PUBLIC_API_URL:</span>
+        <span class="env-value">{publicApiUrl}</span>
+        <span class="env-badge">🌐 Public</span>
+      </div>
+      <div class="env-item public">
+        <span class="env-label">PUBLIC_APP_NAME:</span>
+        <span class="env-value">{publicAppName}</span>
+        <span class="env-badge">🌐 Public</span>
+      </div>
+    </div>
+    <p class="env-note">
+      <strong>⚠️ Important:</strong> Server-only variables (without PUBLIC_ prefix) are
+      processed on the server and NEVER exposed to the client browser!
+    </p>
+  </div>
+
+  <div class="explanation">
+    <h3>How it works:</h3>
+    <ul>
+      <li>✅ Icon loads during build time (server-side)</li>
+      <li>✅ Sent as static HTML to the browser</li>
+      <li>✅ No JavaScript required</li>
+      <li>✅ Great for SEO and performance</li>
+      <li>✅ The SVG is inlined in the HTML</li>
+    </ul>
+
+    <div class="code-example">
+      <strong>Code:</strong>
+      <pre><code>&lt;Icon name="logo" /&gt;</code></pre>
+      <p>Path: <code>src/assets/icons/logo.svg</code></p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .ssr-component {
+    padding: 2rem;
+    border: 3px solid #3b82f6;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    margin-bottom: 2rem;
+  }
+
+  h2 {
+    color: #1e40af;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-size: 1.8rem;
+  }
+
+  .logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem;
+    background-color: white;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .logo-container :global(svg) {
+    width: 180px;
+    height: auto;
+  }
+
+  .explanation {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .explanation h3 {
+    color: #1e40af;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem 0;
+  }
+
+  li {
+    padding: 0.5rem 0;
+    color: #374151;
+    font-size: 1rem;
+  }
+
+  .code-example {
+    background-color: #f9fafb;
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 4px solid #3b82f6;
+  }
+
+  .code-example strong {
+    color: #1e40af;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  pre {
+    background-color: #1f2937;
+    color: #10b981;
+    padding: 0.75rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 0.5rem 0;
+  }
+
+  code {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+  }
+
+  .code-example p {
+    margin: 0.5rem 0 0 0;
+    color: #6b7280;
+  }
+
+  .code-example p code {
+    background-color: #e5e7eb;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    color: #374151;
+  }
+
+  /* Environment Variables Styles */
+  .env-section {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .env-section h3 {
+    color: #1e40af;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .env-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .env-item {
+    display: grid;
+    grid-template-columns: 180px 1fr auto;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+  }
+
+  .env-item.secure {
+    background-color: #fef3c7;
+    border: 2px solid #f59e0b;
+  }
+
+  .env-item.public {
+    background-color: #dbeafe;
+    border: 2px solid #3b82f6;
+  }
+
+  .env-label {
+    font-weight: bold;
+    color: #374151;
+  }
+
+  .env-value {
+    color: #059669;
+    word-break: break-all;
+  }
+
+  .env-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+
+  .env-item.secure .env-badge {
+    background-color: #fbbf24;
+    color: #78350f;
+  }
+
+  .env-item.public .env-badge {
+    background-color: #60a5fa;
+    color: #1e3a8a;
+  }
+
+  .env-note {
+    margin: 0;
+    padding: 0.75rem;
+    background-color: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: #92400e;
+  }
+
+  @media (max-width: 640px) {
+    .env-item {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+  }
+</style>

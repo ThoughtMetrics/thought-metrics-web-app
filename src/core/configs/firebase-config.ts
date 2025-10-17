@@ -1,6 +1,6 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getAPIConfig } from '@/core/configs/api-config';
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getAPIConfig } from "@configs/api-config";
 
 const API_CONFIG = getAPIConfig();
 
