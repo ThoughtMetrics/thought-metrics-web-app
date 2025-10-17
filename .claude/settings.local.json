@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/JeshwanthKumarAS/Downloads/**)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

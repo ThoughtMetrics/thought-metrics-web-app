@@ -17,7 +17,7 @@ export default defineConfig({
     partytown(),
     sitemap(),
     mdx(),
-    icon({ iconDir: "public/icons" }),
+    icon({ iconDir: "src/assets/icons" }),
   ],
 
   vite: {
