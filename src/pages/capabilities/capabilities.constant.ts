@@ -307,7 +307,7 @@ export const capabilities = {
           className: 'absolute -bottom-5 right-20 w-[20rem] h-full',
           title: 'Brand Tracking Research',
           description:
-            'Quantify brand efforts, improve brand messaging, prove ROI, customize KPI tracking, monitor competitors',
+            'Quantify brand efforts, improve brand messaging, prove ROI, customize KPI tracking, monitor competitors.',
           backgroundColor: 'purple',
           illustration: EyeTrackingIllustration,
           link: '/resources/brand-insights-that-matter',
@@ -326,7 +326,7 @@ export const capabilities = {
           className1: 'absolute right-20 bottom-8 w-[18%] h-[18%]',
           title: 'Message Testing',
           description:
-            'Message testing gauges responses to all your marking collaterals and tracks variables like abandonment rate, pate views, problems and frustrations, task success, task time, usability, attitude, conversions and NPS',
+            'Message testing gauges responses to all your marking collaterals and tracks variables like abandonment rate, pate views, problems and frustrations, task success, task time, usability, attitude, conversions and NPS.',
           backgroundColor: 'pink',
           illustration: MessageKiteIllustration,
           link: '/resources/sharpen-your-story-with-message-testing',
@@ -367,7 +367,7 @@ export const capabilities = {
         {
           title: 'Resource Allocation',
           description:
-            'With a clearer understanding of the competitive landscape, businesses can allocate resources more efficiently to areas that offer the greatest potential for growth and profitability',
+            'With a clearer understanding of the competitive landscape, businesses can allocate resources more efficiently to areas that offer the greatest potential for growth and profitability.',
           bgColor: 'grey',
           isBorder: false,
           isActive: false,
@@ -378,7 +378,7 @@ export const capabilities = {
         {
           title: 'Informed decision making',
           description:
-            'Competitive intelligence equips businesses with the knowledge needed to make well-informed decisions. By understanding their competitor’s strengths, weakness, and strategies, organizations can develop effective plans that capitalize on opportunities and mitigate risks',
+            'Competitive intelligence equips businesses with the knowledge needed to make well-informed decisions. By understanding their competitor’s strengths, weakness, and strategies, organizations can develop effective plans that capitalize on opportunities and mitigate risks.',
           bgColor: 'grey',
           isBorder: false,
           isActive: false,
@@ -693,7 +693,7 @@ export const capabilities = {
           },
           title: 'Enhanced Product-Market Fit',
           description:
-            'By incorporating feedback and refining concepts, businesses can tailor their products to better match market needs, ultimately improving the product-market fit',
+            'By incorporating feedback and refining concepts, businesses can tailor their products to better match market needs, ultimately improving the product-market fit.',
           bgColor: 'default',
           isBorder: true,
           isActive: false,
@@ -788,7 +788,7 @@ export const capabilities = {
         {
           title: 'Idea Generation',
           description:
-            ' Capture unmet needs and whitespace opportunities using trend analysis and user feedback.',
+            'Capture unmet needs and whitespace opportunities using trend analysis and user feedback.',
           icon: IdeaGenerationIcon,
           isBorder: false,
           bgColor: 'default',
@@ -796,7 +796,7 @@ export const capabilities = {
         {
           title: 'Concept Testing',
           description:
-            ' Validate product ideas early to avoid costly development missteps.',
+            'Validate product ideas early to avoid costly development missteps.',
           icon: ConceptTestingIcon,
           isBorder: false,
           bgColor: 'default',
@@ -804,7 +804,7 @@ export const capabilities = {
         {
           title: 'Prototype Evaluation',
           description:
-            ' Test usability, design, and feature relevance with target users.',
+            'Test usability, design, and feature relevance with target users.',
           icon: PrototypeEvaluationIcon,
           isBorder: false,
           bgColor: 'default',
@@ -812,7 +812,7 @@ export const capabilities = {
         {
           title: 'Pricing & Positioning',
           description:
-            ' Understand perceived value and optimal pricing through conjoint or pricing research.',
+            'Understand perceived value and optimal pricing through conjoint or pricing research.',
           icon: PricingPositioningIcon,
           isBorder: false,
           bgColor: 'default',
@@ -820,7 +820,7 @@ export const capabilities = {
         {
           title: 'Packaging & Branding',
           description:
-            ' Explore design, messaging, and shelf appeal with simulated environments or surveys.',
+            'Explore design, messaging, and shelf appeal with simulated environments or surveys.',
           icon: PackingBrandingIcon,
           isBorder: false,
           bgColor: 'default',
@@ -828,7 +828,7 @@ export const capabilities = {
         {
           title: 'Market Simulation',
           description:
-            ' Use predictive modeling to estimate adoption, churn, and product-market fit.',
+            'Use predictive modeling to estimate adoption, churn, and product-market fit.',
           icon: MarketSimulationIcon,
           isBorder: false,
           bgColor: 'default',
@@ -836,7 +836,7 @@ export const capabilities = {
         {
           title: 'Pre-launch Feedback',
           description:
-            ' Conduct beta testing or limited releases to fine-tune the final offering.',
+            'Conduct beta testing or limited releases to fine-tune the final offering.',
           icon: PrelaunchFeedbackIcon,
           isBorder: false,
           bgColor: 'default',
@@ -844,7 +844,7 @@ export const capabilities = {
         {
           title: 'Post-launch Insights',
           description:
-            ' Track performance, satisfaction, and evolving user expectations for continuous improvement.',
+            'Track performance, satisfaction, and evolving user expectations for continuous improvement.',
           icon: PostLaunchInsightIcon,
           isBorder: false,
           bgColor: 'default',
@@ -857,7 +857,7 @@ export const capabilities = {
           className: 'absolute right-0 top-0 m-5 w-[20%] h-[20%] ml-12',
           title: 'Conjoint Analysis',
           description:
-            'Conjoint Analysis is based on the idea that consumers make trade-offs when selecting options, and it helps businesses determine which combination of attributes is most appealing to their target audience. Methods include, discrete choice, rating based, best-worst scaling, adaptive conjoint analysis',
+            'Conjoint Analysis is based on the idea that consumers make trade-offs when selecting options, and it helps businesses determine which combination of attributes is most appealing to their target audience. Methods include, discrete choice, rating based, best-worst scaling, adaptive conjoint analysis.',
           backgroundColor: 'green',
           illustration: ConjointAnalysisIllustration,
           link: '/resources/uncovering-consumer-preferences',
@@ -866,7 +866,7 @@ export const capabilities = {
           className: 'absolute -bottom-5 right-14 w-[20rem] h-full',
           title: 'MaxDiff Analysis',
           description:
-            'MaxDiff allows researchers to determine the relative importance of various attributes or features by presenting respondents with sets of choices and asking them to indicate their most and least preferred options. MaxDiff analysis is particularly useful for attribute prioritization, market segmentation, and understanding the key factors that influence consumer preferences',
+            'MaxDiff allows researchers to determine the relative importance of various attributes or features by presenting respondents with sets of choices and asking them to indicate their most and least preferred options. MaxDiff analysis is particularly useful for attribute prioritization, market segmentation, and understanding the key factors that influence consumer preferences.',
           backgroundColor: 'purple',
           illustration: MountainIllustration,
           link: '/resources/from-basics-to-business-solutions',
@@ -885,7 +885,7 @@ export const capabilities = {
           className1: 'absolute right-8 ml-8 bottom-4 w-[22%] h-[22%]',
           title: 'UX Research',
           description:
-            'Avoid unleashing a poor user experience that not only diminishes the product, but damages the brand trust you’ve worked so hard to build using UX mockup testing, tree testing, card sorting, usability studies',
+            'Avoid unleashing a poor user experience that not only diminishes the product, but damages the brand trust you’ve worked so hard to build using UX mockup testing, tree testing, card sorting, usability studies.',
           backgroundColor: 'pink',
           illustration: UXResearchIllustration,
           link: '/resources/partnering-with-a-ux-research-agency',

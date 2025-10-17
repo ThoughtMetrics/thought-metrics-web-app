@@ -60,7 +60,7 @@ export const industries = {
         },
         title: 'Unparalleled access to respondents',
         description:
-          'Thought Metrics delivers access to divers and varied audiences you need, so you can make the right decisions, even when you need to move quickly',
+          'Thought Metrics delivers access to divers and varied audiences you need, so you can make the right decisions, even when you need to move quickly.',
         bgColor: 'grey',
         isBorder: false,
         isActive: true,
@@ -74,7 +74,7 @@ export const industries = {
         },
         title: 'Delivery at the speed of market',
         description:
-          'Get results at the speed you need with tech-enabled solutions that make it smarter, faster, and easier to achieve meaningful audience engagement in depth and scale',
+          'Get results at the speed you need with tech-enabled solutions that make it smarter, faster, and easier to achieve meaningful audience engagement in depth and scale.',
         bgColor: 'grey',
         isBorder: false,
         isActive: true,

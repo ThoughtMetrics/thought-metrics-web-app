@@ -191,3 +191,4 @@ const UnsubscribePage: React.FC = () => {
 };
 
 export default UnsubscribePage;
+//BUG: Sumbit button disabled always. On choosing a checkbox the submit button should be clickable
