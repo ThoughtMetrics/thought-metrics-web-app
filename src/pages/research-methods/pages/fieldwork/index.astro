@@ -1,0 +1,16 @@
+---
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+import ResearchMethodFieldwork from './FieldworkPage';
+
+const seoContent = {
+  title: 'Fieldwork - Thought Metrics',
+  description: 'Fieldwork Research Methods and Insights',
+};
+---
+
+<PresentationLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <ResearchMethodFieldwork client:load />
+</PresentationLayout>

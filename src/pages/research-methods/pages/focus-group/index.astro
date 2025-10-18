@@ -1,0 +1,16 @@
+---
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+import ResearchMethodFocusGroup from './FocusGroupPage';
+
+const seoContent = {
+  title: 'Focus Group - Thought Metrics',
+  description: 'Focus Group Research and Insights',
+};
+---
+
+<PresentationLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <ResearchMethodFocusGroup client:load />
+</PresentationLayout>

@@ -1,0 +1,16 @@
+---
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+import CapabilitiesProductResearchPage from './ProductResearchPage';
+
+const seoContent = {
+  title: 'Product Research - Thought Metrics',
+  description: 'Product Research Capabilities and Insights',
+};
+---
+
+<PresentationLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <CapabilitiesProductResearchPage client:load />
+</PresentationLayout>

@@ -1,0 +1,16 @@
+---
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+import ArticlesPage from './ArticlesPage';
+
+const seoContent = {
+  title: 'Articles & Insights - Thought Metrics',
+  description: 'Data-Driven Research, Centralized Intelligence',
+};
+---
+
+<PresentationLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <ArticlesPage client:load />
+</PresentationLayout>

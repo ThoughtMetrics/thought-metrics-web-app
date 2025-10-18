@@ -1,0 +1,16 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import AuthPage from './AuthPage';
+
+const seoContent = {
+  title: 'Sign In - Thought Metrics',
+  description: 'Sign in to your Thought Metrics account',
+};
+---
+
+<Layout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <AuthPage client:load />
+</Layout>

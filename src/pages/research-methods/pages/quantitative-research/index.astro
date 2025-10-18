@@ -1,0 +1,16 @@
+---
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+import ResearchMethodQuantitativeResearch from './QuantitativeResearchPage';
+
+const seoContent = {
+  title: 'Quantitative Research - Thought Metrics',
+  description: 'Quantitative Research Methods and Insights',
+};
+---
+
+<PresentationLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <ResearchMethodQuantitativeResearch client:load />
+</PresentationLayout>

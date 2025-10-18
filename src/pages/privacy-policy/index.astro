@@ -1,0 +1,15 @@
+---
+import PolicyHeroSection from '@/shared/ui/templates/policy-hero-section';
+import { privacyPolicyContent } from './constant';
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+
+const { title = 'Privacy Policy', description = 'Thought Metrics - Privacy Policy' } = Astro.props;
+---
+
+<PresentationLayout title={title} description={description}>
+  <PolicyHeroSection
+    client:load
+    content={privacyPolicyContent.content}
+    head={privacyPolicyContent.head}
+  />
+</PresentationLayout>

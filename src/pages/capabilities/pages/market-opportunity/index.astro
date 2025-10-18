@@ -1,0 +1,16 @@
+---
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+import CapabilitiesMarketOpportunityPage from './MarketOpportunityPage';
+
+const seoContent = {
+  title: 'Market Opportunity - Thought Metrics',
+  description: 'Market Opportunity Research Capabilities and Insights',
+};
+---
+
+<PresentationLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <CapabilitiesMarketOpportunityPage client:load />
+</PresentationLayout>

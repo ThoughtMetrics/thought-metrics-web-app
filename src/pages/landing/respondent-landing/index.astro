@@ -1,0 +1,16 @@
+---
+import LandingLayout from '@/layouts/LandingLayout.astro';
+import RespondentLandingPage from './RespondentLandingPage';
+
+const seoContent = {
+  title: 'Join Our Panel - Thought Metrics',
+  description: 'Join our research panel and share your opinions',
+};
+---
+
+<LandingLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <RespondentLandingPage client:load />
+</LandingLayout>

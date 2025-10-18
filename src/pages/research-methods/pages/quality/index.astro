@@ -1,0 +1,16 @@
+---
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+import ResearchMethodQuality from './QualityPage';
+
+const seoContent = {
+  title: 'Quality Research - Thought Metrics',
+  description: 'Quality Research Methods and Insights',
+};
+---
+
+<PresentationLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <ResearchMethodQuality client:load />
+</PresentationLayout>

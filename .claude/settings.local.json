@@ -3,7 +3,9 @@
     "allow": [
       "Read(//c/Users/JeshwanthKumarAS/Downloads/**)",
       "Bash(mkdir:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(cat:*)",
+      "Bash(git rm:*)"
     ],
     "deny": [],
     "ask": []
