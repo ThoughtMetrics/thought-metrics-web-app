@@ -1,9 +1,7 @@
 import { useProfileQuery } from '@/core/hooks/queries/use-profile.query';
 import { ROUTES } from '@/routes/routeConfig';
 import { SelectAtom } from '@/shared/ui/atoms/custom-input';
-import { useNavigate } from '';
 const SurveyPage: React.FC = () => {
-  const navigate = useNavigate();
   const { data: userProfile } = useProfileQuery();
 
   return (
@@ -23,7 +21,7 @@ const SurveyPage: React.FC = () => {
             <span
               className="underline"
               onClick={() => {
-                void navigate(ROUTES.EDIT_PROFILE);
+                window.location.href = ROUTES.EDIT_PROFILE;
               }}
             >
               Verify/update your profile

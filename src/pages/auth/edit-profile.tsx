@@ -12,6 +12,7 @@ import { useUpdateProfileMutation } from '@/core/hooks/mutations/use-update-prof
 import { LoaderOverlay } from '@/shared/ui/atoms/loader';
 import { toast } from 'sonner';
 import type { UpdateProfileData } from '@/core/types/user.type';
+import { ROUTES } from '@/routes/routeConfig';
 
 // Destructure constants
 const {
@@ -41,7 +42,6 @@ const years = Array.from({ length: currentYear - 1900 + 1 }, (_, i) => ({
 }));
 
 const EditProfilePage: React.FC = () => {
-  // const navigate = useNavigate();
   const { data: profile, isLoading: isLoadingProfile } = useProfileQuery();
   const updateProfileMutation = useUpdateProfileMutation();
 
@@ -256,7 +256,7 @@ const EditProfilePage: React.FC = () => {
 
       // Redirect to survey page after successful update
       /* NOTE: Issues need to fix */
-      // await navigate('/survey_page');
+      window.location.href = ROUTES.SURVEY_PAGE;
     } catch (error) {
       console.error('Update profile error:', error);
     }

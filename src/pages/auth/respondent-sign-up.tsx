@@ -220,7 +220,6 @@ const useRespondentRegistrationFormStore =
   );
 
 const RespondentSignUpPage: React.FC = () => {
-  const navigate = useNavigate();
   const signUpMutation = useSignUpMutation();
   const [socialAuthLoading, setSocialAuthLoading] = useState<
     'google' | 'facebook' | null
@@ -299,7 +298,7 @@ const RespondentSignUpPage: React.FC = () => {
 
     if (result) {
       setTimeout(() => {
-        void navigate('/survey_page');
+        window.location.href = ROUTES.SURVEY_PAGE;
       }, 2000);
     }
   };
@@ -309,7 +308,7 @@ const RespondentSignUpPage: React.FC = () => {
     try {
       const result = await signUpMutation.mutateAsync({ type: 'google' });
       if (result) {
-        void navigate(ROUTES.SURVEY_PAGE);
+        window.location.href = ROUTES.SURVEY_PAGE;
       }
     } catch (error) {
       let errorCode = '';
@@ -343,7 +342,7 @@ const RespondentSignUpPage: React.FC = () => {
     try {
       const result = await signUpMutation.mutateAsync({ type: 'facebook' });
       if (result) {
-        void navigate(ROUTES.SURVEY_PAGE);
+        window.location.href = ROUTES.SURVEY_PAGE;
       }
     } catch (error) {
       let errorCode = '';

@@ -1,16 +1,34 @@
 ---
 import PresentationLayout from '@/layouts/PresentationLayout.astro';
 import ResearchMethodFieldwork from './FieldworkPage';
+import { contentService } from '@/services/strapi-api/content.service';
+import { ContentCategory } from '@/core/types/content.type';
 
 const seoContent = {
   title: 'Fieldwork - Thought Metrics',
   description: 'Fieldwork Research Methods and Insights',
 };
+
+// Fetch blog data on the server for SSR
+let blogData = null;
+try {
+  const blogItems = await contentService.getBlogContents({
+    type: [],
+    category: [ContentCategory.FIELDWORK],
+    limit: 4,
+  });
+  blogData = {
+    title: 'Fieldwork Insights',
+    items: blogItems,
+  };
+} catch (error) {
+  console.error('Failed to fetch blog data:', error);
+}
 ---
 
 <PresentationLayout
   title={seoContent.title}
   description={seoContent.description}
 >
-  <ResearchMethodFieldwork client:load />
+  <ResearchMethodFieldwork client:load blogData={blogData} />
 </PresentationLayout>

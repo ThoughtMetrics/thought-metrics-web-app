@@ -1,11 +1,11 @@
 ---
 // Demo page showing SSR vs CSR with astro-icon
-import BaseLayout from '../components/RuntimeConfig.astro';
-import LogoSSR from '../components/LogoSSR.astro';
-import LogoCSR from '../components/LogoCSR.tsx';
+import Layout from '@/layouts/Layout.astro';
+import LogoCSR from '@/shared/LogoCSR';
+import LogoSSR from '@/shared/LogoSSR.astro';
 ---
 
-<BaseLayout title="SSR vs CSR Demo - Understanding the Difference">
+<Layout title="SSR vs CSR Demo - Understanding the Difference">
   <style slot="head">
       * {
         margin: 0;
@@ -276,4 +276,4 @@ import LogoCSR from '../components/LogoCSR.tsx';
         </p>
       </div>
   </div>
-</BaseLayout>
+</Layout>

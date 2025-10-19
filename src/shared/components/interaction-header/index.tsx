@@ -8,7 +8,6 @@ const InteractionHeader: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -36,7 +35,7 @@ const InteractionHeader: React.FC = () => {
   const handleLogout = async () => {
     try {
       await authService.signOut();
-      await navigate(ROUTES.HOME);
+      window.location.href = ROUTES.HOME;
     } catch (error) {
       console.error('Logout failed:', error);
     }
@@ -47,21 +46,19 @@ const InteractionHeader: React.FC = () => {
       <header className="common-component bg-white">
         <div className="common-container justify-center !max-w-[var(--breakpoint-2xl)]">
           <nav className="px-6 py-3 xxl:px-0 flex items-center justify-between w-full">
-            <a  href={ROUTES.HOME}>
+            <a href={ROUTES.HOME}>
               <div className="w-45 pt-1">
                 <Logo className="w-full h-full" />
               </div>
             </a>
             <div className="hidden md:flex items-center gap-8 text-nowrap">
               <a
-                
                 href={ROUTES.HOME}
                 className="text-black font-medium hover:underline underline-offset-4"
               >
                 Home
               </a>
               <a
-                
                 href={ROUTES.OUR_PANEL}
                 className="text-black font-medium hover:underline underline-offset-4"
               >
@@ -70,7 +67,6 @@ const InteractionHeader: React.FC = () => {
               {isAuthenticated ? (
                 <>
                   <a
-                    
                     href={ROUTES.EDIT_PROFILE}
                     className="text-black font-medium hover:underline underline-offset-4"
                   >

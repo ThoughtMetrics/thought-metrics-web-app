@@ -9,16 +9,26 @@ import LandingJoinUsSection from '../components/join-us-section';
 import LandingQuestionarySection from '../components/landing-questionary-section';
 import LandingSignUpSection from '../components/landing-sign-section';
 import InteractionFooter from '@/shared/components/interaction-footer';
-import { useBlogData } from '@/core/hooks/use-blog-data';
-import { ContentCategory } from '@/core/types/content.type';
+import BlogSkeleton from '@/shared/components/blog-skeleton';
 
-const RespondentLandingPage: React.FC = () => {
-  const { blogData } = useBlogData({
-    title: landing.respondent.blogSection.title,
-    type: [],
-    category: [ContentCategory.PARTICIPANT_EXPERIENCE],
-    limit: 4,
-  });
+interface BlogData {
+  title: string;
+  items: {
+    id: number;
+    type: string;
+    category: string;
+    label: string;
+    description: string;
+    link: string;
+    src: string;
+  }[];
+}
+
+interface RespondentLandingPageProps {
+  blogData?: BlogData | null;
+}
+
+const RespondentLandingPage: React.FC<RespondentLandingPageProps> = ({ blogData }) => {
 
   return (
     <>
@@ -32,7 +42,11 @@ const RespondentLandingPage: React.FC = () => {
       <LandingWorkingFlowSection
         workingFlowSection={landing.respondent.workingFlowSection}
       />
-      <BlogOrganism data={blogData} titleClassName="w-[60%] md:w-[30%]" />
+      {blogData ? (
+        <BlogOrganism data={blogData} titleClassName="w-[60%] md:w-[30%]" />
+      ) : (
+        <BlogSkeleton />
+      )}
       <LandingAboutUsSection
         aboutUsSection={landing.respondent.aboutUsSection}
       />

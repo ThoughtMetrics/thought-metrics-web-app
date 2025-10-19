@@ -6,37 +6,40 @@ import {
   XIcon,
   LinkedinIcon,
 } from '@/assets';
-import { contentService } from '@/services/strapi-api/content.service';
 import CustomImageAtom from '@/shared/ui/atoms/custom-image';
 import MarkDownOrganism from '@/shared/ui/organisms/markdown-organism';
-import { useQuery } from '@tanstack/react-query';
-import React, { Suspense } from 'react';
+import React from 'react';
 import BlogOrganism from '@/shared/ui/organisms/blog-organism';
 import BlogCard from '@/shared/ui/molecules/blog-card';
-import { QueryKeys } from '@/core/lib/query-keys';
-import { SEOHead } from '@/shared/components/seo/SEOHead';
-import { seoContent } from '@/core/constants/seo.constants';
-import { useBlogData } from '@/core/hooks/use-blog-data';
 import BlogSkeleton from '@/shared/components/blog-skeleton';
 import { footerData } from '@/shared/components/footer/footer.constant';
 import { toast } from 'sonner';
 
-const ResourcePage: React.FC = () => {
-  const { blogData } = useBlogData({
-    title: 'Resources',
-    type: [],
-    category: [],
-    limit: 4,
-  });
+interface BlogData {
+  title: string;
+  items: {
+    id: number;
+    type: string;
+    category: string;
+    label: string;
+    description: string;
+    link: string;
+    src: string;
+  }[];
+}
 
-  const { slug } = useParams<{ slug: string }>();
-  const initialData: any = {};
+interface ResourcePageProps {
+  content?: any;
+  blogData?: BlogData | null;
+}
+
+const ResourcePage: React.FC<ResourcePageProps> = ({ content, blogData }) => {
 
   const handleCopyUrl = async () => {
     try {
       const currentUrl = window.location.href;
       await navigator.clipboard.writeText(currentUrl);
-      toast.success('a copied!', {
+      toast.success('Link copied!', {
         description: 'URL has been copied to clipboard',
       });
     } catch (error) {
@@ -59,30 +62,8 @@ const ResourcePage: React.FC = () => {
     window.location.href = mailtoLink;
   };
 
-  const {
-    data: content,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: QueryKeys.contentKeys.slug(slug!),
-    queryFn: () => contentService.getContentBySlug(slug!),
-    initialData: initialData?.content,
-    enabled: !!slug,
-  });
-  if (isLoading) {
-    return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
-          <div className="h-4 bg-gray-200 rounded mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !content) {
+  // If no content, show error
+  if (!content) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8 text-center">
         <h1 className="text-2xl font-bold mb-4">Resource Not Found</h1>
@@ -96,31 +77,15 @@ const ResourcePage: React.FC = () => {
     );
   }
 
+  // If no blog data, show skeleton
+  const blogSection = blogData ? (
+    <BlogOrganism data={blogData} bgColor="bg-white" />
+  ) : (
+    <BlogSkeleton />
+  );
+
   return (
     <>
-      <SEOHead
-        title={`${content.label} - ${seoContent.title}`}
-        description={content.description}
-        ogImage={content.img?.url}
-        ogType="article"
-        canonicalUrl={`${seoContent.canonicalUrl}/resources/${slug}`}
-        meta={[
-          {
-            property: 'article:published_time',
-            content: content.publishedDate,
-          },
-          { property: 'article:modified_time', content: content.updatedAt },
-        ]}
-        structuredData={{
-          '@context': 'https://schema.org',
-          '@type': 'Article',
-          headline: content.label,
-          description: content.description,
-          datePublished: content.publishedDate,
-          dateModified: content.updatedAt,
-          image: content.img?.url,
-        }}
-      />
       <section className="common-component text-black flex-col items-center">
         <div className="common-container px-4 py-8 md:px-24 md:py-24 flex-col !max-w-[1336px]">
           <div className="grid md:grid-cols-[75%_25%] gap-6">
@@ -208,16 +173,14 @@ const ResourcePage: React.FC = () => {
             <MarkDownOrganism content={content.content} showTOC={true} />
             <div className="">
               <div className="flex flex-col gap-4 sticky top-4">
-                {blogData.items.slice(2).map((blog: any, index: number) => (
+                {blogData && blogData.items.slice(2).map((blog: any, index: number) => (
                   <BlogCard key={index + blog.id} blog={blog} />
                 ))}
               </div>
             </div>
           </div>
         </div>
-        <Suspense fallback={<BlogSkeleton />}>
-          <BlogOrganism data={blogData} bgColor="bg-white" />
-        </Suspense>
+        {blogSection}
       </section>
     </>
   );

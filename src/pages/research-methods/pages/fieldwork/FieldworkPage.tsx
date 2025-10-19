@@ -5,20 +5,27 @@ import { ResearchMethodActionSection } from '@/shared/ui/templates/action-sectio
 import { ResearchMethodQuestionarySection } from '@/shared/ui/templates/questionary-section';
 import { ProductResearchSection } from '@/shared/ui/templates/service-section';
 import AboutUsSection from './components/about-us';
-import { Suspense } from 'react';
 import BlogSkeleton from '@/shared/components/blog-skeleton';
-import { ContentCategory } from '@/core/types/content.type';
-import { useBlogData } from '@/core/hooks/use-blog-data';
 
-const ResearchMethodFieldwork: React.FC = () => {
+interface BlogData {
+  title: string;
+  items: {
+    id: number;
+    type: string;
+    category: string;
+    label: string;
+    description: string;
+    link: string;
+    src: string;
+  }[];
+}
+
+interface FieldworkPageProps {
+  blogData?: BlogData | null;
+}
+
+const ResearchMethodFieldwork: React.FC<FieldworkPageProps> = ({ blogData }) => {
   const pageContent = researchMethods.fieldwork;
-
-  const { blogData } = useBlogData({
-    title: pageContent.blogData.title,
-    type: [],
-    category: [ContentCategory.FIELDWORK],
-    limit: 4,
-  });
 
   return (
     <>
@@ -37,9 +44,11 @@ const ResearchMethodFieldwork: React.FC = () => {
         className=""
         imgClassName="!h-[65%] w-full"
       />
-      <Suspense fallback={<BlogSkeleton />}>
+      {blogData ? (
         <BlogOrganism data={blogData} bgColor="bg-custom-blue-light" />
-      </Suspense>
+      ) : (
+        <BlogSkeleton />
+      )}
       <ResearchMethodActionSection actionSection={pageContent.actionSection} />
     </>
   );

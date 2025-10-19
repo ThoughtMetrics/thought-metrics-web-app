@@ -1,0 +1,17 @@
+---
+import { industries } from '../industries.constant';
+import IndustryTemplatePage from '../template';
+import PresentationLayout from '@layouts/PresentationLayout.astro';
+
+const seoContent = {
+  title: 'Investor Relations - Thought Metrics',
+  description: 'Investor Relations Research and Insights',
+};
+---
+
+<PresentationLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <IndustryTemplatePage client:load industry={industries.investor} />
+</PresentationLayout>

@@ -1,12 +1,12 @@
 ---
-import LandingLayout from '@/layouts/LandingLayout.astro';
-import RespondentLandingPage from './RespondentLandingPage';
+import PresentationLayout from '@layouts/PresentationLayout.astro';
+import ResearchMethodQuantitativeResearch from './QuantitativeResearchPage';
 import { contentService } from '@/services/strapi-api/content.service';
 import { ContentCategory } from '@/core/types/content.type';
 
 const seoContent = {
-  title: 'Join Our Panel - Thought Metrics',
-  description: 'Join our research panel and share your opinions',
+  title: 'Quantitative Research - Thought Metrics',
+  description: 'Quantitative Research Methods and Insights',
 };
 
 // Fetch blog data on the server for SSR
@@ -14,11 +14,11 @@ let blogData = null;
 try {
   const blogItems = await contentService.getBlogContents({
     type: [],
-    category: [ContentCategory.PARTICIPANT_EXPERIENCE],
+    category: [ContentCategory.QUANTITATIVE_RESEARCH],
     limit: 4,
   });
   blogData = {
-    title: 'Participant Experience',
+    title: 'Quantitative Research Insights',
     items: blogItems,
   };
 } catch (error) {
@@ -26,9 +26,9 @@ try {
 }
 ---
 
-<LandingLayout
+<PresentationLayout
   title={seoContent.title}
   description={seoContent.description}
 >
-  <RespondentLandingPage client:load blogData={blogData} />
-</LandingLayout>
+  <ResearchMethodQuantitativeResearch client:load blogData={blogData} />
+</PresentationLayout>

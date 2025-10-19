@@ -1,5 +1,6 @@
 ---
 import Layout from '@/layouts/Layout.astro';
+import AppWrapper from '@/shared/components/AppWrapper';
 import ReportDownloadPage from './ReportDownloadPage';
 
 const seoContent = {
@@ -12,5 +13,7 @@ const seoContent = {
   title={seoContent.title}
   description={seoContent.description}
 >
-  <ReportDownloadPage client:load />
+  <AppWrapper client:only="react">
+    <ReportDownloadPage />
+  </AppWrapper>
 </Layout>

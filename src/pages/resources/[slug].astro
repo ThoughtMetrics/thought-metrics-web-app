@@ -1,0 +1,58 @@
+---
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+import ResourceDetailPage from './ResourceDetailPage';
+import { contentService } from '@/services/strapi-api/content.service';
+
+export async function getStaticPaths() {
+  try {
+    // Fetch all contents with full data to generate static paths
+    const response = await contentService.getContents({
+      filters: {},
+      limit: 1000,
+    });
+
+    return response.data.map((content) => ({
+      params: { slug: content.slug },
+      props: { content },
+    }));
+  } catch (error) {
+    console.error('Error fetching content for static paths:', error);
+    return [];
+  }
+}
+
+const { slug } = Astro.params;
+const { content } = Astro.props;
+
+// Fetch related blog data on the server for SSR
+let relatedBlogData = null;
+try {
+  const blogItems = await contentService.getBlogContents({
+    type: [],
+    category: [],
+    limit: 4,
+  });
+  relatedBlogData = {
+    title: 'Resources',
+    items: blogItems,
+  };
+} catch (error) {
+  console.error('Failed to fetch related blog data:', error);
+}
+
+// SEO content based on the fetched content
+const seoContent = {
+  title: content ? `${content.label} - Thought Metrics` : 'Resource - Thought Metrics',
+  description: content?.description || 'Explore our research insights and resources',
+  ogImage: content?.img?.url,
+  ogType: 'article' as const,
+  canonicalUrl: `https://thoughtmetrics.com/resources/${slug}`,
+};
+---
+
+<PresentationLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <ResourceDetailPage client:load content={content} blogData={relatedBlogData} />
+</PresentationLayout>

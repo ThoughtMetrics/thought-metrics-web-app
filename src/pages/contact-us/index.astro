@@ -1,5 +1,6 @@
 ---
 import PresentationLayout from '@/layouts/PresentationLayout.astro';
+import AppWrapper from '@/shared/components/AppWrapper';
 import ContactUsForm from './ContactUsForm';
 
 const seoContent = {
@@ -9,5 +10,7 @@ const seoContent = {
 ---
 
 <PresentationLayout title={seoContent.title} description={seoContent.description}>
-  <ContactUsForm client:load />
+  <AppWrapper client:only="react">
+    <ContactUsForm />
+  </AppWrapper>
 </PresentationLayout>

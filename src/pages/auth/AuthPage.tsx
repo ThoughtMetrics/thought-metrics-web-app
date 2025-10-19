@@ -119,7 +119,6 @@ const useLoginFormStore = create<LoginFormStore>()(
 );
 
 const AuthPage: React.FC = () => {
-  const navigate = useNavigate();
   const signInMutation = useSignInMutation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [socialAuthLoading, setSocialAuthLoading] = useState<
@@ -140,14 +139,14 @@ const AuthPage: React.FC = () => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setIsAuthenticated(true);
-        void navigate(ROUTES.SURVEY_PAGE);
+        window.location.href = ROUTES.SURVEY_PAGE;
       } else {
         setIsAuthenticated(false);
       }
     });
 
     return () => unsubscribe();
-  }, [navigate]);
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
@@ -168,7 +167,7 @@ const AuthPage: React.FC = () => {
 
     if (result) {
       setTimeout(() => {
-        void navigate(ROUTES.SURVEY_PAGE);
+        window.location.href = ROUTES.SURVEY_PAGE;
       }, 1500);
     }
   };
@@ -178,7 +177,7 @@ const AuthPage: React.FC = () => {
     try {
       const result = await signInMutation.mutateAsync({ type: 'google' });
       if (result) {
-        void navigate(ROUTES.SURVEY_PAGE);
+        window.location.href = ROUTES.SURVEY_PAGE;
       }
     } catch (error) {
       let errorCode = '';
@@ -212,7 +211,7 @@ const AuthPage: React.FC = () => {
     try {
       const result = await signInMutation.mutateAsync({ type: 'facebook' });
       if (result) {
-        void navigate(ROUTES.SURVEY_PAGE);
+        window.location.href = ROUTES.SURVEY_PAGE;
       }
     } catch (error) {
       let errorCode = '';
