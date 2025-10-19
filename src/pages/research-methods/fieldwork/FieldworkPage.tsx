@@ -1,5 +1,5 @@
 import HeroSection from '@/shared/ui/templates/hero-section';
-import { researchMethods } from '../../research-methods.constant';
+import { researchMethods } from '../research-methods.constant';
 import BlogOrganism from '@/shared/ui/organisms/blog-organism';
 import { ResearchMethodActionSection } from '@/shared/ui/templates/action-section';
 import { ResearchMethodQuestionarySection } from '@/shared/ui/templates/questionary-section';

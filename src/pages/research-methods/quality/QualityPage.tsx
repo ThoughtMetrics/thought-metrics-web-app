@@ -1,5 +1,5 @@
 import { ResearchMethodActionSection } from '@/shared/ui/templates/action-section';
-import { researchMethods } from '../../research-methods.constant';
+import { researchMethods } from '../research-methods.constant';
 import { ProductResearchSection } from '@/shared/ui/templates/service-section';
 import QualityCaseStudySection from './components/quality-case-study';
 import QualityHeroSection from './components/quality-hero-section';

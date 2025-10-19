@@ -1,5 +1,5 @@
 import HeroSection from '@/shared/ui/templates/hero-section';
-import { researchMethods } from '../../research-methods.constant';
+import { researchMethods } from '../research-methods.constant';
 import { CustomerResearchSection } from '@/shared/ui/templates/service-section';
 import AboutUsSection from './components/about-us';
 import BlogOrganism from '@/shared/ui/organisms/blog-organism';

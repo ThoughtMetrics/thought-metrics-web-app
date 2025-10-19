@@ -1,5 +1,5 @@
 import HeroSection from '@/shared/ui/templates/hero-section';
-import { researchMethods } from '../../research-methods.constant';
+import { researchMethods } from '../research-methods.constant';
 import OurPanelSection from '@/shared/components/our-panel-section';
 import { ResearchMethodActionSection } from '@/shared/ui/templates/action-section';
 import SurveyServices from './components/surveys-services';
