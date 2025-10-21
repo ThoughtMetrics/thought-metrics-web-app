@@ -6,7 +6,7 @@ const ProductResearchFeatureSection: React.FC<any> = ({
   featureClassName,
 }: any) => {
   return (
-    <section className="common-component w-full h-full relative brand-ad-component text-black">
+    <section className="common-component relative brand-ad-component text-black">
       <div
         className={cn(
           'common-container relative px-6 py-8 md:px-24 md:py-24 !max-w-[1336px] flex-col gap-12 z-10',

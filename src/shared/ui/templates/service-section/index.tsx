@@ -3,11 +3,12 @@ import ServiceCard from '../../molecules/service-card';
 
 const IndustryServiceSection: React.FC<any> = ({ serviceSection }: any) => {
   return (
-    <section className="common-component w-full h-full relative bg-white ">
+    <section className="common-component relative bg-white ">
       <div className="common-container px-6 py-10 md:px-24 md:py-28 !max-w-[1336px]">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           {serviceSection.map((service: any, index: number) => (
             <ServiceCard
+              key={index + service.title}
               service={service}
               index={index}
               className="px-4 py-6 md:px-6 md:py-15 gap-4 md:gap-8"
@@ -22,7 +23,7 @@ const IndustryServiceSection: React.FC<any> = ({ serviceSection }: any) => {
 
 const ResearchServiceSection: React.FC<any> = ({ serviceSection }: any) => {
   return (
-    <section className="common-component w-full h-full relative bg-white text-black">
+    <section className="common-component relative bg-white text-black">
       <div className="common-container px-6 py-10 md:px-24 md:py-16 !max-w-[1336px] flex-col gap-6">
         {serviceSection.title && (
           <h2 className="text-[1.1rem] md:text-3xl font-semibold leading-[1.25] tracking-normal">
@@ -46,7 +47,7 @@ const ResearchServiceSection: React.FC<any> = ({ serviceSection }: any) => {
 
 const MarketOpportunitySection: React.FC<any> = ({ serviceSection }: any) => {
   return (
-    <section className="common-component w-full h-full relative bg-white text-black">
+    <section className="common-component relative bg-white text-black">
       <div className="common-container px-6 py-10 md:px-24 md:py-16 !max-w-[1336px] flex-col gap-6">
         {serviceSection.title && (
           <h2 className="text-[1.1rem] md:text-3xl font-semibold leading-[1.25] tracking-normal">
@@ -112,7 +113,7 @@ const ProductResearchSection: React.FC<any> = ({
   contentClassName,
 }: any) => {
   return (
-    <section className="common-component w-full h-full relative bg-white text-black">
+    <section className="common-component relative bg-white text-black">
       <div className="common-container px-6 py-10 md:px-24 md:py-16 !max-w-[1336px] flex-col gap-18">
         {serviceSection.head ||
           (serviceSection.description && (
@@ -155,7 +156,7 @@ const ProductResearchSection: React.FC<any> = ({
 
 const CustomerResearchSection: React.FC<any> = ({ serviceSection }: any) => {
   return (
-    <section className="common-component w-full h-full relative bg-white text-black">
+    <section className="common-component relative bg-white text-black">
       <div className="common-container px-6 py-10 md:px-24 md:py-16 !max-w-[1336px] flex-col gap-6">
         {serviceSection.title && (
           <h2 className="text-[1.1rem] md:text-3xl font-semibold leading-[1.25] tracking-normal">

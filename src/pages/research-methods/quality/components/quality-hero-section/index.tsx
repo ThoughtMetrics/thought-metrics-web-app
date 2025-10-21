@@ -8,7 +8,7 @@ const QualityHeroSection: React.FC<any> = ({
   titleClassName,
 }: any) => {
   return (
-    <section className="common-component w-full h-full relative quality-hero-component">
+    <section className="common-component relative quality-hero-component">
       <div className="absolute top-0 w-full h-full flex justify-end pt-14 md:pt-6">
         <div className="w-[12rem] h-[14rem] md:w-fit md:h-fit">
           <heroSection.illustrationComponent className="w-full h-full" />

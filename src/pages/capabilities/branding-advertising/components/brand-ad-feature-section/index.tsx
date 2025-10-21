@@ -8,7 +8,7 @@ const BrandAdFeatureSection: React.FC<any> = ({
   cardClassName,
 }: any) => {
   return (
-    <section className="common-component w-full h-full relative bg-primary text-black brand-ad-component">
+    <section className="common-component relative bg-primary text-black brand-ad-component">
       <div className="hidden md:flex absolute xl:w-[10rem] xxl:w-[11rem] wide:w-[13rem] h-fit justify-start items-center md:p-0 z-1 left-0 top-1/2 transform -translate-y-1/2">
         <IllustrationSquares1 className="h-full w-full stroke-2 md:stroke-1 stroke-primary" />
       </div>

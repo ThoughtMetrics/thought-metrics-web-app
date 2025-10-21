@@ -1,7 +1,6 @@
 ---
 import { industries } from '../industries.constant';
-import IndustryTemplatePage from '../template';
-import PresentationLayout from '@layouts/PresentationLayout.astro';
+import IndustryTemplate from '../template/IndustryTemplate.astro';
 
 const seoContent = {
   title: 'Healthcare - Thought Metrics',
@@ -9,9 +8,8 @@ const seoContent = {
 };
 ---
 
-<PresentationLayout
+<IndustryTemplate
   title={seoContent.title}
   description={seoContent.description}
->
-  <IndustryTemplatePage client:load industry={industries.healthcare} />
-</PresentationLayout>
+  industry={industries.healthcare}
+/>

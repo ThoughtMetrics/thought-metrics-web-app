@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { footerData } from "./footer.constant";
-import { LogoWhite } from "@/assets";
-import { auth } from "@/core/configs/firebase-config";
+import React, { useEffect, useState } from 'react';
+import { footerData } from './footer.constant';
+import { LogoWhite } from '@/assets';
+import { auth } from '@/core/configs/firebase-config';
 
 const Footer: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -15,17 +15,17 @@ const Footer: React.FC = () => {
   }, []);
 
   const scrollToTop = () => {
-    const rootElement = document.getElementById("root");
+    const rootElement = document.getElementById('root');
 
     if (rootElement) {
       rootElement.scrollTo({
         top: 0,
-        behavior: "smooth",
+        behavior: 'smooth',
       });
     } else {
       window.scrollTo({
         top: 0,
-        behavior: "smooth",
+        behavior: 'smooth',
       });
     }
   };
@@ -46,12 +46,13 @@ const Footer: React.FC = () => {
                   rel="noopener noreferrer"
                   key={social.name}
                 >
-                  <img
+                  <social.icon className="w-10 wide:w-12"/>
+                  {/* <img
                     key={social.name}
                     src={social.icon}
                     alt={social.name}
                     className="w-10 wide:w-12"
-                  />
+                  /> */}
                 </a>
               ))}
             </div>
@@ -62,10 +63,10 @@ const Footer: React.FC = () => {
               <ul className="list-none p-0 m-0 flex flex-col gap-1 xl:gap-1 xxl:gap-1.5 wide:gap-2">
                 {section.links.map((link, index) => {
                   let routePath =
-                    isAuthenticated && link.label == "Join Our Panel"
+                    isAuthenticated && link.label == 'Join Our Panel'
                       ? link.signedInPath
                       : link.path;
-                  routePath = routePath ?? "#";
+                  routePath = routePath ?? '#';
                   return (
                     <li key={link.label}>
                       <a
@@ -73,7 +74,7 @@ const Footer: React.FC = () => {
                         href={routePath}
                         className="text-sm md:text-base xxl:text-xl hover:underline cursor-pointer"
                       >
-                        {isAuthenticated && link.label == "Join Our Panel"
+                        {isAuthenticated && link.label == 'Join Our Panel'
                           ? link.signedInLabel
                           : link.label}
                       </a>
@@ -96,11 +97,7 @@ const Footer: React.FC = () => {
             onClick={scrollToTop}
             aria-label="Back to top"
           >
-            <img
-              src={footerData.backToTopIcon}
-              alt="Back to top"
-              className="w-6 wide:w-10 mb-1.5 md:mb-1 brightness-1 invert"
-            />
+            <footerData.backToTopIcon className="w-6 wide:w-10 mb-1.5 md:mb-1 brightness-1 invert" />
           </button>
         </div>
         {/* <div className="py-3 px-6 md:px-28 xxl:px-60 wide:px-90">

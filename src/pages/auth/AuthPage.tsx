@@ -302,7 +302,7 @@ const AuthPage: React.FC = () => {
           </nav>
         </header>
         <div className="relative md:h-[calc(100vh-3.5rem)] w-full">
-          <div className="lg:block md:absolute right-0 w-[full%] md:w-[50%] h-full bg-[url('publicimages/login_background_image.png')] bg-cover bg-center bg-no-repeat -z-1 text-black px-6 py-10 md:px-18 md:py-16" />
+          <div className="lg:block md:absolute right-0 w-[full%] md:w-[50%] h-full bg-[url('src/assets/images/login_background_image.png')] bg-cover bg-center bg-no-repeat -z-1 text-black px-6 py-10 md:px-18 md:py-16" />
           <div className="common-container h-full !grid grid-cols-1 md:grid-cols-[50%_50%] inset-ring-custom-grey-1 inset-ring-1">
             <div className="bg-white shadow-sm border border-gray-200 rounded-lg px-8 py-10 wide:py-28 flex flex-col items-center justify-center">
               <div className="mb-8 w-full max-w-[380px]">

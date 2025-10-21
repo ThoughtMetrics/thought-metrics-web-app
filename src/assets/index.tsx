@@ -338,16 +338,22 @@ import ClipPinIcon from './icons/clip-pin.svg?react';
 import FacebookIcon from './icons/facebook.svg?react';
 import InstagramIcon from './icons/instagram.svg?react';
 import LinkedinIcon from './icons/linkedin.svg?react';
+import LinkedinFillIcon from './icons/linkedin-fill.svg?react';
 import MailIcon from './icons/mail.svg?react';
 import XIcon from './icons/x.svg?react';
+import SpaceXIcon from './icons/space-x.svg?react';
+import VimeoIcon from './icons/vimeo.svg?react';
 
 export {
   ClipPinIcon,
-  MailIcon, 
+  MailIcon,
   FacebookIcon,
   InstagramIcon,
   XIcon,
   LinkedinIcon,
+  SpaceXIcon,
+  VimeoIcon,
+  LinkedinFillIcon,
 };
 
 import RedTickIcon from './icons/red-tick.svg?react';

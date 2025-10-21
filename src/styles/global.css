@@ -24,8 +24,7 @@ body {
   overflow: hidden;
 
   color-scheme: light dark;
-  background: var(--color-surface) url('../assets/images/background_image_1.png')
-    no-repeat center;
+  background: var(--color-surface) url('../assets/images/background_image_1.png') no-repeat center;
   background-size: cover;
 
   font-synthesis: none;
@@ -57,9 +56,12 @@ body {
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus,
   input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px var(--custom-grey-5) inset !important; /* Change 'white' to your desired background color */
-    -webkit-text-fill-color: black !important; /* Change 'black' to your desired text color */
-    transition: background-color 5000s ease-in-out 0s; /* Prevents immediate color change */
+    -webkit-box-shadow: 0 0 0 30px var(--custom-grey-5) inset !important;
+    /* Change 'white' to your desired background color */
+    -webkit-text-fill-color: black !important;
+    /* Change 'black' to your desired text color */
+    transition: background-color 5000s ease-in-out 0s;
+    /* Prevents immediate color change */
   }
 }
 
@@ -84,14 +86,12 @@ body {
 }
 
 .brand-ad-component {
-  background: var(--color-surface) url('../assets/images/background_image_5.png')
-    no-repeat center;
+  background: var(--color-surface) url('../assets/images/background_image_5.png') no-repeat center;
   background-size: cover;
 }
 
 .industries-component {
-  background: var(--color-surface) url('../assets/images/background_image_4.png')
-    no-repeat center;
+  background: var(--color-surface) url('../assets/images/background_image_4.png') no-repeat center;
   background-size: cover;
 }
 
@@ -101,8 +101,7 @@ body {
 }
 
 .form-1-component {
-  background: var(--color-surface) url('../assets/images/form_image_1.png') no-repeat
-    center;
+  background: var(--color-surface) url('../assets/images/form_image_1.png') no-repeat center;
   background-size: cover;
 }
 

@@ -44,6 +44,16 @@ import {
 } from '@/assets';
 import { ROUTES } from '@/routes/routeConfig';
 
+import research_methods_quantitative_1 from "images/research_methods_quantitative_1.png"
+import illustration_quantitative_1 from "images/illustration-usecase-quantitative-research-m.png"
+import research_methods_qualitative_1 from "images/research_methods_qualitative_1.png"
+import research_methods_fieldwork_1 from "images/research_methods_fieldwork_1.png"
+import research_methods_fieldwork_2 from "images/research_methods_fieldwork_2.png"
+import research_methods_focus_group_1 from "images/research_methods_focus_group_1.png"
+import research_methods_focus_group_2 from "images/research_methods_focus_group_2.png"
+import research_methods_surveys_1 from "images/research_methods_surveys_1.png"
+import research_method_girl_1 from "images/research_method_girl_1.png"
+
 export const researchMethods = {
   quantitative_research: {
     heroSection: {
@@ -55,7 +65,7 @@ export const researchMethods = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: 'images/research_methods_quantitative_1.png',
+        img: research_methods_quantitative_1.src,
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'br',
@@ -183,7 +193,7 @@ export const researchMethods = {
       ],
       illustrationComponent: IllustrationUsecaseQuantitativeResearchIcon,
       illustrationMobile:
-        'images/illustration-usecase-quantitative-research-m.png',
+        illustration_quantitative_1.src,
     },
     questionarySection: {
       title: 'End to End Quantitative Research Service',
@@ -239,7 +249,7 @@ export const researchMethods = {
       title:
         'Make decisions backed by data. Explore our robust quantitative research solutions.',
       illustration: StackIllustration,
-      img: 'images/research_method_girl_1.png',
+      img: research_method_girl_1.src,
       actionButton: {
         label: "Let's Connect",
         path: ROUTES.CONTACT_US,
@@ -256,7 +266,7 @@ export const researchMethods = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: 'images/research_methods_qualitative_1.png',
+        img: research_methods_qualitative_1.src,
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'br',
@@ -346,7 +356,7 @@ export const researchMethods = {
       ],
       illustrationComponent: IllustrationUsecaseQualitativeResearchIcon,
       illustrationMobile:
-        'images/illustration-usecase-qualitative-research-m.png',
+        illustration_quantitative_1.src,
     },
     questionarySection: {
       title: 'End to End Qualitative Research Service',
@@ -391,7 +401,7 @@ export const researchMethods = {
       title:
         "Uncover the 'why' behind behavior. Dive deeper with our qualitative expertise.",
       illustration: StackIllustration,
-      img: 'images/research_method_girl_1.png',
+      img: research_method_girl_1.src,
       actionButton: {
         label: "Let's Connect",
         path: ROUTES.CONTACT_US,
@@ -407,7 +417,7 @@ export const researchMethods = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: 'images/research_methods_fieldwork_1.png',
+        img: research_methods_fieldwork_1.src,
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'br',
@@ -540,7 +550,7 @@ export const researchMethods = {
         'Fieldwork facility-level of support outside our facilities',
       ],
       illustration: {
-        img: 'images/research_methods_fieldwork_2.png',
+        img: research_methods_fieldwork_2.src,
         size: 'full',
         aspectRatio: 'video',
         shadowPosition: 'br',
@@ -554,7 +564,7 @@ export const researchMethods = {
       title:
         'Leave the logistics to us. We deliver seamless, end-to-end fieldwork execution.',
       illustration: StackIllustration,
-      img: 'images/research_method_girl_1.png',
+      img: research_method_girl_1.src,
       actionButton: {
         label: "Let's Connect",
         path: ROUTES.CONTACT_US,
@@ -571,7 +581,7 @@ export const researchMethods = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: 'images/research_methods_focus_group_1.png',
+        img: research_methods_focus_group_1.src,
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'br',
@@ -713,7 +723,7 @@ export const researchMethods = {
         },
       ],
       illustration: {
-        img: 'images/research_methods_focus_group_2.png',
+        img: research_methods_focus_group_2.src,
         size: 'full',
         aspectRatio: 'portrait',
         shadowPosition: 'br',
@@ -727,7 +737,7 @@ export const researchMethods = {
       title:
         'Get real insights, face-to-face. Run powerful focus groups with the right participants.',
       illustration: StackIllustration,
-      img: 'images/research_method_girl_1.png',
+      img: research_method_girl_1.src,
       actionButton: {
         label: "Let's Connect",
         path: ROUTES.CONTACT_US,
@@ -744,7 +754,7 @@ export const researchMethods = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: 'images/research_methods_surveys_1.png',
+        img: research_methods_surveys_1.src,
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'br',
@@ -906,7 +916,7 @@ export const researchMethods = {
     actionSection: {
       title: 'Discover insights that drive smarter decisions.',
       illustration: StackIllustration,
-      img: 'images/research_method_girl_1.png',
+      img: research_method_girl_1.src,
       actionButton: {
         label: "Let's Connect",
         path: ROUTES.CONTACT_US,
@@ -1066,7 +1076,7 @@ export const researchMethods = {
       title:
         'Trust in every step. Our commitment to quality and security keeps your data safe.',
       illustration: StackIllustration,
-      img: 'images/research_method_girl_1.png',
+      img: research_method_girl_1.src,
       actionButton: {
         label: "Let's Connect",
         path: ROUTES.CONTACT_US,

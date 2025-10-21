@@ -134,7 +134,7 @@ const ReportDownloadPage: React.FC = () => {
         </nav>
       </header>
       <div className="relative md:h-[calc(100vh-3.5rem)] w-full">
-        <div className="lg:block md:absolute left-0 w-[full%] md:w-[50%] h-full bg-[url('images/background_image_5.png')] bg-cover bg-center bg-no-repeat -z-1 text-black px-6 py-10 md:px-18 md:py-16">
+        <div className="lg:block md:absolute left-0 w-[full%] md:w-[50%] h-full bg-[url('src/assets/images/background_image_5.png')] bg-cover bg-center bg-no-repeat -z-1 text-black px-6 py-10 md:px-18 md:py-16">
           <p className="flex flex-col">
             <span className="text-xl font-medium">
               Use of AI in User Experience Research

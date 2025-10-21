@@ -15,6 +15,18 @@ export interface IndustryTabData {
   path: string;
 }
 
+import illustrationstore from 'icons/illustration-store.svg';
+import illustrationretailer from 'icons/illustration-retailer.svg';
+import illustrationfinancials from 'icons/illustration-financials.svg';
+import illustrationinvestors from 'icons/illustration-investors.svg';
+import illustrationmedia from 'icons/illustration-media.svg';
+import illustrationtech from 'icons/illustration-tech.svg';
+import illustrationautomobile from 'icons/illustration-automobile.svg';
+import illustrationadvertising from 'icons/illustration-advertising.svg';
+import illustrationhr from 'icons/illustration-hr.svg';
+import illustrationeducation from 'icons/illustration-education.svg';
+import illustrationparma from 'icons/illustration-parma.svg';
+
 export const industryData = {
   mainTitle: 'Designed to meet your unique needs.',
   industries: [
@@ -30,7 +42,7 @@ export const industryData = {
         'Better understand how customers make their decisions.',
         'Gain feedback at every phase of product development',
       ],
-      image: 'src/assets/icons/illustration-store.svg',
+      image: illustrationstore.src,
       imageAlt: 'FMCG retail store aisle',
       tabNumber: '01',
       path: ROUTES.INDUSTRY_FMCG,
@@ -47,7 +59,7 @@ export const industryData = {
         'Optimize in-store and online experiences based on real insights.',
         'Test pricing, promotions, and layouts quickly to boost conversions.',
       ],
-      image: 'src/assets/icons/illustration-retailer.svg',
+      image: illustrationretailer.src,
       imageAlt: 'Retail store interior',
       tabNumber: '02',
       shortTitle: 'Retail',
@@ -65,7 +77,7 @@ export const industryData = {
         'Segment your audience to tailor services that truly resonate.',
         'Refine messaging and product offerings to build long-term trust.',
       ],
-      image: 'src/assets/icons/illustration-financials.svg',
+      image: illustrationfinancials.src,
       imageAlt: 'Person making payment using credit card',
       tabNumber: '03',
       path: ROUTES.INDUSTRY_FINANCE,
@@ -82,7 +94,7 @@ export const industryData = {
         'Gauge brand traction and customer sentiment with real-time insights.',
         'Back your thesis with evidence, not just instinct.',
       ],
-      image: 'src/assets/icons/illustration-investors.svg',
+      image: illustrationinvestors.src,
       imageAlt: 'Group of people analyzing business data',
       tabNumber: '04',
       path: ROUTES.INDUSTRY_INVESTOR,
@@ -98,7 +110,7 @@ export const industryData = {
         'Test content, characters, and story arcs before the launch.',
         'Track media consumption shifts and stay ahead of trends.',
       ],
-      image: 'src/assets/icons/illustration-media.svg',
+      image: illustrationmedia.src,
       imageAlt: 'Media professional recording video with camera',
       tabNumber: '05',
       path: ROUTES.INDUSTRY_INTERNET,
@@ -115,7 +127,7 @@ export const industryData = {
         'Uncover usability gaps through qualitative testing.',
         'Optimize UX and messaging for clarity, trust, and adoption.',
       ],
-      image: 'src/assets/icons/illustration-tech.svg',
+      image: illustrationtech.src,
       imageAlt: 'Person reviewing code on a computer screen',
       tabNumber: '06',
       path: ROUTES.INDUSTRY_TECHNOLOGY,
@@ -132,7 +144,7 @@ export const industryData = {
         'Test features, designs, and positioning for different segments.',
         'Navigate category shifts and competitive dynamics with confidence.',
       ],
-      image: 'src/assets/icons/illustration-automobile.svg',
+      image: illustrationautomobile.src,
       imageAlt: 'Close-up of sports car wheel',
       tabNumber: '07',
       path: ROUTES.INDUSTRY_AUTOMOTIVE,
@@ -149,7 +161,7 @@ export const industryData = {
         'Track brand recall, perception, and effectiveness over time.',
         'Measure emotional and cognitive response for deeper creative impact.',
       ],
-      image: 'src/assets/icons/illustration-advertising.svg',
+      image: illustrationadvertising.src,
       imageAlt: 'Crowded Times Square with advertising billboards',
       tabNumber: '08',
       shortTitle: 'Advertising',
@@ -167,7 +179,7 @@ export const industryData = {
         'Test new HR initiatives before rollout.',
         'Benchmark satisfaction and guide culture-building efforts.',
       ],
-      image: 'src/assets/icons/illustration-hr.svg',
+      image: illustrationhr.src,
       imageAlt: 'Corporate employees in HR interview discussion',
       tabNumber: '09',
       path: ROUTES.INDUSTRY_HR,
@@ -184,7 +196,7 @@ export const industryData = {
         'Test curricula, content, and platforms for effectiveness.',
         'Track engagement and feedback to continuously improve learning delivery.',
       ],
-      image: 'src/assets/icons/illustration-education.svg',
+      image: illustrationeducation.src,
       imageAlt: 'Student learning in a classroom environment',
       tabNumber: '10',
       path: ROUTES.INDUSTRY_EDUCATION,
@@ -201,7 +213,7 @@ export const industryData = {
         'Healthcare professional insights and needs assessment.',
         'Treatment adherence and outcome studies.',
       ],
-      image: 'src/assets/icons/illustration-parma.svg',
+      image: illustrationparma.src,
       imageAlt: 'Healthcare consultation',
       tabNumber: '11',
       shortTitle: 'Healthcare',

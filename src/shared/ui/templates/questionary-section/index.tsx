@@ -10,7 +10,7 @@ const QuestionarySection: React.FC<any> = ({
   imgClassName,
 }: any) => {
   return (
-    <section className="common-component w-full h-full relative bg-primary-lighter text-black">
+    <section className="common-component relative bg-primary-lighter text-black">
       <div
         className={cn(
           'common-container px-6 py-8 md:px-24 md:py-24 !max-w-[1336px] !grid grid-cols-1 md:grid-cols-2',
@@ -57,7 +57,7 @@ const ResearchMethodQuestionarySection: React.FC<any> = ({
   illustrationClassName
 }: any) => {
   return (
-    <section className="common-component w-full h-full relative bg-primary-lighter text-black">
+    <section className="common-component relative bg-primary-lighter text-black">
       <div
         className={cn(
           'common-container px-6 py-8 md:px-24 md:py-24 !max-w-[1336px] !grid grid-cols-1 md:grid-cols-2 items-center',

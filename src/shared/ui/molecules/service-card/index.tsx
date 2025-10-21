@@ -26,16 +26,12 @@ const ServiceCard: React.FC<any> = ({
       )}
     >
       {service.iconOptions && (
-        <CustomBoxIcon
-          icon={service.iconOptions.icon}
-          isActive={service.iconOptions.isActive}
-          isBorder={service.iconOptions.isBorder}
-          bgColor={service.iconOptions.bgColor}
-          className={iconClassName}
-        />
+        <CustomBoxIcon iconOptions={service.iconOptions} />
       )}
       <div className={cn('flex flex-col gap-1 w-full', contentClassName)}>
-        <span className="font-semibold wide:text-lg w-fit">{service.title}</span>
+        <span className="font-semibold wide:text-lg w-fit">
+          {service.title}
+        </span>
         {service.description && (
           <p className="wide:text-lg leading-5">{service.description}</p>
         )}

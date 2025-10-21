@@ -59,7 +59,7 @@ export const landing = {
         ],
       },
       illustration: {
-        img: 'images/landing_page_3.png',
+        img: 'src/assets/images/landing_page_3.png',
         size: 'full',
         aspectRatio: 'portrait',
         shadowPosition: 'br',
@@ -99,7 +99,7 @@ export const landing = {
     blogSection: { title: 'Learn More About Participant Experience' },
     aboutUsSection: {
       illustration: {
-        img: 'images/landing_page_7.png',
+        img: 'src/assets/images/landing_page_7.png',
         size: 'full',
         aspectRatio: 'auto',
         shadowPosition: 'tl',
@@ -238,7 +238,7 @@ export const landing = {
         ],
       },
       illustration: {
-        img: 'images/landing_page_4.png',
+        img: 'src/assets/images/landing_page_4.png',
         size: 'full',
         aspectRatio: 'portrait',
         shadowPosition: 'br',
@@ -379,7 +379,7 @@ export const landing = {
       actionButton: {
         label: 'Submit',
       },
-      img: 'images/landing_page_6.png',
+      img: 'src/assets/images/landing_page_6.png',
     },
   },
 };

@@ -1,4 +1,5 @@
 import { ROUTES } from '@/routes/routeConfig';
+import our_panel_1 from "images/our_panel_1.png";
 
 export const ourPanelConstants = {
   head: 'Our Panel',
@@ -11,7 +12,7 @@ export const ourPanelConstants = {
     path: ROUTES.OUR_PANEL,
   },
   illustration: {
-    img: 'images/our_panel_1.png',
+    img: our_panel_1.src,
     size: 'full',
     aspectRatio: 'auto',
     shadowPosition: 'br',

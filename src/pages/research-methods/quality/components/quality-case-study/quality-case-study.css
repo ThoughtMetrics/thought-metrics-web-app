@@ -1,5 +1,5 @@
 .quality-case-study-component {
-  background: var(--color-surface) url('images/background_image_3.png')
+  background: var(--color-surface) url('src/assets/images/background_image_3.png')
     no-repeat center;
   background-size: cover;
 }

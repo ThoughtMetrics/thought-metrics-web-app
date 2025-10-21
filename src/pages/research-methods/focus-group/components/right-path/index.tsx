@@ -11,7 +11,7 @@ const RightPathSection: React.FC<any> = ({
   className,
 }: any) => {
   return (
-    <section className="common-component w-full h-full relative bg-primary-lighter text-black">
+    <section className="common-component relative bg-primary-lighter text-black">
         <div className="absolute top-0 -right-8 md:right-0 transform -translate-y-1/2 z-1">
           <RedEllipseIcon className="h-[8rem] md:h-[15rem] xxl:h-[35rem]" />
         </div>

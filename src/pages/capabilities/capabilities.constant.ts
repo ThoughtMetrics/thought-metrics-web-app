@@ -39,6 +39,16 @@ import {
 } from '@/assets';
 import { ROUTES } from '@/routes/routeConfig';
 
+import capabilities_branding_advertising_1 from 'images/capabilities_branding_advertising_1.png'
+import capabilities_branding_advertising_2 from 'images/capabilities_branding_advertising_2.png'
+import capabilities_market_opportunity_1 from 'images/capabilities_market_opportunity_1.png'
+import capabilities_market_opportunity_2 from 'images/capabilities_market_opportunity_2.png'
+import capabilities_product_research_1 from 'images/capabilities_product_research_1.png'
+import capabilities_product_research_2 from 'images/capabilities_product_research_2.png'
+import capabilities_customer_research_1 from 'images/capabilities_customer_research_1.png'
+import capabilities_customer_research_2 from 'images/capabilities_customer_research_2.png'
+import capabilities_girl_1 from 'images/capabilities_girl_1.png'
+
 export const capabilities = {
   brand_advertising: {
     heroSection: {
@@ -50,7 +60,7 @@ export const capabilities = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: 'publicimages/capabilities_branding_advertising_1.png',
+        img: capabilities_branding_advertising_1.src,
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'br',
@@ -154,7 +164,7 @@ export const capabilities = {
       description:
         "Key performance indicators (KPIs) such as impressions, click-through rates, and conversion rates serve as quantitative benchmarks for assessing the reach and engagement of a campaign.<br><br>Complementing these quantitative insights are qualitative methods, including customer surveys and sentiment analysis. These methods offer a deeper understanding of the emotional impact of the campaign's messaging and how it resonates with the audience's perceptions and preferences.",
       illustration: {
-        img: 'publicimages/capabilities_branding_advertising_2.png',
+        img: capabilities_branding_advertising_2.src,
         size: 'default',
         aspectRatio: 'square',
         objectFit: 'cover',
@@ -334,7 +344,7 @@ export const capabilities = {
       ],
     },
     actionSection: {
-      img: 'images/capabilities_girl_1.png',
+      img: capabilities_girl_1.src,
       illustration: StackIllustration,
       title: 'Make every messaging count.',
       actionButton: {
@@ -353,7 +363,7 @@ export const capabilities = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: 'images/capabilities_market_opportunity_1.png',
+        img: capabilities_market_opportunity_1.src,
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'br',
@@ -423,7 +433,7 @@ export const capabilities = {
       description:
         'Competitive intelligence research makes you more competitive relative to all the factors in your environment, including: clients, distributors, technologies, macro economics, competitors, and anything else that impact your business.',
       illustration: {
-        img: 'images/capabilities_market_opportunity_2.png',
+        img: capabilities_market_opportunity_2.src,
         size: 'default',
         aspectRatio: 'square',
         objectFit: 'cover',
@@ -611,7 +621,7 @@ export const capabilities = {
       ],
     },
     actionSection: {
-      img: 'images/capabilities_girl_1.png',
+      img: capabilities_girl_1.src,
       illustration: StackIllustration,
       title: 'Stay ahead of the market.',
       actionButton: {
@@ -630,7 +640,7 @@ export const capabilities = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: 'images/capabilities_product_research_1.png',
+        img: capabilities_product_research_1.src,
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'br',
@@ -719,7 +729,7 @@ export const capabilities = {
       description:
         'Product research drives smarter decisions across product development, brand messaging, packaging, services, digital experiences, marketing campaigns, and everything that shapes customer engagement.',
       illustration: {
-        img: 'images/capabilities_product_research_2.png',
+        img: capabilities_product_research_2.src,
         aspectRatio: 'square',
         objectFit: 'cover',
         loading: 'lazy',
@@ -893,7 +903,7 @@ export const capabilities = {
       ],
     },
     actionSection: {
-      img: 'images/capabilities_girl_1.png',
+      img: capabilities_girl_1.src,
       illustration: StackIllustration,
       title: "Let's build smarter products.",
       actionButton: {
@@ -912,7 +922,7 @@ export const capabilities = {
         path: ROUTES.START_YOUR_RESEARCH,
       },
       illustration: {
-        img: 'images/capabilities_customer_research_1.png',
+        img: capabilities_customer_research_1.src,
         size: 'full',
         aspectRatio: 'landscape',
         shadowPosition: 'br',
@@ -1001,7 +1011,7 @@ export const capabilities = {
       description:
         'Customer research uncovers how people discover, choose, and stay loyal — spanning journey mapping, path to purchase, persona development, usage & attitude, win/loss insights, pricing strategies, and more.',
       illustration: {
-        img: 'images/capabilities_customer_research_2.png',
+        img: capabilities_customer_research_2.src,
         size: 'default',
         aspectRatio: 'square',
         objectFit: 'cover',
@@ -1139,7 +1149,7 @@ export const capabilities = {
       ],
     },
     actionSection: {
-      img: 'images/capabilities_girl_1.png',
+      img: capabilities_girl_1.src,
       illustration: StackIllustration,
       title: 'Ready for a simpler, more successful research?',
       actionButton: {
