@@ -23,7 +23,7 @@ if (industry.heroSection?.illustration) {
 ---
 
 <PresentationLayout title={title} description={description}>
-  <HeroSection heroSection={industry.heroSection} />
+  <HeroSection heroSection={industry.heroSection} client:load/>
   <IndustryServiceSection serviceSection={industry.serviceSection} />
   <QuestionarySection questionarySection={industry.questionarySection} />
   <FeatureSection
