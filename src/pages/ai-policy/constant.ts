@@ -50,7 +50,7 @@ Thought Metrics will regularly review and refine this AI policy to reflect evolv
 <br>
 
 ## 5. Questions on Compliance?
-Contact us: [Insert your compliance email here]
+Contact us: contactus@thoughtmetrics.com
 
 <br>
 

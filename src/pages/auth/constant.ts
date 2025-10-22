@@ -138,11 +138,13 @@ export const signUpFormConstant = {
     { code: 'WI', name: 'Wisconsin' },
     { code: 'WY', name: 'Wyoming' },
   ],
+  //Bug: States drop down should be based on country drop down chosen by the user.
   countryCodes: [
     { code: '+91', country: 'India' },
     { code: '+1', country: 'USA' },
     { code: '+44', country: 'UK' },
   ],
+  //Bug: All countries should be listed here.
   defaultCountryCode: '+91',
   storeName: 'registration-form-store',
   validationMessages: {
@@ -272,7 +274,7 @@ export const signUpFormConstant = {
       {
         question: 'Once I have registered, what happens?',
         answer:
-          'Once you register, your details are stored in the Thought Metrics participant community. From there:\n• You may be contacted for projects you qualify for based on your profile.\n• Some additional screening may be required to confirm eligibility.\n• When selected, you will be provided with study details, timing, and incentive information.',
+          'Once you register, your details are stored in the Thought Metrics participant community. From there:\n• You may be contacted for projects you qualify for based on your profile\n• Some additional screening may be required to confirm eligibility\n• When selected, you will be provided with study details, timing, and incentive information',
       },
       {
         question: 'Is my information safe?',
@@ -282,7 +284,7 @@ export const signUpFormConstant = {
       {
         question: 'What are my responsibilities as a focus group participant?',
         answer:
-          'To make research meaningful and accurate, we ask all participants to:\n• Be truthful when answering questions about yourself and your habits.\n• Arrive for your appointment on time and ready to participate in the discussion.\n• Notify Thought Metrics if you must cancel, with as much advance notice as possible.\n• Enjoy it! Focus groups are fun and engaging.',
+          'To make research meaningful and accurate, we ask all participants to:\n• Be truthful when answering questions about yourself and your habits\n• Arrive for your appointment on time and ready to participate in the discussion\n• Notify Thought Metrics if you must cancel, with as much advance notice as possible\n• Enjoy it! Focus groups are fun and engaging',
       },
       {
         question: 'How do I unsubscribe?',

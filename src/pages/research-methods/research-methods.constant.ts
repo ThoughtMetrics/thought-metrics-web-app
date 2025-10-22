@@ -549,6 +549,7 @@ export const researchMethods = {
         'Specialized recruitment solutions',
         'Fieldwork facility-level of support outside our facilities',
       ],
+      //BUG: Font size of the bullet changes, it should be in line with the paragraphs
       illustration: {
         img: research_methods_fieldwork_2.src,
         size: 'full',
@@ -644,7 +645,7 @@ export const researchMethods = {
           },
           title: 'Capture Unfiltered, In-the-Moment Reactions',
           description:
-            'Real-time conversations allow participants to express thoughts naturally, leading to unexpected insights, emotional cues, and spontaneous feedback no survey can replicate',
+            'Real-time conversations allow participants to express thoughts naturally, leading to unexpected insights, emotional cues, and spontaneous feedback no survey can replicate.',
           bgColor: 'grey',
           isBorder: false,
           isActive: true,
@@ -1045,7 +1046,7 @@ export const researchMethods = {
         {
           label: 'Ethical Oversight',
           description:
-            'AI is always guided by human review. Our team ensures AI-driven outcomes are accurate, fair, and aligned with ethical standards',
+            'AI is always guided by human review. Our team ensures AI-driven outcomes are accurate, fair, and aligned with ethical standards.',
           iconOptions: {
             icon: EthicalOversightIcon,
             isActive: false,
