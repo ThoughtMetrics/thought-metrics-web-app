@@ -6,6 +6,11 @@ import {
 } from '@/assets';
 import { ROUTES } from '@/routes/routeConfig';
 
+import landing_page_3 from 'images/landing_page_3.png';
+import landing_page_7 from 'images/landing_page_7.png';
+import landing_page_4 from 'images/landing_page_4.png';
+import landing_page_6 from 'images/landing_page_6.png';
+
 export const landing = {
   respondent: {
     heroSection: {
@@ -59,7 +64,7 @@ export const landing = {
         ],
       },
       illustration: {
-        img: 'src/assets/images/landing_page_3.png',
+        img: landing_page_3.src,
         size: 'full',
         aspectRatio: 'portrait',
         shadowPosition: 'br',
@@ -99,7 +104,7 @@ export const landing = {
     blogSection: { title: 'Learn More About Participant Experience' },
     aboutUsSection: {
       illustration: {
-        img: 'src/assets/images/landing_page_7.png',
+        img: landing_page_7.src,
         size: 'full',
         aspectRatio: 'auto',
         shadowPosition: 'tl',
@@ -238,7 +243,7 @@ export const landing = {
         ],
       },
       illustration: {
-        img: 'src/assets/images/landing_page_4.png',
+        img: landing_page_4.src,
         size: 'full',
         aspectRatio: 'portrait',
         shadowPosition: 'br',
@@ -379,7 +384,7 @@ export const landing = {
       actionButton: {
         label: 'Submit',
       },
-      img: 'src/assets/images/landing_page_6.png',
+      img: landing_page_6.src,
     },
   },
 };

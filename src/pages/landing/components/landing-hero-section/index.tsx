@@ -16,7 +16,7 @@ const LandingHeroSection: React.FC<any> = ({ heroSection, faqId }) => {
     return () => unsubscribe();
   }, []);
   return (
-    <section className="common-component w-full h-full relative md:pt-0 landing_hero_section">
+    <section className="common-component relative md:pt-0 landing_hero_section">
       <div className="absolute top-0 w-full h-full bg-primary/65" />
       <div className="hidden md:flex absolute w-full h-[95%] justify-end top-1/2 transform -translate-y-1/2">
         <IllustrationSquares2 className="h-full w-auto stroke-1 stroke-primary" />

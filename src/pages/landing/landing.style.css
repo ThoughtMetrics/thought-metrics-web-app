@@ -1,17 +1,17 @@
 .landing_hero_section {
-  background: var(--color-surface) url('src/assets/images/landing_page_1.png') center
+  background: var(--color-surface) url('images/landing_page_1.png') center
     no-repeat;
   background-size: cover;
 }
 
 .landing-join-us-section {
-  background: var(--color-surface) url('src/assets/images/landing_page_5.png') center
+  background: var(--color-surface) url('images/landing_page_5.png') center
     no-repeat;
   background-size: cover;
 }
 
 .landing-signup-section {
-  background: var(--color-surface) url('src/assets/images/landing_page_2.png') center
+  background: var(--color-surface) url('images/landing_page_2.png') center
     no-repeat;
   background-size: cover;
 }

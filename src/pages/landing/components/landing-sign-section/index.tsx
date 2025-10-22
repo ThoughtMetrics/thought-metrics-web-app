@@ -15,7 +15,7 @@ const LandingSignUpSection: React.FC<any> = ({ signUpSection }) => {
     return () => unsubscribe();
   }, []);
   return (
-    <section className="common-component w-full h-full relative md:pt-0 landing-signup-section">
+    <section className="common-component relative md:pt-0 landing-signup-section">
       <div className="absolute top-0 w-full h-full bg-primary/72" />
       <div className="z-1 common-container w-full !max-w-[var(--breakpoint-2xl)] px-6 md:px-24 py-32 relative flex-col text-center gap-12">
         <h2 className="text-4xl font-medium">{signUpSection.label}</h2>

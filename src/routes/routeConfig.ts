@@ -35,8 +35,8 @@ export const ROUTES = {
   RESEARCH_METHODS_SURVEYS: '/research-methods/surveys',
   RESEARCH_METHODS_QUALITY: '/research-methods/quality',
   /* Landing */
-  RESPONDENT_LANDING: '/respondent-landing',
-  ADVOCATE_LANDING: '/advocate-landing',
+  RESPONDENT_LANDING: '/landing/respondent-landing',
+  ADVOCATE_LANDING: '/landing/advocate-landing',
   /* Resource Route (Blog, Article, Insights, Report, etc) */
   RESOURCES: '/resources',
   ARTICLES: '/resources/articles',

@@ -28,8 +28,9 @@ interface RespondentLandingPageProps {
   blogData?: BlogData | null;
 }
 
-const RespondentLandingPage: React.FC<RespondentLandingPageProps> = ({ blogData }) => {
-
+const RespondentLandingPage: React.FC<RespondentLandingPageProps> = ({
+  blogData,
+}) => {
   return (
     <>
       <LandingHeroSection
@@ -57,7 +58,6 @@ const RespondentLandingPage: React.FC<RespondentLandingPageProps> = ({ blogData 
         questionarySection={landing.respondent.questionarySection}
       />
       <LandingSignUpSection signUpSection={landing.respondent.signUpSection} />
-      <InteractionFooter />
     </>
   );
 };

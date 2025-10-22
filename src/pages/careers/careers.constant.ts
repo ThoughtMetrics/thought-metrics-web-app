@@ -1,10 +1,11 @@
+import careers_1 from 'images/careers_1.png';
 export const careers = {
   heroSection: {
     head: 'Careers',
     description:
       'Have a zeal to contribute to the real world and create a visible impact in businesses and lives of consumers? We are transforming businesses and consumer experience everyday using technology.',
     illustration: {
-      img: 'src/assets/images/careers_1.png',
+      img: careers_1.src,
       size: 'default',
       aspectRatio: 'landscape',
       shadowPosition: 'br',

@@ -5,7 +5,7 @@ const LandingWorkingFlowSection: React.FC<any> = ({
   workingFlowSection,
 }: any) => {
   return (
-    <section className="common-component w-full h-full bg-custom-grey-1 text-black relative">
+    <section className="common-component bg-custom-grey-1 text-black relative">
       <StackIllustration className="absolute -right-26 md:-right-48 bottom-0 w-[12rem] md:w-[28rem] fill-current text-white mb-8" />
       <div className="common-container px-6 pt-14 pb-8 md:px-24 md:py-24 !max-w-[1336px] flex-col md:gap-18 justify-center">
         <h2 className="w-[50%] md:w-[20%] text-2xl xl:text-3xl xxl:text-4xl font-semibold">

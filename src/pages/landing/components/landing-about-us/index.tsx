@@ -20,7 +20,7 @@ const LandingAboutUsSection: React.FC<any> = ({
     return () => unsubscribe();
   }, []);
   return (
-    <section className="common-component w-full h-full relative text-black landing-about-us-section">
+    <section className="common-component relative text-black landing-about-us-section">
       <div
         className={cn(
           'common-container px-6 pt-14 pb-8 md:px-24 md:py-24 !max-w-[1336px] !grid grid-cols-1 md:grid-cols-[50%_50%] gap-8 items-center justify-between',

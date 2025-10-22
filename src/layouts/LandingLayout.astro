@@ -1,9 +1,13 @@
 ---
-import Layout from "@layouts/Layout.astro";
+import InteractionFooter from '@/shared/components/interaction-footer';
+import InteractionHeader from '@/shared/components/interaction-header';
+import Layout from '@layouts/Layout.astro';
 
-const { formatter } = Astro.props;
+const { title, description } = Astro.props;
 ---
 
-<Layout title={formatter.title} >
-    
+<Layout title={title} description={description.description}>
+  <InteractionHeader />
+  <slot />
+  <InteractionFooter />
 </Layout>

@@ -5,7 +5,7 @@ import { StackIllustration } from '@/assets';
 
 const LandingJoinUsSection: React.FC<any> = ({ joinUsSection }) => {
   return (
-    <section className="common-component w-full h-full relative landing-join-us-section py-18 md:py-24 !grid grid-cols-1 md:grid-cols-[55%_45%] justify-items-end">
+    <section className="common-component relative landing-join-us-section py-18 md:py-24 !grid grid-cols-1 md:grid-cols-[55%_45%] justify-items-end">
       <div className=""></div>
       <div className="top-0 w-[90%] md:w-full h-full bg-primary/84 px-8 py-18 md:px-16 md:py-24 relative rounded-l-2xl">
         <StackIllustration className="absolute right-0 bottom-0 h-fit w-[6rem] md:w-[8rem] fill-current text-white my-6 mx-4" />
