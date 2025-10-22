@@ -15,7 +15,6 @@ const MarkDownOrganism: React.FC<{ content: string; showTOC: boolean }> = ({
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-    setActiveHeading(id);
   };
 
   // Intersection Observer to track active heading

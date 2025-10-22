@@ -1,0 +1,15 @@
+---
+import { industries } from '@/core/constants/page-constants/industries-constant';
+import IndustryTemplate from './IndustryTemplate.astro';
+
+const seoContent = {
+  title: 'Healthcare - Thought Metrics',
+  description: 'Healthcare and Life Sciences Research and Insights',
+};
+---
+
+<IndustryTemplate
+  title={seoContent.title}
+  description={seoContent.description}
+  industry={industries.healthcare}
+/>

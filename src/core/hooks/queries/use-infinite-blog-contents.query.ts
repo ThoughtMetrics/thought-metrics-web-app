@@ -5,6 +5,7 @@ import type {
   ContentTypeValue,
   ContentCategoryValue,
 } from '@/core/types/content.type';
+import { ROUTES } from '@/routes/routeConfig';
 import { contentService } from '@/services/strapi-api/content.service';
 import {
   useInfiniteQuery,
@@ -71,7 +72,7 @@ export const useInfiniteBlogContentsQuery = (
         category: content.category,
         label: content.label,
         description: content.description,
-        link: `/resources/${content.slug}`,
+        link: `${ROUTES.RESOURCES}/${content.slug}`,
         src:
           content.img?.formats?.medium?.url ??
           content.img?.formats?.small?.url ??

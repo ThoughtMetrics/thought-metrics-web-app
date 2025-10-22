@@ -2,54 +2,53 @@
 /// <reference types="vite/client" />
 
 // SVG imports with vite-plugin-svgr
-declare module "*.svg" {
+declare module '*.svg' {
   const content: string;
   export default content;
 }
 
-declare module "*.svg?react" {
-  import * as React from "react";
+declare module '*.svg?react' {
+  import * as React from 'react';
   const SVGComponent: React.FunctionComponent<
     React.SVGProps<SVGSVGElement> & { title?: string }
   >;
   export default SVGComponent;
 }
 
-declare module "*.svg?url" {
+declare module '*.svg?url' {
   const content: string;
   export default content;
 }
 
 // Image imports
-declare module "*.png" {
+declare module '*.png' {
   const content: string;
   export default content;
 }
 
-declare module "*.jpg" {
+declare module '*.jpg' {
   const content: string;
   export default content;
 }
 
-declare module "*.jpeg" {
+declare module '*.jpeg' {
   const content: string;
   export default content;
 }
 
-declare module "*.gif" {
+declare module '*.gif' {
   const content: string;
   export default content;
 }
 
-declare module "*.webp" {
+declare module '*.webp' {
   const content: string;
   export default content;
 }
 
 interface Window {
   __APP_CONFIG__?: {
-    // Only PUBLIC_ prefixed variables are exposed to the browser
-    // STRAPI_API_URL is server-only and NOT included here for security
+    PUBLIC_STRAPI_API_URL?: string;
     PUBLIC_BASE_URL?: string;
     PUBLIC_BASE_API_VERSION?: string;
     PUBLIC_SITE_URL?: string;
@@ -63,7 +62,7 @@ interface Window {
 }
 
 interface ImportMetaEnv {
-  STRAPI_API_URL: string;
+  PUBLIC_STRAPI_API_URL: string;
   PUBLIC_BASE_URL: string;
   PUBLIC_BASE_API_VERSION: string;
   PUBLIC_SITE_URL: string;

@@ -1,11 +1,11 @@
 ---
 import PresentationLayout from '@/layouts/PresentationLayout.astro';
-import ArticlesPage from './pages/articles/ArticlesPage';
+import ContentHeroSection from '@/shared/screens/resources/components/articles-hero-section';
+import ContentBentoGrid from '@/shared/screens/resources/components/content-bento-grid';
 
 const seoContent = {
-  title: 'Resources - Thought Metrics',
-  description:
-    'Explore our research insights, case studies, and industry reports',
+  title: 'Articles & Insights - Thought Metrics',
+  description: 'Data-Driven Research, Centralized Intelligence',
 };
 ---
 
@@ -13,5 +13,11 @@ const seoContent = {
   title={seoContent.title}
   description={seoContent.description}
 >
-  <ArticlesPage />
+  <ContentHeroSection
+    heroSection={{
+      title: 'ThoughtMetrics Insights',
+      description: 'Data-Driven Research, Centralized Intelligence',
+    }}
+  />
+  <ContentBentoGrid client:only="react" />
 </PresentationLayout>

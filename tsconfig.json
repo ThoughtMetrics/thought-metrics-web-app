@@ -40,9 +40,15 @@
       "@components/*": [
         "./src/shared/components/*"
       ],
+      "@screens/*": [
+        "./src/shared/screens/*"
+      ],
+      "@constants/*": [
+        "./src/core/constants/*"
+      ],
       "@layouts/*": [
         "./src/layouts/*"
-      ]
+      ],
     }
   },
   "include": [

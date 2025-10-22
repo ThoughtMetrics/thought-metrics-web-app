@@ -1,0 +1,15 @@
+---
+import PolicyHeroSection from '@/shared/ui/templates/policy-hero-section';
+import { businessConductEthicsContent } from '@/core/constants/page-constants/business-conduct-ethics-constant';
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+
+const { title = 'Business Conduct & Ethics', description = 'Thought Metrics - Business Conduct & Ethics' } = Astro.props;
+---
+
+<PresentationLayout title={title} description={description}>
+  <PolicyHeroSection
+    client:load
+    content={businessConductEthicsContent.content}
+    head={businessConductEthicsContent.head}
+  />
+</PresentationLayout>

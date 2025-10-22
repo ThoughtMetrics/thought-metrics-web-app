@@ -24,12 +24,11 @@ export {
 /* Home Page */
 
 //Solutions Insights SVGs
-import PersonWithPhone from './icons/illustration-model.svg?react';
 import PeopleIcon from './icons/people.svg?react';
 import ResearchIcon from './icons/research.svg?react';
 import StatisticsIcon from './icons/statistics.svg?react';
 
-export { PersonWithPhone, PeopleIcon, ResearchIcon, StatisticsIcon };
+export { PeopleIcon, ResearchIcon, StatisticsIcon };
 
 //B2B Services SVGs
 import IllustrationSlope from './icons/illustration-slope.svg?react';
@@ -232,13 +231,7 @@ import ArrowIcon from './icons/→.svg?react';
 
 /* Illustrations */
 import GreyEllipseIcon from './icons/grey-ellipse.svg?react';
-import IllustrationDataSecurityIcon from './icons/illustration-data-security.svg?react';
-import IllustrationLoginIcon from './icons/illustration-login.svg?react';
 import IllustrationParticipantQualityIcon from './icons/illustration-participant-quality.svg?react';
-import IllustrationRightRespondentsIcon from './icons/illustration-right-respondents.svg?react';
-import IllustrationRightRespondentsMIcon from './icons/illustration-right-respondents-m.svg?react';
-import IllustrationUsecaseQualitativeResearchIcon from './icons/illustration-usecase-qualitative-research.svg?react';
-import IllustrationUsecaseQuantitativeResearchIcon from './icons/illustration-usecase-quantitative-research.svg?react';
 import RedEllipseIcon from './icons/red-ellipse.svg?react';
 
 export {
@@ -279,13 +272,7 @@ export {
   UnderstandConsumerHabitsIcon,
   GreyEllipseIcon,
   ArrowIcon,
-  IllustrationDataSecurityIcon,
-  IllustrationLoginIcon,
   IllustrationParticipantQualityIcon,
-  IllustrationRightRespondentsIcon,
-  IllustrationRightRespondentsMIcon,
-  IllustrationUsecaseQualitativeResearchIcon,
-  IllustrationUsecaseQuantitativeResearchIcon,
   RedEllipseIcon,
 };
 

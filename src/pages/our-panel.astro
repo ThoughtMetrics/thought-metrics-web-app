@@ -1,0 +1,16 @@
+---
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+import OurPanelComponent from '@/shared/screens/our-panel/OurPanelComponent';
+
+const seoContent = {
+  title: 'Our Panel - Thought Metrics',
+  description: 'Discover our diverse and high-quality research panel',
+};
+---
+
+<PresentationLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <OurPanelComponent />
+</PresentationLayout>

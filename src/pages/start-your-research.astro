@@ -1,0 +1,16 @@
+---
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+import ResearchForm from '@/shared/screens/start-your-research/ResearchForm';
+
+const seoContent = {
+  title: 'Start Your Research - Thought Metrics',
+  description: 'Begin your research journey with our expert team',
+};
+---
+
+<PresentationLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <ResearchForm />
+</PresentationLayout>

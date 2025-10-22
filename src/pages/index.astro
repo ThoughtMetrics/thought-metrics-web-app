@@ -1,19 +1,17 @@
 ---
 // src/pages/index.astro
-import PresentationLayout from "@layouts/PresentationLayout.astro";
-import {
-  B2BServices,
-  Blogs,
-  HeroCarousel,
-  Industries,
-  SolutionInsights,
-} from "./home/components";
-import { contentService } from "@/services/strapi-api/content.service";
+import PresentationLayout from '@layouts/PresentationLayout.astro';
+import { contentService } from '@/services/strapi-api/content.service';
+import B2BServices from '@screens/home/components/b2b-services';
+import HeroCarousel from '@screens/home/components/hero-carousel';
+import SolutionInsights from '@screens/home/components/solutions-insights';
+import Industries from '@screens/home/components/industries';
+import Blogs from '@screens/home/components/blogs';
 
 const seoContent = {
-  title: "Home - Thought Metrics",
-  description: "Welcome to our platform",
-  keywords: "research, analytics, insights",
+  title: 'Home - Thought Metrics',
+  description: 'Welcome to our platform',
+  keywords: 'research, analytics, insights',
 };
 
 // Fetch blog data on the server for SSR
@@ -39,8 +37,8 @@ try {
   keywords={seoContent.keywords}
 >
   <HeroCarousel client:load />
-  <SolutionInsights client:load/>
+  <SolutionInsights client:load />
   <B2BServices />
-  <Industries client:load/>
+  <Industries client:load />
   <Blogs blogData={blogData} client:load />
 </PresentationLayout>

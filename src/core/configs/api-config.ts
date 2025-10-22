@@ -36,7 +36,7 @@ export const getAPIConfig = (): {
 } => {
   return {
     // SERVER-ONLY: STRAPI_API_URL is never exposed to the browser
-    strapiURL: getServerEnv("STRAPI_API_URL") || "",
+    strapiURL: getServerEnv("PUBLIC_STRAPI_API_URL") || "",
 
     // PUBLIC: These are available on both server and client
     baseURL: getPublicEnv("PUBLIC_BASE_URL") || "",

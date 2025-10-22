@@ -1,0 +1,16 @@
+---
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+import SurveyPageSection from '@screens/survey-page/SurveyPageComponent';
+
+const seoContent = {
+  title: 'My Surveys - Thought Metrics',
+  description: 'View and complete your surveys',
+};
+---
+
+<PresentationLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <SurveyPageSection />
+</PresentationLayout>

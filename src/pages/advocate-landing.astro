@@ -1,0 +1,16 @@
+---
+import LandingLayout from '@/layouts/LandingLayout.astro';
+import AdvocateLandingPage from '@/shared/screens/landing/advocate-landing/AdvocateLandingPage';
+
+const seoContent = {
+  title: 'Partner With Us - Thought Metrics',
+  description: 'Become an advocate partner with Thought Metrics',
+};
+---
+
+<LandingLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <AdvocateLandingPage client:load />
+</LandingLayout>
