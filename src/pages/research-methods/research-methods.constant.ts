@@ -44,15 +44,17 @@ import {
 } from '@/assets';
 import { ROUTES } from '@/routes/routeConfig';
 
-import research_methods_quantitative_1 from "images/research_methods_quantitative_1.png"
-import illustration_quantitative_1 from "images/illustration-usecase-quantitative-research-m.png"
-import research_methods_qualitative_1 from "images/research_methods_qualitative_1.png"
-import research_methods_fieldwork_1 from "images/research_methods_fieldwork_1.png"
-import research_methods_fieldwork_2 from "images/research_methods_fieldwork_2.png"
-import research_methods_focus_group_1 from "images/research_methods_focus_group_1.png"
-import research_methods_focus_group_2 from "images/research_methods_focus_group_2.png"
-import research_methods_surveys_1 from "images/research_methods_surveys_1.png"
-import research_method_girl_1 from "images/research_method_girl_1.png"
+import research_methods_quantitative_1 from 'images/research_methods_quantitative_1.png';
+import illustration_quantitative_1 from 'images/illustration-usecase-quantitative-research-m.png';
+import research_methods_qualitative_1 from 'images/research_methods_qualitative_1.png';
+import research_methods_fieldwork_1 from 'images/research_methods_fieldwork_1.png';
+import research_methods_fieldwork_2 from 'images/research_methods_fieldwork_2.png';
+import research_methods_focus_group_1 from 'images/research_methods_focus_group_1.png';
+import research_methods_focus_group_2 from 'images/research_methods_focus_group_2.png';
+import research_methods_surveys_1 from 'images/research_methods_surveys_1.png';
+import research_method_girl_1 from 'images/research_method_girl_1.png';
+import research_methods_quality_1 from 'images/research_methods_quality_1.png';
+export const research_methods_quality_src = research_methods_quality_1.src;
 
 export const researchMethods = {
   quantitative_research: {
@@ -192,8 +194,7 @@ export const researchMethods = {
         ],
       ],
       illustrationComponent: IllustrationUsecaseQuantitativeResearchIcon,
-      illustrationMobile:
-        illustration_quantitative_1.src,
+      illustrationMobile: illustration_quantitative_1.src,
     },
     questionarySection: {
       title: 'End to End Quantitative Research Service',
@@ -355,8 +356,7 @@ export const researchMethods = {
         ],
       ],
       illustrationComponent: IllustrationUsecaseQualitativeResearchIcon,
-      illustrationMobile:
-        illustration_quantitative_1.src,
+      illustrationMobile: illustration_quantitative_1.src,
     },
     questionarySection: {
       title: 'End to End Qualitative Research Service',

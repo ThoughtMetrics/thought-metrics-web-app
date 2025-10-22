@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { footerData } from './footer.constant';
 import { LogoWhite } from '@/assets';
 import { auth } from '@/core/configs/firebase-config';
+import { ROUTES } from '@/routes/routeConfig';
 
 const Footer: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -37,7 +38,9 @@ const Footer: React.FC = () => {
         <div className="w-full h-full md:flex justify-between grid grid-cols-2 gap-2 md:text-base xxl:text-xl pb-4">
           {/* Brand Section */}
           <div className="col-span-2 w-45 wide:w-48 gap-1 xxl:gap-2 wide:gap-3 flex flex-col md:pb-auto mb-4 md:mb-0 md:mt-4 mr-6">
-            <LogoWhite className="w-full" />
+            <a href={ROUTES.HOME}>
+              <LogoWhite className="w-full" />
+            </a>
             <div className="flex justify-between">
               {footerData.socialLinks.map((social) => (
                 <a
@@ -46,7 +49,7 @@ const Footer: React.FC = () => {
                   rel="noopener noreferrer"
                   key={social.name}
                 >
-                  <social.icon className="w-10 wide:w-12"/>
+                  <social.icon className="w-10 wide:w-12" />
                   {/* <img
                     key={social.name}
                     src={social.icon}

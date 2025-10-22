@@ -1,19 +1,14 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import AppWrapper from '@/shared/components/AppWrapper';
 import ReportDownloadPage from './ReportDownloadPage';
 
 const seoContent = {
   title: 'Download Report - Thought Metrics',
-  description: 'Download our latest research report on AI in User Experience Research',
+  description:
+    'Download our latest research report on AI in User Experience Research',
 };
 ---
 
-<Layout
-  title={seoContent.title}
-  description={seoContent.description}
->
-  <AppWrapper client:only="react">
-    <ReportDownloadPage />
-  </AppWrapper>
+<Layout title={seoContent.title} description={seoContent.description}>
+  <ReportDownloadPage />
 </Layout>

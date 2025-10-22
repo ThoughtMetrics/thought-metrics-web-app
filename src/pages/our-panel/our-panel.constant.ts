@@ -13,6 +13,9 @@ import {
 } from '@/assets';
 import { ROUTES } from '@/routes/routeConfig';
 
+import our_panel_2 from 'images/our_panel_2.png';
+import our_panel_3 from 'images/our_panel_3.png';
+
 export const ourPanel = {
   heroSection: {
     title:
@@ -20,7 +23,7 @@ export const ourPanel = {
     description:
       "With our unmatched capabilities, seamless processes, and commitment to quality, we're the ideal fieldwork partner to bring your research to life.",
     illustration: {
-      img: 'src/assets/images/our_panel_2.png',
+      img: our_panel_2.src,
       size: 'default',
       aspectRatio: 'landscape',
       shadowPosition: 'br',
@@ -164,7 +167,7 @@ export const ourPanel = {
     description:
       'Ready to get involved?<br>Sign up today and help influence the products, services, and experiences of tomorrow.',
     illustration: {
-      img: 'src/assets/images/our_panel_3.png',
+      img: our_panel_3.src,
       size: 'full',
       aspectRatio: 'landscape',
       objectFit: 'cover',

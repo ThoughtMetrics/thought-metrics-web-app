@@ -1,6 +1,5 @@
 ---
 import PresentationLayout from '@/layouts/PresentationLayout.astro';
-import AppWrapper from '@/shared/components/AppWrapper';
 import ResearchForm from './ResearchForm';
 
 const seoContent = {
@@ -9,8 +8,9 @@ const seoContent = {
 };
 ---
 
-<PresentationLayout title={seoContent.title} description={seoContent.description}>
-  <AppWrapper client:only="react">
-    <ResearchForm />
-  </AppWrapper>
+<PresentationLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <ResearchForm />
 </PresentationLayout>

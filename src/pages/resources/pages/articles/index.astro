@@ -1,5 +1,6 @@
 ---
 import PresentationLayout from '@/layouts/PresentationLayout.astro';
+import AppWrapper from '@/shared/components/AppWrapper';
 import ArticlesPage from './ArticlesPage';
 
 const seoContent = {
@@ -12,5 +13,7 @@ const seoContent = {
   title={seoContent.title}
   description={seoContent.description}
 >
-  <ArticlesPage client:load />
+  <AppWrapper client:only="react">
+    <ArticlesPage />
+  </AppWrapper>
 </PresentationLayout>

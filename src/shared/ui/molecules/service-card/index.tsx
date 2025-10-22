@@ -26,7 +26,9 @@ const ServiceCard: React.FC<any> = ({
       )}
     >
       {service.iconOptions && (
-        <CustomBoxIcon iconOptions={service.iconOptions} />
+        <CustomBoxIcon
+          iconOptions={{ ...service.iconOptions, className: iconClassName }}
+        />
       )}
       <div className={cn('flex flex-col gap-1 w-full', contentClassName)}>
         <span className="font-semibold wide:text-lg w-fit">

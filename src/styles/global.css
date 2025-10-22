@@ -24,7 +24,7 @@ body {
   overflow: hidden;
 
   color-scheme: light dark;
-  background: var(--color-surface) url('../assets/images/background_image_1.png') no-repeat center;
+  background: var(--color-surface) url('images/background_image_1.png') no-repeat center;
   background-size: cover;
 
   font-synthesis: none;
@@ -86,22 +86,22 @@ body {
 }
 
 .brand-ad-component {
-  background: var(--color-surface) url('../assets/images/background_image_5.png') no-repeat center;
+  background: var(--color-surface) url('images/background_image_5.png') no-repeat center;
   background-size: cover;
 }
 
 .industries-component {
-  background: var(--color-surface) url('../assets/images/background_image_4.png') no-repeat center;
+  background: var(--color-surface) url('images/background_image_4.png') no-repeat center;
   background-size: cover;
 }
 
 .policies-component {
-  background: var(--color-surface) url('../assets/images/policies.png') no-repeat center;
+  background: var(--color-surface) url('images/policies.png') no-repeat center;
   background-size: cover;
 }
 
 .form-1-component {
-  background: var(--color-surface) url('../assets/images/form_image_1.png') no-repeat center;
+  background: var(--color-surface) url('images/form_image_1.png') no-repeat center;
   background-size: cover;
 }
 

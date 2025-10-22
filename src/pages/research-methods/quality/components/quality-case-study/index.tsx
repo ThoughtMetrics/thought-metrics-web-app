@@ -1,5 +1,6 @@
 import { cn } from '@/core/utils/cn';
 import './quality-case-study.css';
+import { research_methods_quality_src } from '@/pages/research-methods/research-methods.constant';
 
 const QualityCaseStudySection: React.FC<any> = ({
   caseStudySection,
@@ -29,7 +30,7 @@ const QualityCaseStudySection: React.FC<any> = ({
           {caseStudySection.description}
         </p>
         <img
-          src="images/research_methods_quality_1.png"
+          src={research_methods_quality_src}
           className="md:hidden w-full h-fit"
         />
         <ul className={cn('text-md md:text-base space-y-2', className)}>

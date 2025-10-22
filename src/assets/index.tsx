@@ -364,3 +364,6 @@ import GoogleOutlineIcon from './icons/google-outline.svg?react';
 import FacebookOutlineIcon from './icons/facebook-outline.svg?react';
 
 export { GoogleOutlineIcon, FacebookOutlineIcon };
+
+import right_arrow_white from 'icons/right-arrow-white.svg';
+export const right_arrow_white_src = right_arrow_white.src;

@@ -1,4 +1,4 @@
-import { ArrowRight } from '@/assets';
+import { ArrowRight, right_arrow_white_src } from '@/assets';
 import React from 'react';
 const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
   return (
@@ -130,7 +130,7 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
               </p>
               <div className="absolute bottom-0.5 right-0.5 w-[72px] h-[38px] rounded-tl-lg rounded-br-md bg-primary text-white border-none flex items-center justify-center">
                 <img
-                  src="/icons/right-arrow-white.svg"
+                  src={right_arrow_white_src}
                   alt="Read more"
                   className="w-[35px] h-[35px]"
                 />
@@ -150,7 +150,7 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
               </p>
               <div className="absolute bottom-0.5 right-0.5 w-[72px] h-[38px] rounded-tl-lg rounded-br-md bg-primary text-white border-none flex items-center justify-center">
                 <img
-                  src="/icons/right-arrow-white.svg"
+                  src={right_arrow_white_src}
                   alt="Read more"
                   className="w-[35px] h-[35px]"
                 />
@@ -170,7 +170,7 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
               </p>
               <div className="absolute bottom-0.5 right-0.5 w-[72px] h-[38px] rounded-tl-lg rounded-br-md bg-primary text-white border-none flex items-center justify-center">
                 <img
-                  src="/icons/right-arrow-white.svg"
+                  src={right_arrow_white_src}
                   alt="Read more"
                   className="w-[35px] h-[35px]"
                 />
@@ -190,7 +190,7 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
               </p>
               <div className="absolute bottom-0.5 right-0.5 w-[72px] h-[38px] rounded-tl-lg rounded-br-md bg-primary text-white border-none flex items-center justify-center">
                 <img
-                  src="/icons/right-arrow-white.svg"
+                  src={right_arrow_white_src}
                   alt="Read more"
                   className="w-[35px] h-[35px]"
                 />
