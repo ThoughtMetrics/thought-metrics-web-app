@@ -1,6 +1,6 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import ReportDownloadPage from '@/shared/screens/report-download/ReportDownloadPage';
+import ReportDownloadPageWrapper from '@/shared/screens/report-download/ReportDownloadPageWrapper';
 
 const seoContent = {
   title: 'Download Report - Thought Metrics',
@@ -10,5 +10,5 @@ const seoContent = {
 ---
 
 <Layout title={seoContent.title} description={seoContent.description}>
-  <ReportDownloadPage />
+  <ReportDownloadPageWrapper client:only="react" />
 </Layout>

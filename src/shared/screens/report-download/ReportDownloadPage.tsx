@@ -178,7 +178,7 @@ const ReportDownloadPage: React.FC = () => {
             <p className="text-gray-600 mb-6">
               {ui.loginPrompt}{' '}
               <a
-                href={ROUTES.AUTH}
+                href={ROUTES.LOGIN_IN}
                 className="text-blue-600 hover:text-blue-800 hover:underline"
               >
                 {ui.loginLink}

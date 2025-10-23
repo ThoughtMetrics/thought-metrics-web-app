@@ -1,6 +1,6 @@
 ---
 import LandingLayout from '@/layouts/LandingLayout.astro';
-import AdvocateLandingPage from '@/shared/screens/landing/advocate-landing/AdvocateLandingPage';
+import AdvocateLandingPageWrapper from '@/shared/screens/landing/advocate-landing/AdvocateLandingPageWrapper';
 
 const seoContent = {
   title: 'Partner With Us - Thought Metrics',
@@ -12,5 +12,5 @@ const seoContent = {
   title={seoContent.title}
   description={seoContent.description}
 >
-  <AdvocateLandingPage client:load />
+  <AdvocateLandingPageWrapper client:only="react" />
 </LandingLayout>

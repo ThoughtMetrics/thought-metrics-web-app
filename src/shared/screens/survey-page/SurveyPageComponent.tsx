@@ -1,6 +1,10 @@
 import { useProfileQuery } from '@/core/hooks/queries/use-profile.query';
+import { queryClient } from '@/core/lib/query-client';
 import { ROUTES } from '@/routes/routeConfig';
+import { AuthProvider } from '@/shared/providers/auth-provider';
 import { SelectAtom } from '@/shared/ui/atoms/custom-input';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from 'sonner';
 const SurveyPageSection: React.FC = () => {
   const { data: userProfile } = useProfileQuery();
 
@@ -69,4 +73,15 @@ const SurveyPageSection: React.FC = () => {
   );
 };
 
-export default SurveyPageSection;
+const SurveyPageWrapper: React.FC = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Toaster />
+        <SurveyPageSection />
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+};
+
+export default SurveyPageWrapper;

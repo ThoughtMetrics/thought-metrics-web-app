@@ -1,0 +1,93 @@
+---
+/**
+ * SEOHead Component
+ * Comprehensive SEO meta tags following PRO India SEO Guidelines
+ *
+ * Guidelines Requirements:
+ * - Meta Title: 60 characters max, meaningful, includes keywords
+ * - Meta Description: 160 characters max, meaningful, generates curiosity
+ * - Open Graph tags for social sharing
+ * - Twitter Card tags
+ * - Canonical URL
+ */
+
+import { getAPIConfig } from '@/core/configs/api-config';
+
+export interface Props {
+  title: string; // Max 60 characters
+  description: string; // Max 160 characters
+  keywords?: string; // Comma-separated keywords
+  ogImage?: string; // Open Graph image URL
+  ogType?: string; // Page type (website, article, etc.)
+  canonical?: string; // Canonical URL
+  noindex?: boolean; // Prevent indexing
+  nofollow?: boolean; // Prevent following links
+}
+
+const {
+  title,
+  description,
+  keywords,
+  ogImage,
+  ogType = 'website',
+  canonical,
+  noindex = false,
+  nofollow = false,
+} = Astro.props;
+
+const config = getAPIConfig();
+const siteUrl = config.siteURL || 'https://thoughtmetrics.com';
+
+// Build full URL for canonical and OG
+const currentUrl = canonical || new URL(Astro.url.pathname, siteUrl).href;
+
+// Default OG image if not provided
+const defaultOgImage = `${siteUrl}/og-image.png`;
+const ogImageUrl = ogImage || defaultOgImage;
+
+// Build robots meta content
+const robotsContent = [
+  noindex ? 'noindex' : 'index',
+  nofollow ? 'nofollow' : 'follow'
+].join(', ');
+
+// Validate character lengths (in development only)
+if (import.meta.env.DEV) {
+  if (title.length > 60) {
+    console.warn(`⚠️ SEO Warning: Title exceeds 60 characters (${title.length}): "${title}"`);
+  }
+  if (description.length > 160) {
+    console.warn(`⚠️ SEO Warning: Description exceeds 160 characters (${description.length}): "${description}"`);
+  }
+}
+---
+
+<!-- Primary Meta Tags -->
+<title>{title}</title>
+<meta name="title" content={title} />
+<meta name="description" content={description} />
+{keywords && <meta name="keywords" content={keywords} />}
+<meta name="robots" content={robotsContent} />
+
+<!-- Canonical URL -->
+<link rel="canonical" href={currentUrl} />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={ogType} />
+<meta property="og:url" content={currentUrl} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={ogImageUrl} />
+<meta property="og:site_name" content="Thought Metrics" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content={currentUrl} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImageUrl} />
+
+<!-- Additional SEO -->
+<meta name="author" content="Thought Metrics" />
+<meta name="language" content="English" />
+<meta name="revisit-after" content="7 days" />

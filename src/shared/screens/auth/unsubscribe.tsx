@@ -1,6 +1,6 @@
 import { ROUTES } from '@/routes/routeConfig';
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
-import { unsubscribeConstant } from '../../core/constants/page-constants/auth-constant';
+import { unsubscribeConstant } from '@constants/page-constants/auth-constant';
 import { CheckboxOutlineGroupAtom } from '@/shared/ui/atoms/custom-input';
 import type {
   UnsubscribeFormData,
@@ -9,6 +9,10 @@ import type {
 import { devtools } from 'zustand/middleware';
 import { create } from 'zustand';
 import { useProfileQuery } from '@/core/hooks/queries/use-profile.query';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider } from '@/shared/providers/auth-provider';
+import { Toaster } from 'sonner';
+import { queryClient } from '@/core/lib/query-client';
 
 // Destructure constants
 const {
@@ -189,5 +193,17 @@ const UnsubscribePage: React.FC = () => {
   );
 };
 
-export default UnsubscribePage;
+const UnsubscribeWrapper: React.FC = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Toaster />
+        <UnsubscribePage />
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+};
+
+export default UnsubscribeWrapper;
+
 //BUG: Sumbit button disabled always. On choosing a checkbox the submit button should be clickable

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { signUpFormConstant } from '../../core/constants/page-constants/auth-constant';
+import { signUpFormConstant } from '@constants/page-constants/auth-constant';
 import type {
   RespondentRegistrationFormData,
   RespondentRegistrationFormStore,
@@ -18,6 +18,10 @@ import FaqOrganism from '@/shared/ui/organisms/faq-organism';
 import { useSignUpMutation } from '@/core/hooks/mutations/use-sign-up.mutation';
 import { ROUTES } from '@/routes/routeConfig';
 import { LoaderOverlay } from '@/shared/ui/atoms/loader';
+import { Toaster } from 'sonner';
+import { AuthProvider } from '@/shared/providers/auth-provider';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '@/core/lib/query-client';
 
 // Destructure constants
 const {
@@ -835,4 +839,15 @@ const RespondentSignUpPage: React.FC = () => {
   );
 };
 
-export default RespondentSignUpPage;
+const RespondentSignUpWrapper: React.FC = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Toaster />
+        <RespondentSignUpPage />
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+};
+
+export default RespondentSignUpWrapper;

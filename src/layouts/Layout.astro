@@ -1,5 +1,6 @@
 ---
 import RuntimeConfig from '@components/RuntimeConfig.astro';
+import SEOHead from '@/shared/components/SEOHead.astro';
 import '@styles/global.css';
 import '@styles/animations.css';
 import '@styles/variables.css';
@@ -13,6 +14,10 @@ export interface Props {
   description?: string;
   keywords?: string;
   ogImage?: string;
+  ogType?: string;
+  canonical?: string;
+  noindex?: boolean;
+  nofollow?: boolean;
 }
 
 const {
@@ -20,6 +25,10 @@ const {
   description = 'Thought Metrics Website',
   keywords,
   ogImage,
+  ogType,
+  canonical,
+  noindex,
+  nofollow,
 } = Astro.props;
 ---
 
@@ -102,8 +111,18 @@ const {
     <meta name="theme-color" content="#ffffff" />
 
     <meta name="generator" content={Astro.generator} />
-    <meta name="description" content={description} />
-    <title>{title}</title>
+
+    <!-- SEO Meta Tags (Following PRO India SEO Guidelines) -->
+    <SEOHead
+      title={title}
+      description={description}
+      keywords={keywords}
+      ogImage={ogImage}
+      ogType={ogType}
+      canonical={canonical}
+      noindex={noindex}
+      nofollow={nofollow}
+    />
 
     <!-- Allow additional head content from pages -->
     <slot name="head" />

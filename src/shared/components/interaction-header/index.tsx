@@ -81,7 +81,7 @@ const InteractionHeader: React.FC = () => {
                 </>
               ) : (
                 <button className="bg-primary text-white text-nowrap w-auto hover:bg-secondary hover:text-white transition-all duration-300 ease-in-out rounded font-medium text-sm md:text-lg px-8 py-1 flex items-center gap-4">
-                  <a href={ROUTES.AUTH}>
+                  <a href={ROUTES.LOGIN_IN}>
                     <label>Sign In</label>
                   </a>
                   <ArrowRed className="fill-current text-white" />
@@ -139,7 +139,7 @@ const InteractionHeader: React.FC = () => {
               </div>
             ) : (
               <button className="md:hidden bg-primary text-white text-nowrap w-auto hover:bg-secondary hover:text-white transition-all duration-300 ease-in-out rounded font-medium px-6 py-1 flex items-center gap-3">
-                <a href={ROUTES.AUTH}>
+                <a href={ROUTES.LOGIN_IN}>
                   <label>Sign In</label>
                 </a>
                 <ArrowRed className="fill-current text-white" />

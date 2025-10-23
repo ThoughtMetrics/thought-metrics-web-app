@@ -1,6 +1,6 @@
 ---
 import PresentationLayout from '@/layouts/PresentationLayout.astro';
-import ContactUsForm from '@/shared/screens/contact-us/ContactUsForm';
+import ContactUsFormWrapper from '@/shared/screens/contact-us/ContactUsFormWrapper';
 
 const seoContent = {
   title: 'Contact Us - Thought Metrics',
@@ -12,5 +12,5 @@ const seoContent = {
   title={seoContent.title}
   description={seoContent.description}
 >
-  <ContactUsForm />
+  <ContactUsFormWrapper client:only="react" />
 </PresentationLayout>

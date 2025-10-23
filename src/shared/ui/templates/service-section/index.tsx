@@ -138,7 +138,10 @@ const ProductResearchSection: React.FC<any> = ({
             </h2>
           )}
           {serviceSection.items.map((service: any, index: number) => (
-            <div className="relative p-2 flex flex-col items-center justify-center">
+            <div
+              key={service.title + index}
+              className="relative p-2 flex flex-col items-center justify-center"
+            >
               <ServiceCard
                 service={service}
                 index={index}

@@ -49,7 +49,7 @@ export const ROUTES = {
   TERMS_AND_CONDITIONS: '/terms-and-conditions',
   START_YOUR_RESEARCH: '/start-your-research',
   REPORT_DOWNLOAD: '/report-download',
-  AUTH: '/auth',
+  LOGIN_IN: '/login',
   SIGN_UP: '/sign-up',
   UNSUBSCRIBE: '/unsubscribe',
   EDIT_PROFILE: '/edit-profile',

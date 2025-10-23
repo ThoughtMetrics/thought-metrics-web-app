@@ -1,0 +1,13 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import LoginWrapper from '@/shared/screens/auth/AuthPage';
+
+const seoContent = {
+  title: 'Login In - Thought Metrics',
+  description: 'Login in to your Thought Metrics account',
+};
+---
+
+<Layout title={seoContent.title} description={seoContent.description}>
+  <LoginWrapper client:only="react"/>
+</Layout>

@@ -40,8 +40,12 @@ const QualityCaseStudySection: React.FC<any> = ({
           className="md:hidden w-full h-fit"
         />
         <ul className={cn('text-md md:text-base space-y-2', className)}>
-          {caseStudySection.list.map((value: string) => {
-            return <p className="leading-5">{value}</p>;
+          {caseStudySection.list.map((value: string, index: number) => {
+            return (
+              <p key={value + index} className="leading-5">
+                {value}
+              </p>
+            );
           })}
         </ul>
       </div>

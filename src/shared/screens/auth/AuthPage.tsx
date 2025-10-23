@@ -18,6 +18,10 @@ import { useSignInMutation } from '@/core/hooks/mutations/use-sign-in.mutation';
 import { auth } from '@/core/configs/firebase-config';
 import { LoaderOverlay } from '@/shared/ui/atoms/loader';
 import { getSignInErrorDetails } from '@/core/utils/firebase-error-handler';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '@/core/lib/query-client';
+import { Toaster } from 'sonner';
+import { AuthProvider } from '@/shared/providers/auth-provider';
 
 const { initialFormData, storeName, validationMessages, formResetDelay, ui } =
   loginFormConstant;
@@ -118,7 +122,7 @@ const useLoginFormStore = create<LoginFormStore>()(
   )
 );
 
-const AuthPage: React.FC = () => {
+const LoginPage: React.FC = () => {
   const signInMutation = useSignInMutation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [socialAuthLoading, setSocialAuthLoading] = useState<
@@ -448,4 +452,16 @@ const AuthPage: React.FC = () => {
     </>
   );
 };
-export default AuthPage;
+
+const LoginWrapper: React.FC = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Toaster />
+        <LoginPage />
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+};
+
+export default LoginWrapper;

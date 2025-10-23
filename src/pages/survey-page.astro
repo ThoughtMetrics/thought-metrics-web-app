@@ -1,6 +1,6 @@
 ---
-import PresentationLayout from '@/layouts/PresentationLayout.astro';
-import SurveyPageSection from '@screens/survey-page/SurveyPageComponent';
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import SurveyPageWrapper from '@screens/survey-page/SurveyPageComponent';
 
 const seoContent = {
   title: 'My Surveys - Thought Metrics',
@@ -8,9 +8,6 @@ const seoContent = {
 };
 ---
 
-<PresentationLayout
-  title={seoContent.title}
-  description={seoContent.description}
->
-  <SurveyPageSection />
-</PresentationLayout>
+<IntractionLayout title={seoContent.title} description={seoContent.description}>
+  <SurveyPageWrapper client:only="react" />
+</IntractionLayout>

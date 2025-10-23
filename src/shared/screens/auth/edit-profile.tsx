@@ -10,9 +10,12 @@ import { ArrowRed } from '@/assets';
 import { useProfileQuery } from '@hooks/queries/use-profile.query';
 import { useUpdateProfileMutation } from '@hooks/mutations/use-update-profile.mutation';
 import { LoaderOverlay } from '@ui/atoms/loader';
-import { toast } from 'sonner';
+import { toast, Toaster } from 'sonner';
 import type { UpdateProfileData } from '@/core/types/user.type';
 import { ROUTES } from '@/routes/routeConfig';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '@/core/lib/query-client';
+import { AuthProvider } from '@/shared/providers/auth-provider';
 
 // Destructure constants
 const {
@@ -512,4 +515,15 @@ const EditProfilePage: React.FC = () => {
   );
 };
 
-export default EditProfilePage;
+const EditProfileWrapper: React.FC = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Toaster />
+        <EditProfilePage />
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+};
+
+export default EditProfileWrapper;
