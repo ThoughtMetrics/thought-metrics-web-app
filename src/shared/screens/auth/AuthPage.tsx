@@ -16,7 +16,6 @@ import {
 } from '@/assets';
 import { useSignInMutation } from '@/core/hooks/mutations/use-sign-in.mutation';
 import { auth } from '@/core/configs/firebase-config';
-import { LoaderOverlay } from '@/shared/ui/atoms/loader';
 import { getSignInErrorDetails } from '@/core/utils/firebase-error-handler';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/core/lib/query-client';
@@ -285,16 +284,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <>
-      <LoaderOverlay
-        isVisible={socialAuthLoading !== null}
-        message={
-          socialAuthLoading === 'google'
-            ? 'Signing in with Google...'
-            : socialAuthLoading === 'facebook'
-              ? 'Signing in with Facebook...'
-              : 'Loading...'
-        }
-      />
+      {/* ApiLoadingIndicator handles loading states automatically */}
       <div className="common-component w-full relative bg-white text-black z-1 overflow-scroll flex-col items-center !justify-start hide-scrollbar">
         <header className="common-container bg-white !max-w-[var(--breakpoint-2xl)] h-[3.5rem]">
           <nav className="px-6 py-3 xxl:px-0 flex items-center justify-between w-full">

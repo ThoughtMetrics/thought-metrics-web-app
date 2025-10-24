@@ -7,6 +7,7 @@ import { AuthProvider } from '@/shared/providers/auth-provider';
 import { ErrorBoundary } from '@/shared/ui/organisms/error-boundary';
 import { Toaster } from '@/shared/ui/atoms/toaster';
 import { DevToolsGuard } from '@/shared/components/devtools-guard';
+import ApiLoadingIndicator from '@/shared/components/ApiLoadingIndicator';
 
 interface AppWrapperProps {
   children: React.ReactNode;
@@ -16,6 +17,8 @@ const AppWrapper: React.FC<AppWrapperProps> = ({ children }) => {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
+        {/* Global API loading indicator with anti-flicker logic */}
+        <ApiLoadingIndicator />
         <AuthProvider>
           {children}
           <Toaster />

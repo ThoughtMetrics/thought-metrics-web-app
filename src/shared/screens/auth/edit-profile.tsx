@@ -9,7 +9,6 @@ import {
 import { ArrowRed } from '@/assets';
 import { useProfileQuery } from '@hooks/queries/use-profile.query';
 import { useUpdateProfileMutation } from '@hooks/mutations/use-update-profile.mutation';
-import { LoaderOverlay } from '@ui/atoms/loader';
 import { toast, Toaster } from 'sonner';
 import type { UpdateProfileData } from '@/core/types/user.type';
 import { ROUTES } from '@/routes/routeConfig';
@@ -265,16 +264,13 @@ const EditProfilePage: React.FC = () => {
     }
   };
 
+  // ApiLoadingIndicator handles loading states automatically
   if (isLoadingProfile) {
-    return <LoaderOverlay isVisible={true} message="Loading your profile..." />;
+    return null; // ApiLoadingIndicator will show loading overlay
   }
 
   return (
     <>
-      <LoaderOverlay
-        isVisible={updateProfileMutation.isPending}
-        message="Updating your profile..."
-      />
       <div className="common-component bg-white text-black">
         <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col !max-w-[var(--breakpoint-2xl)]">
           {/* Header */}
