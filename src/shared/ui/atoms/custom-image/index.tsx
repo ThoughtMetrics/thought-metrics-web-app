@@ -25,7 +25,7 @@ export interface ImageAtomProps {
 
 // Size configurations
 const SIZE_CLASSES = {
-  default:'',
+  default: '',
   sm: 'w-16 h-16',
   md: 'w-24 h-24',
   lg: 'w-32 h-32',

@@ -1,13 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { footerData } from './footer.constant';
 import { LogoWhite } from '@/assets';
-import { Link } from 'react-router-dom';
 import { auth } from '@/core/configs/firebase-config';
+import { ROUTES } from '@/routes/routeConfig';
 
-const Footer: React.FC = () => {
+const FooterWrapper: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    // Only set up auth listener on client-side
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    // Check if auth is available (will be null/undefined during SSR or if Firebase failed to init)
+    if (!auth || typeof auth.onAuthStateChanged !== 'function') {
+      console.warn('Firebase auth not available in FooterWrapper');
+      return;
+    }
+
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsAuthenticated(!!user);
     });
@@ -38,22 +49,25 @@ const Footer: React.FC = () => {
         <div className="w-full h-full md:flex justify-between grid grid-cols-2 gap-2 md:text-base xxl:text-xl pb-4">
           {/* Brand Section */}
           <div className="col-span-2 w-45 wide:w-48 gap-1 xxl:gap-2 wide:gap-3 flex flex-col md:pb-auto mb-4 md:mb-0 md:mt-4 mr-6">
-            <LogoWhite className="w-full" />
+            <a href={ROUTES.HOME}>
+              <LogoWhite className="w-full" />
+            </a>
             <div className="flex justify-between">
               {footerData.socialLinks.map((social) => (
-                <Link
-                  to={social.path}
+                <a
+                  href={social.path}
                   target="_blank"
                   rel="noopener noreferrer"
                   key={social.name}
                 >
-                  <img
+                  <social.icon className="w-10 wide:w-12" />
+                  {/* <img
                     key={social.name}
                     src={social.icon}
                     alt={social.name}
                     className="w-10 wide:w-12"
-                  />
-                </Link>
+                  /> */}
+                </a>
               ))}
             </div>
           </div>
@@ -69,16 +83,15 @@ const Footer: React.FC = () => {
                   routePath = routePath ?? '#';
                   return (
                     <li key={link.label}>
-                      <Link
-                        viewTransition={true}
+                      <a
                         key={index + link.label}
-                        to={routePath}
+                        href={routePath}
                         className="text-sm md:text-base xxl:text-xl hover:underline cursor-pointer"
                       >
                         {isAuthenticated && link.label == 'Join Our Panel'
                           ? link.signedInLabel
                           : link.label}
-                      </Link>
+                      </a>
                     </li>
                   );
                 })}
@@ -98,11 +111,7 @@ const Footer: React.FC = () => {
             onClick={scrollToTop}
             aria-label="Back to top"
           >
-            <img
-              src={footerData.backToTopIcon}
-              alt="Back to top"
-              className="w-6 wide:w-10 mb-1.5 md:mb-1 brightness-1 invert"
-            />
+            <footerData.backToTopIcon className="w-6 wide:w-10 mb-1.5 md:mb-1 brightness-1 invert" />
           </button>
         </div>
         {/* <div className="py-3 px-6 md:px-28 xxl:px-60 wide:px-90">
@@ -112,4 +121,12 @@ const Footer: React.FC = () => {
   );
 };
 
-export default Footer;
+// const FooterWrapper: React.FC = () => {
+//   return (
+//     <AppWrapper>
+//       <Footer />
+//     </AppWrapper>
+//   );
+// };
+
+export default FooterWrapper;

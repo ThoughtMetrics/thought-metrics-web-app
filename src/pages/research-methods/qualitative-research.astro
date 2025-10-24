@@ -1,0 +1,34 @@
+---
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+import ResearchMethodQualitativeResearch from '@/shared/screens/research-methods/qualitative-research/QualitativeResearchPage';
+import { contentService } from '@/services/strapi-api/content.service';
+import { ContentCategory } from '@/core/types/content.type';
+
+const seoContent = {
+  title: 'Qualitative Research - Thought Metrics',
+  description: 'Qualitative Research Methods and Insights',
+};
+
+// Fetch blog data on the server for SSR
+let blogData = null;
+try {
+  const blogItems = await contentService.getBlogContents({
+    type: [],
+    category: [ContentCategory.QUALITATIVE_RESEARCH],
+    limit: 4,
+  });
+  blogData = {
+    title: 'Qualitative Research Insights',
+    items: blogItems,
+  };
+} catch (error) {
+  console.error('Failed to fetch blog data:', error);
+}
+---
+
+<PresentationLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <ResearchMethodQualitativeResearch client:load blogData={blogData} />
+</PresentationLayout>

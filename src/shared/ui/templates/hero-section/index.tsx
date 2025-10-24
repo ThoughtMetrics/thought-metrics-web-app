@@ -10,7 +10,7 @@ const HeroSection: React.FC<any> = ({
   titleClassName,
 }: any) => {
   return (
-    <section className="common-component w-full h-full relative">
+    <section className="common-component relative">
       <div className="absolute w-full h-full flex justify-end pt-10 md:p-0">
         <IllustrationSquares className="h-[17rem] md:h-[98%] w-auto stroke-2 md:stroke-1 stroke-primary" />
       </div>

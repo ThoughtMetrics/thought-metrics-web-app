@@ -1,0 +1,15 @@
+---
+import { industries } from '@/core/constants/page-constants/industries-constant';
+import IndustryTemplate from './IndustryTemplate.astro';
+
+const seoContent = {
+  title: 'Finance - Thought Metrics',
+  description: 'Financial Services Research and Insights',
+};
+---
+
+<IndustryTemplate
+  title={seoContent.title}
+  description={seoContent.description}
+  industry={industries.finance}
+/>

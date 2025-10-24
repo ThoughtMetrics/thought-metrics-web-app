@@ -1,0 +1,65 @@
+---
+/**
+ * Cookiebot Component
+ *
+ * PURPOSE: GDPR/CCPA Cookie Consent Management
+ *
+ * WHAT COOKIEBOT DOES:
+ * - Shows cookie consent banner to users
+ * - Blocks non-essential cookies until user consents
+ * - Automatically scans your site for cookies
+ * - Generates privacy policy and cookie declaration
+ * - Manages user consent across sessions
+ *
+ * HOW IT WORKS:
+ * 1. Cookiebot script loads first (blocks other scripts)
+ * 2. Scans page for cookies and categorizes them:
+ *    - Necessary (always allowed)
+ *    - Preferences (optional)
+ *    - Statistics (optional - GA4, Clarity)
+ *    - Marketing (optional - Pinterest, ads)
+ * 3. User selects preferences via consent banner
+ * 4. Only approved categories load
+ * 5. Consent stored in cookie (12 months)
+ *
+ * SETUP:
+ * 1. Sign up at https://www.cookiebot.com
+ * 2. Add your domain
+ * 3. Get Domain Group ID (cbid)
+ * 4. Add PUBLIC_COOKIEBOT_ID to .env
+ * 5. Scan your site in Cookiebot dashboard
+ *
+ * INTEGRATIONS:
+ * - Works automatically with GTM (add data-cookieconsent attribute)
+ * - Blocks GA4, Clarity until consent
+ * - Updates consent in dataLayer for GTM
+ *
+ * BEST PRACTICES:
+ * - Place before any other tracking scripts
+ * - Use 'statistics' category for analytics (GA4, Clarity)
+ * - Use 'marketing' category for ads (Pinterest)
+ * - Test in incognito to see consent flow
+ *
+ * LEGAL COMPLIANCE:
+ * - GDPR (EU)
+ * - CCPA (California)
+ * - ePrivacy Directive
+ * - LGPD (Brazil)
+ */
+
+const cookiebotId = (import.meta.env.PUBLIC_COOKIEBOT_ID ||
+                     (typeof window !== 'undefined' && window.__APP_CONFIG__?.PUBLIC_COOKIEBOT_ID)) || '';
+
+const shouldRender = cookiebotId && cookiebotId.length > 0;
+---
+
+{shouldRender && (
+  <script
+    id="Cookiebot"
+    src="https://consent.cookiebot.com/uc.js"
+    data-cbid={cookiebotId}
+    data-blockingmode="auto"
+    type="text/javascript"
+    is:inline
+  ></script>
+)}

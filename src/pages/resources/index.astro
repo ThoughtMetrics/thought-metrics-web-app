@@ -1,0 +1,23 @@
+---
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+import ContentHeroSection from '@/shared/screens/resources/components/articles-hero-section';
+import ContentBentoGridWrapper from '@/shared/screens/resources/components/content-bento-grid-wrapper';
+
+const seoContent = {
+  title: 'Articles & Insights - Thought Metrics',
+  description: 'Data-Driven Research, Centralized Intelligence',
+};
+---
+
+<PresentationLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <ContentHeroSection
+    heroSection={{
+      title: 'ThoughtMetrics Insights',
+      description: 'Data-Driven Research, Centralized Intelligence',
+    }}
+  />
+  <ContentBentoGridWrapper client:only="react" />
+</PresentationLayout>

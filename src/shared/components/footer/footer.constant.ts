@@ -1,3 +1,9 @@
+import {
+  ArrowUp,
+  LinkedinFillIcon,
+  SpaceXIcon,
+  VimeoIcon,
+} from '@/assets';
 import { ROUTES } from '@/routes/routeConfig';
 
 export interface FooterLinkData {
@@ -14,21 +20,20 @@ export interface FooterSectionData {
 }
 
 export const footerData = {
-  logo: '/icons/logo_white.svg',
   socialLinks: [
     {
       name: 'LinkedIn',
-      icon: '/icons/linkedin.svg',
+      icon: LinkedinFillIcon,
       path: 'https://www.linkedin.com/company/the-thought-metrics-company',
     },
     {
       name: 'Twitter',
-      icon: '/icons/space-x.svg',
+      icon: SpaceXIcon,
       path: 'https://x.com/thoughtmetrics',
     },
     {
       name: 'Vimeo',
-      icon: '/icons/vimeo.svg',
+      icon: VimeoIcon,
       path: 'https://vimeo.com/thoughtmetrics',
     },
   ],
@@ -106,5 +111,5 @@ export const footerData = {
     },
   ] as FooterSectionData[],
   copyright: '© Copyright 2025. All Rights Reserved.',
-  backToTopIcon: '/icons/up-arrow.svg',
+  backToTopIcon: ArrowUp,
 };

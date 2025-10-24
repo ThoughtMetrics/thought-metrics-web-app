@@ -1,7 +1,65 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@assets/*": [
+        "./src/assets/*"
+      ],
+      "@styles/*": [
+        "./src/styles/*"
+      ],
+      "@configs/*": [
+        "./src/core/configs/*"
+      ],
+      "@hooks/*": [
+        "./src/core/hooks/*"
+      ],
+      "@types/*": [
+        "./src/core/types/*"
+      ],
+      "@utils/*": [
+        "./src/core/utils/*"
+      ],
+      "@pages/*": [
+        "./src/components/pages/*"
+      ],
+      "@services/*": [
+        "./src/services/*"
+      ],
+      "@interfaces/*": [
+        "./src/core/interfaces/*"
+      ],
+      "@ui/*": [
+        "./src/shared/ui/*"
+      ],
+      "@components/*": [
+        "./src/shared/components/*"
+      ],
+      "@screens/*": [
+        "./src/shared/screens/*"
+      ],
+      "@constants/*": [
+        "./src/core/constants/*"
+      ],
+      "@layouts/*": [
+        "./src/layouts/*"
+      ],
+    }
+  },
+  "include": [
+    ".astro/types.d.ts",
+    "src",
+    "public",
+    "vite-env.d.ts",
+    "astro.config.mjs"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ],
 }

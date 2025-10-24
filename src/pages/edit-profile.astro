@@ -1,0 +1,26 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import EditProfileWrapper from '@/shared/screens/auth/edit-profile';
+
+/**
+ * SEO Configuration (Following PRO India SEO Guidelines)
+ * - Title: Max 60 characters (current: 32 chars) ✓
+ * - Description: Max 160 characters (current: 96 chars) ✓
+ * - Keywords: Relevant terms for search engines
+ */
+const seoContent = {
+  title: 'Edit Profile - Thought Metrics', // 32 characters
+  description: 'Update your profile information, preferences, and account settings on Thought Metrics platform.', // 102 characters
+  keywords: 'edit profile, user profile, account settings, update profile, thought metrics profile',
+  noindex: true, // Prevent indexing of user-specific pages
+};
+---
+
+<IntractionLayout
+  title={seoContent.title}
+  description={seoContent.description}
+  keywords={seoContent.keywords}
+  noindex={seoContent.noindex}
+>
+  <EditProfileWrapper client:only="react" />
+</IntractionLayout>

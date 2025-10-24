@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { ArrowRed, Logo } from '@/assets';
-import { Link, useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/routes/routeConfig';
 import { auth } from '@/core/configs/firebase-config';
 import authService from '@/services/api/auth.service';
@@ -9,9 +8,19 @@ const InteractionHeader: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
+    // Only set up auth listener on client-side
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    // Check if auth is available (will be null/undefined during SSR or if Firebase failed to init)
+    if (!auth || typeof auth.onAuthStateChanged !== 'function') {
+      console.warn('Firebase auth not available in InteractionHeader');
+      return;
+    }
+
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsAuthenticated(!!user);
     });
@@ -37,7 +46,7 @@ const InteractionHeader: React.FC = () => {
   const handleLogout = async () => {
     try {
       await authService.signOut();
-      await navigate(ROUTES.HOME);
+      window.location.href = ROUTES.HOME;
     } catch (error) {
       console.error('Logout failed:', error);
     }
@@ -48,35 +57,32 @@ const InteractionHeader: React.FC = () => {
       <header className="common-component bg-white">
         <div className="common-container justify-center !max-w-[var(--breakpoint-2xl)]">
           <nav className="px-6 py-3 xxl:px-0 flex items-center justify-between w-full">
-            <Link viewTransition={true} to={ROUTES.HOME}>
+            <a href={ROUTES.HOME}>
               <div className="w-45 pt-1">
                 <Logo className="w-full h-full" />
               </div>
-            </Link>
+            </a>
             <div className="hidden md:flex items-center gap-8 text-nowrap">
-              <Link
-                viewTransition={true}
-                to={ROUTES.HOME}
+              <a
+                href={ROUTES.HOME}
                 className="text-black font-medium hover:underline underline-offset-4"
               >
                 Home
-              </Link>
-              <Link
-                viewTransition={true}
-                to={ROUTES.OUR_PANEL}
+              </a>
+              <a
+                href={ROUTES.OUR_PANEL}
                 className="text-black font-medium hover:underline underline-offset-4"
               >
                 About Us
-              </Link>
+              </a>
               {isAuthenticated ? (
                 <>
-                  <Link
-                    viewTransition={true}
-                    to={ROUTES.EDIT_PROFILE}
+                  <a
+                    href={ROUTES.EDIT_PROFILE}
                     className="text-black font-medium hover:underline underline-offset-4"
                   >
                     Edit Profile
-                  </Link>
+                  </a>
                   <button
                     onClick={handleLogout}
                     className="text-black font-medium hover:underline underline-offset-4"
@@ -86,9 +92,9 @@ const InteractionHeader: React.FC = () => {
                 </>
               ) : (
                 <button className="bg-primary text-white text-nowrap w-auto hover:bg-secondary hover:text-white transition-all duration-300 ease-in-out rounded font-medium text-sm md:text-lg px-8 py-1 flex items-center gap-4">
-                  <Link to={ROUTES.AUTH} viewTransition={true}>
+                  <a href={ROUTES.LOGIN_IN}>
                     <label>Sign In</label>
-                  </Link>
+                  </a>
                   <ArrowRed className="fill-current text-white" />
                 </button>
               )}
@@ -123,14 +129,13 @@ const InteractionHeader: React.FC = () => {
 
                 {isDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-[1000] border border-gray-200">
-                    <Link
-                      to={ROUTES.EDIT_PROFILE}
-                      viewTransition={true}
+                    <a
+                      href={ROUTES.EDIT_PROFILE}
                       onClick={() => setIsDropdownOpen(false)}
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                     >
                       Edit Profile
-                    </Link>
+                    </a>
                     <button
                       onClick={() => {
                         setIsDropdownOpen(false);
@@ -145,9 +150,9 @@ const InteractionHeader: React.FC = () => {
               </div>
             ) : (
               <button className="md:hidden bg-primary text-white text-nowrap w-auto hover:bg-secondary hover:text-white transition-all duration-300 ease-in-out rounded font-medium px-6 py-1 flex items-center gap-3">
-                <Link to={ROUTES.AUTH} viewTransition={true}>
+                <a href={ROUTES.LOGIN_IN}>
                   <label>Sign In</label>
-                </Link>
+                </a>
                 <ArrowRed className="fill-current text-white" />
               </button>
             )}

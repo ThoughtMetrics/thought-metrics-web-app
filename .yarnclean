@@ -1,0 +1,100 @@
+# Test directories
+__tests__
+test
+tests
+powered-test
+
+# Assets
+*.md
+*.markdown
+*.mkd
+*.ts.map
+*.js.map
+
+# Examples and documentation
+example
+examples
+doc
+docs
+documentation
+website
+images
+assets
+
+# Coverage
+coverage
+.nyc_output
+
+# Benchmarks
+benchmark
+benchmarks
+
+# Build configs
+.editorconfig
+.eslintrc
+.eslintrc.js
+.eslintrc.json
+.eslintrc.yml
+.eslintignore
+.prettierrc
+.prettierrc.js
+.prettierrc.json
+.prettierrc.yml
+.prettierignore
+.stylelintrc
+.stylelintrc.js
+.stylelintrc.json
+.stylelintrc.yml
+.babelrc
+.babelrc.js
+babel.config.js
+.flowconfig
+.jshintrc
+.jshintignore
+tsconfig.json
+tslint.json
+
+# CI/CD
+.travis.yml
+.gitlab-ci.yml
+circle.yml
+appveyor.yml
+.coveralls.yml
+CHANGELOG
+CHANGES
+AUTHORS
+CONTRIBUTORS
+HISTORY
+
+# Development files
+Makefile
+Gulpfile.js
+Gruntfile.js
+gulpfile.js
+gruntfile.js
+karma.conf.js
+wallaby.js
+wallaby.conf.js
+
+# License files (keep only in root)
+LICENSE.txt
+LICENSE.md
+LICENSE-MIT.txt
+LICENSE-MIT
+MIT-LICENSE.txt
+MIT-LICENSE
+LICENSE-APACHE
+LICENSE-APACHE.txt
+APACHE-LICENSE.txt
+APACHE-LICENSE
+
+# Misc
+*.yml
+*.yaml
+*.swp
+*.log
+.DS_Store
+.git
+.gitignore
+.gitattributes
+.github

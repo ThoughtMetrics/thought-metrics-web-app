@@ -1,0 +1,49 @@
+---
+/**
+ * Google Tag Manager (GTM) Component
+ *
+ * PURPOSE: Central hub for managing ALL tracking tags via GTM dashboard
+ *
+ * MANAGES (via GTM Dashboard):
+ * - Google Analytics 4 (GA4)
+ * - Microsoft Clarity
+ * - Cookiebot CMP (Cookie Consent)
+ * - Any other tracking pixels/tags
+ *
+ * HOW IT WORKS:
+ * 1. Loads GTM container script in <head>
+ * 2. Creates dataLayer for event tracking
+ * 3. GTM dashboard controls which tags fire and when
+ *
+ * SETUP:
+ * 1. Get GTM ID from https://tagmanager.google.com (format: GTM-XXXXXXX)
+ * 2. Add PUBLIC_GTM_ID to .env
+ * 3. Configure tags in GTM dashboard (GA4, Clarity, Cookiebot)
+ * 4. Add <noscript> fallback in <body> of Layout.astro
+ *
+ * BENEFITS:
+ * - Add/remove tracking scripts without code changes
+ * - Better performance (tags load asynchronously)
+ * - Single source of truth for all tracking
+ * - Easier consent management via Cookiebot
+ */
+
+const gtmId = (import.meta.env.PUBLIC_GTM_ID ||
+               (typeof window !== 'undefined' && window.__APP_CONFIG__?.PUBLIC_GTM_ID)) || '';
+
+// Only render if GTM ID is provided
+const shouldRender = gtmId && gtmId !== 'GTM-XXXXXXX';
+---
+
+{shouldRender && (
+  <Fragment>
+    <!-- Google Tag Manager Script -->
+    <script is:inline define:vars={{ gtmId }}>
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer',gtmId);
+    </script>
+  </Fragment>
+)}

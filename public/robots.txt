@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.thoughtmetrics.com/sitemap-index.xml
+

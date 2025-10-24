@@ -1,0 +1,41 @@
+---
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+
+const seoContent = {
+  title: 'Research Methods We Serve - Thought Metrics',
+  description: 'Discover specialized research solutions tailored to your research methods unique challenges and opportunities. Our expert insights help drive informed decisions across diverse sectors.',
+};
+---
+
+<PresentationLayout title={seoContent.title} description={seoContent.description}>
+  <div class="container mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto">
+      <!-- Header Section -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-800 mb-4">
+          Research Methods We Serve
+        </h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Discover specialized research solutions tailored to your
+          research methods's unique challenges and opportunities. Our expert
+          insights help drive informed decisions across diverse sectors.
+        </p>
+      </div>
+
+      <!-- CTA Section -->
+      <div class="mt-16 text-center bg-blue-50 rounded-lg p-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">
+          Don't See Your Research Method?
+        </h2>
+        <p class="text-gray-600 mb-6 max-w-2xl mx-auto">
+          We work across many more research methods and can customize our research
+          approach to meet your specific sector needs. Contact us to discuss
+          your requirements.
+        </p>
+        <a href="/contact-us" class="inline-block bg-primary text-white px-8 py-3 rounded-md font-medium hover:bg-primary-dark transition-colors">
+          Contact Our Experts
+        </a>
+      </div>
+    </div>
+  </div>
+</PresentationLayout>

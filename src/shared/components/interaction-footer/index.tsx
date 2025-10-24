@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+
 import { footerLinks } from './constant';
 
 const InteractionFooter: React.FC = () => {
@@ -11,13 +11,13 @@ const InteractionFooter: React.FC = () => {
         <div className="bg-white w-full flex justify-center">
           <div className="common-container !max-w-[var(--breakpoint-2xl)] space-x-8 px-6 py-3 md:px-24 flex items-center">
             {footerLinks.map((item) => (
-              <Link
+              <a
                 key={item.label}
-                to={item.link}
+                href={item.link}
                 className="text-sm md:text-base text-black font-medium hover:font-regular underline"
               >
                 {item.label}
-              </Link>
+              </a>
             ))}
           </div>
         </div>

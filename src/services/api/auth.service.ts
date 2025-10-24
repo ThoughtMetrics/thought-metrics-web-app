@@ -13,12 +13,23 @@ import ApiService from './api.service';
 import type { UserProfile, SignUpData } from '@/core/types/user.type';
 
 class AuthService {
-  private readonly googleProvider: GoogleAuthProvider;
-  private readonly facebookProvider: FacebookAuthProvider;
+  private googleProvider: GoogleAuthProvider | null = null;
+  private facebookProvider: FacebookAuthProvider | null = null;
 
-  constructor() {
-    this.googleProvider = new GoogleAuthProvider();
-    this.facebookProvider = new FacebookAuthProvider();
+  // Lazy initialization for Google provider
+  private getGoogleProvider(): GoogleAuthProvider {
+    if (!this.googleProvider) {
+      this.googleProvider = new GoogleAuthProvider();
+    }
+    return this.googleProvider;
+  }
+
+  // Lazy initialization for Facebook provider
+  private getFacebookProvider(): FacebookAuthProvider {
+    if (!this.facebookProvider) {
+      this.facebookProvider = new FacebookAuthProvider();
+    }
+    return this.facebookProvider;
   }
 
   /**
@@ -114,7 +125,7 @@ class AuthService {
     try {
       const userCredential: UserCredential = await signInWithPopup(
         auth,
-        this.googleProvider
+        this.getGoogleProvider()
       );
 
       // Sync to backend
@@ -142,7 +153,7 @@ class AuthService {
     try {
       const userCredential: UserCredential = await signInWithPopup(
         auth,
-        this.facebookProvider
+        this.getFacebookProvider()
       );
 
       // Sync to backend

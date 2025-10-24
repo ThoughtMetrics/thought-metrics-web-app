@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { headerDropdownData, navigationItems } from './header.constant';
 import { CurveIcon, Logo, StackIllustration } from '@/assets';
-import { Link } from 'react-router-dom';
 import { ROUTES } from '@/routes/routeConfig';
 import { cn } from '@/core/utils/cn';
 import { auth } from '@/core/configs/firebase-config';
 
-const Header: React.FC = () => {
+const HeaderWrapper: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -19,6 +18,17 @@ const Header: React.FC = () => {
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    // Only set up auth listener on client-side
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    // Check if auth is available (will be null/undefined during SSR or if Firebase failed to init)
+    if (!auth || typeof auth.onAuthStateChanged !== 'function') {
+      console.warn('Firebase auth not available in HeaderWrapper');
+      return;
+    }
+
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsAuthenticated(!!user);
     });
@@ -46,15 +56,15 @@ const Header: React.FC = () => {
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
-    if (isDropdownOpen && window.innerWidth < 768) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
+    //NOTE: Need to work on it
+    // if (isDropdownOpen && window.innerWidth < 768) {
+    //   document.body.style.overflow = "scroll";
+    // } else {
+    //   document.body.style.overflow = "unset";
+    // }
+    // return () => {
+    //   document.body.style.overflow = "unset";
+    // };
   }, [isDropdownOpen]);
 
   // Clear timeout on unmount
@@ -126,9 +136,9 @@ const Header: React.FC = () => {
         >
           {/* Desktop View */}
           <nav className="flex-nowrap gap-3 xl:gap-4 xxl:gap-6 wide:gap-5 py-2 xl:py-3.5 xxl:py-4 hidden md:flex items-center">
-            <Link viewTransition={true} to={ROUTES.HOME}>
+            <a href={ROUTES.HOME}>
               <Logo className="w-34 xl:w-45 xxl:w-52" />
-            </Link>
+            </a>
             {navigationItems.map((item) => (
               <button
                 key={item}
@@ -145,29 +155,27 @@ const Header: React.FC = () => {
                 ></div>
               </button>
             ))}
-            <Link
-              to={ROUTES.START_YOUR_RESEARCH}
-              viewTransition={true}
+            <a
+              href={ROUTES.START_YOUR_RESEARCH}
               className="py-0.5 xl:py-[3px] xxl:py-1 px-4 text-[11px] xl:text-sm xxl:text-base border-[1px] xl:border-[1.25px] xxl:border-[1.5px] font-medium cursor-pointer transition-all duration-300 ease-in-out whitespace-nowrap border-primary bg-white text-primary hover:text-custom-blue hover:border-custom-blue"
             >
               Start Your Research
-            </Link>
-            <Link
-              to={
+            </a>
+            <a
+              href={
                 isAuthenticated ? ROUTES.SURVEY_PAGE : ROUTES.RESPONDENT_LANDING
               }
-              viewTransition={true}
               className="py-0.5 xl:py-[3px] xxl:py-1 px-4 text-[11px] xl:text-sm xxl:text-base font-medium cursor-pointer transition-all duration-300 ease-in-out whitespace-nowrap bg-primary text-white hover:bg-custom-blue hover:border-custom-blue"
             >
               {isAuthenticated ? 'Take a Paid Survey' : 'Join a Paid Survey'}
-            </Link>
+            </a>
           </nav>
 
           {/* Mobile view */}
           <nav className="w-full py-4 px-5 items-center justify-between flex md:hidden">
-            <Link viewTransition={true} to={ROUTES.HOME}>
+            <a href={ROUTES.HOME}>
               <Logo className="w-52" />
-            </Link>
+            </a>
             <button
               onClick={toggleMenu}
               className="relative w-8 h-8 flex flex-col justify-center items-center z-[1001]"
@@ -234,15 +242,15 @@ const Header: React.FC = () => {
                     className="flex flex-col gap-0.5 xl:gap-2"
                   >
                     {/* {'sub_title' in column && column.sub_title != null && (
-                      <Link
-                        viewTransition={true}
+                      <a
+                        
                         key={columnIndex}
-                        to={'path' in column ? column.path : '#'}
+                        href={'path' in column ? column.path : '#'}
                         onClick={() => handleDropdownLeave()}
                         className="text-sm xl:text-md xxl:text-xl font-medium hover:underline cursor-pointer tracking-wider"
                       >
                         {column.sub_title}
-                      </Link>
+                      </a>
                     )} */}
                     {column.items.length > 0 &&
                       column.items.map((item, itemIndex) => {
@@ -250,11 +258,10 @@ const Header: React.FC = () => {
                           'path' in item ? (item.path as string) : '#';
 
                         return (
-                          <Link
-                            viewTransition={true}
+                          <a
                             onClick={() => handleDropdownLeave()}
                             key={itemIndex + item.label}
-                            to={itemPath}
+                            href={itemPath}
                             className="text-xxs xl:text-sm xxl:text-lg font-medium hover:underline cursor-pointer tracking-wider"
                           >
                             {item.label ? (
@@ -262,7 +269,7 @@ const Header: React.FC = () => {
                             ) : (
                               <span className="opacity-0">Thought Metrics</span>
                             )}
-                          </Link>
+                          </a>
                         );
                       })}
                   </div>
@@ -326,15 +333,15 @@ const Header: React.FC = () => {
                         {section.columns.map((column, columnIndex) => (
                           <div key={columnIndex}>
                             {/* {'sub_title' in column && column.sub_title && (
-                              <Link
-                                viewTransition={true}
+                              <a
+                                
                                 key={columnIndex}
-                                to={'path' in column ? column.path : '#'}
+                                href={'path' in column ? column.path : '#'}
                                 onClick={() => handleDropdownLeave()}
                                 className="text-white/80 text-sm font-semibold mb-2 px-4"
                               >
                                 {column.sub_title}
-                              </Link>
+                              </a>
                             )} */}
                             {column.items.map((subItem, subIndex) => {
                               const isSubItemVisible = subItem.label !== '';
@@ -344,15 +351,14 @@ const Header: React.FC = () => {
                                   : '#';
                               return (
                                 isSubItemVisible && (
-                                  <Link
-                                    viewTransition={true}
+                                  <a
                                     key={subIndex}
-                                    to={subItemPath}
+                                    href={subItemPath}
                                     onClick={() => handleDropdownLeave()}
                                     className="block px-4 py-2 text-white/70 hover:text-white text-sm"
                                   >
                                     {subItem.label}
-                                  </Link>
+                                  </a>
                                 )
                               );
                             })}
@@ -367,24 +373,22 @@ const Header: React.FC = () => {
 
             {/* Action Buttons */}
             <div className="px-6 mt-8 flex flex-col gap-3">
-              <Link
-                to={ROUTES.START_YOUR_RESEARCH}
-                viewTransition={true}
+              <a
+                href={ROUTES.START_YOUR_RESEARCH}
                 className="w-full py-3 px-4 border border-white text-white font-medium rounded hover:bg-white/10 transition-colors text-center"
               >
                 Start Your Research
-              </Link>
-              <Link
-                to={
+              </a>
+              <a
+                href={
                   isAuthenticated
                     ? ROUTES.SURVEY_PAGE
                     : ROUTES.RESPONDENT_LANDING
                 }
-                viewTransition={true}
                 className="w-full py-3 px-4 bg-white text-primary font-medium rounded hover:bg-white/90 transition-colors text-center"
               >
                 {isAuthenticated ? 'Take a Paid Survey' : 'Join a Paid Survey'}
-              </Link>
+              </a>
             </div>
 
             {/* Footer Info */}
@@ -403,4 +407,12 @@ const Header: React.FC = () => {
   );
 };
 
-export default Header;
+// const HeaderWrapper: React.FC = () => {
+//   return (
+//     <AppWrapper>
+//       <Header />
+//     </AppWrapper>
+//   );
+// };
+
+export default HeaderWrapper;

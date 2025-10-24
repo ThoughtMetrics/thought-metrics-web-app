@@ -1,6 +1,5 @@
 import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
-import React from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 
 interface BreadcrumbProps {
   className?: string;
@@ -9,11 +8,34 @@ interface BreadcrumbProps {
   useAutoGenerate?: boolean; // Option to use auto-generated breadcrumbs
 }
 
+// Custom hook to get current pathname (Astro-compatible)
+const usePathname = () => {
+  const [pathname, setPathname] = useState('');
+
+  useEffect(() => {
+    // Set initial pathname
+    setPathname(window.location.pathname);
+
+    // Optional: Listen for navigation changes (for client-side routing)
+    const handleLocationChange = () => {
+      setPathname(window.location.pathname);
+    };
+
+    window.addEventListener('popstate', handleLocationChange);
+
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+    };
+  }, []);
+
+  return pathname;
+};
+
 export const PageTitle: React.FC<BreadcrumbProps> = ({ className = '' }) => {
-  const location = useLocation();
+  const pathname = usePathname();
 
   // Choose breadcrumb generation method
-  const breadcrumbs = generateBreadcrumbsFromPath(location.pathname);
+  const breadcrumbs = generateBreadcrumbsFromPath(pathname);
 
   if (breadcrumbs.length <= 1) {
     return null;
@@ -36,13 +58,13 @@ export const PageTitle: React.FC<BreadcrumbProps> = ({ className = '' }) => {
 
 // Hook for debugging breadcrumbs
 export const useBreadcrumbs = () => {
-  const location = useLocation();
-  const breadcrumbs = generateBreadcrumbsFromPath(location.pathname);
+  const pathname = usePathname();
+  const breadcrumbs = generateBreadcrumbsFromPath(pathname);
 
   React.useEffect(() => {
-    console.log('Current location:', location.pathname);
+    console.log('Current location:', pathname);
     console.log('Generated breadcrumbs:', breadcrumbs);
-  }, [location.pathname, breadcrumbs]);
+  }, [pathname, breadcrumbs]);
 
   return breadcrumbs;
 };

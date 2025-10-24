@@ -53,18 +53,18 @@ export const LoaderOverlay: React.FC<LoaderOverlayProps> = ({
   isVisible,
 }) => {
   React.useEffect(() => {
-    if (isVisible) {
-      // Prevent body scroll when loader is visible
-      document.body.style.overflow = 'hidden';
-    } else {
-      // Restore body scroll when loader is hidden
-      document.body.style.overflow = 'unset';
-    }
+    // if (isVisible) {
+    //   // Prevent body scroll when loader is visible
+    //   document.body.style.overflow = 'hidden';
+    // } else {
+    //   // Restore body scroll when loader is hidden
+    //   document.body.style.overflow = 'unset';
+    // }
 
-    // Cleanup on unmount
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
+    // // Cleanup on unmount
+    // return () => {
+    //   document.body.style.overflow = 'unset';
+    // };
   }, [isVisible]);
 
   if (!isVisible) return null;

@@ -1,11 +1,11 @@
 import { ArrowRight, ResourcesIllustration } from '@/assets';
 import { cn } from '@/core/utils/cn';
-import { Link } from 'react-router-dom';
+
 
 const BlogCard: React.FC<any> = ({ blog, className = '' }) => {
   return (
-    <Link
-      to={blog.link}
+    <a
+      href={blog.link}
       className={cn(
         'snap-start snap-always w-[85%] relative shrink-0 backdrop-blur-[40px] overflow-hidden group hover:shadow-xl transition-shadow duration-300 md:w-auto',
         className
@@ -43,7 +43,7 @@ const BlogCard: React.FC<any> = ({ blog, className = '' }) => {
           </div>
         </div>
       </article>
-    </Link>
+    </a>
   );
 };
 

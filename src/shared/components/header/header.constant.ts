@@ -119,7 +119,7 @@ export const headerDropdownData = {
         {
           items: [
             { label: 'Our Panel', path: ROUTES.OUR_PANEL },
-            { label: 'Articles', path: ROUTES.ARTICLES },
+            { label: 'Articles', path: ROUTES.RESOURCES },
             { label: '' },
             { label: '' },
           ],

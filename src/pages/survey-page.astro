@@ -1,0 +1,13 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import SurveyPageWrapper from '@screens/survey-page/SurveyPageComponent';
+
+const seoContent = {
+  title: 'My Surveys - Thought Metrics',
+  description: 'View and complete your surveys',
+};
+---
+
+<IntractionLayout title={seoContent.title} description={seoContent.description}>
+  <SurveyPageWrapper client:only="react" />
+</IntractionLayout>

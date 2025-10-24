@@ -1,0 +1,14 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import ReportDownloadPageWrapper from '@/shared/screens/report-download/ReportDownloadPageWrapper';
+
+const seoContent = {
+  title: 'Download Report - Thought Metrics',
+  description:
+    'Download our latest research report on AI in User Experience Research',
+};
+---
+
+<Layout title={seoContent.title} description={seoContent.description}>
+  <ReportDownloadPageWrapper client:only="react" />
+</Layout>

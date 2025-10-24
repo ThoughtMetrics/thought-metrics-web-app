@@ -3,7 +3,7 @@ import './casestudy-section.css';
 
 const CaseStudySection: React.FC<any> = ({ caseStudySection }: any) => {
   return (
-    <section className="common-component w-full h-full relative bg-white text-black">
+    <section className="common-component relative bg-white text-black">
       <div className="common-container px-6 py-8 md:px-24 md:py-24 !max-w-[1336px] !grid grid-cols-1 md:grid-cols-[40%_60%] gap-10 md:gap-0">
         <div className="w-full flex flex-col gap-3">
           <h2 className="md:w-[95%] text-xl md:text-3xl font-semibold leading-[1.25] tracking-wide flex flex-col gap-2">
@@ -39,14 +39,15 @@ const ResearchMethodCaseStudySection: React.FC<any> = ({
   caseStudySection,
 }: any) => {
   return (
-    <section className="common-component w-full h-full relative bg-white text-black z-1 research-method-component">
+    <section className="common-component relative bg-white text-black z-1 research-method-component">
       <div className="hidden md:flex -z-1 absolute w-full h-full items-end justify-end">
-        {(() => {
-          const ImgComponent = caseStudySection.illustrationComponent;
-          return ImgComponent ? (
-            <ImgComponent className="h-fit xl:w-[26.5rem] xl:h-[25rem] xxl:w-fit xxl:h-fit" />
-          ) : null;
-        })()}
+        {caseStudySection.illustrationDesktop && (
+          <img
+            src={caseStudySection.illustrationDesktop}
+            alt="Research illustration"
+            className="h-[18rem] w-auto xl:w-[21.5rem] xl:h-[20rem] xxl:w-fit xxl:h-fit"
+          />
+        )}
       </div>
       <div className="common-container px-6 py-8 md:px-24 md:py-24 !max-w-[1336px]">
         <div className="w-full flex flex-col gap-3">
@@ -61,15 +62,13 @@ const ResearchMethodCaseStudySection: React.FC<any> = ({
             }}
           ></p>
           <div className="md:hidden w-full mb-5">
-            {(() => {
-              const ImgComponent = caseStudySection.illustrationComponent;
-              return ImgComponent ? (
-                <img
-                  src={caseStudySection.illustrationMobile}
-                  className="w-full h-full"
-                />
-              ) : null;
-            })()}
+            {caseStudySection.illustrationMobile && (
+              <img
+                src={caseStudySection.illustrationMobile}
+                alt="Research illustration mobile"
+                className="w-full h-full"
+              />
+            )}
           </div>
           <div className="flex flex-wrap md:gap-3 leading-6 md:text-lg">
             {caseStudySection.list.map((subList: string[]) => {

@@ -1,0 +1,5 @@
+.quality-hero-component {
+  background: var(--color-surface) url('images/background_image_7.png')
+    no-repeat center;
+  background-size: cover;
+}

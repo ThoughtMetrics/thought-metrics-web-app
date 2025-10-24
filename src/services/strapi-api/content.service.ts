@@ -10,6 +10,7 @@ import type {
   StrapiResponse,
   StrapiSingleResponse,
 } from '@/core/types/strapi.type';
+import { ROUTES } from '@/routes/routeConfig';
 
 export class ContentService extends StrapiService {
   private readonly endpoint = '/contents';
@@ -252,7 +253,7 @@ export class ContentService extends StrapiService {
       category: content.category,
       label: content.label,
       description: content.description,
-      link: `/resources/${content.slug}`,
+      link: `${ROUTES.RESOURCES}/${content.slug}`,
       src: this.getOptimalImageUrl(content),
     }));
   }

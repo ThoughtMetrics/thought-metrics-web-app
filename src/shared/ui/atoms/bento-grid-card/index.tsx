@@ -1,6 +1,6 @@
 import { ArrowRight, ResourcesIllustration } from '@/assets';
 import { cn } from '@/core/utils/cn';
-import { Link } from 'react-router-dom';
+
 
 export type BentoCardSize =
   | 'small'
@@ -39,8 +39,8 @@ const BentoGridCard: React.FC<BentoGridCardProps> = ({
   className = '',
 }) => {
   return (
-    <Link
-      to={blog.link}
+    <a
+      href={blog.link}
       className={cn(
         'relative backdrop-blur-[40px] overflow-hidden group min-h-[280px] md:min-h-0',
         sizeClasses[size],
@@ -93,7 +93,7 @@ const BentoGridCard: React.FC<BentoGridCardProps> = ({
         </div>
       </article>
       <div className="absolute bottom-0 left-0 right-0 h-1 w-0 group-hover:w-full transition-all duration-300 bg-primary"></div>
-    </Link>
+    </a>
   );
 };
 

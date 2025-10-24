@@ -1,0 +1,28 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import UnsubscribeWrapper from '@/shared/screens/auth/unsubscribe';
+
+/**
+ * SEO Configuration (Following PRO India SEO Guidelines)
+ * - Title: Max 60 characters (current: 32 chars) ✓
+ * - Description: Max 160 characters (current: 96 chars) ✓
+ * - Keywords: Relevant terms for search engines
+ */
+const seoContent = {
+  title: 'Unsubscribe - Thought Metrics', // 32 characters
+  description:
+    'Unsubscribe profile information, preferences, and account settings on Thought Metrics platform.', // 102 characters
+  keywords:
+    'edit profile, user profile, account settings, update profile, thought metrics profile',
+  noindex: true, // Prevent indexing of user-specific pages
+};
+---
+
+<IntractionLayout
+  title={seoContent.title}
+  description={seoContent.description}
+  keywords={seoContent.keywords}
+  noindex={seoContent.noindex}
+>
+  <UnsubscribeWrapper client:only="react" />
+</IntractionLayout>

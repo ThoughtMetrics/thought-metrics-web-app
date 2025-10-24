@@ -1,0 +1,33 @@
+---
+import InteractionFooter from '@/shared/components/interaction-footer';
+import InteractionHeader from '@/shared/components/interaction-header';
+import Layout from '@layouts/Layout.astro';
+
+export interface Props {
+  title: string;
+  description: string;
+  keywords?: string;
+  ogImage?: string;
+  ogType?: string;
+  canonical?: string;
+  noindex?: boolean;
+  nofollow?: boolean;
+}
+
+const { title, description, keywords, ogImage, ogType, canonical, noindex, nofollow } = Astro.props;
+---
+
+<Layout
+  title={title}
+  description={description}
+  keywords={keywords}
+  ogImage={ogImage}
+  ogType={ogType}
+  canonical={canonical}
+  noindex={noindex}
+  nofollow={nofollow}
+>
+  <InteractionHeader client:only="react"/>
+  <slot />
+  <InteractionFooter />
+</Layout>

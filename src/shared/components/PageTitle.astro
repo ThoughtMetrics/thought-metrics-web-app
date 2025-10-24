@@ -1,0 +1,32 @@
+---
+import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
+
+interface Props {
+  className?: string;
+}
+
+const { className = '' } = Astro.props;
+
+// Get current pathname from Astro
+const pathname = Astro.url.pathname;
+
+// Generate breadcrumbs from the current path
+const breadcrumbs = generateBreadcrumbsFromPath(pathname);
+
+// Don't render if there's only one breadcrumb (usually home)
+const shouldRender = breadcrumbs.length > 1;
+---
+
+{shouldRender && (
+  <div
+    class={`
+      flex flex-col gap-2
+      text-black font-semibold
+      text-xl xl:text-2xl wide:text-4xl
+      ${className}
+    `}
+  >
+    <span>{breadcrumbs[breadcrumbs.length - 1].label}</span>
+    <div class="w-25 md:w-45 max-w-full h-1 bg-primary rounded"></div>
+  </div>
+)}

@@ -1,0 +1,26 @@
+---
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+import ResearchFormWrapper from '@/shared/screens/start-your-research/ResearchFormWrapper';
+
+/**
+ * SEO Configuration (Following PRO India SEO Guidelines)
+ * - Title: Max 60 characters (current: 40 chars) ✓
+ * - Description: Max 160 characters (current: 158 chars) ✓
+ * - Keywords: Targeted keywords related to page content
+ */
+const seoContent = {
+  title: 'Start Your Research - Thought Metrics', // 40 characters
+  description: 'Begin your research journey with Thought Metrics. Get expert insights, qualitative and quantitative research services tailored to your business needs.', // 158 characters
+  keywords: 'start research, research services, market research, qualitative research, quantitative research, thought metrics',
+  ogType: 'website',
+};
+---
+
+<PresentationLayout
+  title={seoContent.title}
+  description={seoContent.description}
+  keywords={seoContent.keywords}
+  ogType={seoContent.ogType}
+>
+  <ResearchFormWrapper client:only="react" />
+</PresentationLayout>

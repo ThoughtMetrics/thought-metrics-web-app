@@ -1,0 +1,16 @@
+---
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+import ResearchMethodSurveys from '@/shared/screens/research-methods/surveys/SurveysPage';
+
+const seoContent = {
+  title: 'Surveys - Thought Metrics',
+  description: 'Survey Research Methods and Insights',
+};
+---
+
+<PresentationLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <ResearchMethodSurveys client:load />
+</PresentationLayout>

@@ -1,0 +1,48 @@
+---
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+import ResourceDetailPage from '@/shared/screens/resources/ResourceDetailPage';
+import { contentService } from '@/services/strapi-api/content.service';
+
+const { slug } = Astro.params;
+
+// Fetch related blog data on the server for SSR
+let relatedBlogData = null;
+let content = null;
+try {
+  content = await contentService.getContentBySlug(slug ?? '');
+  const blogItems = await contentService.getBlogContents({
+    type: [],
+    category: [],
+    limit: 4,
+  });
+  relatedBlogData = {
+    title: 'Resources',
+    items: blogItems,
+  };
+} catch (error) {
+  console.error('Failed to fetch related blog data:', error);
+}
+
+// SEO content based on the fetched content
+const seoContent = {
+  title: content
+    ? `${content.label} - Thought Metrics`
+    : 'Resource - Thought Metrics',
+  description:
+    content?.description || 'Explore our research insights and resources',
+  ogImage: content?.img?.url,
+  ogType: 'article' as const,
+  canonicalUrl: `https://thoughtmetrics.com/resources/${slug}`,
+};
+---
+
+<PresentationLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <ResourceDetailPage
+    content={content}
+    blogData={relatedBlogData}
+    client:only="react"
+  />
+</PresentationLayout>

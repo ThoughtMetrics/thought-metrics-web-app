@@ -1,0 +1,128 @@
+/* index.css */
+
+@import "tailwindcss";
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* Prevent bounce scrolling on iOS */
+  position: fixed;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+  /* end */
+  /* scroll-behavior: smooth; */
+}
+
+:root {
+  font-family: 'Barlow', system-ui;
+  line-height: 1.5;
+  font-weight: 400;
+  width: 100%;
+  overflow: hidden;
+
+  color-scheme: light dark;
+  background: var(--color-surface) url('images/background_image_1.png') no-repeat center;
+  background-size: cover;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* scroll-behavior: smooth; */
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-dark);
+  }
+
+  /* Input Styles Customization */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px var(--custom-grey-5) inset !important;
+    /* Change 'white' to your desired background color */
+    -webkit-text-fill-color: black !important;
+    /* Change 'black' to your desired text color */
+    transition: background-color 5000s ease-in-out 0s;
+    /* Prevents immediate color change */
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.common-component {
+  @apply w-full flex justify-center min-w-[1280px];
+}
+
+.common-container {
+  @apply w-full max-w-[1920px] flex;
+}
+
+@media (max-width: 768px) {
+  .common-component {
+    @apply w-full flex justify-center min-w-auto;
+  }
+}
+
+.brand-ad-component {
+  background: var(--color-surface) url('images/background_image_5.png') no-repeat center;
+  background-size: cover;
+}
+
+.industries-component {
+  background: var(--color-surface) url('images/background_image_4.png') no-repeat center;
+  background-size: cover;
+}
+
+.policies-component {
+  background: var(--color-surface) url('images/policies.png') no-repeat center;
+  background-size: cover;
+}
+
+.form-1-component {
+  background: var(--color-surface) url('images/form_image_1.png') no-repeat center;
+  background-size: cover;
+}
+
+input[type='checkbox'] {
+  flex-shrink: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--custom-grey);
+  border-radius: 0;
+  cursor: pointer;
+  position: relative;
+}
+
+input[type='checkbox']:checked::after {
+  content: '✔';
+  /* custom tick */
+  color: var(--primary);
+  /* 🎨 tick color */
+  font-size: 15px;
+  position: absolute;
+  top: -40%;
+}
