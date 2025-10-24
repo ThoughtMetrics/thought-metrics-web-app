@@ -1,0 +1,17 @@
+---
+import PolicyHeroSection from '@ui/templates/policy-hero-section';
+import PresentationLayout from '@layouts/PresentationLayout.astro';
+import { siteDisclaimerContent } from '@/core/constants/page-constants/site-disclaimer-constant';
+const {
+  title = 'Site Disclaimer',
+  description = 'Thought Metrics - Site Disclaimer',
+} = Astro.props;
+---
+
+<PresentationLayout title={title} description={description}>
+  <PolicyHeroSection
+    client:load
+    content={siteDisclaimerContent.content}
+    head={title}
+  />
+</PresentationLayout>
