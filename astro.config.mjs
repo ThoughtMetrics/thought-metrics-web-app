@@ -11,7 +11,7 @@ import svgr from 'vite-plugin-svgr';
 
 // https://astro.build/config
 export default defineConfig({
-  site: import.meta.env.SITE_URL ?? 'https://www.thoughtmetrics.com',
+  site: import.meta.env.PUBLIC_SITE_URL ?? 'https://www.thoughtmetrics.com',
   integrations: [
     react(),
     partytown(),

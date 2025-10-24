@@ -9,6 +9,17 @@ const LandingHeader: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    // Only set up auth listener on client-side
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    // Check if auth is available (will be null/undefined during SSR or if Firebase failed to init)
+    if (!auth || typeof auth.onAuthStateChanged !== 'function') {
+      console.warn('Firebase auth not available in LandingHeader');
+      return;
+    }
+
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsAuthenticated(!!user);
     });

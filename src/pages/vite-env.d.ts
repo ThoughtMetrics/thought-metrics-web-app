@@ -49,7 +49,7 @@ declare module '*.webp' {
 interface Window {
   __APP_CONFIG__?: {
     // Only PUBLIC_ prefixed variables are exposed to the browser
-    // STRAPI_API_URL is server-only and NOT included here for security
+    // Razor key secret is server-only and NOT included here for security
     PUBLIC_BASE_URL?: string;
     PUBLIC_BASE_API_VERSION?: string;
     PUBLIC_SITE_URL?: string;
@@ -59,6 +59,12 @@ interface Window {
     PUBLIC_FIREBASE_STORAGE_BUCKET?: string;
     PUBLIC_FIREBASE_MESSAGING_SENDER_ID?: string;
     PUBLIC_FIREBASE_APP_ID?: string;
+    PUBLIC_MEASUREMENT_ID?: string;
+    PUBLIC_GTM_ID?: string;
+    PUBLIC_GOOGLE_SITE_VERIFICATION?: string;
+    PUBLIC_CLARITY_PROJECT_ID?: string;
+    PUBLIC_COOKIEBOT_ID?: string;
+    PUBLIC_RAZORPAY_KEY_ID?: string;
   };
 }
 
@@ -73,4 +79,10 @@ interface ImportMetaEnv {
   PUBLIC_FIREBASE_STORAGE_BUCKET: string;
   PUBLIC_FIREBASE_MESSAGING_SENDER_ID: string;
   PUBLIC_FIREBASE_APP_ID: string;
+  PUBLIC_MEASUREMENT_ID: string;
+  PUBLIC_GTM_ID: string;
+  PUBLIC_GOOGLE_SITE_VERIFICATION: string;
+  PUBLIC_CLARITY_PROJECT_ID: string;
+  PUBLIC_COOKIEBOT_ID: string;
+  PUBLIC_RAZORPAY_KEY_ID: string;
 }

@@ -1,19 +1,21 @@
-import { initializeApp, type FirebaseApp } from "firebase/app";
-import { getAuth, type Auth } from "firebase/auth";
-import { getAPIConfig } from "@configs/api-config";
+import { getAnalytics, type Analytics } from 'firebase/analytics';
+import { initializeApp, type FirebaseApp } from 'firebase/app';
+import { getAuth, type Auth } from 'firebase/auth';
+import { getAPIConfig } from '@configs/api-config';
 
 // Singleton instances
 let firebaseApp: FirebaseApp | null = null;
 let firebaseAuth: Auth | null = null;
+let firebaseAnalytics: Analytics | null = null;
 
 // Check if we're in a browser environment
-const isBrowser = typeof window !== "undefined";
+const isBrowser = typeof window !== 'undefined';
 
 // Lazy initialization - only runs on client-side
 const initializeFirebase = (): FirebaseApp | null => {
   // Guard: Only initialize on client-side
   if (!isBrowser) {
-    console.warn("Firebase initialization skipped: not in browser environment");
+    console.warn('Firebase initialization skipped: not in browser environment');
     return null;
   }
 
@@ -27,17 +29,24 @@ const initializeFirebase = (): FirebaseApp | null => {
     const API_CONFIG = getAPIConfig();
 
     // Validate that we have a real API key (not placeholder)
-    if (!API_CONFIG.firebaseConfig.apiKey ||
-        API_CONFIG.firebaseConfig.apiKey === "build-placeholder-key" ||
-        API_CONFIG.firebaseConfig.apiKey === "") {
-      console.warn("Firebase initialization skipped: missing or invalid API key");
+    if (
+      !API_CONFIG.firebaseConfig.apiKey ||
+      API_CONFIG.firebaseConfig.apiKey === 'build-placeholder-key' ||
+      API_CONFIG.firebaseConfig.apiKey === ''
+    ) {
+      console.warn(
+        'Firebase initialization skipped: missing or invalid API key'
+      );
       return null;
     }
 
     firebaseApp = initializeApp(API_CONFIG.firebaseConfig);
+
+    firebaseAnalytics = getAnalytics(firebaseApp);
+
     return firebaseApp;
   } catch (error) {
-    console.error("Failed to initialize Firebase:", error);
+    console.error('Failed to initialize Firebase:', error);
     return null;
   }
 };
@@ -64,7 +73,7 @@ const createSafeProxy = <T extends object>(getter: () => T | null): T => {
     get: (_, prop) => {
       if (!isBrowser) {
         // Return safe defaults during SSR
-        if (typeof prop === "string" && prop === "currentUser") {
+        if (typeof prop === 'string' && prop === 'currentUser') {
           return null;
         }
         return undefined;
@@ -74,8 +83,8 @@ const createSafeProxy = <T extends object>(getter: () => T | null): T => {
         return undefined;
       }
       const value = instance[prop as keyof T];
-      return typeof value === "function" ? value.bind(instance) : value;
-    }
+      return typeof value === 'function' ? value.bind(instance) : value;
+    },
   });
 };
 

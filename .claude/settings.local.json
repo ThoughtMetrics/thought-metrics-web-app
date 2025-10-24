@@ -9,7 +9,13 @@
       "Bash(git mv:*)",
       "Bash(find:*)",
       "Bash(tree:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(yarn docker:run)",
+      "Bash(docker logs:*)",
+      "Bash(curl:*)",
+      "Bash(yarn docker:build:*)",
+      "Bash(docker stop:*)",
+      "Bash(docker rm:*)"
     ],
     "deny": [],
     "ask": []

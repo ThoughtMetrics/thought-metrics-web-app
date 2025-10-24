@@ -10,6 +10,17 @@ const InteractionHeader: React.FC = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Only set up auth listener on client-side
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    // Check if auth is available (will be null/undefined during SSR or if Firebase failed to init)
+    if (!auth || typeof auth.onAuthStateChanged !== 'function') {
+      console.warn('Firebase auth not available in InteractionHeader');
+      return;
+    }
+
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsAuthenticated(!!user);
     });

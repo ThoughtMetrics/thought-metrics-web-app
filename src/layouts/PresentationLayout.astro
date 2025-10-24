@@ -1,6 +1,6 @@
 ---
-import Footer from '@components/footer';
-import Header from '@components/header';
+import FooterWrapper from '@components/footer';
+import HeaderWrapper from '@components/header';
 import Layout from '@layouts/Layout.astro';
 
 export interface Props {
@@ -14,7 +14,16 @@ export interface Props {
   nofollow?: boolean;
 }
 
-const { title, description, keywords, ogImage, ogType, canonical, noindex, nofollow } = Astro.props;
+const {
+  title,
+  description,
+  keywords,
+  ogImage,
+  ogType,
+  canonical,
+  noindex,
+  nofollow,
+} = Astro.props;
 ---
 
 <Layout
@@ -27,7 +36,7 @@ const { title, description, keywords, ogImage, ogType, canonical, noindex, nofol
   noindex={noindex}
   nofollow={nofollow}
 >
-  <Header client:load />
+  <HeaderWrapper client:load />
   <slot />
-  <Footer client:load />
+  <FooterWrapper client:load />
 </Layout>

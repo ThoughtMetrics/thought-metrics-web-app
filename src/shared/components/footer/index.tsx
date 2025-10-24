@@ -4,10 +4,21 @@ import { LogoWhite } from '@/assets';
 import { auth } from '@/core/configs/firebase-config';
 import { ROUTES } from '@/routes/routeConfig';
 
-const Footer: React.FC = () => {
+const FooterWrapper: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    // Only set up auth listener on client-side
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    // Check if auth is available (will be null/undefined during SSR or if Firebase failed to init)
+    if (!auth || typeof auth.onAuthStateChanged !== 'function') {
+      console.warn('Firebase auth not available in FooterWrapper');
+      return;
+    }
+
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsAuthenticated(!!user);
     });
@@ -110,4 +121,12 @@ const Footer: React.FC = () => {
   );
 };
 
-export default Footer;
+// const FooterWrapper: React.FC = () => {
+//   return (
+//     <AppWrapper>
+//       <Footer />
+//     </AppWrapper>
+//   );
+// };
+
+export default FooterWrapper;

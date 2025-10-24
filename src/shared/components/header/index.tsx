@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
-import { headerDropdownData, navigationItems } from "./header.constant";
-import { CurveIcon, Logo, StackIllustration } from "@/assets";
-import { ROUTES } from "@/routes/routeConfig";
-import { cn } from "@/core/utils/cn";
-import { auth } from "@/core/configs/firebase-config";
+import React, { useEffect, useRef, useState } from 'react';
+import { headerDropdownData, navigationItems } from './header.constant';
+import { CurveIcon, Logo, StackIllustration } from '@/assets';
+import { ROUTES } from '@/routes/routeConfig';
+import { cn } from '@/core/utils/cn';
+import { auth } from '@/core/configs/firebase-config';
 
-const Header: React.FC = () => {
+const HeaderWrapper: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -18,6 +18,17 @@ const Header: React.FC = () => {
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    // Only set up auth listener on client-side
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    // Check if auth is available (will be null/undefined during SSR or if Firebase failed to init)
+    if (!auth || typeof auth.onAuthStateChanged !== 'function') {
+      console.warn('Firebase auth not available in HeaderWrapper');
+      return;
+    }
+
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsAuthenticated(!!user);
     });
@@ -36,24 +47,21 @@ const Header: React.FC = () => {
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
       unsubscribe();
     };
   }, []);
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
-
     //NOTE: Need to work on it
-    
     // if (isDropdownOpen && window.innerWidth < 768) {
     //   document.body.style.overflow = "scroll";
     // } else {
     //   document.body.style.overflow = "unset";
     // }
-
     // return () => {
     //   document.body.style.overflow = "unset";
     // };
@@ -124,7 +132,7 @@ const Header: React.FC = () => {
     <div className="relative">
       <header ref={headerRef} className="common-component">
         <div
-          className={`common-container justify-center transition-colors duration-300 ease-in-out bg-white ${isDropdownOpen ? "md:bg-white" : "md:bg-transparent"}`}
+          className={`common-container justify-center transition-colors duration-300 ease-in-out bg-white ${isDropdownOpen ? 'md:bg-white' : 'md:bg-transparent'}`}
         >
           {/* Desktop View */}
           <nav className="flex-nowrap gap-3 xl:gap-4 xxl:gap-6 wide:gap-5 py-2 xl:py-3.5 xxl:py-4 hidden md:flex items-center">
@@ -134,16 +142,16 @@ const Header: React.FC = () => {
             {navigationItems.map((item) => (
               <button
                 key={item}
-                className={`relative text-[12px] xl:text-md xxl:text-lg text-text-dark font-medium cursor-pointer flex items-center gap-[0.3rem] transition-all duration-300 ease-in-out whitespace-nowrap ${activeDropdown !== item && "hover:underline hover:underline-offset-2"}`}
+                className={`relative text-[12px] xl:text-md xxl:text-lg text-text-dark font-medium cursor-pointer flex items-center gap-[0.3rem] transition-all duration-300 ease-in-out whitespace-nowrap ${activeDropdown !== item && 'hover:underline hover:underline-offset-2'}`}
                 onMouseEnter={() => handleNavItemHover(item)}
                 onMouseLeave={handleNavLeave}
               >
                 {item}
                 <CurveIcon
-                  className={`w-[8px] xl:w-[10px] xxl:w-[12px] transition-transform duration-300 ease-in-out ${activeDropdown === item ? "rotate-180" : ""}`}
+                  className={`w-[8px] xl:w-[10px] xxl:w-[12px] transition-transform duration-300 ease-in-out ${activeDropdown === item ? 'rotate-180' : ''}`}
                 />
                 <div
-                  className={`absolute -bottom-[12px] xl:-bottom-[17px] xxl:-bottom-[20px] -left-[2px] bg-primary h-[3px] xl:h-[4px] xxl:h-[5px] w-full rounded-t ${activeDropdown === item ? "block animate-fadeIn" : "hidden animate-fadeOut"}`}
+                  className={`absolute -bottom-[12px] xl:-bottom-[17px] xxl:-bottom-[20px] -left-[2px] bg-primary h-[3px] xl:h-[4px] xxl:h-[5px] w-full rounded-t ${activeDropdown === item ? 'block animate-fadeIn' : 'hidden animate-fadeOut'}`}
                 ></div>
               </button>
             ))}
@@ -159,7 +167,7 @@ const Header: React.FC = () => {
               }
               className="py-0.5 xl:py-[3px] xxl:py-1 px-4 text-[11px] xl:text-sm xxl:text-base font-medium cursor-pointer transition-all duration-300 ease-in-out whitespace-nowrap bg-primary text-white hover:bg-custom-blue hover:border-custom-blue"
             >
-              {isAuthenticated ? "Take a Paid Survey" : "Join a Paid Survey"}
+              {isAuthenticated ? 'Take a Paid Survey' : 'Join a Paid Survey'}
             </a>
           </nav>
 
@@ -176,20 +184,20 @@ const Header: React.FC = () => {
               <span
                 className={`block w-6 h-0.5 transition-all duration-300 ease-in-out ${
                   isDropdownOpen
-                    ? "rotate-45 translate-y-1.5 bg-white"
-                    : "bg-gray-800"
+                    ? 'rotate-45 translate-y-1.5 bg-white'
+                    : 'bg-gray-800'
                 }`}
               />
               <span
                 className={`block w-6 h-0.5 bg-gray-800 transition-all duration-300 ease-in-out my-1 ${
-                  isDropdownOpen ? "opacity-0" : ""
+                  isDropdownOpen ? 'opacity-0' : ''
                 }`}
               />
               <span
                 className={`block w-6 h-0.5 transition-all duration-300 ease-in-out ${
                   isDropdownOpen
-                    ? "-rotate-45 -translate-y-1.5 bg-white"
-                    : "bg-gray-800"
+                    ? '-rotate-45 -translate-y-1.5 bg-white'
+                    : 'bg-gray-800'
                 }`}
               />
             </button>
@@ -207,10 +215,10 @@ const Header: React.FC = () => {
         >
           <div
             className={cn(
-              "relative flex items-center gap-8 xl:gap-11 xxl:gap-13",
-              "py-8 xl:py-10 xxl:py-12",
+              'relative flex items-center gap-8 xl:gap-11 xxl:gap-13',
+              'py-8 xl:py-10 xxl:py-12',
               // 'px-7 xl:px-9 xxl:px-10',
-              "px-6 md:px-28"
+              'px-6 md:px-28'
             )}
           >
             {/* <div className="flex flex-col gap-1 xl:gap-3.5">
@@ -230,7 +238,7 @@ const Header: React.FC = () => {
               <div className="flex gap-7 xl:gap-10 xxl:gap-13 ml-48">
                 {getActiveSection()!.columns.map((column, columnIndex) => (
                   <div
-                    key={columnIndex + "sub_title"}
+                    key={columnIndex + 'sub_title'}
                     className="flex flex-col gap-0.5 xl:gap-2"
                   >
                     {/* {'sub_title' in column && column.sub_title != null && (
@@ -247,7 +255,7 @@ const Header: React.FC = () => {
                     {column.items.length > 0 &&
                       column.items.map((item, itemIndex) => {
                         const itemPath =
-                          "path" in item ? (item.path as string) : "#";
+                          'path' in item ? (item.path as string) : '#';
 
                         return (
                           <a
@@ -287,7 +295,7 @@ const Header: React.FC = () => {
       <div
         ref={mobileMenuRef}
         className={`fixed top-0 right-0 z-[1000] bg-primary h-full w-[300px] transform transition-transform duration-300 ease-in-out md:hidden ${
-          isDropdownOpen ? "translate-x-0" : "translate-x-full"
+          isDropdownOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         <div className="flex flex-col h-full">
@@ -313,7 +321,7 @@ const Header: React.FC = () => {
                       {section && (
                         <CurveIcon
                           className={`text-white transition-transform duration-300 ${
-                            activeMobileDropdown === item ? "rotate-180" : ""
+                            activeMobileDropdown === item ? 'rotate-180' : ''
                           }`}
                         />
                       )}
@@ -336,11 +344,11 @@ const Header: React.FC = () => {
                               </a>
                             )} */}
                             {column.items.map((subItem, subIndex) => {
-                              const isSubItemVisible = subItem.label !== "";
+                              const isSubItemVisible = subItem.label !== '';
                               const subItemPath =
-                                "path" in subItem
+                                'path' in subItem
                                   ? (subItem.path as string)
-                                  : "#";
+                                  : '#';
                               return (
                                 isSubItemVisible && (
                                   <a
@@ -367,7 +375,6 @@ const Header: React.FC = () => {
             <div className="px-6 mt-8 flex flex-col gap-3">
               <a
                 href={ROUTES.START_YOUR_RESEARCH}
-                
                 className="w-full py-3 px-4 border border-white text-white font-medium rounded hover:bg-white/10 transition-colors text-center"
               >
                 Start Your Research
@@ -378,10 +385,9 @@ const Header: React.FC = () => {
                     ? ROUTES.SURVEY_PAGE
                     : ROUTES.RESPONDENT_LANDING
                 }
-                
                 className="w-full py-3 px-4 bg-white text-primary font-medium rounded hover:bg-white/90 transition-colors text-center"
               >
-                {isAuthenticated ? "Take a Paid Survey" : "Join a Paid Survey"}
+                {isAuthenticated ? 'Take a Paid Survey' : 'Join a Paid Survey'}
               </a>
             </div>
 
@@ -401,4 +407,12 @@ const Header: React.FC = () => {
   );
 };
 
-export default Header;
+// const HeaderWrapper: React.FC = () => {
+//   return (
+//     <AppWrapper>
+//       <Header />
+//     </AppWrapper>
+//   );
+// };
+
+export default HeaderWrapper;

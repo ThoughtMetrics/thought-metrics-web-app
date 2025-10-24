@@ -40,16 +40,23 @@ export const getAPIConfig = (): {
     storageBucket: string;
     messagingSenderId: string;
     appId: string;
+    measurementId: string;
   };
+  gtmId: string;
+  gSiteVerification: string;
+  publicClarityProjectId: string;
+  publicCookiebotId: string;
+  publicRazorpayKeyId: string;
+  razorpayKeySecret: string;
   apiPath: string;
   timeout: number;
   headers: Record<string, string>;
 } => {
   return {
     siteURL:
-      getServerEnv('PUBLIC_SITE_URL') || 'https://www.thoughtmetrics.com',
+      getPublicEnv('PUBLIC_SITE_URL') || 'https://www.thoughtmetrics.com',
     // SERVER-ONLY: STRAPI_API_URL is never exposed to the browser
-    strapiURL: getServerEnv('PUBLIC_STRAPI_API_URL') || '',
+    strapiURL: getPublicEnv('PUBLIC_STRAPI_API_URL') || '',
 
     // PUBLIC: These are available on both server and client
     baseURL: getPublicEnv('PUBLIC_BASE_URL') || '',
@@ -62,7 +69,14 @@ export const getAPIConfig = (): {
       messagingSenderId:
         getPublicEnv('PUBLIC_FIREBASE_MESSAGING_SENDER_ID') || '',
       appId: getPublicEnv('PUBLIC_FIREBASE_APP_ID') || '',
+      measurementId: getPublicEnv('PUBLIC_MEASUREMENT_ID') || '',
     },
+    gtmId: getPublicEnv('PUBLIC_GTM_ID') || '',
+    gSiteVerification: getPublicEnv('PUBLIC_GOOGLE_SITE_VERIFICATION') || '',
+    publicClarityProjectId: getPublicEnv('PUBLIC_CLARITY_PROJECT_ID') || '',
+    publicCookiebotId: getPublicEnv('PUBLIC_COOKIEBOT_ID') || '',
+    publicRazorpayKeyId: getPublicEnv('PUBLIC_RAZORPAY_KEY_ID') || '',
+    razorpayKeySecret: getServerEnv('RAZORPAY_KEY_SECRET') || '',
     apiPath: '/api',
     timeout: 10000,
     headers: {
