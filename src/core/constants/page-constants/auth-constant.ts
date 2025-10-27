@@ -297,7 +297,6 @@ export const signUpFormConstant = {
 
 export const unsubscribeConstant = {
   initialFormData: {
-    email: 'vijay.dpgc@gmail.com',
     reasons: [],
   },
   unsubscribeReasonOptions: [
@@ -315,12 +314,7 @@ export const unsubscribeConstant = {
     },
   ],
   storeName: 'unsubscribe-store',
-  validationMessages: {
-    reasons: 'Please select at least one reason',
-    submitError: 'Unsubscribe failed. Please try again.',
-  },
   formResetDelay: 3000,
-  apiSimulationDelay: 2000,
   ui: {
     pageTitle: 'Unsubscribe',
     description:
