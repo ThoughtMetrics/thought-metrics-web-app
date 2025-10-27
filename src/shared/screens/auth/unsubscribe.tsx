@@ -11,38 +11,34 @@ import { create } from 'zustand';
 import { useProfileQuery } from '@/core/hooks/queries/use-profile.query';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '@/shared/providers/auth-provider';
-import { Toaster } from 'sonner';
+import { Toaster, toast } from 'sonner';
 import { queryClient } from '@/core/lib/query-client';
+import { useUnsubscribeMutation } from '@/core/hooks/mutations/use-unsubscribe.mutation';
 
 // Destructure constants
 const {
   initialFormData,
   unsubscribeReasonOptions,
   storeName,
-  validationMessages,
   formResetDelay,
-  apiSimulationDelay,
   ui,
 } = unsubscribeConstant;
 
 // Zustand store
 const useUnsubscribeFormStore = create<UnsubscribeFormStore>()(
   devtools(
-    (set, get) => ({
+    (set) => ({
       formData: initialFormData as UnsubscribeFormData,
       isSubmitting: false,
       isSubmitted: false,
-      errors: {},
-      updateField: (field, value) =>
+
+      updateReasons: (reasons: string[]) =>
         set(
-          (state) => {
-            return {
-              formData: { ...state.formData, [field]: value },
-              errors: { ...state.errors, [field]: undefined },
-            };
-          },
+          (state) => ({
+            formData: { ...state.formData, reasons },
+          }),
           false,
-          `updateField_${field}`
+          'updateReasons'
         ),
 
       resetForm: () =>
@@ -51,60 +47,16 @@ const useUnsubscribeFormStore = create<UnsubscribeFormStore>()(
             formData: initialFormData as UnsubscribeFormData,
             isSubmitting: false,
             isSubmitted: false,
-            errors: {},
           },
           false,
           'resetForm'
         ),
 
-      validateStep: (step) => {
-        const { formData } = get();
-        const errors: Record<string, string> = {};
+      setSubmitting: (isSubmitting: boolean) =>
+        set({ isSubmitting }, false, 'setSubmitting'),
 
-        if (step === 1) {
-          if (!formData.reasons || formData.reasons.length === 0)
-            errors.reason = validationMessages.reasons;
-        }
-
-        set({ errors }, false, 'validateStep');
-        return Object.keys(errors).length === 0;
-      },
-
-      submitForm: async () => {
-        const { formData } = get();
-
-        set({ isSubmitting: true }, false, 'submitForm_start');
-
-        try {
-          await new Promise((resolve) =>
-            setTimeout(resolve, apiSimulationDelay)
-          );
-
-          console.log('Registration form submitted:', formData);
-
-          set(
-            {
-              isSubmitting: false,
-              isSubmitted: true,
-            },
-            false,
-            'submitForm_success'
-          );
-
-          setTimeout(() => {
-            get().resetForm();
-          }, formResetDelay);
-        } catch {
-          set(
-            {
-              isSubmitting: false,
-              errors: { general: validationMessages.submitError },
-            },
-            false,
-            'submitForm_error'
-          );
-        }
-      },
+      setSubmitted: (isSubmitted: boolean) =>
+        set({ isSubmitted }, false, 'setSubmitted'),
     }),
     {
       name: storeName,
@@ -115,16 +67,44 @@ const useUnsubscribeFormStore = create<UnsubscribeFormStore>()(
 const UnsubscribePage: React.FC = () => {
   const { data: userProfile } = useProfileQuery();
 
-  const { formData, isSubmitting, isSubmitted, updateField, submitForm } =
-    useUnsubscribeFormStore();
+  const {
+    formData,
+    isSubmitting,
+    isSubmitted,
+    updateReasons,
+    setSubmitting,
+    setSubmitted,
+    resetForm,
+  } = useUnsubscribeFormStore();
+
+  const { mutate: unsubscribe } = useUnsubscribeMutation();
 
   const handleReasonChange = (selectedValues: string[]) => {
-    updateField('reasons', selectedValues);
+    updateReasons(selectedValues);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    void submitForm();
+
+    setSubmitting(true);
+
+    // Call the API with unsubscribe action and selected reasons
+    unsubscribe(formData.reasons, {
+      onSuccess: () => {
+        setSubmitting(false);
+        setSubmitted(true);
+        toast.success('Account unsubscribed successfully');
+
+        // Reset form after delay
+        setTimeout(() => {
+          resetForm();
+        }, formResetDelay);
+      },
+      onError: (error: Error) => {
+        setSubmitting(false);
+        toast.error(error.message || 'Failed to unsubscribe account. Please try again.');
+      },
+    });
   };
 
   if (isSubmitted) {
@@ -183,9 +163,10 @@ const UnsubscribePage: React.FC = () => {
           />
           {/* Submit Button */}
           <CustomButtonAtom
+            type="submit"
             label={isSubmitting ? ui.buttons.submitting : ui.buttons.submit}
             className="py-2 px-14"
-            disabled={!isSubmitting}
+            disabled={isSubmitting}
           />
         </form>
       </div>
@@ -205,5 +186,3 @@ const UnsubscribeWrapper: React.FC = () => {
 };
 
 export default UnsubscribeWrapper;
-
-//BUG: Sumbit button disabled always. On choosing a checkbox the submit button should be clickable

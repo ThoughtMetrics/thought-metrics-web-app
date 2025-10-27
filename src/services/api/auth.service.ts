@@ -227,6 +227,24 @@ class AuthService {
     const response = await ApiService.get(`/users/${userId}`);
     return response.data as UserProfile;
   }
+
+  /**
+   * Unsubscribe user account
+   * Sends unsubscribe request with optional reasons
+   */
+  async unsubscribeAccount(reasons?: string[]): Promise<void> {
+    const user = this.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+
+    const token = await user.getIdToken();
+    ApiService.setAuthToken(token);
+
+    // Send unsubscribe request with reasons in body
+    await ApiService.post('/users/profile/unsubscribe', {
+      action: 'unsubscribe',
+      reasons: reasons || [],
+    });
+  }
 }
 
 export default new AuthService();

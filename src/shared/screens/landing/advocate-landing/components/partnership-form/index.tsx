@@ -12,11 +12,8 @@ import { usePartnershipFormValidation } from '@/core/hooks/validation/use-partne
 import { useSubmitPartnership } from '@/core/hooks/queries/partnership/index.queries';
 
 // Destructure constants
-const {
-  countryCodes,
-  defaultCountryCode,
-  ui,
-} = landing.advocate.formsSection.inputForm;
+const { countryCodes, defaultCountryCode, ui } =
+  landing.advocate.formsSection.inputForm;
 
 const PartnershipForm: React.FC = () => {
   const { formData, updateField, resetForm } = usePartnershipFormStore();
@@ -285,7 +282,6 @@ const PartnershipForm: React.FC = () => {
           </div>
         </div>
       </div>
-      <InteractionFooter />
     </div>
   );
 };

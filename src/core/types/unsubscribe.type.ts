@@ -1,6 +1,5 @@
 // Form Data Interface
 export interface UnsubscribeFormData {
-  email: string;
   reasons: string[];
 }
 
@@ -9,10 +8,9 @@ export interface UnsubscribeFormStore {
   formData: UnsubscribeFormData;
   isSubmitting: boolean;
   isSubmitted: boolean;
-  errors: Record<string, string | undefined>;
 
-  updateField: (field: string, value: string | boolean | string[]) => void;
+  updateReasons: (reasons: string[]) => void;
   resetForm: () => void;
-  submitForm: () => Promise<void>;
-  validateStep: (step: number) => boolean;
+  setSubmitting: (isSubmitting: boolean) => void;
+  setSubmitted: (isSubmitted: boolean) => void;
 }
