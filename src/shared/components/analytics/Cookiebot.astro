@@ -47,19 +47,22 @@
  * - LGPD (Brazil)
  */
 
-const cookiebotId = (import.meta.env.PUBLIC_COOKIEBOT_ID ||
-                     (typeof window !== 'undefined' && window.__APP_CONFIG__?.PUBLIC_COOKIEBOT_ID)) || '';
-
-const shouldRender = cookiebotId && cookiebotId.length > 0;
 ---
 
-{shouldRender && (
-  <script
-    id="Cookiebot"
-    src="https://consent.cookiebot.com/uc.js"
-    data-cbid={cookiebotId}
-    data-blockingmode="auto"
-    type="text/javascript"
-    is:inline
-  ></script>
-)}
+<script>
+  import { getAPIConfig } from '@configs/api-config';
+
+  const config = getAPIConfig();
+  const cookiebotId = config.publicCookiebotId;
+
+  if (cookiebotId && cookiebotId.length > 0) {
+    // Dynamically inject Cookiebot script
+    const script = document.createElement('script');
+    script.id = 'Cookiebot';
+    script.src = 'https://consent.cookiebot.com/uc.js';
+    script.setAttribute('data-cbid', cookiebotId);
+    script.setAttribute('data-blockingmode', 'auto');
+    script.type = 'text/javascript';
+    document.head.appendChild(script);
+  }
+</script>

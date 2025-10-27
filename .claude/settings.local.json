@@ -15,7 +15,8 @@
       "Bash(curl:*)",
       "Bash(yarn docker:build:*)",
       "Bash(docker stop:*)",
-      "Bash(docker rm:*)"
+      "Bash(docker rm:*)",
+      "Bash(yarn lint:*)"
     ],
     "deny": [],
     "ask": []

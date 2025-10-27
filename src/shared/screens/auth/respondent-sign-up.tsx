@@ -17,7 +17,6 @@ import { ArrowRed, FacebookOutlineIcon, GoogleOutlineIcon } from '@/assets';
 import FaqOrganism from '@/shared/ui/organisms/faq-organism';
 import { useSignUpMutation } from '@/core/hooks/mutations/use-sign-up.mutation';
 import { ROUTES } from '@/routes/routeConfig';
-import { LoaderOverlay } from '@/shared/ui/atoms/loader';
 import { Toaster } from 'sonner';
 import { AuthProvider } from '@/shared/providers/auth-provider';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -416,16 +415,6 @@ const RespondentSignUpPage: React.FC = () => {
 
   return (
     <>
-      <LoaderOverlay
-        isVisible={socialAuthLoading !== null}
-        message={
-          socialAuthLoading === 'google'
-            ? 'Signing in with Google...'
-            : socialAuthLoading === 'facebook'
-              ? 'Signing in with Facebook...'
-              : 'Loading...'
-        }
-      />
       <div className="common-component bg-white text-black">
         <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col !max-w-[var(--breakpoint-2xl)]">
           {/* Header */}
