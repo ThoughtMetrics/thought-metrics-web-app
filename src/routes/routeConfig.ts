@@ -7,7 +7,7 @@ export const ROUTES = {
   OUR_PANEL: '/our-panel',
   /* Industry Routes */
   INDUSTRY: '/industries',
-  INDUSTRY_ADVERTISING: '/industries/advertising-marketing',
+  INDUSTRY_ADVERTISING: '/industries/advertising',
   INDUSTRY_INTERNET: '/industries/internet',
   INDUSTRY_RETAIL: '/industries/retail',
   INDUSTRY_HEALTHCARE: '/industries/healthcare',
@@ -79,7 +79,7 @@ export const generateBreadcrumbsFromPath = (
     const segmentLabels: Record<string, string> = {
       'our-panel': 'Our Panel',
       industries: 'Industries',
-      'advertising-marketing': 'Advertising and Marketing',
+      advertising: 'Advertising and Marketing',
       internet: 'Internet and Media',
       retail: 'Retail and Merchandising',
       healthcare: 'Healthcare and Life Sciences',

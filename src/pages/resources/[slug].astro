@@ -32,13 +32,16 @@ const seoContent = {
     content?.description || 'Explore our research insights and resources',
   ogImage: content?.img?.url,
   ogType: 'article' as const,
-  canonicalUrl: `https://thoughtmetrics.com/resources/${slug}`,
+  canonical: `https://thoughtmetrics.com/resources/${slug}`,
 };
 ---
 
 <PresentationLayout
   title={seoContent.title}
   description={seoContent.description}
+  ogImage={seoContent.ogImage}
+  ogType={seoContent.ogType}
+  canonical={seoContent.canonical}
 >
   <ResourceDetailPage
     content={content}
