@@ -44,8 +44,6 @@ export const getAPIConfig = (): {
   };
   gtmId: string;
   gSiteVerification: string;
-  publicClarityProjectId: string;
-  publicCookiebotId: string;
   publicRazorpayKeyId: string;
   razorpayKeySecret: string;
   apiPath: string;
@@ -73,8 +71,6 @@ export const getAPIConfig = (): {
     },
     gtmId: getPublicEnv('PUBLIC_GTM_ID') || '',
     gSiteVerification: getPublicEnv('PUBLIC_GOOGLE_SITE_VERIFICATION') || '',
-    publicClarityProjectId: getPublicEnv('PUBLIC_CLARITY_PROJECT_ID') || '',
-    publicCookiebotId: getPublicEnv('PUBLIC_COOKIEBOT_ID') || '',
     publicRazorpayKeyId: getPublicEnv('PUBLIC_RAZORPAY_KEY_ID') || '',
     razorpayKeySecret: getServerEnv('RAZORPAY_KEY_SECRET') || '',
     apiPath: '/api',

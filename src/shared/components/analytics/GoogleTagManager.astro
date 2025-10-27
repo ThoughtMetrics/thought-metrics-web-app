@@ -1,3 +1,7 @@
+---
+const { gtmId } = Astro.props;
+---
+
 <!--
   Google Tag Manager (GTM) Component
 
@@ -16,38 +20,52 @@
 
   SETUP:
   1. Get GTM ID from https://tagmanager.google.com (format: GTM-XXXXXXX)
-  2. Add PUBLIC_GTM_ID to .env
+  2. Add PUBLIC_GTM_ID to .env and ensure it's in window.__APP_CONFIG__
   3. Configure tags in GTM dashboard (GA4, Clarity, Cookiebot)
-  4. Add <noscript> fallback in <body> of Layout.astro
+  4. Noscript fallback is auto-injected by this component
 
   BENEFITS:
   - Add/remove tracking scripts without code changes
   - Better performance (tags load asynchronously)
   - Single source of truth for all tracking
   - Easier consent management via Cookiebot
+  - Pure runtime configuration (no build-time env vars)
 -->
-<script>
-  import { getAPIConfig } from '@configs/api-config';
 
-  const config = getAPIConfig();
-  const gtmId = config.gtmId;
+{gtmId && gtmId !== 'GTM-XXXXXXX' && gtmId.length > 0 && (
+  <>
+    <script is:inline set:html={`
+      (function() {
+        // Initialize Google Tag Manager (Official GTM snippet)
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          'gtm.start': new Date().getTime(),
+          event: 'gtm.js'
+        });
 
-  // Only initialize if GTM ID is provided and not placeholder
-  if (gtmId && gtmId !== 'GTM-XXXXXXX' && gtmId.length > 0) {
-    // Initialize Google Tag Manager (Official GTM snippet)
-    (window as any).dataLayer = (window as any).dataLayer || [];
-    (window as any).dataLayer.push({
-      'gtm.start': new Date().getTime(),
-      event: 'gtm.js'
-    });
+        var firstScript = document.getElementsByTagName('script')[0];
+        var gtmScript = document.createElement('script');
+        gtmScript.async = true;
+        gtmScript.src = 'https://www.googletagmanager.com/gtm.js?id=${gtmId}';
 
-    const firstScript = document.getElementsByTagName('script')[0];
-    const gtmScript = document.createElement('script') as HTMLScriptElement;
-    gtmScript.async = true;
-    gtmScript.src = 'https://www.googletagmanager.com/gtm.js?id=' + gtmId;
+        if (firstScript && firstScript.parentNode) {
+          firstScript.parentNode.insertBefore(gtmScript, firstScript);
+        }
 
-    if (firstScript && firstScript.parentNode) {
-      firstScript.parentNode.insertBefore(gtmScript, firstScript);
-    }
-  }
-</script>
+        // Inject noscript iframe fallback
+        var noscript = document.createElement('noscript');
+        var iframe = document.createElement('iframe');
+        iframe.src = 'https://www.googletagmanager.com/ns.html?id=${gtmId}';
+        iframe.height = '0';
+        iframe.width = '0';
+        iframe.style.display = 'none';
+        iframe.style.visibility = 'hidden';
+        noscript.appendChild(iframe);
+
+        if (document.body) {
+          document.body.insertBefore(noscript, document.body.firstChild);
+        }
+      })();
+    `} />
+  </>
+)}

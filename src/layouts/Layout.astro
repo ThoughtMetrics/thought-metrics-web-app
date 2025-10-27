@@ -9,6 +9,7 @@ import '@styles/markdown.css';
 import AppWrapper from '@/shared/components/AppWrapper';
 import faviconSvg from '@assets/icons/thought-metrics.svg';
 import GoogleTagManager from '@/shared/components/analytics/GoogleTagManager.astro';
+import { getAPIConfig } from '@/core/configs/api-config';
 
 export interface Props {
   title?: string;
@@ -31,6 +32,8 @@ const {
   noindex,
   nofollow,
 } = Astro.props;
+
+const config = getAPIConfig();
 ---
 
 <!doctype html>
@@ -92,7 +95,7 @@ const {
 
     <!-- Analytics & Tracking (GTM manages: GA4, Clarity) -->
     <!-- Note: Cookiebot loads BEFORE GTM to control consent -->
-    <GoogleTagManager />
+    <GoogleTagManager gtmId={config.gtmId} />
 
     <!-- View Transitions for smooth page navigation -->
     <ClientRouter />
@@ -140,15 +143,6 @@ const {
     </style>
   </head>
   <body id="root">
-    <!-- Google Tag Manager (noscript fallback) -->
-    <noscript>
-      <iframe
-        src={`https://www.googletagmanager.com/ns.html?id=${import.meta.env.PUBLIC_GTM_ID}`}
-        height="0"
-        width="0"
-        style="display:none;visibility:hidden"></iframe>
-    </noscript>
-
     <AppWrapper client:only="react">
       <slot />
     </AppWrapper>
