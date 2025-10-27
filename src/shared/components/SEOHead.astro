@@ -9,15 +9,23 @@
  * - Open Graph tags for social sharing
  * - Twitter Card tags
  * - Canonical URL
+ *
+ * IMAGE HANDLING:
+ * - Uses Astro's optimized image imports (with hashed filenames)
+ * - Works correctly in Docker/SSR deployments
+ * - Supports both ImageMetadata and string URLs
  */
 
 import { getAPIConfig } from '@/core/configs/api-config';
+import { getSEOImageUrl } from '@utils/seo-images';
+import type { ImageMetadata } from 'astro';
+import defaultOgImageImport from '@assets/images/og-default.png';
 
 export interface Props {
   title: string; // Max 60 characters
   description: string; // Max 160 characters
   keywords?: string; // Comma-separated keywords
-  ogImage?: string; // Open Graph image URL
+  ogImage?: ImageMetadata | string; // Open Graph image (ImageMetadata or URL)
   ogType?: string; // Page type (website, article, etc.)
   canonical?: string; // Canonical URL
   noindex?: boolean; // Prevent indexing
@@ -36,28 +44,38 @@ const {
 } = Astro.props;
 
 const config = getAPIConfig();
-const siteUrl = config.siteURL || 'https://thoughtmetrics.com';
+const siteUrl = config.siteURL || 'https://www.thoughtmetrics.com';
 
 // Build full URL for canonical and OG
 const currentUrl = canonical || new URL(Astro.url.pathname, siteUrl).href;
 
-// Default OG image if not provided
-const defaultOgImage = `${siteUrl}/og-image.png`;
-const ogImageUrl = ogImage || defaultOgImage;
+// Get optimized OG image URL (handles ImageMetadata, string URLs, and fallback)
+const ogImagePath = ogImage
+  ? await getSEOImageUrl(ogImage, 'og-default.png')
+  : defaultOgImageImport.src;
+
+// Convert to absolute URL for social media crawlers
+const ogImageUrl = ogImagePath.startsWith('http')
+  ? ogImagePath
+  : new URL(ogImagePath, siteUrl).href;
 
 // Build robots meta content
 const robotsContent = [
   noindex ? 'noindex' : 'index',
-  nofollow ? 'nofollow' : 'follow'
+  nofollow ? 'nofollow' : 'follow',
 ].join(', ');
 
 // Validate character lengths (in development only)
 if (import.meta.env.DEV) {
   if (title.length > 60) {
-    console.warn(`⚠️ SEO Warning: Title exceeds 60 characters (${title.length}): "${title}"`);
+    console.warn(
+      `⚠️ SEO Warning: Title exceeds 60 characters (${title.length}): "${title}"`
+    );
   }
   if (description.length > 160) {
-    console.warn(`⚠️ SEO Warning: Description exceeds 160 characters (${description.length}): "${description}"`);
+    console.warn(
+      `⚠️ SEO Warning: Description exceeds 160 characters (${description.length}): "${description}"`
+    );
   }
 }
 ---
