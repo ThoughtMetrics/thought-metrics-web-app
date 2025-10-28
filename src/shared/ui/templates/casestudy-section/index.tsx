@@ -4,9 +4,9 @@ import './casestudy-section.css';
 const CaseStudySection: React.FC<any> = ({ caseStudySection }: any) => {
   return (
     <section className="common-component relative bg-white text-black">
-      <div className="common-container px-6 py-8 md:px-24 md:py-24 !max-w-[1336px] !grid grid-cols-1 md:grid-cols-[40%_60%] gap-10 md:gap-0">
+      <div className="common-container px-6 py-8 md:px-24 md:py-24 max-w-[1336px]! grid! grid-cols-1 md:grid-cols-[40%_60%] gap-10 md:gap-0">
         <div className="w-full flex flex-col gap-3">
-          <h2 className="md:w-[95%] text-xl md:text-3xl font-semibold leading-[1.25] tracking-wide flex flex-col gap-2">
+          <h2 className="md:w-[95%] text-xl md:text-3xl font-semibold leading-tight tracking-wide flex flex-col gap-2">
             <span>{caseStudySection.title}</span>
             <div className="w-25 h-1 bg-primary rounded"></div>
           </h2>
@@ -45,13 +45,13 @@ const ResearchMethodCaseStudySection: React.FC<any> = ({
           <img
             src={caseStudySection.illustrationDesktop}
             alt="Research illustration"
-            className="h-[18rem] w-auto xl:w-[21.5rem] xl:h-[20rem] xxl:w-fit xxl:h-fit"
+            className="h-72 w-auto xl:w-86 xl:h-80 xxl:w-fit xxl:h-fit"
           />
         )}
       </div>
-      <div className="common-container px-6 py-8 md:px-24 md:py-24 !max-w-[1336px]">
+      <div className="common-container px-6 py-8 md:px-24 md:py-24 max-w-[1336px]!">
         <div className="w-full flex flex-col gap-3">
-          <h2 className="w-[85%] md:w-full text-xl md:text-3xl font-semibold leading-[1.25] tracking-wide flex flex-col gap-2">
+          <h2 className="w-[85%] md:w-full text-xl md:text-3xl font-semibold leading-tight tracking-wide flex flex-col gap-2">
             <span>{caseStudySection.title}</span>
           </h2>
 

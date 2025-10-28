@@ -285,8 +285,8 @@ const LoginPage: React.FC = () => {
   return (
     <>
       {/* ApiLoadingIndicator handles loading states automatically */}
-      <div className="common-component w-full relative bg-white text-black z-1 overflow-scroll flex-col items-center !justify-start hide-scrollbar">
-        <header className="common-container bg-white !max-w-[var(--breakpoint-2xl)] h-[3.5rem]">
+      <div className="common-component w-full relative bg-white text-black z-1 overflow-scroll flex-col items-center justify-start! hide-scrollbar">
+        <header className="common-container bg-white max-w-(--breakpoint-2xl)! h-14">
           <nav className="px-6 py-3 xxl:px-0 flex items-center justify-between w-full">
             <a href={ROUTES.HOME}>
               <div className="w-45 pt-1">
@@ -297,7 +297,7 @@ const LoginPage: React.FC = () => {
         </header>
         <div className="relative md:h-[calc(100vh-3.5rem)] w-full">
           <div className="lg:block md:absolute right-0 w-[full%] md:w-[50%] h-full bg-[url('images/login_background_image.png')] bg-cover bg-center bg-no-repeat -z-1 text-black px-6 py-10 md:px-18 md:py-16" />
-          <div className="common-container h-full !grid grid-cols-1 md:grid-cols-[50%_50%] inset-ring-custom-grey-1 inset-ring-1">
+          <div className="common-container h-full grid! grid-cols-1 md:grid-cols-[50%_50%] inset-ring-custom-grey-1 inset-ring-1">
             <div className="bg-white shadow-sm border border-gray-200 rounded-lg px-8 py-10 wide:py-28 flex flex-col items-center justify-center">
               <div className="mb-8 w-full max-w-[380px]">
                 <h1 className="text-2xl font-medium text-black">
@@ -314,7 +314,7 @@ const LoginPage: React.FC = () => {
                   className="relative w-full flex items-center pl-4 pr-12 py-2 bg-[#DB4437] text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <GoogleOutlineIcon className="w-5 h-5 mr-8" />
-                  <div className="left-13 absolute w-0.25 h-full bg-white"></div>
+                  <div className="left-13 absolute w-px h-full bg-white"></div>
                   {socialAuthLoading === 'google'
                     ? 'Signing in...'
                     : 'Sign in with Google'}
@@ -326,7 +326,7 @@ const LoginPage: React.FC = () => {
                   className="relative w-full flex items-center pl-4 pr-12 py-2 bg-[#1877F2] text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <FacebookOutlineIcon className="w-5 h-5 mr-8" />
-                  <div className="left-13 absolute w-0.25 h-full bg-white"></div>
+                  <div className="left-13 absolute w-px h-full bg-white"></div>
                   {socialAuthLoading === 'facebook'
                     ? 'Signing in...'
                     : 'Sign in with Facebook'}
@@ -341,7 +341,7 @@ const LoginPage: React.FC = () => {
 
               <form
                 onSubmit={handleSubmit}
-                className="space-y-6 border-y-1 border-y-custom-grey py-4 max-w-[380px] shrink-0 w-full"
+                className="space-y-6 border-y border-y-custom-grey py-4 max-w-[380px] shrink-0 w-full"
               >
                 {/* Login Error Message */}
                 {loginError && (
@@ -395,7 +395,7 @@ const LoginPage: React.FC = () => {
                     checked={formData.rememberMe}
                     onChange={handleInputChange}
                     label={ui.checkboxLabels.rememberMe}
-                    className="font-medium [&>*]:text-base"
+                    className="font-medium *:text-base"
                   />
                 </div>
               </form>
@@ -419,7 +419,7 @@ const LoginPage: React.FC = () => {
                   href={ROUTES.SIGN_UP}
                   //NOTE: Uncomment the line below to enable the reset password link
                   // href={ROUTES.RESET_PASSWORD}
-                  className="border-t-1 border-t-custom-grey w-full pt-3"
+                  className="border-t border-t-custom-grey w-full pt-3"
                 >
                   <span className="text-blue-600 hover:text-blue-800 text-sm hover:underline w-full">
                     {ui.links.resetPassword}

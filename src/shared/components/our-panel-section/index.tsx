@@ -6,7 +6,7 @@ const OurPanelSection: React.FC = () => {
   const pageContent = ourPanelConstants;
   return (
     <section className="common-component bg-white">
-      <div className="z-1 common-container w-full !max-w-[var(--breakpoint-2xl)] py-8 px-6 md:p-24 !grid grid-cols-1 md:grid-cols-[40%_60%] gap-12 md:gap-24">
+      <div className="z-1 common-container w-full max-w-(--breakpoint-2xl)! py-8 px-6 md:p-24 grid! grid-cols-1 md:grid-cols-[40%_60%] gap-12 md:gap-24">
         <div className="hidden md:flex w-full h-full items-center justify-center xl:pt-14 wide:pt-0">
           <CustomImageAtom
             src={pageContent.illustration.img}

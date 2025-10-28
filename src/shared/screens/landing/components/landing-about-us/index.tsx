@@ -23,7 +23,7 @@ const LandingAboutUsSection: React.FC<any> = ({
     <section className="common-component relative text-black landing-about-us-section">
       <div
         className={cn(
-          'common-container px-6 pt-14 pb-8 md:px-24 md:py-24 !max-w-[1336px] !grid grid-cols-1 md:grid-cols-[50%_50%] gap-8 items-center justify-between',
+          'common-container px-6 pt-14 pb-8 md:px-24 md:py-24 max-w-[1336px]! grid! grid-cols-1 md:grid-cols-[50%_50%] gap-8 items-center justify-between',
           className
         )}
       >
@@ -34,7 +34,7 @@ const LandingAboutUsSection: React.FC<any> = ({
           aspectRatio={aboutUsSection.illustration.aspectRatio}
           objectFit={aboutUsSection.illustration.objectFit}
           loading={aboutUsSection.illustration.loading}
-          className="hidden md:block !max-h-[45rem] wide:!max-h-[52rem]"
+          className="hidden md:block max-h-180! wide:!max-h-[52rem]"
         />
         <div className="w-full flex flex-col gap-5 text-black">
           <div className="flex flex-col gap-4 md:gap-6">

@@ -10,8 +10,8 @@ const BG_COLORS: Record<string, string> = {
 const SurveyServices: React.FC<any> = ({ serviceSection }) => {
   return (
     <section className="common-component bg-white">
-      <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col !max-w-[var(--breakpoint-2xl)] text-black">
-        <h2 className="md:text-lg xl:text-xl xxl:text-2xl font-semibold leading-[1.25] tracking-normal">
+      <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col max-w-(--breakpoint-2xl)! text-black">
+        <h2 className="md:text-lg xl:text-xl xxl:text-2xl font-semibold leading-tight tracking-normal">
           {serviceSection.head}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">

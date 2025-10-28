@@ -272,7 +272,7 @@ const EditProfilePage: React.FC = () => {
   return (
     <>
       <div className="common-component bg-white text-black">
-        <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col !max-w-[var(--breakpoint-2xl)]">
+        <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col max-w-(--breakpoint-2xl)!">
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-4xl font-medium tracking-tighter text-gray-900 mb-2">

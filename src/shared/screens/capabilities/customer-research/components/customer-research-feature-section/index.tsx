@@ -10,7 +10,7 @@ const CustomerResearchFeatureSection: React.FC<any> = ({
     <section className="common-component relative text-black brand-ad-component">
       <div
         className={cn(
-          'common-container relative px-6 py-8 md:px-24 md:py-24 !max-w-[1336px] flex-col gap-12 z-10',
+          'common-container relative px-6 py-8 md:px-24 md:py-24 max-w-[1336px]! flex-col gap-12 z-10',
           className
         )}
       >
@@ -36,7 +36,7 @@ const CustomerResearchFeatureSection: React.FC<any> = ({
           {featureSection.items.map((feature: any, index: number) => (
             <BrandAdFeatureCard
               feature={feature}
-              index={index}
+              key={index + feature.title}
               className={cn('px-7 py-8', featureClassName)}
               contentClassName="md:gap-16 xl:gap-16 xxl:gap-16"
             />
@@ -52,7 +52,7 @@ const CustomerResearchFeatureSection: React.FC<any> = ({
           {featureSection.items.map((feature: any, index: number) => (
             <BrandAdFeatureCard
               feature={feature}
-              index={index}
+              key={index + feature.title}
               className={cn('px-5 py-6 shrink-0 w-[65%]', featureClassName)}
               contentClassName="gap-14"
             />

@@ -139,7 +139,7 @@ const UnsubscribePage: React.FC = () => {
 
   return (
     <div className="common-component text-black bg-white flex-col h-[calc(100vh-7.25rem)]">
-      <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col gap-4 md:gap-8 !max-w-[var(--breakpoint-2xl)]">
+      <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col gap-4 md:gap-8 max-w-(--breakpoint-2xl)!">
         <h1 className="text-4xl font-medium">Unsubscribe</h1>
         <p className="text-md md:w-[70%]">
           {ui.description}{' '}

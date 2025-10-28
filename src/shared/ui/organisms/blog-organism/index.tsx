@@ -12,14 +12,14 @@ const BlogOrganism: React.FC<any> = ({
     <section className={`common-component text-black ${bgColor}`}>
       <div
         className={cn(
-          'common-container px-6 pt-8 pb-12 md:px-24 md:pt-18 md:pb-24 !max-w-[1336px] flex-col',
+          'common-container px-6 pt-8 pb-12 md:px-24 md:pt-18 md:pb-24 max-w-[1336px]! flex-col',
           className
         )}
       >
         <div className="flex justify-between items-center w-full">
           <h2
             className={cn(
-              'text-[1.1rem] md:text-3xl font-semibold leading-[1.25] tracking-normal',
+              'text-[1.1rem] md:text-3xl font-semibold leading-tight tracking-normal',
               titleClassName
             )}
           >

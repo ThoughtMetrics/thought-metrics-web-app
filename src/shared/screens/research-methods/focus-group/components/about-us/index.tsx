@@ -10,7 +10,7 @@ const AboutUsSection: React.FC<any> = ({
     <section className="common-component relative bg-white text-black">
       <div
         className={cn(
-          'common-container px-6 pt-14 pb-8 md:px-24 md:py-24 !max-w-[1336px] !grid grid-cols-1 md:grid-cols-[43%_40%] items-center justify-between',
+          'common-container px-6 pt-14 pb-8 md:px-24 md:py-24 max-w-[1336px]! grid! grid-cols-1 md:grid-cols-[43%_40%] items-center justify-between',
           className
         )}
       >
@@ -21,7 +21,7 @@ const AboutUsSection: React.FC<any> = ({
             </span>
             <div className="w-25 h-0.5 md:h-1 bg-primary rounded"></div>
           </h2>
-          <h2 className="text-xl xl:text-2xl xxl:text-3xl font-semibold leading-[1.25]">
+          <h2 className="text-xl xl:text-2xl xxl:text-3xl font-semibold leading-tight">
             <span>{questionarySection.title}</span>
           </h2>
           <CustomImageAtom

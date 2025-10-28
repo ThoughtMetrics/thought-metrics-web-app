@@ -9,7 +9,7 @@ const ProductResearchFeatureSection: React.FC<any> = ({
     <section className="common-component relative brand-ad-component text-black">
       <div
         className={cn(
-          'common-container relative px-6 py-8 md:px-24 md:py-24 !max-w-[1336px] flex-col gap-12 z-10',
+          'common-container relative px-6 py-8 md:px-24 md:py-24 max-w-[1336px]! flex-col gap-12 z-10',
           className
         )}
       >
@@ -30,7 +30,7 @@ const ProductResearchFeatureSection: React.FC<any> = ({
               className={cn('grid grid-cols-[25%_73%] md:grid-cols-[15%_84%]', featureClassName)}
               key={index + feature.title}
             >
-              <div className="w-[3.5rem] h-[3.5rem] md:w-[4.25rem] md:h-[4.25rem] bg-primary/20 rounded-full flex items-center justify-center overflow-hidden p-4">
+              <div className="w-14 h-14 md:w-17 md:h-17 bg-primary/20 rounded-full flex items-center justify-center overflow-hidden p-4">
                 <feature.icon className="w-full h-full xl:h-11 xl:w-11 xxl:w-12 xxl:h-12 fill-current text-black" />
               </div>
               <div className="w-full flex flex-col text-sm md:text-base">

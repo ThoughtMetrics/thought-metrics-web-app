@@ -3,7 +3,7 @@ import React from 'react';
 const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
   return (
     <section className="common-component bg-white">
-      <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col !max-w-[var(--breakpoint-2xl)]">
+      <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col max-w-(--breakpoint-2xl)!">
         {/* Desktop View */}
         <div className="hidden md:grid grid-cols-1 w-full md:grid-cols-3  md:grid-rows-2 gap-3 pt-6 text-black">
           {/* Service 1 */}
@@ -20,7 +20,7 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
                 />
               ) : null;
             })()}
-            <div className="flex flex-col justify-between h-[12rem]">
+            <div className="flex flex-col justify-between h-48">
               <div className="w-[88%] flex flex-col gap-2 z-1">
                 <h3 className="leading-[1.2] font-semibold">
                   {b2bServiceSection.services[0].title}
@@ -36,9 +36,9 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
           {/* Service 2 */}
           <a
             href={b2bServiceSection.services[1].link || '#'}
-            className="relative col-span-2 bg-gradient-to-r from-custom-violet to-white rounded-md flex flex-col justify-center pb-18 pt-24 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
+            className="relative col-span-2 bg-linear-to-r from-custom-violet to-white rounded-md flex flex-col justify-center pb-18 pt-24 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
           >
-            <div className="flex flex-col justify-between h-[12rem]">
+            <div className="flex flex-col justify-between h-48">
               <div className="w-[40%] flex flex-col gap-2">
                 <h3 className="leading-[1.2] font-semibold">
                   {b2bServiceSection.services[1].title}
@@ -62,9 +62,9 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
           {/* Service 3 */}
           <a
             href={b2bServiceSection.services[2].link || '#'}
-            className="relative col-span-2 bg-gradient-to-r from-custom-grey-1 to-white rounded-md flex flex-col justify-center pb-18 pt-24 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
+            className="relative col-span-2 bg-linear-to-r from-custom-grey-1 to-white rounded-md flex flex-col justify-center pb-18 pt-24 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
           >
-            <div className="flex flex-col justify-between h-[12rem]">
+            <div className="flex flex-col justify-between h-48">
               <div className="w-[40%] flex flex-col gap-2">
                 <h3 className="leading-[1.2] font-semibold">
                   {b2bServiceSection.services[2].title}
@@ -88,7 +88,7 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
             href={b2bServiceSection.services[3].link || '#'}
             className="relative col-span-1 bg-custom-pink rounded-md flex flex-col justify-center pb-18 pt-24 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
           >
-            <div className="flex flex-col justify-between h-[12rem]">
+            <div className="flex flex-col justify-between h-48">
               <div className="w-[90%] flex flex-col gap-2">
                 <h3 className="leading-[1.2] font-semibold">
                   {b2bServiceSection.services[3].title}
@@ -139,7 +139,7 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
           </a>
           <a
             href={b2bServiceSection.services[1].link || '#'}
-            className="shrink-0 w-70 h-80 relative col-span-1 bg-gradient-to-r from-custom-violet to-white rounded-md flex flex-col justify-center py-10 px-7"
+            className="shrink-0 w-70 h-80 relative col-span-1 bg-linear-to-r from-custom-violet to-white rounded-md flex flex-col justify-center py-10 px-7"
           >
             <div className="w-full flex flex-col gap-2 z-1">
               <h3 className="w-[90%] leading-[1.2] font-semibold">
@@ -159,7 +159,7 @@ const BrandAdB2BServices: React.FC<any> = ({ b2bServiceSection }) => {
           </a>
           <a
             href={b2bServiceSection.services[2].link || '#'}
-            className="shrink-0 w-70 h-80 relative col-span-1 bg-gradient-to-r from-custom-grey-1 to-white rounded-md flex flex-col justify-center py-10 px-7"
+            className="shrink-0 w-70 h-80 relative col-span-1 bg-linear-to-r from-custom-grey-1 to-white rounded-md flex flex-col justify-center py-10 px-7"
           >
             <div className="w-full flex flex-col gap-2 z-1">
               <h3 className="w-[90%] leading-[1.2] font-semibold">

@@ -11,7 +11,7 @@ const HeroCarousel: React.FC = () => {
   return (
     <section className="common-component">
       {/* Desktop View */}
-      <div className="common-container relative !hidden md:!block w-full">
+      <div className="common-container relative hidden! md:block! w-full">
         <Swiper
           modules={[Pagination, Autoplay, EffectFade]}
           slidesPerView={1}
@@ -27,17 +27,17 @@ const HeroCarousel: React.FC = () => {
             delay: 5000,
             disableOnInteraction: true,
           }}
-          className="w-full min-h-[18rem] xl:min-h-[30rem] xxl:min-h-[38rem] wide:min-h-[45rem]"
+          className="w-full min-h-72 xl:min-h-120 xxl:min-h-[38rem] wide:min-h-[45rem]"
         >
           {carouselData.map((item, index) => (
             <SwiperSlide
               key={index + item.label}
-              className="!flex !items-stretch"
+              className="flex! items-stretch!"
             >
               <div className="grid grid-cols-[48%_52%] w-full h-full">
                 {/* Image Section */}
                 <div className="relative h-full w-full flex justify-end items-center">
-                  <div className="w-[30rem] xxl:w-fit px-[4rem] xxl:px-[8rem] py-[2rem]">
+                  <div className="w-120 xxl:w-fit px-16 xxl:px-[8rem] py-8">
                     <img src={item.src} alt={item.alt} />
                   </div>
                 </div>
@@ -65,10 +65,10 @@ const HeroCarousel: React.FC = () => {
         </Swiper>
 
         {/* Custom Pagination */}
-        <div className="custom-pagination absolute flex gap-3 justify-center xl:!bottom-8 xxl:!bottom-10 wide:!bottom-12 left-1/2 -translate-x-1/2 z-10"></div>
+        <div className="custom-pagination absolute flex gap-3 justify-center xl:bottom-8! xxl:!bottom-10 wide:!bottom-12 left-1/2 -translate-x-1/2 z-10"></div>
       </div>
       {/* Mobile View */}
-      <div className="common-container flex-col gap-4 md:!hidden px-6 py-8 !justify-start">
+      <div className="common-container flex-col gap-4 md:hidden! px-6 py-8 justify-start!">
         <div className="text-3xl font-bold text-black">
           {carouselData[0]?.mobileLabel.split('\n').map((line, idx) => (
             <p key={idx + 'label'}>

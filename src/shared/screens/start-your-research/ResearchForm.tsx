@@ -130,11 +130,11 @@ const ResearchForm: React.FC = () => {
 
   return (
     <div className="common-component bg-white text-black flex-col items-center">
-      <div className="form-1-component w-full min-h-[240px] md:min-h-[480px] xxl:p-0 z-1 flex items-center relative justify-center">
+      <div className="form-1-component w-full min-h-60 md:min-h-[480px] xxl:p-0 z-1 flex items-center relative justify-center">
         <div className="flex absolute w-full h-[95%] justify-end top-1/2 transform -translate-y-1/2">
           <IllustrationSquares2 className="h-full w-auto stroke-1" />
         </div>
-        <div className="common-container px-6 py-8 md:px-24 md:py-24 !max-w-[1336px]">
+        <div className="common-container px-6 py-8 md:px-24 md:py-24 max-w-[1336px]!">
           <h2 className="text-xl md:text-4xl font-semibold text-white">
               {ui.pageTitle}
           </h2>
@@ -142,7 +142,7 @@ const ResearchForm: React.FC = () => {
         <div className="absolute top-0 w-full h-full bg-primary/65 -z-1" />
       </div>
 
-      <div className="common-container px-6 py-8 md:px-24 md:py-12 !max-w-[var(--breakpoint-2xl)] flex-col">
+      <div className="common-container px-6 py-8 md:px-24 md:py-12 max-w-(--breakpoint-2xl)! flex-col">
         <h1 className="font-medium md:text-xl text-black mb-2 flex flex-col pb-4">
           <span>{ui.mainHeading}</span>
           <span>{ui.subHeading}</span>
@@ -352,7 +352,7 @@ const ResearchForm: React.FC = () => {
 
           {/* Contact Info Section */}
           <div className="lg:w-1/3 text-end">
-            <div className="p-4 sticky top-4 border-y-1 border-black w-full">
+            <div className="p-4 sticky top-4 border-y border-black w-full">
               <h3 className="text-xl font-medium text-black mb-4">
                 {ui.contactInfo.title}
               </h3>

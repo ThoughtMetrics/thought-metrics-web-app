@@ -5,8 +5,8 @@ import { ArrowRight } from '@/assets';
 const B2BServices: React.FC = () => {
   return (
     <section className="common-component bg-neutral">
-      <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col !max-w-[var(--breakpoint-2xl)]">
-        <h2 className="text-[1.1rem] md:text-3xl font-semibold leading-[1.25] text-black tracking-normal md:w-[85%]">
+      <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col max-w-(--breakpoint-2xl)!">
+        <h2 className="text-[1.1rem] md:text-3xl font-semibold leading-tight text-black tracking-normal md:w-[85%]">
           {contentSecondData.mainTitle}
         </h2>
         {/* Desktop View */}
@@ -23,7 +23,7 @@ const B2BServices: React.FC = () => {
                   />
                 ) : null;
               })()}
-              <div className="flex flex-col justify-between h-[18rem]">
+              <div className="flex flex-col justify-between h-72">
                 <div className="w-[90%] flex flex-col gap-2 z-1">
                   <h3 className="leading-[1.2] font-semibold">
                     {contentSecondData.services[0].title}
@@ -40,9 +40,9 @@ const B2BServices: React.FC = () => {
           {/* Service 2 */}
           <a
             href={contentSecondData.services[1].path}
-            className="relative col-span-2 bg-gradient-to-r from-custom-violet to-white rounded-md flex flex-col py-9 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
+            className="relative col-span-2 bg-linear-to-r from-custom-violet to-white rounded-md flex flex-col py-9 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
           >
-            <div className="flex flex-col justify-between h-[18rem]">
+            <div className="flex flex-col justify-between h-72">
               <div className="w-[52%] flex flex-col gap-2">
                 <h3 className="w-[50%] leading-[1.2] font-semibold">
                   {contentSecondData.services[1].title}
@@ -70,9 +70,9 @@ const B2BServices: React.FC = () => {
           {/* Service 3 */}
           <a
             href={contentSecondData.services[2].path}
-            className="relative col-span-2 bg-gradient-to-r from-custom-grey-1 to-white rounded-md flex flex-col justify-center py-9 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
+            className="relative col-span-2 bg-linear-to-r from-custom-grey-1 to-white rounded-md flex flex-col justify-center py-9 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
           >
-            <div className="flex flex-col justify-between h-[14rem]">
+            <div className="flex flex-col justify-between h-56">
               <div className="w-[60%] flex flex-col gap-2">
                 <h3 className="w-[40%] leading-[1.2] font-semibold">
                   {contentSecondData.services[2].title}
@@ -100,7 +100,7 @@ const B2BServices: React.FC = () => {
             href={contentSecondData.services[3].path}
             className="relative col-span-1 bg-custom-pink rounded-md flex flex-col justify-center py-9 px-12 overflow-hidden group hover:shadow-xl transition-shadow duration-300"
           >
-            <div className="flex flex-col justify-between h-[14rem]">
+            <div className="flex flex-col justify-between h-56">
               <div className="w-[95%] flex flex-col gap-2">
                 <h3 className="leading-[1.2] font-semibold">
                   {contentSecondData.services[3].title}
@@ -146,7 +146,7 @@ const B2BServices: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="shrink-0 w-70 h-80 relative col-span-1 bg-gradient-to-r from-custom-violet to-white rounded-md flex flex-col justify-center py-10 px-7">
+          <div className="shrink-0 w-70 h-80 relative col-span-1 bg-linear-to-r from-custom-violet to-white rounded-md flex flex-col justify-center py-10 px-7">
             <div className="w-full flex flex-col gap-2 z-1">
               <h3 className="w-[90%] leading-[1.2] font-semibold">
                 {contentSecondData.services[1].title}
@@ -159,7 +159,7 @@ const B2BServices: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="shrink-0 w-70 h-80 relative col-span-1 bg-gradient-to-r from-custom-grey-1 to-white rounded-md flex flex-col justify-center py-10 px-7">
+          <div className="shrink-0 w-70 h-80 relative col-span-1 bg-linear-to-r from-custom-grey-1 to-white rounded-md flex flex-col justify-center py-10 px-7">
             <div className="w-full flex flex-col gap-2 z-1">
               <h3 className="w-[90%] leading-[1.2] font-semibold">
                 {contentSecondData.services[2].title}

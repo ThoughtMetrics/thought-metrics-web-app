@@ -4,7 +4,7 @@ import ServiceCard from '../../molecules/service-card';
 const IndustryServiceSection: React.FC<any> = ({ serviceSection }: any) => {
   return (
     <section className="common-component relative bg-white ">
-      <div className="common-container px-6 py-10 md:px-24 md:py-28 !max-w-[1336px]">
+      <div className="common-container px-6 py-10 md:px-24 md:py-28 max-w-[1336px]!">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           {serviceSection.map((service: any, index: number) => (
             <ServiceCard
@@ -24,9 +24,9 @@ const IndustryServiceSection: React.FC<any> = ({ serviceSection }: any) => {
 const ResearchServiceSection: React.FC<any> = ({ serviceSection }: any) => {
   return (
     <section className="common-component relative bg-white text-black">
-      <div className="common-container px-6 py-10 md:px-24 md:py-16 !max-w-[1336px] flex-col gap-6">
+      <div className="common-container px-6 py-10 md:px-24 md:py-16 max-w-[1336px]! flex-col gap-6">
         {serviceSection.title && (
-          <h2 className="text-[1.1rem] md:text-3xl font-semibold leading-[1.25] tracking-normal">
+          <h2 className="text-[1.1rem] md:text-3xl font-semibold leading-tight tracking-normal">
             {serviceSection.title}
           </h2>
         )}
@@ -48,9 +48,9 @@ const ResearchServiceSection: React.FC<any> = ({ serviceSection }: any) => {
 const MarketOpportunitySection: React.FC<any> = ({ serviceSection }: any) => {
   return (
     <section className="common-component relative bg-white text-black">
-      <div className="common-container px-6 py-10 md:px-24 md:py-16 !max-w-[1336px] flex-col gap-6">
+      <div className="common-container px-6 py-10 md:px-24 md:py-16 max-w-[1336px]! flex-col gap-6">
         {serviceSection.title && (
-          <h2 className="text-[1.1rem] md:text-3xl font-semibold leading-[1.25] tracking-normal">
+          <h2 className="text-[1.1rem] md:text-3xl font-semibold leading-tight tracking-normal">
             {serviceSection.title}
           </h2>
         )}
@@ -114,7 +114,7 @@ const ProductResearchSection: React.FC<any> = ({
 }: any) => {
   return (
     <section className="common-component relative bg-white text-black">
-      <div className="common-container px-6 py-10 md:px-24 md:py-16 !max-w-[1336px] flex-col gap-18">
+      <div className="common-container px-6 py-10 md:px-24 md:py-16 max-w-[1336px]! flex-col gap-18">
         {serviceSection.head ||
           (serviceSection.description && (
             <div className={cn('flex flex-col gap-5', contentClassName)}>
@@ -133,7 +133,7 @@ const ProductResearchSection: React.FC<any> = ({
           ))}
         <div className="grid grid-cols-1 grid-rows-1 md:grid-rows-2 md:grid-cols-3 gap-4">
           {serviceSection.title && (
-            <h2 className="h-full w-[75%] text-[1.1rem] md:text-3xl font-semibold leading-[1.25] tracking-normal flex items-center pb-6">
+            <h2 className="h-full w-[75%] text-[1.1rem] md:text-3xl font-semibold leading-tight tracking-normal flex items-center pb-6">
               <span>{serviceSection.title}</span>
             </h2>
           )}
@@ -160,15 +160,15 @@ const ProductResearchSection: React.FC<any> = ({
 const CustomerResearchSection: React.FC<any> = ({ serviceSection }: any) => {
   return (
     <section className="common-component relative bg-white text-black">
-      <div className="common-container px-6 py-10 md:px-24 md:py-16 !max-w-[1336px] flex-col gap-6">
+      <div className="common-container px-6 py-10 md:px-24 md:py-16 max-w-[1336px]! flex-col gap-6">
         {serviceSection.title && (
-          <h2 className="text-[1.1rem] md:text-3xl font-semibold leading-[1.25] tracking-normal">
+          <h2 className="text-[1.1rem] md:text-3xl font-semibold leading-tight tracking-normal">
             {serviceSection.title}
           </h2>
         )}
         <div className="grid grid-cols-1 grid-rows-1 md:grid-rows-2 md:grid-cols-3 gap-4">
           {serviceSection.innerTitle && (
-            <h2 className="h-full w-[80%] text-[1.5rem] md:text-3xl font-semibold leading-[1.25] tracking-normal flex items-center py-6">
+            <h2 className="h-full w-[80%] text-[1.5rem] md:text-3xl font-semibold leading-tight tracking-normal flex items-center py-6">
               <span>{serviceSection.innerTitle}</span>
             </h2>
           )}
@@ -176,7 +176,7 @@ const CustomerResearchSection: React.FC<any> = ({ serviceSection }: any) => {
             <div className="relative p-2 flex flex-col items-center justify-center">
               <ServiceCard
                 service={service}
-                index={index}
+                key={index + service.title}
                 className="p-4 gap-3 w-full h-full hover:shadow-xl transition-shadow duration-300"
                 iconClassName="w-12 h-12 p-2"
                 contentClassName="text-md"
