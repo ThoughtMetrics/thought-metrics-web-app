@@ -7,6 +7,7 @@ import '@styles/animations.css';
 import '@styles/variables.css';
 import '@styles/markdown.css';
 import AppWrapper from '@/shared/components/AppWrapper';
+import PageLoader from '@/shared/components/PageLoader';
 import faviconSvg from '@assets/icons/thought-metrics.svg';
 import GoogleTagManager from '@/shared/components/analytics/GoogleTagManager.astro';
 import { getAPIConfig } from '@/core/configs/api-config';
@@ -144,6 +145,9 @@ const config = getAPIConfig();
     </style>
   </head>
   <body id="root">
+    <!-- Full-screen loader for page navigation -->
+    <PageLoader client:load />
+
     <AppWrapper client:only="react">
       <slot />
     </AppWrapper>
