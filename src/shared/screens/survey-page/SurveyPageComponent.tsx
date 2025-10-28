@@ -10,7 +10,7 @@ const SurveyPageSection: React.FC = () => {
 
   return (
     <div className="common-component bg-white text-black h-full">
-      <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col gap-6 !max-w-[var(--breakpoint-2xl)]">
+      <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col gap-6 max-w-(--breakpoint-2xl)!">
         <div className="bg-custom-grey-1 px-8 py-6 md:px-18 md:py-12 rounded-lg">
           <h1 className="text-3xl md:text-6xl font-medium mb-6">
             Welcome,{' '}
@@ -20,7 +20,7 @@ const SurveyPageSection: React.FC = () => {
           <label className="flex flex-col md:flex-row gap-6 relative font-medium text-md md:text-2xl w-fit">
             <span className="">{userProfile?.profile?.phone}</span>
             {userProfile?.profile?.phone && (
-              <div className="hidden md:block absolute h-full w-0.25 bg-black left-22 md:left-34"></div>
+              <div className="hidden md:block absolute h-full w-px bg-black left-22 md:left-34"></div>
             )}
             <span
               className="underline"

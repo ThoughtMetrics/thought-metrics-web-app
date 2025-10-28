@@ -44,7 +44,7 @@ const FooterWrapper: React.FC = () => {
 
   return (
     <footer className="common-component bg-primary text-white relative">
-      <div className="common-container flex-col px-6 pt-8 md:px-24 !max-w-[var(--breakpoint-xxl)] items-center w-fit">
+      <div className="common-container flex-col px-6 pt-8 md:px-24 max-w-(--breakpoint-xxl)! items-center w-fit">
         {/* Navigation */}
         <div className="w-full h-full md:flex justify-between grid grid-cols-2 gap-2 md:text-base xxl:text-xl pb-4">
           {/* Brand Section */}
@@ -100,7 +100,7 @@ const FooterWrapper: React.FC = () => {
           ))}
         </div>
         {/* Divider */}
-        <div className="absolute left-0 bottom-10 md:bottom-12 bg-white h-0.25 w-full" />
+        <div className="absolute left-0 bottom-10 md:bottom-12 bg-white h-px w-full" />
         {/* Bottom Section */}
         <div className="w-full h-10 md:h-12 flex items-center justify-between">
           <p className="text-sm md:text-base xl:text-xl opacity-80 mb-0.5 md:mb-1">

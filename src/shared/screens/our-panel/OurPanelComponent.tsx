@@ -22,17 +22,17 @@ const OurPanel: React.FC = () => {
       {/* Section 1 */}
       <section className="common-component w-full h-full relative bg-[url('images/background_image_8_1_m.png')] md:bg-[url('images/background_image_8_1.png')] our-panel-container">
         <div className="absolute top-0 right-0 md:min-h-[360px] xl:min-h-[480px] wide:min-h-[580px] w-[50%] flex justify-center md:items-center">
-          <div className="pr-[8rem] xxl:pr-[8rem] wide:pr-[16rem]">
+          <div className="pr-32 xxl:pr-[8rem] wide:pr-[16rem]">
             <CustomImageAtom
               src={ourPanel.heroSection.illustration.img}
               aspectRatio={ourPanel.heroSection.illustration.aspectRatio}
               objectFit={ourPanel.heroSection.illustration.objectFit}
               loading={ourPanel.heroSection.illustration.loading}
-              className="hidden md:block md:!h-[16rem] md:!w-[34rem] xl:!h-[19.5rem] xl:!w-[40rem] xxl:!h-[19.5rem] xxl:!w-[39em] wide:!h-[22rem] wide:!w-[44em]"
+              className="hidden md:block md:h-64! md:w-136! xl:h-78! xl:w-160! xxl:!h-[19.5rem] xxl:!w-[39em] wide:!h-[22rem] wide:!w-[44em]"
             />
           </div>
         </div>
-        <div className="common-container p-5 md:p-10 xxl:p-0 !max-w-[var(--breakpoint-2xl)] flex-col pb-28">
+        <div className="common-container p-5 md:p-10 xxl:p-0 max-w-(--breakpoint-2xl)! flex-col pb-28">
           <div className="md:w-[28%] xl:w-[37%] wide:w-[40%] h-full flex flex-col gap-3 justify-center md:min-h-[360px] xl:min-h-[480px] wide:min-h-[580px]">
             <PageTitle className="w-fit md:w-24 xl:w-32 wide:w-48" />
             <h2 className="w-full text-xl md:text-2xl xl:text-3xl xxl:text-4xl md:leading-8 xl:leading-11">
@@ -43,10 +43,10 @@ const OurPanel: React.FC = () => {
               aspectRatio={ourPanel.heroSection.illustration.aspectRatio}
               objectFit={ourPanel.heroSection.illustration.objectFit}
               loading={ourPanel.heroSection.illustration.loading}
-              className="md:hidden !h-[10.5rem] w-full"
+              className="md:hidden h-42! w-full"
             />
             <p
-              className="xl:w-[90%] text-text-dark xl:text-lg xxl:text-xl [&>*]:pt-2"
+              className="xl:w-[90%] text-text-dark xl:text-lg xxl:text-xl *:pt-2"
               dangerouslySetInnerHTML={{
                 __html: ourPanel.heroSection.description,
               }}
@@ -107,7 +107,7 @@ const OurPanel: React.FC = () => {
       </section>
       {/* Section 2 */}
       <section className="common-component w-full h-full relative bg-[url('images/background_image_8_2_m.png')] md:bg-[url('images/background_image_8_2.png')] our-panel-container">
-        <div className="common-container p-5 md:p-10 xxl:p-0 !max-w-[var(--breakpoint-2xl)] flex-col">
+        <div className="common-container p-5 md:p-10 xxl:p-0 max-w-(--breakpoint-2xl)! flex-col">
           <div className="flex flex-col gap-6 items-center xxl:py-8">
             <label className="font-semibold text-xl md:text-2xl xl:text-3xl wide:text-4xl">
               Our Coverage
@@ -116,16 +116,16 @@ const OurPanel: React.FC = () => {
               We bring extensive experience in sourcing high-quality research
               participants across a wide range of sectors.
             </p>
-            <div className="h-0.25 w-[14rem] md:w-[20rem] bg-black my-4"></div>
+            <div className="h-px w-56 md:w-[20rem] bg-black my-4"></div>
           </div>
           <div className="shrink-0 grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-4 px-4 py-8 md:p-8">
             {ourPanel.aboutUsSection.items.map((item: any, index: number) => {
               return (
                 <div
                   key={index + item.label}
-                  className="flex flex-col gap-3 w-full md:h-[14rem]"
+                  className="flex flex-col gap-3 w-full md:h-56"
                 >
-                  <div className="shrink-0 w-[3rem] h-[3rem] md:w-[3.75rem] md:h-[3.75rem] bg-primary/20 rounded-full flex items-center justify-center overflow-hidden p-2 md:p-3">
+                  <div className="shrink-0 w-12 h-12 md:w-15 md:h-15 bg-primary/20 rounded-full flex items-center justify-center overflow-hidden p-2 md:p-3">
                     <item.icon className="w-full h-full xl:h-11 xl:w-11 xxl:w-12 xxl:h-12 fill-current text-black" />
                   </div>
                   <div className="flex flex-col gap-3">
@@ -144,7 +144,7 @@ const OurPanel: React.FC = () => {
       <section className="common-component w-full h-full relative z-1 bg-white px-6 pt-14 pb-8 md:p-0 text-black">
         <div
           className={cn(
-            'common-container !max-w-[1336px] !grid grid-cols-1 md:grid-cols-2 items-center justify-between'
+            'common-container max-w-[1336px]! grid! grid-cols-1 md:grid-cols-2 items-center justify-between'
           )}
         >
           <div className="w-full flex flex-col gap-3 md:pl-10 md:py-14">
@@ -154,7 +154,7 @@ const OurPanel: React.FC = () => {
               </span>
               <div className="w-25 h-0.5 md:h-1 bg-primary rounded"></div>
             </h2>
-            <h2 className="w-[70%] md:w-[45%] text-xl xl:text-2xl xxl:text-3xl font-semibold leading-[1.25]">
+            <h2 className="w-[70%] md:w-[45%] text-xl xl:text-2xl xxl:text-3xl font-semibold leading-tight">
               <span>{ourPanel.caseStudySection.title}</span>
             </h2>
             <img
@@ -189,7 +189,7 @@ const OurPanel: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="absolute h-full w-full !grid grid-cols-1 md:grid-cols-2 -z-1">
+        <div className="absolute h-full w-full grid! grid-cols-1 md:grid-cols-2 -z-1">
           <div className="col-span-1"></div>
           <div className="col-span-1 hidden md:block place-self-end self-center">
             <CustomImageAtom
@@ -199,7 +199,7 @@ const OurPanel: React.FC = () => {
               objectFit={ourPanel.caseStudySection.illustration.objectFit}
               loading={ourPanel.caseStudySection.illustration.loading}
               rounded="none"
-              className="!h-[28rem] !w-[60rem] wide:!h-[32rem] wide:!w-[50rem]"
+              className="h-112! w-240! wide:!h-[32rem] wide:!w-[50rem]"
             />
           </div>
         </div>

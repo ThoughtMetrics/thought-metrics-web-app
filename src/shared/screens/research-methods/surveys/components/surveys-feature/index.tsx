@@ -6,8 +6,8 @@ import { cn } from '@/core/utils/cn';
 const SurveyFeature: React.FC<any> = ({ featureSection }) => {
   return (
     <section className="common-component survey-feature-component">
-      <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col !max-w-[var(--breakpoint-2xl)] text-black">
-        <h2 className="md:text-lg xl:text-xl xxl:text-2xl font-semibold leading-[1.25] tracking-normal">
+      <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col max-w-(--breakpoint-2xl)! text-black">
+        <h2 className="md:text-lg xl:text-xl xxl:text-2xl font-semibold leading-tight tracking-normal">
           {featureSection.title}
         </h2>
         <div className="grid grid-flow-row md:grid-flow-col gap-8 pt-8">
@@ -28,11 +28,11 @@ const SurveyFeature: React.FC<any> = ({ featureSection }) => {
                     {serviceIndex !== featureSection.items.length - 1 && (
                       <>
                         <div className="hidden md:block relative w-full">
-                          <line className="absolute bg-black h-0.25 w-full right-0 transform -translate-y-1/2" />
+                          <line className="absolute bg-black h-px w-full right-0 transform -translate-y-1/2" />
                           <ArrowRed className="absolute w-fit h-3 fill-current text-black right-0 transform -translate-y-1/2" />
                         </div>
                         <div className="md:hidden relative bg-black h-full">
-                          <line className="absolute bg-black h-full w-0.25 transform bottom-0 -translate-x-1/2" />
+                          <line className="absolute bg-black h-full w-px transform bottom-0 -translate-x-1/2" />
                           <ArrowRed className="absolute rotate-90 h-3 fill-current text-black -bottom-1 transform -translate-x-1/2" />
                         </div>
                       </>

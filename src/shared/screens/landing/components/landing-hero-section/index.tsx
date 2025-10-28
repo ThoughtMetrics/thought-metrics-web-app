@@ -21,7 +21,7 @@ const LandingHeroSection: React.FC<any> = ({ heroSection, faqId }) => {
       <div className="hidden md:flex absolute w-full h-[95%] justify-end top-1/2 transform -translate-y-1/2">
         <IllustrationSquares2 className="h-full w-auto stroke-1 stroke-primary" />
       </div>
-      <div className="z-1 common-container w-full !max-w-[var(--breakpoint-2xl)] md:min-h-[480px] xl:min-h-[580px] wide:min-h-[780px] items-center p-5 md:p-10 xxl:p-0 relative">
+      <div className="z-1 common-container w-full max-w-(--breakpoint-2xl)! md:min-h-[480px] xl:min-h-[580px] wide:min-h-[780px] items-center p-5 md:p-10 xxl:p-0 relative">
         <div className="md:hidden absolute w-full h-[95%] flex justify-end top-1/2 transform -translate-y-1/2">
           <IllustrationSquares2 className="h-full w-auto stroke-1.75 stroke-primary" />
         </div>
@@ -30,7 +30,7 @@ const LandingHeroSection: React.FC<any> = ({ heroSection, faqId }) => {
             <div className="flex flex-col gap-4">
               <h2 className="flex flex-col gap-2">
                 <span className="text-sm md:text-base">{heroSection.head}</span>
-                <div className="w-45 h-0.25 md:h-0.5 bg-white rounded"></div>
+                <div className="w-45 h-px md:h-0.5 bg-white rounded"></div>
               </h2>
               <p className="md:w-[83.5%] text-3xl md:text-5xl font-semibold">
                 {heroSection.label}
@@ -41,7 +41,7 @@ const LandingHeroSection: React.FC<any> = ({ heroSection, faqId }) => {
             </p>
           </div>
           <div className="flex gap-5 w-[90%] md:w-[85%] z-1">
-            <div className="max-w-[13rem] w-full">
+            <div className="max-w-52 w-full">
               <CustomButtonAtom
                 path={
                   isAuthenticated
@@ -57,7 +57,7 @@ const LandingHeroSection: React.FC<any> = ({ heroSection, faqId }) => {
               />
             </div>
             {heroSection.faqButton && (
-              <a href={`#${faqId}`} className="w-full max-w-[13rem]">
+              <a href={`#${faqId}`} className="w-full max-w-52">
                 <button className="rounded-md text-nowrap px-6 hover:text-white transition-all duration-300 ease-in-out font-semibold py-1 xl:py-2 text-lg xl:text-xl border-secondary bg-white text-secondary hover:bg-custom-blue w-full border-2">
                   {heroSection.faqButton.label}
                 </button>

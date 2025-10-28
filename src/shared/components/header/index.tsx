@@ -148,16 +148,16 @@ const HeaderWrapper: React.FC = () => {
               >
                 {item}
                 <CurveIcon
-                  className={`w-[8px] xl:w-[10px] xxl:w-[12px] transition-transform duration-300 ease-in-out ${activeDropdown === item ? 'rotate-180' : ''}`}
+                  className={`w-2 xl:w-2.5 xxl:w-[12px] transition-transform duration-300 ease-in-out ${activeDropdown === item ? 'rotate-180' : ''}`}
                 />
                 <div
-                  className={`absolute -bottom-[12px] xl:-bottom-[17px] xxl:-bottom-[20px] -left-[2px] bg-primary h-[3px] xl:h-[4px] xxl:h-[5px] w-full rounded-t ${activeDropdown === item ? 'block animate-fadeIn' : 'hidden animate-fadeOut'}`}
+                  className={`absolute -bottom-3 xl:-bottom-[17px] xxl:-bottom-[20px] -left-0.5 bg-primary h-[3px] xl:h-1 xxl:h-[5px] w-full rounded-t ${activeDropdown === item ? 'block animate-fadeIn' : 'hidden animate-fadeOut'}`}
                 ></div>
               </button>
             ))}
             <a
               href={ROUTES.START_YOUR_RESEARCH}
-              className="py-0.5 xl:py-[3px] xxl:py-1 px-4 text-[11px] xl:text-sm xxl:text-base border-[1px] xl:border-[1.25px] xxl:border-[1.5px] font-medium cursor-pointer transition-all duration-300 ease-in-out whitespace-nowrap border-primary bg-white text-primary hover:text-custom-blue hover:border-custom-blue"
+              className="py-0.5 xl:py-[3px] xxl:py-1 px-4 text-[11px] xl:text-sm xxl:text-base border xl:border-[1.25px] xxl:border-[1.5px] font-medium cursor-pointer transition-all duration-300 ease-in-out whitespace-nowrap border-primary bg-white text-primary hover:text-custom-blue hover:border-custom-blue"
             >
               Start Your Research
             </a>
@@ -178,7 +178,7 @@ const HeaderWrapper: React.FC = () => {
             </a>
             <button
               onClick={toggleMenu}
-              className="relative w-8 h-8 flex flex-col justify-center items-center z-[1001]"
+              className="relative w-8 h-8 flex flex-col justify-center items-center z-1001"
               aria-label="Toggle menu"
             >
               <span
@@ -209,7 +209,7 @@ const HeaderWrapper: React.FC = () => {
       {isDropdownOpen && (
         <div
           ref={dropdownRef}
-          className="absolute left-0 right-0 bg-primary shadow-[0_4px_20px_rgba(0,0,0,0.1)] z-[999] animate-fadeIn hidden md:block text-white"
+          className="absolute left-0 right-0 bg-primary shadow-[0_4px_20px_rgba(0,0,0,0.1)] z-999 animate-fadeIn hidden md:block text-white"
           onMouseEnter={handleDropdownEnter}
           onMouseLeave={handleDropdownLeave}
         >
@@ -286,7 +286,7 @@ const HeaderWrapper: React.FC = () => {
       {/* Mobile Menu Overlay */}
       {isDropdownOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-[998] md:hidden"
+          className="fixed inset-0 bg-black/50 z-998 md:hidden"
           onClick={toggleMenu}
         />
       )}
@@ -294,7 +294,7 @@ const HeaderWrapper: React.FC = () => {
       {/* Mobile Menu Panel */}
       <div
         ref={mobileMenuRef}
-        className={`fixed top-0 right-0 z-[1000] bg-primary h-full w-[300px] transform transition-transform duration-300 ease-in-out md:hidden ${
+        className={`fixed top-0 right-0 z-1000 bg-primary h-full w-[300px] transform transition-transform duration-300 ease-in-out md:hidden ${
           isDropdownOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >

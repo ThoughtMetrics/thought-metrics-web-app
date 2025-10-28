@@ -7,8 +7,8 @@ const QualityCaseStudySection: React.FC<any> = ({
   className,
 }: any) => {
   return (
-    <section className="common-component w-full relative bg-white text-black quality-case-study-component items-center !grid md:grid-cols-2">
-      <div className="hidden md:flex w-full min-h-[18rem] xl:min-h-[30rem] xxl:min-h-[40rem] wide:min-h-[45rem]">
+    <section className="common-component w-full relative bg-white text-black quality-case-study-component items-center grid! md:grid-cols-2">
+      <div className="hidden md:flex w-full min-h-72 xl:min-h-120 xxl:min-h-[40rem] wide:min-h-[45rem]">
         {caseStudySection.illustrationDesktop && (
           <img
             src={caseStudySection.illustrationDesktop}

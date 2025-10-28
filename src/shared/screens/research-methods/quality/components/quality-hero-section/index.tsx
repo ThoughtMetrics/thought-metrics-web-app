@@ -10,20 +10,20 @@ const QualityHeroSection: React.FC<any> = ({
   return (
     <section className="common-component relative quality-hero-component">
       <div className="absolute top-0 w-full h-full flex justify-end pt-14 md:pt-6">
-        <div className="w-[12rem] h-[14rem] md:w-fit md:h-fit">
+        <div className="w-48 h-56 md:w-fit md:h-fit">
           {heroSection.illustrationComponent ? (
             <heroSection.illustrationComponent className="w-full h-full" />
           ) : null}
         </div>
       </div>
-      <div className="z-1 common-container flex-col justify-start h-fit !max-w-[var(--breakpoint-2xl)] px-6 md:px-24 text-black">
+      <div className="z-1 common-container flex-col justify-start h-fit max-w-(--breakpoint-2xl)! px-6 md:px-24 text-black">
         <div
           className={cn(
             'shrink-0 md:w-[43%] xxl:w-[37%] wide:w-[50%] h-full flex flex-col gap-3 justify-center',
             contentClassName
           )}
         >
-          <div className="h-[18rem] md:h-18"></div>
+          <div className="h-72 md:h-18"></div>
           <PageTitle />
           <h1
             className={cn(
@@ -49,13 +49,13 @@ const QualityHeroSection: React.FC<any> = ({
                     <label className="font-bold">{item.sNo}</label>
                     <line
                       className={cn(
-                        'hidden absolute -z-1 bg-black h-[1px] w-[110%] left-0 transform -translate-y-1/2',
+                        'hidden absolute -z-1 bg-black h-px w-[110%] left-0 transform -translate-y-1/2',
                         index % 3 !== 2 && 'md:block'
                       )}
                     />
                     <line
                       className={cn(
-                        'md:hidden absolute bg-black h-[125%] w-[1px] top-0 -z-1 transform -translate-x-1/2',
+                        'md:hidden absolute bg-black h-[125%] w-px top-0 -z-1 transform -translate-x-1/2',
                         index === heroSection.items.length - 1 && 'hidden'
                       )}
                     />

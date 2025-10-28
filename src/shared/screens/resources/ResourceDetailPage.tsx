@@ -87,10 +87,10 @@ const ResourcePage: React.FC<ResourcePageProps> = ({ content, blogData }) => {
   return (
     <>
       <section className="common-component text-black flex-col items-center">
-        <div className="common-container px-4 py-8 md:px-24 md:py-24 flex-col !max-w-[1336px]">
+        <div className="common-container px-4 py-8 md:px-24 md:py-24 flex-col max-w-[1336px]!">
           <div className="grid md:grid-cols-[75%_25%] gap-6">
             <div className="flex flex-col gap-6">
-              <h2 className="md:text-[2.85rem] font-medium leading-[1.25]">
+              <h2 className="md:text-[2.85rem] font-medium leading-tight">
                 {content?.label}
               </h2>
               <CustomImageAtom
@@ -103,7 +103,7 @@ const ResourcePage: React.FC<ResourcePageProps> = ({ content, blogData }) => {
               />
             </div>
             <div className="flex flex-col gap-6">
-              <div className="flex gap-4 flex-wrap border-t-1 border-custom-grey-1 pt-2 py-3">
+              <div className="flex gap-4 flex-wrap border-t border-custom-grey-1 pt-2 py-3">
                 {content?.tags.split(',').map((tag: string, index: number) => (
                   <div
                     key={index}
@@ -113,7 +113,7 @@ const ResourcePage: React.FC<ResourcePageProps> = ({ content, blogData }) => {
                   </div>
                 ))}
               </div>
-              <div className="flex flex-col border-t-1 border-custom-grey-1 pt-2 py-3">
+              <div className="flex flex-col border-t border-custom-grey-1 pt-2 py-3">
                 <p className="font-medium">
                   {new Date(content.publishedDate).toLocaleDateString('en-GB', {
                     day: '2-digit',
@@ -123,7 +123,7 @@ const ResourcePage: React.FC<ResourcePageProps> = ({ content, blogData }) => {
                 </p>
                 <p className=" ">{content.type}</p>
               </div>
-              <div className="flex gap-2 border-t-1 border-custom-grey-1 pt-2 py-3">
+              <div className="flex gap-2 border-t border-custom-grey-1 pt-2 py-3">
                 <button
                   onClick={handleCopyUrl}
                   className="bg-secondary w-10 h-10 p-2 hover:bg-primary transition-colors duration-200 cursor-pointer"

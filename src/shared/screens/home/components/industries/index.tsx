@@ -33,8 +33,8 @@ const Industries: React.FC = () => {
 
   return (
     <section className="common-component bg-white text-black">
-      <div className="common-container px-4 py-8 md:px-24 md:py-24 flex-col !max-w-[1336px]">
-        <h2 className="md:text-3xl font-semibold leading-[1.25]">
+      <div className="common-container px-4 py-8 md:px-24 md:py-24 flex-col max-w-[1336px]!">
+        <h2 className="md:text-3xl font-semibold leading-tight">
           {industryData.mainTitle}
         </h2>
 

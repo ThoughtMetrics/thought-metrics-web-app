@@ -10,17 +10,17 @@ const BG_COLORS: Record<string, string> = {
 
 const ServiceCard: React.FC<any> = ({
   service,
-  index,
+  key,
   className,
   iconClassName = '',
   contentClassName = '',
 }) => {
   return (
     <div
-      key={index + service.title}
+      key={key}
       className={cn(
         'text-black rounded-lg flex flex-col',
-        service.isBorder ? 'border-black border-1' : '',
+        service.isBorder ? 'border-black border' : '',
         service.isActive && BG_COLORS[service.bgColor],
         className
       )}

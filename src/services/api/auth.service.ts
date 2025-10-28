@@ -5,6 +5,7 @@ import {
   GoogleAuthProvider,
   FacebookAuthProvider,
   signOut,
+  fetchSignInMethodsForEmail,
   type User,
   type UserCredential,
 } from 'firebase/auth';
@@ -81,9 +82,36 @@ class AuthService {
   }
 
   /**
+   * Check if a user already exists with the given email
+   * @param email - Email address to check
+   * @returns Promise<boolean> - true if user exists, false otherwise
+   */
+  async checkUserExists(email: string): Promise<boolean> {
+    try {
+      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+      return signInMethods.length > 0;
+    } catch (error: any) {
+      // If error code is invalid-email, the email format is wrong
+      if (error.code === 'auth/invalid-email') {
+        throw new Error('Invalid email format');
+      }
+      // For other errors, assume user doesn't exist
+      return false;
+    }
+  }
+
+  /**
    * Sign up with email and password
    */
   async signUpWithEmail(data: SignUpData): Promise<UserProfile> {
+    // Check if user already exists
+    const userExists = await this.checkUserExists(data.email);
+    if (userExists) {
+      throw new Error(
+        'User already exists with this email. Please sign in instead.'
+      );
+    }
+
     const userCredential: UserCredential = await createUserWithEmailAndPassword(
       auth,
       data.email,
@@ -141,6 +169,28 @@ class AuthService {
       ) {
         throw error;
       }
+
+      // Handle account exists with different credential
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        const email = error.customData?.email;
+
+        if (email) {
+          // Get existing sign-in methods for this email
+          const methods = await fetchSignInMethodsForEmail(auth, email);
+
+          // Map provider IDs to user-friendly names
+          const providerName = methods[0]?.includes('facebook')
+            ? 'Facebook'
+            : methods[0]?.includes('password')
+              ? 'email and password'
+              : methods[0] || 'another method';
+
+          throw new Error(
+            `An account already exists with ${email}. Please sign in with ${providerName} first.`
+          );
+        }
+      }
+
       // For other errors, also throw immediately
       throw error;
     }
@@ -169,6 +219,28 @@ class AuthService {
       ) {
         throw error;
       }
+
+      // Handle account exists with different credential
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        const email = error.customData?.email;
+
+        if (email) {
+          // Get existing sign-in methods for this email
+          const methods = await fetchSignInMethodsForEmail(auth, email);
+
+          // Map provider IDs to user-friendly names
+          const providerName = methods[0]?.includes('google')
+            ? 'Google'
+            : methods[0]?.includes('password')
+              ? 'email and password'
+              : methods[0] || 'another method';
+
+          throw new Error(
+            `An account already exists with ${email}. Please sign in with ${providerName} first.`
+          );
+        }
+      }
+
       // For other errors, also throw immediately
       throw error;
     }

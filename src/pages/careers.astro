@@ -16,7 +16,7 @@ const seoContent = {
 >
   <section class="common-component relative text-black">
     <div
-      class="common-container !max-w-[var(--breakpoint-2xl)] flex-col px-6 py-10 md:px-24 md:py-28"
+      class="common-container max-w-(--breakpoint-2xl)! flex-col px-6 py-10 md:px-24 md:py-28"
     >
       <div class="h-full flex flex-col gap-3">
         <h2 class="w-full text-2xl xl:text-3xl xxl:text-4xl font-semibold">
@@ -32,7 +32,7 @@ const seoContent = {
           objectFit={careers.heroSection.illustration.objectFit}
           loading={careers.heroSection.illustration.loading}
           rounded="none"
-          className="!w-full !h-full"
+          className="w-full! h-full!"
         />
       </div>
       <div class="pt-8 flex flex-col gap-6">
@@ -64,9 +64,9 @@ const seoContent = {
       <div
         class="absolute left-0 top-0 w-full h-full flex justify-center items-end"
       >
-        <div class="max-w-[var(--breakpoint-2xl)] w-full">
+        <div class="max-w-(--breakpoint-2xl) w-full">
           <div
-            class="ml-6 md:ml-24 mb-60 md:mb-78 h-1.5 md:h-2 w-[95%] lg:w-[97%] xxl:w-[110%] wide:w-[120%] bg-gradient-to-r from-secondary to-primary"
+            class="ml-6 md:ml-24 mb-60 md:mb-78 h-1.5 md:h-2 w-[95%] lg:w-[97%] xxl:w-[110%] wide:w-[120%] bg-linear-to-r from-secondary to-primary"
           >
           </div>
         </div>

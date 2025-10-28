@@ -416,7 +416,7 @@ const RespondentSignUpPage: React.FC = () => {
   return (
     <>
       <div className="common-component bg-white text-black">
-        <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col !max-w-[var(--breakpoint-2xl)]">
+        <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col max-w-(--breakpoint-2xl)!">
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-4xl font-medium tracking-tighter text-gray-900 mb-2">
@@ -440,7 +440,7 @@ const RespondentSignUpPage: React.FC = () => {
               className="relative col-span-1 flex items-center pl-4 pr-12 py-2 bg-[#1877F2] text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <FacebookOutlineIcon className="w-5 h-5 mr-8" />
-              <div className="left-13 absolute w-0.25 h-full bg-white"></div>
+              <div className="left-13 absolute w-px h-full bg-white"></div>
               {socialAuthLoading === 'facebook'
                 ? 'Signing in...'
                 : ui.socialButtons.facebook}
@@ -452,7 +452,7 @@ const RespondentSignUpPage: React.FC = () => {
               className="relative col-span-1 flex items-center pl-4 pr-12 py-2 bg-[#DB4437] text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <GoogleOutlineIcon className="w-5 h-5 mr-8" />
-              <div className="left-13 absolute w-0.25 h-full bg-white"></div>
+              <div className="left-13 absolute w-px h-full bg-white"></div>
               {socialAuthLoading === 'google'
                 ? 'Signing in...'
                 : ui.socialButtons.google}
@@ -802,6 +802,13 @@ const RespondentSignUpPage: React.FC = () => {
                   columns={1}
                 />
               </>
+            )}
+
+            {/* General Error Message */}
+            {errors.general && (
+              <div className="bg-red-50 border border-red-200 rounded-md p-4">
+                <p className="text-red-600 text-sm font-medium">{errors.general}</p>
+              </div>
             )}
 
             {/* Submit Button */}

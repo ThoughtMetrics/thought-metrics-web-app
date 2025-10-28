@@ -12,7 +12,7 @@ const HeroSection: React.FC<any> = ({
   return (
     <section className="common-component relative">
       <div className="absolute w-full h-full flex justify-end pt-10 md:p-0">
-        <IllustrationSquares className="h-[17rem] md:h-[98%] w-auto stroke-2 md:stroke-1 stroke-primary" />
+        <IllustrationSquares className="h-68 md:h-[98%] w-auto stroke-2 md:stroke-1 stroke-primary" />
       </div>
       <div className="hidden md:flex absolute w-full h-full justify-end pt-18 md:pt-0 md:items-center">
         <div className="pl-[6%] pr-[8%] xxl:pr-[15%] wide:pr-[12%]">
@@ -27,7 +27,7 @@ const HeroSection: React.FC<any> = ({
           />
         </div>
       </div>
-      <div className="z-1 common-container w-full !max-w-[var(--breakpoint-2xl)] md:min-h-[480px] xl:min-h-[580px] wide:min-h-[780px] items-center p-5 pb-8 md:py-10 md:px-24">
+      <div className="z-1 common-container w-full max-w-(--breakpoint-2xl)! md:min-h-[480px] xl:min-h-[580px] wide:min-h-[780px] items-center p-5 pb-8 md:py-10 md:px-24">
         <div
           className={cn(
             'md:w-[43%] xxl:w-[43%] wide:w-[50%] h-full flex flex-col gap-3 justify-center',

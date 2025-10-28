@@ -55,7 +55,7 @@ const InteractionHeader: React.FC = () => {
   return (
     <div className="relative">
       <header className="common-component bg-white">
-        <div className="common-container justify-center !max-w-[var(--breakpoint-2xl)]">
+        <div className="common-container justify-center max-w-(--breakpoint-2xl)!">
           <nav className="px-6 py-3 xxl:px-0 flex items-center justify-between w-full">
             <a href={ROUTES.HOME}>
               <div className="w-45 pt-1">
@@ -103,7 +103,7 @@ const InteractionHeader: React.FC = () => {
               <div className="md:hidden relative" ref={dropdownRef}>
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="relative w-8 h-8 flex flex-col justify-center items-center z-[1001]"
+                  className="relative w-8 h-8 flex flex-col justify-center items-center z-1001"
                   aria-label="Toggle menu"
                 >
                   <span
@@ -128,7 +128,7 @@ const InteractionHeader: React.FC = () => {
                 </button>
 
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-[1000] border border-gray-200">
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-1000 border border-gray-200">
                     <a
                       href={ROUTES.EDIT_PROFILE}
                       onClick={() => setIsDropdownOpen(false)}

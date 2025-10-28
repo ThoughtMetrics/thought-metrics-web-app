@@ -121,8 +121,8 @@ const ReportDownloadPage: React.FC = () => {
   }
 
   return (
-    <div className="common-component w-full relative bg-white text-black z-1 overflow-scroll flex-col items-center !justify-start hide-scrollbar">
-      <header className="common-container bg-white !max-w-[var(--breakpoint-2xl)] h-[3.5rem]">
+    <div className="common-component w-full relative bg-white text-black z-1 overflow-scroll flex-col items-center justify-start! hide-scrollbar">
+      <header className="common-container bg-white max-w-(--breakpoint-2xl)! h-14">
         <nav className="px-6 py-3 xxl:px-0 flex items-center justify-between w-full">
           <a href={ROUTES.HOME}>
             <div className="w-45 pt-1">
@@ -169,7 +169,7 @@ const ReportDownloadPage: React.FC = () => {
           alt="Login illustration"
           className="hidden lg:block absolute bottom-0 left-0 w-[50%] h-fit z-1"
         />
-        <div className="common-container h-full !grid grid-cols-1 md:grid-cols-[50%_50%] inset-ring-custom-grey-1 inset-ring-1">
+        <div className="common-container h-full grid! grid-cols-1 md:grid-cols-[50%_50%] inset-ring-custom-grey-1 inset-ring-1">
           <div className=""></div>
           <div className="h-full md:overflow-y-auto px-6 py-10 md:px-18 md:py-16">
             <h1 className="text-2xl font-medium text-gray-900 mb-2">
