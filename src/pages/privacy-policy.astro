@@ -3,7 +3,10 @@ import PolicyHeroSection from '@/shared/ui/templates/policy-hero-section';
 import { privacyPolicyContent } from '@/core/constants/page-constants/privacy-policy-constant';
 import PresentationLayout from '@/layouts/PresentationLayout.astro';
 
-const { title = 'Privacy Policy', description = 'Thought Metrics - Privacy Policy' } = Astro.props;
+const {
+  title = 'Privacy Policy | Data Protection - Thought Metrics',
+  description = 'Learn how Thought Metrics protects your privacy. Our policy covers data collection, usage, security, and your rights under GDPR and global data regulations.'
+} = Astro.props;
 ---
 
 <PresentationLayout title={title} description={description}>
