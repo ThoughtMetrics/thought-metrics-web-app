@@ -62,6 +62,7 @@ interface Window {
     PUBLIC_MEASUREMENT_ID?: string;
     PUBLIC_GTM_ID?: string;
     PUBLIC_GOOGLE_SITE_VERIFICATION?: string;
+    PUBLIC_COOKIEBOT_ID?: string;
     PUBLIC_RAZORPAY_KEY_ID?: string;
   };
 }
@@ -80,5 +81,6 @@ interface ImportMetaEnv {
   PUBLIC_MEASUREMENT_ID: string;
   PUBLIC_GTM_ID: string;
   PUBLIC_GOOGLE_SITE_VERIFICATION: string;
+  PUBLIC_COOKIEBOT_ID: string;
   PUBLIC_RAZORPAY_KEY_ID: string;
 }

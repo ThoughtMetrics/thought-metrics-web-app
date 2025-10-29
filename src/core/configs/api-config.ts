@@ -43,6 +43,7 @@ export const getAPIConfig = (): {
     measurementId: string;
   };
   gtmId: string;
+  cookiebotId: string;
   gSiteVerification: string;
   publicRazorpayKeyId: string;
   razorpayKeySecret: string;
@@ -73,6 +74,7 @@ export const getAPIConfig = (): {
     gSiteVerification: getPublicEnv('PUBLIC_GOOGLE_SITE_VERIFICATION') || '',
     publicRazorpayKeyId: getPublicEnv('PUBLIC_RAZORPAY_KEY_ID') || '',
     razorpayKeySecret: getServerEnv('RAZORPAY_KEY_SECRET') || '',
+    cookiebotId: getPublicEnv('PUBLIC_COOKIEBOT_ID') || '',
     apiPath: '/api',
     timeout: 10000,
     headers: {
