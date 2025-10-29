@@ -1,6 +1,6 @@
 ---
-import FooterWrapper from '@components/footer';
-import HeaderWrapper from '@components/header';
+import Footer from '@components/footer';
+import Header from '@components/header';
 import Layout from '@layouts/Layout.astro';
 import type { ImageMetadata } from 'astro';
 
@@ -37,7 +37,7 @@ const {
   noindex={noindex}
   nofollow={nofollow}
 >
-  <HeaderWrapper client:load />
+  <Header client:load />
   <slot />
-  <FooterWrapper client:load />
+  <Footer client:load />
 </Layout>
