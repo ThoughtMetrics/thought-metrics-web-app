@@ -46,7 +46,11 @@ const config = getAPIConfig();
     <RuntimeConfig />
 
     <!-- CRITICAL: Cookiebot must load BEFORE any tracking scripts to manage consent -->
-    <Cookiebot cookiebotId={config.cookiebotId} />
+    <script
+      id="CookieDeclaration"
+      src={`https://consent.cookiebot.com/${config.cookiebotId}/cd.js`}
+      type="text/javascript"
+      async></script>
 
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href={faviconSvg.src} />

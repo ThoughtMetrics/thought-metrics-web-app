@@ -3,7 +3,10 @@ import PolicyHeroSection from '@/shared/ui/templates/policy-hero-section';
 import { termsAndConditionsContent } from '@/core/constants/page-constants/terms-condition-constant';
 import PresentationLayout from '@/layouts/PresentationLayout.astro';
 
-const { title = 'Terms & Conditions', description = 'Thought Metrics - Terms & Conditions' } = Astro.props;
+const {
+  title = 'Terms & Conditions | Usage Terms - Thought Metrics',
+  description = 'Read our terms and conditions governing the use of Thought Metrics services, platform access, research participation, and data rights. Updated and transparent.'
+} = Astro.props;
 ---
 
 <PresentationLayout title={title} description={description}>
