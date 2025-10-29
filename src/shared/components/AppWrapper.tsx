@@ -22,8 +22,8 @@ const AppWrapper: React.FC<AppWrapperProps> = ({ children }) => {
         <AuthProvider>
           {children}
           <Toaster />
-          {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
-          <DevToolsGuard />
+          {/* {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+          <DevToolsGuard /> */}
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>

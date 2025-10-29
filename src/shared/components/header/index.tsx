@@ -5,7 +5,7 @@ import { ROUTES } from '@/routes/routeConfig';
 import { cn } from '@/core/utils/cn';
 import { auth } from '@/core/configs/firebase-config';
 
-const HeaderWrapper: React.FC = () => {
+const Header: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -407,12 +407,4 @@ const HeaderWrapper: React.FC = () => {
   );
 };
 
-// const HeaderWrapper: React.FC = () => {
-//   return (
-//     <AppWrapper>
-//       <Header />
-//     </AppWrapper>
-//   );
-// };
-
-export default HeaderWrapper;
+export default Header;

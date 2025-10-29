@@ -4,7 +4,7 @@ import { LogoWhite } from '@/assets';
 import { auth } from '@/core/configs/firebase-config';
 import { ROUTES } from '@/routes/routeConfig';
 
-const FooterWrapper: React.FC = () => {
+const Footer: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -121,12 +121,4 @@ const FooterWrapper: React.FC = () => {
   );
 };
 
-// const FooterWrapper: React.FC = () => {
-//   return (
-//     <AppWrapper>
-//       <Footer />
-//     </AppWrapper>
-//   );
-// };
-
-export default FooterWrapper;
+export default Footer;
