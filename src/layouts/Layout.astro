@@ -43,13 +43,16 @@ const config = getAPIConfig();
   <head>
     <!-- CRITICAL: RuntimeConfig must be first to prevent hydration errors -->
     <RuntimeConfig />
+    <!-- Analytics & Tracking (GTM manages: GA4, Clarity) -->
+    <!-- Note: Cookiebot loads BEFORE GTM to control consent -->
+    <GoogleTagManager gtmId={config.gtmId} />
 
-    <!-- CRITICAL: Cookiebot must load BEFORE any tracking scripts to manage consent -->
+    <!-- CRITICAL: Cookiebot must load BEFORE any tracking scripts to manage consent
     <script
       id="CookieDeclaration"
       src={`https://consent.cookiebot.com/${config.cookiebotId}/cd.js`}
       type="text/javascript"
-      async></script>
+      async></script> -->
 
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href={faviconSvg.src} />
@@ -99,10 +102,6 @@ const config = getAPIConfig();
       nofollow={nofollow}
     />
 
-    <!-- Analytics & Tracking (GTM manages: GA4, Clarity) -->
-    <!-- Note: Cookiebot loads BEFORE GTM to control consent -->
-    <GoogleTagManager gtmId={config.gtmId} />
-
     <!-- View Transitions for smooth page navigation -->
     <ClientRouter />
 
@@ -149,6 +148,15 @@ const config = getAPIConfig();
     </style>
   </head>
   <body id="root">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript
+      ><iframe
+        src={`https://www.googletagmanager.com/ns.html?id=${config.gtmId}`}
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden"></iframe></noscript
+    >
+    <!-- End Google Tag Manager (noscript) -->
     <!-- Full-screen loader for page navigation -->
     <PageLoader client:load />
 
