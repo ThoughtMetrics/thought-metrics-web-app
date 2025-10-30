@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import logoSvg from '@assets/icons/thought-metrics.svg';
+import { cn } from '@utils/cn';
 
 const PageLoader: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,12 +15,18 @@ const PageLoader: React.FC = () => {
     };
 
     // Listen to Astro view transition events
-    document.addEventListener('astro:before-preparation', handleBeforePreparation);
+    document.addEventListener(
+      'astro:before-preparation',
+      handleBeforePreparation
+    );
     document.addEventListener('astro:after-swap', handleAfterSwap);
 
     // Cleanup listeners on unmount
     return () => {
-      document.removeEventListener('astro:before-preparation', handleBeforePreparation);
+      document.removeEventListener(
+        'astro:before-preparation',
+        handleBeforePreparation
+      );
       document.removeEventListener('astro:after-swap', handleAfterSwap);
     };
   }, []);
@@ -28,7 +35,10 @@ const PageLoader: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-0 z-9999 flex items-center justify-center bg-white"
+      className={cn(
+        'fixed inset-0 z-9999 flex items-center justify-center bg-white',
+        'bg-white/90'
+      )}
       style={{
         animation: 'fadeIn 0.2s ease-in',
       }}
@@ -63,7 +73,13 @@ const PageLoader: React.FC = () => {
             }}
           >
             <defs>
-              <linearGradient id="spinnerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <linearGradient
+                id="spinnerGradient"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
                 <stop offset="0%" stopColor="var(--primary)" />
                 <stop offset="50%" stopColor="var(--secondary)" />
                 <stop offset="100%" stopColor="var(--primary)" />
@@ -93,7 +109,10 @@ const PageLoader: React.FC = () => {
         </div>
 
         {/* Loading Text */}
-        <p className="text-sm font-medium" style={{ color: 'var(--secondary)' }}>
+        <p
+          className="text-sm font-medium"
+          style={{ color: 'var(--secondary)' }}
+        >
           Loading...
         </p>
       </div>
