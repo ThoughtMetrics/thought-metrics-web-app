@@ -319,7 +319,7 @@ const LoginPage: React.FC = () => {
                     ? 'Signing in...'
                     : 'Sign in with Google'}
                 </button>
-                <button
+                {/* <button
                   type="button"
                   onClick={() => void handleFacebookSignIn()}
                   disabled={socialAuthLoading !== null}
@@ -330,7 +330,7 @@ const LoginPage: React.FC = () => {
                   {socialAuthLoading === 'facebook'
                     ? 'Signing in...'
                     : 'Sign in with Facebook'}
-                </button>
+                </button> */}
               </div>
 
               <div className="w-full max-w-[380px] flex items-center mb-6">
