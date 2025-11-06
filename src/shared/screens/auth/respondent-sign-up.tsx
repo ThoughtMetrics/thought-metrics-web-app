@@ -433,7 +433,7 @@ const RespondentSignUpPage: React.FC = () => {
 
           {/* Social Login Buttons */}
           <div className="mb-8 space-y-3 grid grid-cols-1 w-full md:w-fit">
-            <button
+            {/* <button
               type="button"
               onClick={() => void handleFacebookSignUp()}
               disabled={socialAuthLoading !== null}
@@ -444,7 +444,7 @@ const RespondentSignUpPage: React.FC = () => {
               {socialAuthLoading === 'facebook'
                 ? 'Signing in...'
                 : ui.socialButtons.facebook}
-            </button>
+            </button> */}
             <button
               type="button"
               onClick={() => void handleGoogleSignUp()}
