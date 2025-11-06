@@ -6,7 +6,6 @@ import { queryClient } from '@/core/lib/query-client';
 import { AuthProvider } from '@/shared/providers/auth-provider';
 import { ErrorBoundary } from '@/shared/ui/organisms/error-boundary';
 import { Toaster } from '@/shared/ui/atoms/toaster';
-import { DevToolsGuard } from '@/shared/components/devtools-guard';
 import ApiLoadingIndicator from '@/shared/components/ApiLoadingIndicator';
 
 interface AppWrapperProps {
@@ -23,7 +22,7 @@ const AppWrapper: React.FC<AppWrapperProps> = ({ children }) => {
           {children}
           <Toaster />
           {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
-          <DevToolsGuard />
+          {/* <DevToolsGuard /> */}
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>
