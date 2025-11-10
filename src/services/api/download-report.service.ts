@@ -53,7 +53,7 @@ export interface DownloadReportSearchResponse {
 }
 
 class DownloadReportService {
-  private readonly endpoint = '/download-report';
+  private readonly endpoint = '/forms/download-report';
 
   /**
    * Submit download report form

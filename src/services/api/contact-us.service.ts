@@ -51,7 +51,7 @@ export interface ContactUsSearchResponse {
 }
 
 class ContactUsService {
-  private readonly endpoint = '/contact-us';
+  private readonly endpoint = '/forms/contact-us';
 
   /**
    * Submit contact us form

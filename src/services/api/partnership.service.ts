@@ -65,7 +65,7 @@ export interface PartnershipSearchResponse {
 }
 
 class PartnershipService {
-  private readonly endpoint = '/partnership';
+  private readonly endpoint = '/forms/partnership';
 
   /**
    * Submit partnership form

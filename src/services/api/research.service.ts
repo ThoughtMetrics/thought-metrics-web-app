@@ -64,7 +64,7 @@ export interface ResearchSearchResponse {
 }
 
 class ResearchService {
-  private readonly endpoint = '/research';
+  private readonly endpoint = '/forms/research-participation';
 
   /**
    * Submit research form
