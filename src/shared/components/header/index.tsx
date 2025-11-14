@@ -163,7 +163,7 @@ const Header: React.FC = () => {
             </a>
             <a
               href={
-                isAuthenticated ? ROUTES.SURVEY_PAGE : ROUTES.RESPONDENT_LANDING
+                isAuthenticated ? ROUTES.SURVEY_BOARDS : ROUTES.RESPONDENT_LANDING
               }
               className="py-0.5 xl:py-[3px] xxl:py-1 px-4 text-[11px] xl:text-sm xxl:text-base font-medium cursor-pointer transition-all duration-300 ease-in-out whitespace-nowrap bg-primary text-white hover:bg-custom-blue hover:border-custom-blue"
             >
@@ -382,7 +382,7 @@ const Header: React.FC = () => {
               <a
                 href={
                   isAuthenticated
-                    ? ROUTES.SURVEY_PAGE
+                    ? ROUTES.SURVEY_BOARDS
                     : ROUTES.RESPONDENT_LANDING
                 }
                 className="w-full py-3 px-4 bg-white text-primary font-medium rounded hover:bg-white/90 transition-colors text-center"

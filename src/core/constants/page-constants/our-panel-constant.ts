@@ -177,7 +177,7 @@ export const ourPanel = {
       label: 'Sign Up',
       path: ROUTES.SIGN_UP,
       signedInLabel: 'Take a Survey',
-      signedInPath: ROUTES.SURVEY_PAGE,
+      signedInPath: ROUTES.SURVEY_BOARDS,
     },
   },
 } as const;

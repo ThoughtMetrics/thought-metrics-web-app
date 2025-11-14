@@ -27,7 +27,7 @@ const Footer: React.FC = () => {
   }, []);
 
   const scrollToTop = () => {
-    const rootElement = document.getElementById('root');
+    const rootElement = document.getElementById('full-screen');
 
     if (rootElement) {
       rootElement.scrollTo({

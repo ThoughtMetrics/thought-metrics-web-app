@@ -15,7 +15,16 @@ export interface Props {
   nofollow?: boolean;
 }
 
-const { title, description, keywords, ogImage, ogType, canonical, noindex, nofollow } = Astro.props;
+const {
+  title,
+  description,
+  keywords,
+  ogImage,
+  ogType,
+  canonical,
+  noindex,
+  nofollow,
+} = Astro.props;
 ---
 
 <Layout
@@ -28,7 +37,9 @@ const { title, description, keywords, ogImage, ogType, canonical, noindex, nofol
   noindex={noindex}
   nofollow={nofollow}
 >
-  <InteractionHeader client:only="react"/>
-  <slot />
-  <InteractionFooter />
+  <div class="w-full min-h-screen flex flex-col justify-between">
+    <InteractionHeader client:only="react" />
+    <slot/>
+    <InteractionFooter />
+  </div>
 </Layout>

@@ -1,13 +1,13 @@
 ---
 import IntractionLayout from '@/layouts/IntractionLayout.astro';
-import SurveyPageWrapper from '@screens/survey-page/SurveyPageComponent';
+import SurveyBoardsWrapper from '@screens/survey-boards/SurveyBoardsComponent';
 
 const seoContent = {
-  title: 'My Surveys | Available Studies - Thought Metrics',
+  title: 'Survey Boards | Available Studies - Thought Metrics',
   description: 'View and complete your available surveys. Access research studies, track your participation history, and earn rewards for sharing your valuable opinions.',
 };
 ---
 
 <IntractionLayout title={seoContent.title} description={seoContent.description}>
-  <SurveyPageWrapper client:only="react" />
+  <SurveyBoardsWrapper client:only="react"/>
 </IntractionLayout>

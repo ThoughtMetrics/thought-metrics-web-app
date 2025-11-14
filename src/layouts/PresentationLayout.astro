@@ -37,7 +37,9 @@ const {
   noindex={noindex}
   nofollow={nofollow}
 >
-  <Header client:load />
-  <slot />
-  <Footer client:load />
+  <div id="full-screen" class="w-full flex flex-col justify-between overflow-y-scroll overflow-x-hidden">
+    <Header client:load />
+    <slot />
+    <Footer client:load />
+  </div>
 </Layout>

@@ -6,7 +6,6 @@ import {
   PhoneInputAtom,
 } from '@/shared/ui/atoms/custom-input';
 import { landing } from '@/core/constants/page-constants/landing-constant';
-import InteractionFooter from '@/shared/components/interaction-footer';
 import { usePartnershipFormStore } from '@/core/stores/partnership.store';
 import { usePartnershipFormValidation } from '@/core/hooks/validation/use-partnership-form-validation';
 import { useSubmitPartnership } from '@/core/hooks/queries/partnership/index.queries';

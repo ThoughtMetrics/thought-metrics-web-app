@@ -37,13 +37,6 @@ const LandingHeader: React.FC = () => {
                 <Logo className="w-full h-full" />
               </div>
             </a>
-            <div className="flex items-center justify-end">
-              <CustomButtonAtom
-                path={isAuthenticated ? ROUTES.SURVEY_PAGE : ROUTES.SIGN_UP}
-                label={isAuthenticated ? 'Take a Survey' : 'Sign Up'}
-                className="rounded font-medium text-sm md:text-lg px-6 py-2 md:px-13 bg-secondary hover:bg-custom-blue"
-              />
-            </div>
           </nav>
         </div>
       </header>
