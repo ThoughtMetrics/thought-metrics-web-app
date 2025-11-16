@@ -572,7 +572,7 @@ export const industries = {
         {
           title: 'Rapid Alert Omnibus',
           description:
-            "Sometimes, speed is everything. Whether you're responding to supply chain shifts, competitor moves, or unexpected consumer feedback, our Rapid Alert Omnibus gives you fast, targeted answers. Submit your most urgent questions and access robust, directional insights from retail audiences within 48 hours. It\'s your early-warning system — helping you make smarter decisions, faster.",
+            "Sometimes, speed is everything. Whether you're responding to supply chain shifts, competitor moves, or unexpected consumer feedback, our Rapid Alert Omnibus gives you fast, targeted answers. Submit your most urgent questions and access robust, directional insights from retail audiences. It\'s your early-warning system — helping you make smarter decisions, faster.",
           isBorder: true,
         },
       ],

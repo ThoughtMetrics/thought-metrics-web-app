@@ -18,10 +18,10 @@ export const landing = {
       label: 'Speak Up. Make an Impact.',
       description: 'Join in. Be heard. See the difference you make.',
       signButton: {
-        label: 'Sign Me Up',
+        label: 'Sign Up for paid surveys',
         path: ROUTES.SIGN_UP,
         signedInLabel: 'Take a Survey',
-        signedInPath: ROUTES.SURVEY_PAGE,
+        signedInPath: ROUTES.SURVEY_BOARDS,
       },
       faqButton: {
         label: 'FAQs',
@@ -119,7 +119,7 @@ export const landing = {
         label: 'Get Started',
         path: ROUTES.SIGN_UP,
         signedInLabel: 'Take a Survey',
-        signedInPath: ROUTES.SURVEY_PAGE,
+        signedInPath: ROUTES.SURVEY_BOARDS,
       },
     },
     joinUsSection: {
@@ -191,7 +191,7 @@ export const landing = {
         label: 'Sign Me Up',
         path: ROUTES.SIGN_UP,
         signedInLabel: 'Take a Survey',
-        signedInPath: ROUTES.SURVEY_PAGE,
+        signedInPath: ROUTES.SURVEY_BOARDS,
       },
     },
   },
@@ -204,7 +204,7 @@ export const landing = {
         label: 'Sign Me Up',
         path: ROUTES.SIGN_UP,
         signedInLabel: 'Take a Survey',
-        signedInPath: ROUTES.SURVEY_PAGE,
+        signedInPath: ROUTES.SURVEY_BOARDS,
       },
     },
     caseStudySection: {

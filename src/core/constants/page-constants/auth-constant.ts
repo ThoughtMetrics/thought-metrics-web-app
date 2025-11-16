@@ -177,7 +177,7 @@ export const signUpFormConstant = {
     pageTitle: 'Create an Account',
     whyRegister: 'Why Register?',
     registerDescription:
-      'Register using the form or data from on the services below.',
+      "(There is a joining bonus of rupees 50 on successful registration. this will be credited to your account after your first completed survey. T&C apply.)",
     socialButtons: {
       facebook: 'Continue with Facebook',
       google: 'Continue with Google',
@@ -259,7 +259,7 @@ export const signUpFormConstant = {
       {
         question: 'Why and how do I register?',
         answer:
-          "Registering will add you to Thought Metrics' participant community, giving you access to various study opportunities. During the sign-up process, we will ask for:\n• Contact information\n• Demographic details\n• Household information\n\nThis helps us identify if you qualify for a particular project. Additional screening may be needed to confirm qualification.\nClick here to register.",
+          "Registering will add you to Thought Metrics' participant community, giving you access to various study opportunities. During the sign-up process, we will ask for:\n• Contact information\n• Demographic details\n• Household information\n\nThis helps us identify if you qualify for a particular project. Additional screening may be needed to confirm qualification.",
       },
       {
         question: 'Where does Thought Metrics do a focus group?',

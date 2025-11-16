@@ -8,18 +8,12 @@ import type {
   LoginFormData,
   LoginFormStore,
 } from '@/core/types/login-form.type';
-import {
-  ArrowRight,
-  Logo,
-  FacebookOutlineIcon,
-  GoogleOutlineIcon,
-} from '@/assets';
+import { ArrowRight, Logo, GoogleOutlineIcon } from '@/assets';
 import { useSignInMutation } from '@/core/hooks/mutations/use-sign-in.mutation';
 import { auth } from '@/core/configs/firebase-config';
 import { getSignInErrorDetails } from '@/core/utils/firebase-error-handler';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/core/lib/query-client';
-import { Toaster } from 'sonner';
 import { AuthProvider } from '@/shared/providers/auth-provider';
 
 const { initialFormData, storeName, validationMessages, formResetDelay, ui } =
@@ -142,7 +136,7 @@ const LoginPage: React.FC = () => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setIsAuthenticated(true);
-        window.location.href = ROUTES.SURVEY_PAGE;
+        window.location.href = ROUTES.SURVEY_BOARDS;
       } else {
         setIsAuthenticated(false);
       }
@@ -170,7 +164,7 @@ const LoginPage: React.FC = () => {
 
     if (result) {
       setTimeout(() => {
-        window.location.href = ROUTES.SURVEY_PAGE;
+        window.location.href = ROUTES.SURVEY_BOARDS;
       }, 1500);
     }
   };
@@ -180,7 +174,7 @@ const LoginPage: React.FC = () => {
     try {
       const result = await signInMutation.mutateAsync({ type: 'google' });
       if (result) {
-        window.location.href = ROUTES.SURVEY_PAGE;
+        window.location.href = ROUTES.SURVEY_BOARDS;
       }
     } catch (error) {
       let errorCode = '';
@@ -209,12 +203,12 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  const handleFacebookSignIn = async () => {
+  /* const handleFacebookSignIn = async () => {
     setSocialAuthLoading('facebook');
     try {
       const result = await signInMutation.mutateAsync({ type: 'facebook' });
       if (result) {
-        window.location.href = ROUTES.SURVEY_PAGE;
+        window.location.href = ROUTES.SURVEY_BOARDS;
       }
     } catch (error) {
       let errorCode = '';
@@ -241,7 +235,7 @@ const LoginPage: React.FC = () => {
       // Ensure loading state is cleared
       setSocialAuthLoading(null);
     }
-  };
+  }; */
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -296,7 +290,7 @@ const LoginPage: React.FC = () => {
           </nav>
         </header>
         <div className="relative md:h-[calc(100vh-3.5rem)] w-full">
-          <div className="lg:block md:absolute right-0 w-[full%] md:w-[50%] h-full bg-[url('images/login_background_image.png')] bg-cover bg-center bg-no-repeat -z-1 text-black px-6 py-10 md:px-18 md:py-16" />
+          <div className="lg:block md:absolute right-0 w-full md:w-[50%] h-8 md:h-full bg-[url('images/login_background_image.png')] bg-cover bg-center bg-no-repeat -z-1 text-black" />
           <div className="common-container h-full grid! grid-cols-1 md:grid-cols-[50%_50%] inset-ring-custom-grey-1 inset-ring-1">
             <div className="bg-white shadow-sm border border-gray-200 rounded-lg px-8 py-10 wide:py-28 flex flex-col items-center justify-center">
               <div className="mb-8 w-full max-w-[380px]">
@@ -447,7 +441,6 @@ const LoginWrapper: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Toaster />
         <LoginPage />
       </AuthProvider>
     </QueryClientProvider>

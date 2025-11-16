@@ -6,6 +6,7 @@ import { Autoplay, EffectFade, Pagination } from 'swiper/modules';
 // Import custom styles
 import './hero-carousel.style.css';
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
+import { ROUTES } from '@/routes/routeConfig';
 
 const HeroCarousel: React.FC = () => {
   return (
@@ -83,7 +84,7 @@ const HeroCarousel: React.FC = () => {
             </p>
           ))}
         </div>
-        <CustomButtonAtom label={carouselData[0].buttonLabel} />
+        <CustomButtonAtom label={carouselData[0].buttonLabel} path={ROUTES.CONTACT_US}/>
 
         <img
           src={carouselData[0].src}

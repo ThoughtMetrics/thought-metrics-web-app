@@ -40,15 +40,15 @@ const LandingHeroSection: React.FC<any> = ({ heroSection, faqId }) => {
               {heroSection.description}
             </p>
           </div>
-          <div className="flex gap-5 w-[90%] md:w-[85%] z-1">
-            <div className="max-w-52 w-full">
+          <div className="flex flex-col gap-5 w-full z-1 max-w-[288px]">
+            <div className="w-full">
               <CustomButtonAtom
                 path={
                   isAuthenticated
                     ? heroSection.signButton.signedInPath
                     : heroSection.signButton.path
                 }
-                className="font-semibold py-1 xl:py-2 px-6 text-lg xl:text-xl bg-secondary hover:bg-custom-blue w-full"
+                className="font-semibold py-2 px-6 text-xl bg-secondary hover:bg-custom-blue w-full"
                 label={
                   isAuthenticated
                     ? heroSection.signButton.signedInLabel
@@ -57,8 +57,8 @@ const LandingHeroSection: React.FC<any> = ({ heroSection, faqId }) => {
               />
             </div>
             {heroSection.faqButton && (
-              <a href={`#${faqId}`} className="w-full max-w-52">
-                <button className="rounded-md text-nowrap px-6 hover:text-white transition-all duration-300 ease-in-out font-semibold py-1 xl:py-2 text-lg xl:text-xl border-secondary bg-white text-secondary hover:bg-custom-blue w-full border-2">
+              <a href={`#${faqId}`} className="w-full">
+                <button className="rounded-md text-nowrap px-6 hover:text-white transition-all duration-300 ease-in-out font-semibold py-1 xl:py-2 text-lg xl:text-xl border-secondary bg-white text-secondary hover:bg-custom-blue border-2 w-full">
                   {heroSection.faqButton.label}
                 </button>
               </a>

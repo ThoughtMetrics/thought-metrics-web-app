@@ -1,7 +1,6 @@
 import React from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/core/lib/query-client';
-import { Toaster } from '@/shared/ui/atoms/toaster';
 import AdvocateLandingPage from './AdvocateLandingPage';
 
 /**
@@ -13,7 +12,6 @@ const AdvocateLandingPageWrapper: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AdvocateLandingPage />
-      <Toaster />
     </QueryClientProvider>
   );
 };

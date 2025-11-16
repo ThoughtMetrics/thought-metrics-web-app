@@ -9,7 +9,7 @@ import {
 import { ArrowRed } from '@/assets';
 import { useProfileQuery } from '@hooks/queries/use-profile.query';
 import { useUpdateProfileMutation } from '@hooks/mutations/use-update-profile.mutation';
-import { toast, Toaster } from 'sonner';
+import { toast } from 'sonner';
 import type { UpdateProfileData } from '@/core/types/user.type';
 import { ROUTES } from '@/routes/routeConfig';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -258,7 +258,7 @@ const EditProfilePage: React.FC = () => {
 
       // Redirect to survey page after successful update
       /* NOTE: Issues need to fix */
-      window.location.href = ROUTES.SURVEY_PAGE;
+      window.location.href = ROUTES.SURVEY_BOARDS;
     } catch (error) {
       console.error('Update profile error:', error);
     }
@@ -271,8 +271,8 @@ const EditProfilePage: React.FC = () => {
 
   return (
     <>
-      <div className="common-component bg-white text-black">
-        <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col max-w-(--breakpoint-2xl)!">
+      <div className="common-component bg-white text-black h-full overflow-y-scroll overflow-x-hidden">
+        <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center block! flex-col max-w-(--breakpoint-2xl)!">
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-4xl font-medium tracking-tighter text-gray-900 mb-2">
@@ -286,7 +286,7 @@ const EditProfilePage: React.FC = () => {
             </a> */}
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 pb-8">
             <p className="text-xl font-medium tracking-tighter mb-4">
               {ui.notes.requiredFields}
             </p>
@@ -515,7 +515,6 @@ const EditProfileWrapper: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Toaster />
         <EditProfilePage />
       </AuthProvider>
     </QueryClientProvider>

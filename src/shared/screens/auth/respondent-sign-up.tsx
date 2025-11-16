@@ -13,11 +13,10 @@ import {
   SelectAtom,
   TextInputAtom,
 } from '@/shared/ui/atoms/custom-input';
-import { ArrowRed, FacebookOutlineIcon, GoogleOutlineIcon } from '@/assets';
+import { ArrowRed, GoogleOutlineIcon } from '@/assets';
 import FaqOrganism from '@/shared/ui/organisms/faq-organism';
 import { useSignUpMutation } from '@/core/hooks/mutations/use-sign-up.mutation';
 import { ROUTES } from '@/routes/routeConfig';
-import { Toaster } from 'sonner';
 import { AuthProvider } from '@/shared/providers/auth-provider';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/core/lib/query-client';
@@ -301,7 +300,7 @@ const RespondentSignUpPage: React.FC = () => {
 
     if (result) {
       setTimeout(() => {
-        window.location.href = ROUTES.SURVEY_PAGE;
+        window.location.href = ROUTES.SURVEY_BOARDS;
       }, 2000);
     }
   };
@@ -311,7 +310,7 @@ const RespondentSignUpPage: React.FC = () => {
     try {
       const result = await signUpMutation.mutateAsync({ type: 'google' });
       if (result) {
-        window.location.href = ROUTES.SURVEY_PAGE;
+        window.location.href = ROUTES.SURVEY_BOARDS;
       }
     } catch (error) {
       let errorCode = '';
@@ -340,12 +339,12 @@ const RespondentSignUpPage: React.FC = () => {
     }
   };
 
-  const handleFacebookSignUp = async () => {
+  /* const handleFacebookSignUp = async () => {
     setSocialAuthLoading('facebook');
     try {
       const result = await signUpMutation.mutateAsync({ type: 'facebook' });
       if (result) {
-        window.location.href = ROUTES.SURVEY_PAGE;
+        window.location.href = ROUTES.SURVEY_BOARDS;
       }
     } catch (error) {
       let errorCode = '';
@@ -372,7 +371,7 @@ const RespondentSignUpPage: React.FC = () => {
       // Ensure loading state is cleared
       setSocialAuthLoading(null);
     }
-  };
+  }; */
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -385,7 +384,7 @@ const RespondentSignUpPage: React.FC = () => {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="common-component bg-white text-black h-full overflow-y-scroll">
         <div className="max-w-md text-center bg-white rounded-lg shadow-lg p-8">
           <div className="mb-4">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
@@ -415,8 +414,8 @@ const RespondentSignUpPage: React.FC = () => {
 
   return (
     <>
-      <div className="common-component bg-white text-black">
-        <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center flex-col max-w-(--breakpoint-2xl)!">
+      <div className="common-component bg-white text-black h-full overflow-y-scroll">
+        <div className="common-container px-6 py-8 md:px-24 md:py-12 block! justify-center flex-col max-w-(--breakpoint-2xl)!">
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-4xl font-medium tracking-tighter text-gray-900 mb-2">
@@ -839,7 +838,6 @@ const RespondentSignUpWrapper: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Toaster />
         <RespondentSignUpPage />
       </AuthProvider>
     </QueryClientProvider>

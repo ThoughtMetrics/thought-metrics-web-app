@@ -16,7 +16,14 @@
       "Bash(yarn docker:build:*)",
       "Bash(docker stop:*)",
       "Bash(docker rm:*)",
-      "Bash(yarn lint:*)"
+      "Bash(yarn lint:*)",
+      "Bash(yarn dev)",
+      "mcp__ide__getDiagnostics",
+      "Bash(timeout 3 curl:*)",
+      "Bash(yarn build:*)",
+      "Bash(python -m json.tool:*)",
+      "Bash(survey_response.json)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []
