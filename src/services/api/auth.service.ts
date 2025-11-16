@@ -10,7 +10,7 @@ import {
   type UserCredential,
 } from 'firebase/auth';
 import { auth } from '@/core/configs/firebase-config';
-import ApiService from './api.service';
+import ApiService from '@/services/api/api.service';
 import type { UserProfile, SignUpData } from '@/core/types/user.type';
 
 class AuthService {
@@ -19,17 +19,13 @@ class AuthService {
 
   // Lazy initialization for Google provider
   private getGoogleProvider(): GoogleAuthProvider {
-    if (!this.googleProvider) {
-      this.googleProvider = new GoogleAuthProvider();
-    }
+    this.googleProvider ??= new GoogleAuthProvider();
     return this.googleProvider;
   }
 
   // Lazy initialization for Facebook provider
   private getFacebookProvider(): FacebookAuthProvider {
-    if (!this.facebookProvider) {
-      this.facebookProvider = new FacebookAuthProvider();
-    }
+    this.facebookProvider ??= new FacebookAuthProvider();
     return this.facebookProvider;
   }
 

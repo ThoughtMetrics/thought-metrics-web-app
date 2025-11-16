@@ -100,9 +100,10 @@ const UnsubscribePage: React.FC = () => {
           resetForm();
         }, formResetDelay);
       },
-      onError: (error: Error) => {
+      onError: (error: any) => {
         setSubmitting(false);
-        toast.error(error.message || 'Failed to unsubscribe account. Please try again.');
+        
+        toast.error(error.details.error.message || 'Failed to unsubscribe account. Please try again.');
       },
     });
   };

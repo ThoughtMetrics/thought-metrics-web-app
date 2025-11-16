@@ -13,7 +13,7 @@ export const useSaveDraftMutation = () => {
       toast.success('Draft saved successfully!');
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to save draft');
+      toast.error(error.details.error.message || 'Failed to save draft');
     },
   });
 };

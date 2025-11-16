@@ -2,7 +2,6 @@
 import { queryClient } from '@/core/lib/query-client';
 import { useSurveyDetailsQuery } from '@/core/hooks/queries/survey/use-survey-details.query';
 import { useSubmitSurveyMutation } from '@/core/hooks/mutations/survey/use-submit-survey.mutation';
-import { useSaveDraftMutation } from '@/core/hooks/mutations/survey/use-save-draft.mutation';
 import { QuestionType } from '@/core/types/survey.type';
 import { AuthProvider } from '@/shared/providers/auth-provider';
 import { SurveySuccessMessage } from '@/shared/components/survey/SurveySuccessMessage';
@@ -152,7 +151,35 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     );
   }
 
-  const { template } = surveyData.data;
+  const { survey, template } = surveyData.data;
+
+  // Check if user has already completed this survey
+  if (survey.userResponse?.isCompleted && !survey.userResponse?.canUpdate) {
+    return (
+      <div className="min-h-full bg-white flex items-center justify-center">
+        <div className="text-center px-6 max-w-md">
+          <div className="text-6xl mb-6">✓</div>
+          <h2 className="text-2xl font-semibold mb-4 text-custom-text-dark">
+            Survey Already Completed
+          </h2>
+          <p className="text-lg text-custom-grey-3 mb-6">
+            {survey.userResponse?.status === 'submitted' &&
+              'You have already submitted a response for this survey. It is currently under review.'}
+            {survey.userResponse?.status === 'approved' &&
+              'Your response has been approved. Thank you for your participation!'}
+            {survey.userResponse?.status === 'declined' &&
+              'Your response was reviewed. Please check your email for more details.'}
+          </p>
+          <button
+            onClick={() => (window.location.href = '/survey-boards')}
+            className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+          >
+            Back to Surveys
+          </button>
+        </div>
+      </div>
+    );
+  }
   const questions = template.questions;
   const totalQuestions = questions.length;
   const currentQuestionData = questions[currentQuestion];

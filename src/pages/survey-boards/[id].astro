@@ -2,8 +2,8 @@
 import IntractionLayout from '@/layouts/IntractionLayout.astro';
 import SurveyDetailWrapper from '@screens/survey-boards/SurveyDetailComponent';
 
-// Get the survey ID from the URL
-const { id } = Astro.params;
+// Get the survey ID from the URL (supports both TM-xxx format and UUID for backward compatibility)
+const { id: surveyId } = Astro.params;
 
 const seoContent = {
   title: 'Survey Questions | Thought Metrics',
@@ -12,5 +12,5 @@ const seoContent = {
 ---
 
 <IntractionLayout title={seoContent.title} description={seoContent.description}>
-  <SurveyDetailWrapper surveyId={id || ''} client:only="react" />
+  <SurveyDetailWrapper surveyId={surveyId || ''} client:only="react" />
 </IntractionLayout>

@@ -2,7 +2,6 @@
 import React from 'react';
 import { useProfileQuery } from '@/core/hooks/queries/use-profile.query';
 import { useSurveyListQuery } from '@/core/hooks/queries/survey/use-survey-list.query';
-import { useUserResponsesQuery } from '@/core/hooks/queries/survey/use-user-responses.query';
 import { queryClient } from '@/core/lib/query-client';
 import { ROUTES } from '@/routes/routeConfig';
 import type { ISurvey } from '@/core/types/survey.type';
@@ -20,19 +19,8 @@ const SurveyBoardsSection: React.FC = () => {
     visibility: 'public',
     limit: 100,
   });
-  const { data: userResponsesData } = useUserResponsesQuery();
 
   const surveys = surveysData?.data || [];
-  const userResponses = userResponsesData?.data || [];
-
-  // Create a set of submitted survey IDs for quick lookup
-  const submittedSurveyIds = React.useMemo(() => {
-    return new Set(
-      userResponses
-        .filter((response) => response.status === SurveyResponseStatus.SUBMITTED)
-        .map((response) => response.surveyId)
-    );
-  }, [userResponses]);
 
   // Filter surveys by selected industry
   const filteredSurveys = React.useMemo(() => {
@@ -45,11 +33,22 @@ const SurveyBoardsSection: React.FC = () => {
     });
   }, [surveys, selectedIndustry]);
 
-  const handleSurveyClick = (surveyId: string, isSubmitted: boolean) => {
-    if (isSubmitted) {
-      return; // Do nothing if survey is already submitted
+  const handleSurveyClick = (survey: ISurvey) => {
+    // Check if user has already submitted or response is completed
+    if (survey.userResponse?.isCompleted) {
+      return; // Do nothing if survey is already completed (submitted/approved/declined)
     }
-    window.location.href = `/survey-boards/${surveyId}`;
+
+    // Use surveyId (TM-xxx format) instead of database UUID for user-friendly URLs
+    const surveyIdentifier = survey.surveyId || survey.id;
+
+    // If user has a draft, they can resume
+    if (survey.userResponse?.canUpdate) {
+      window.location.href = `/survey-boards/${surveyIdentifier}?resume=true`;
+    } else {
+      // Start new survey
+      window.location.href = `/survey-boards/${surveyIdentifier}`;
+    }
   };
 
   return (
@@ -104,7 +103,8 @@ const SurveyBoardsSection: React.FC = () => {
               const metadata = survey.metadata || {};
               const industry = survey.industry || 'General';
               const timeToComplete = metadata.timeToComplete || 15;
-              const surveyId = survey.surveyId || `TM-${survey.id}`;
+              // surveyId should always be provided by backend (e.g., TM-AD001)
+              const surveyId = survey.surveyId || survey.id;
 
               // Parse price - backend returns string like "90.00"
               const price =
@@ -112,15 +112,40 @@ const SurveyBoardsSection: React.FC = () => {
                   ? parseFloat(survey.price)
                   : survey.price || 0;
 
-              // Check if user has submitted this survey
-              const isSubmitted = submittedSurveyIds.has(survey.id);
+              // Check survey status based on userResponse
+              const hasResponded = survey.userResponse?.hasResponded || false;
+              const isCompleted = survey.userResponse?.isCompleted || false;
+              const canUpdate = survey.userResponse?.canUpdate || false;
+              const responseStatus = survey.userResponse?.status;
+
+              // Determine status badge text and style
+              const getStatusInfo = () => {
+                if (!hasResponded) {
+                  return { text: 'Available', bgColor: 'bg-green-100', textColor: 'text-green-800' };
+                }
+                if (canUpdate && responseStatus === SurveyResponseStatus.DRAFT) {
+                  return { text: 'Draft Saved', bgColor: 'bg-yellow-100', textColor: 'text-yellow-800' };
+                }
+                if (responseStatus === SurveyResponseStatus.SUBMITTED) {
+                  return { text: 'Submitted', bgColor: 'bg-blue-100', textColor: 'text-blue-800' };
+                }
+                if (responseStatus === SurveyResponseStatus.APPROVED) {
+                  return { text: 'Approved', bgColor: 'bg-gray-200', textColor: 'text-gray-700' };
+                }
+                if (responseStatus === SurveyResponseStatus.DECLINED) {
+                  return { text: 'Declined', bgColor: 'bg-red-100', textColor: 'text-red-800' };
+                }
+                return { text: survey.status || 'Published', bgColor: 'bg-gray-100', textColor: 'text-gray-700' };
+              };
+
+              const statusInfo = getStatusInfo();
 
               return (
                 <div
-                  key={survey.id}
-                  onClick={() => handleSurveyClick(survey.id, isSubmitted)}
+                  key={survey.surveyId || survey.id}
+                  onClick={() => handleSurveyClick(survey)}
                   className={`border-2 border-custom-grey-2 rounded-lg overflow-hidden transition-all flex flex-col justify-between h-full ${
-                    isSubmitted
+                    isCompleted
                       ? 'opacity-60 cursor-not-allowed bg-gray-50'
                       : 'hover:border-primary cursor-pointer hover:shadow-lg'
                   }`}
@@ -152,17 +177,9 @@ const SurveyBoardsSection: React.FC = () => {
                         {industry}
                       </span>
                       <span
-                        className={`inline-block px-3 py-1 rounded text-xs font-medium ${
-                          isSubmitted
-                            ? 'bg-gray-200 text-gray-700'
-                            : 'bg-green-100 text-green-800'
-                        }`}
+                        className={`inline-block px-3 py-1 rounded text-xs font-medium ${statusInfo.bgColor} ${statusInfo.textColor}`}
                       >
-                        {isSubmitted
-                          ? 'Submitted'
-                          : survey.status === 'published'
-                            ? 'Available'
-                            : survey.status}
+                        {statusInfo.text}
                       </span>
                     </div>
                   </div>

@@ -60,6 +60,14 @@ export interface ISurvey {
     industry?: string;
     timeToComplete?: number;
   };
+  // User response status (included when authenticated)
+  userResponse?: {
+    hasResponded: boolean;
+    status?: SurveyResponseStatus;
+    responseId?: string;
+    canUpdate: boolean;
+    isCompleted: boolean;
+  };
 }
 
 export interface IQuestionTemplate {
@@ -93,6 +101,15 @@ export interface ISurveyTemplate {
 export interface ISurveyDetails {
   survey: ISurvey;
   template: ISurveyTemplate;
+  // User response status (included when authenticated)
+  // This is returned by the merged /surveys/:surveyId endpoint
+  userResponse?: {
+    hasResponded: boolean;
+    status?: SurveyResponseStatus;
+    responseId?: string;
+    canUpdate: boolean;
+    isCompleted: boolean;
+  };
 }
 
 export interface ISurveySubmission {

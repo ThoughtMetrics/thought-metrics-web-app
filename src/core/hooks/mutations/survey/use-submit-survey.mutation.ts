@@ -20,9 +20,7 @@ export const useSubmitSurveyMutation = () => {
       );
     },
     onError: (error: any) => {
-      console.log('Sur Sub: ', JSON.stringify(error.message));
-
-      toast.error(error.message || 'Failed to submit survey');
+      toast.error(error.details.error.message || 'Failed to submit survey');
     },
   });
 };

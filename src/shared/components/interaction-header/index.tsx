@@ -91,12 +91,12 @@ const InteractionHeader: React.FC = () => {
                   </button>
                 </>
               ) : (
-                <button className="bg-primary text-white text-nowrap w-auto hover:bg-secondary hover:text-white transition-all duration-300 ease-in-out rounded font-medium text-sm md:text-lg px-8 py-1 flex items-center gap-4">
-                  <a href={ROUTES.LOGIN_IN}>
+                <a href={ROUTES.LOGIN_IN}>
+                  <button className="bg-primary text-white text-nowrap w-auto hover:bg-secondary hover:text-white transition-all duration-300 ease-in-out rounded font-medium text-sm md:text-lg px-8 py-1 flex items-center gap-4">
                     <label>Sign In</label>
-                  </a>
-                  <ArrowRed className="fill-current text-white" />
-                </button>
+                    <ArrowRed className="fill-current text-white" />
+                  </button>
+                </a>
               )}
             </div>
             {isAuthenticated ? (
