@@ -73,10 +73,12 @@ export const LickertScale: React.FC<LickertScaleProps> = ({
         </div>
 
         {/* Labels */}
-        <div className="flex justify-between text-xs md:text-sm text-black">
-          <span>{minLabel}</span>
-          <span>{maxLabel}</span>
-        </div>
+        {(minLabel || maxLabel) && (
+          <div className="flex justify-between text-sm md:text-base text-black mb-2">
+            <span>{`${minValue} = ${minLabel}` || `Min: ${minValue}`}</span>
+            <span>{`${maxValue} = ${maxLabel}` || `Max: ${maxValue}`}</span>
+          </div>
+        )}
 
         {/* Feedback Section */}
         {description && (

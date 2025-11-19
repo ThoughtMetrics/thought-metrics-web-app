@@ -27,15 +27,15 @@ export const SurveySuccessMessage: React.FC<SurveySuccessMessageProps> = ({
               />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold mb-4">
+          <h2 className="text-2xl font-bold mb-4 text-text-dark">
             Thank you for your responses!
           </h2>
-          <p className="text-custom-grey-3 mb-6">
+          <p className="text-text-dark mb-6">
             Our team will review your answers. If you meet the criteria for
             this study, a Thought Metrics representative will contact you for
             next steps.
           </p>
-          <p className="text-sm text-custom-grey-3 mb-6">
+          <p className="text-sm text-text-dark mb-6">
             Stay tuned — your opinions help shape tomorrow's decisions!
           </p>
           <button

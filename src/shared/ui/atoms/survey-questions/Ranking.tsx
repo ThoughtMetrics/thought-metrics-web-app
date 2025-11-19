@@ -47,8 +47,8 @@ export const Ranking: React.FC<RankingProps> = ({
     setDraggedItem(null);
   };
 
-  const getItemLabel = (itemId: string) => {
-    return items.find((item) => item.id === itemId)?.label || '';
+  const getItemLabel = (itemValue: string) => {
+    return items.find((item) => item.value === itemValue)?.label || '';
   };
 
   return (
@@ -68,6 +68,9 @@ export const Ranking: React.FC<RankingProps> = ({
       isNextDisabled={isNextDisabled}
       isLastQuestion={isLastQuestion}
     >
+      <div className="mb-8 text-text-dark">
+        (click and drag to reorder)
+      </div>
       <div className="space-y-3">
         {rankedItems.map((itemId, index) => (
           <div

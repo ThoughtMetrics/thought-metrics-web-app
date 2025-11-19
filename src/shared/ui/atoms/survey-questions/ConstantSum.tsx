@@ -27,9 +27,9 @@ export const ConstantSum: React.FC<ConstantSumProps> = ({
   isNextDisabled,
   isLastQuestion,
 }) => {
-  const [localAllocation, setLocalAllocation] = useState<Record<string, number>>(
-    allocatedPoints || {}
-  );
+  const [localAllocation, setLocalAllocation] = useState<
+    Record<string, number>
+  >(allocatedPoints || {});
 
   useEffect(() => {
     setLocalAllocation(allocatedPoints);
@@ -42,20 +42,45 @@ export const ConstantSum: React.FC<ConstantSumProps> = ({
   const remaining = totalPoints - currentTotal;
 
   const handleChange = (optionId: string, value: string) => {
-    const numValue = parseInt(value) || 0;
-    const newAllocation = {
-      ...localAllocation,
-      [optionId]: numValue,
-    };
-    setLocalAllocation(newAllocation);
-    onAllocationChange(newAllocation);
+    if (optionId && optionId !== '') {
+      const numValue = parseInt(value) || 0;
+      const newAllocation = {
+        ...localAllocation,
+        [optionId]: numValue,
+      };
+      setLocalAllocation(newAllocation);
+      onAllocationChange(newAllocation);
+    }
   };
 
-  const isValid = () => {
-    if (requireTotal && currentTotal !== totalPoints) return false;
-    if (!allowZero && Object.values(localAllocation).some((v) => v === 0))
-      return false;
-    return currentTotal <= totalPoints;
+  const increaseVal = (optionId: string) => {
+    if (optionId && optionId !== '') {
+      const val = localAllocation[optionId] ?? 0;
+      if (currentTotal < totalPoints) {
+        const numValue = val + 1;
+        const newAllocation = {
+          ...localAllocation,
+          [optionId]: numValue,
+        };
+        setLocalAllocation(newAllocation);
+        onAllocationChange(newAllocation);
+      }
+    }
+  };
+
+  const decreaseVal = (optionId: string) => {
+    if (optionId && optionId !== '') {
+      const val = localAllocation[optionId] ?? 0;
+      if (val > 0) {
+        const numValue = val - 1;
+        const newAllocation = {
+          ...localAllocation,
+          [optionId]: numValue,
+        };
+        setLocalAllocation(newAllocation);
+        onAllocationChange(newAllocation);
+      }
+    }
   };
 
   return (
@@ -85,20 +110,33 @@ export const ConstantSum: React.FC<ConstantSumProps> = ({
         <div className="space-y-4">
           {options.map((option) => (
             <div
-              key={option.id}
-              className="flex items-center gap-4 p-4 border-2 border-custom-grey-2 rounded-lg bg-custom-grey-5"
+              key={option.value}
+              className="flex items-center gap-4 p-2 border-2 border-custom-grey-2 rounded-lg bg-custom-grey-5 hover:border-primary group"
             >
-              <label className="flex-1 text-base md:text-lg text-black">
-                {option.label}
-              </label>
               <input
                 type="number"
                 min="0"
-                max={totalPoints}
-                value={localAllocation[option.id] || 0}
-                onChange={(e) => handleChange(option.id, e.target.value)}
-                className="w-24 px-3 py-2 border-2 border-custom-grey-2 rounded focus:border-primary outline-none bg-white text-center"
+                max={remaining + localAllocation[option.value]}
+                value={localAllocation[option.value]}
+                onChange={(e) => handleChange(option.value, e.target.value)}
+                className="w-16 py-1 border-2 border-custom-grey-2 rounded focus:border-primary outline-none bg-white text-center group-hover:border-primary"
               />
+              <label className="flex-1 text-base md:text-lg text-black">
+                {option.label}
+              </label>
+              <button
+                className="h-8 w-8 bg-white rounded-lg flex justify-center items-center relative group/button border-2 border-custom-grey-2 focus:border-primary outline-none"
+                onClick={() => decreaseVal(option.value)}
+              >
+                <div className="w-4 h-0.5 bg-custom-grey-2 group-hover/button:bg-primary"></div>
+              </button>
+              <button
+                className="h-8 w-8 bg-white rounded-lg flex justify-center items-center relative group/button border-2 border-custom-grey-2 focus:border-primary outline-none"
+                onClick={() => increaseVal(option.value)}
+              >
+                <div className="w-4 h-0.5 bg-custom-grey-2 group-hover/button:bg-primary"></div>
+                <div className="absolute w-0.5 h-4 bg-custom-grey-2 group-hover/button:bg-primary"></div>
+              </button>
             </div>
           ))}
         </div>
@@ -115,14 +153,14 @@ export const ConstantSum: React.FC<ConstantSumProps> = ({
                   ? 'text-red-600'
                   : currentTotal === totalPoints
                     ? 'text-green-600'
-                    : 'text-custom-grey-3'
+                    : 'text-text-dark'
               }`}
             >
               {currentTotal} / {totalPoints}
             </span>
           </div>
           {requireTotal && remaining !== 0 && (
-            <p className="text-sm text-custom-grey-3 mt-2">
+            <p className="text-sm text-text-dark mt-2">
               {remaining > 0
                 ? `${remaining} points remaining`
                 : `${Math.abs(remaining)} points over limit`}

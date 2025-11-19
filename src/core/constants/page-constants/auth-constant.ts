@@ -177,7 +177,7 @@ export const signUpFormConstant = {
     pageTitle: 'Create an Account',
     whyRegister: 'Why Register?',
     registerDescription:
-      "(There is a joining bonus of rupees 50 on successful registration. this will be credited to your account after your first completed survey. T&C apply.)",
+      '(There is a joining bonus of ₹ 50 on successful registration. This will be credited to your account after your first completed survey. T&C apply.)',
     socialButtons: {
       facebook: 'Continue with Facebook',
       google: 'Continue with Google',
@@ -195,6 +195,11 @@ export const signUpFormConstant = {
       },
       step3: {
         number: 'Step 3',
+      //   title: 'Payment Info',
+      //   active: false,
+      // },
+      // step4: {
+      //   number: 'Step 4',
         title: 'Surveys',
         active: false,
       },

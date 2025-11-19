@@ -10,6 +10,7 @@ export const MatrixGrid: React.FC<MatrixGridProps> = ({
   surveyId,
   surveyLabel,
   rows,
+  columns,
   selectedValues,
   onValuesChange,
   comment,
@@ -22,6 +23,7 @@ export const MatrixGrid: React.FC<MatrixGridProps> = ({
   isNextDisabled,
   isLastQuestion,
 }) => {
+
   const handleSelectionChange = (rowId: string, optionId: string) => {
     onValuesChange({
       ...selectedValues,
@@ -31,11 +33,11 @@ export const MatrixGrid: React.FC<MatrixGridProps> = ({
 
   return (
     <SurveyQuestionWrapper
+      surveyId={surveyId}
+      surveyLabel={surveyLabel}
       questionNumber={questionNumber}
       totalQuestions={totalQuestions}
       question={question}
-      surveyId={surveyId}
-      surveyLabel={surveyLabel}
       comment={comment}
       onCommentChange={onCommentChange}
       showComment={showComment}
@@ -47,8 +49,8 @@ export const MatrixGrid: React.FC<MatrixGridProps> = ({
       isLastQuestion={isLastQuestion}
     >
       <div className="space-y-6">
-        {rows.map((row) => (
-          <div key={row.id} className="space-y-3">
+        {rows.map((row, index) => (
+          <div key={row.value + index} className="space-y-3">
             {/* Row Label */}
             <label className="block text-base md:text-lg text-black font-medium">
               {row.label}
@@ -56,14 +58,14 @@ export const MatrixGrid: React.FC<MatrixGridProps> = ({
 
             {/* Dropdown/Select */}
             <select
-              value={selectedValues[row.id] || ''}
-              onChange={(e) => handleSelectionChange(row.id, e.target.value)}
+              value={selectedValues[row.value] || ''}
+              onChange={(e) => handleSelectionChange(row.value, e.target.value)}
               className="w-full px-3 py-2 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors border-custom-grey-2 focus:border-primary"
             >
-              <option value="">Select an option</option>
-              {row.options.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.label}
+              <option value=''>Select an option</option>
+              {columns.map((column) => (
+                <option key={column.value} value={column.value}>
+                  {column.label}
                 </option>
               ))}
             </select>

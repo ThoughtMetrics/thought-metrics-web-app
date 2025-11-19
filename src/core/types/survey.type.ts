@@ -1,5 +1,7 @@
 // src/core/types/survey.type.ts
 
+import type { LabelValuePair } from './base.type';
+
 // ========== ENUMS ==========
 export enum SurveyStatus {
   DRAFT = 'draft',
@@ -181,7 +183,7 @@ export interface StarRatingProps extends BaseSurveyQuestionProps {
   selectedStars?: number;
   onRatingChange: (rating: number) => void;
   image?: string;
-  ratingLabel?: string;
+  ratingLabels?: Record<number, string>;
 }
 
 export interface RadioButtonOption {
@@ -218,13 +220,18 @@ export interface SingleSliderProps extends BaseSurveyQuestionProps {
   step?: number;
 }
 
+export interface DoubleSliderItem {
+  min: number;
+  max: number;
+}
+
 export interface DoubleSliderProps extends BaseSurveyQuestionProps {
   minValue: number;
   maxValue: number;
   minLabel?: string;
   maxLabel?: string;
-  selectedRange?: [number, number];
-  onRangeChange: (range: [number, number]) => void;
+  selectedRange?: DoubleSliderItem;
+  onRangeChange: (range: DoubleSliderItem) => void;
   step?: number;
 }
 
@@ -248,25 +255,15 @@ export interface MatrixOption {
   label: string;
 }
 
-export interface MatrixRowItem {
-  id: string;
-  label: string;
-  options: MatrixOption[];
-}
-
 export interface MatrixGridProps extends BaseSurveyQuestionProps {
-  rows: MatrixRowItem[];
+  rows: LabelValuePair[];
+  columns: LabelValuePair[];
   selectedValues: Record<string, string>;
   onValuesChange: (values: Record<string, string>) => void;
 }
 
-export interface RankingItem {
-  id: string;
-  label: string;
-}
-
 export interface RankingProps extends BaseSurveyQuestionProps {
-  items: RankingItem[];
+  items: LabelValuePair[];
   rankedItems: string[];
   onRankingChange: (rankedIds: string[]) => void;
 }
@@ -283,14 +280,9 @@ export interface MaxDiffProps extends BaseSurveyQuestionProps {
   onSelectionChange: (mostImportant: string, leastImportant: string) => void;
 }
 
-export interface ConstantSumOption {
-  id: string;
-  label: string;
-}
-
 export interface ConstantSumProps extends BaseSurveyQuestionProps {
   totalPoints: number;
-  options: ConstantSumOption[];
+  options: LabelValuePair[];
   allocatedPoints: Record<string, number>;
   onAllocationChange: (allocation: Record<string, number>) => void;
   allowZero?: boolean;
