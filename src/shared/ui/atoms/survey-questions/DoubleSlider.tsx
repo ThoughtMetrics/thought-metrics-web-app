@@ -1,5 +1,8 @@
 // src/shared/ui/atoms/survey-questions/DoubleSlider.tsx
-import type { DoubleSliderProps } from '@/core/types/survey.type';
+import type {
+  DoubleSliderItem,
+  DoubleSliderProps,
+} from '@/core/types/survey.type';
 import type React from 'react';
 import { useState } from 'react';
 import { SurveyQuestionWrapper } from './SurveyQuestionWrapper';
@@ -14,7 +17,7 @@ export const DoubleSlider: React.FC<DoubleSliderProps> = ({
   maxValue,
   minLabel,
   maxLabel,
-  selectedRange = [minValue, maxValue],
+  selectedRange = { min: minValue, max: maxValue },
   onRangeChange,
   step = 1,
   comment,
@@ -27,18 +30,24 @@ export const DoubleSlider: React.FC<DoubleSliderProps> = ({
   isNextDisabled,
   isLastQuestion,
 }) => {
-  const [localRange, setLocalRange] = useState<[number, number]>(selectedRange);
+  const [localRange, setLocalRange] = useState<DoubleSliderItem>(selectedRange);
 
   const handleMinChange = (value: number) => {
-    const newMin = Math.min(value, localRange[1]);
-    const newRange: [number, number] = [newMin, localRange[1]];
+    const min = Math.min(value, localRange.max);
+    const newRange: DoubleSliderItem = {
+      min,
+      max: localRange.max,
+    };
     setLocalRange(newRange);
     onRangeChange(newRange);
   };
 
   const handleMaxChange = (value: number) => {
-    const newMax = Math.max(value, localRange[0]);
-    const newRange: [number, number] = [localRange[0], newMax];
+    const max = Math.max(value, localRange.min);
+    const newRange: DoubleSliderItem = {
+      min: localRange.min,
+      max,
+    };
     setLocalRange(newRange);
     onRangeChange(newRange);
   };
@@ -64,8 +73,8 @@ export const DoubleSlider: React.FC<DoubleSliderProps> = ({
         {/* Labels */}
         {(minLabel || maxLabel) && (
           <div className="flex justify-between text-sm md:text-base text-black mb-2">
-            <span>{minLabel || `Rs. ${minValue}`}</span>
-            <span>{maxLabel || `Rs. ${maxValue}`}</span>
+            <span>{`Min: ${minLabel}` || `${minValue}`}</span>
+            <span>{`Max: ${maxLabel}` || `${maxValue}`}</span>
           </div>
         )}
 
@@ -78,8 +87,8 @@ export const DoubleSlider: React.FC<DoubleSliderProps> = ({
           <div
             className="absolute top-1/2 -translate-y-1/2 h-2 bg-primary rounded-lg"
             style={{
-              left: `${((localRange[0] - minValue) / (maxValue - minValue)) * 100}%`,
-              right: `${100 - ((localRange[1] - minValue) / (maxValue - minValue)) * 100}%`,
+              left: `${((localRange.min - minValue) / (maxValue - minValue)) * 100}%`,
+              right: `${100 - ((localRange.max - minValue) / (maxValue - minValue)) * 100}%`,
             }}
           />
 
@@ -89,7 +98,7 @@ export const DoubleSlider: React.FC<DoubleSliderProps> = ({
             min={minValue}
             max={maxValue}
             step={step}
-            value={localRange[0]}
+            value={localRange.min}
             onChange={(e) => handleMinChange(Number(e.target.value))}
             className="absolute w-full h-2 bg-transparent appearance-none cursor-pointer pointer-events-none
                        [&::-webkit-slider-thumb]:appearance-none
@@ -114,7 +123,7 @@ export const DoubleSlider: React.FC<DoubleSliderProps> = ({
             min={minValue}
             max={maxValue}
             step={step}
-            value={localRange[1]}
+            value={localRange.max}
             onChange={(e) => handleMaxChange(Number(e.target.value))}
             className="absolute w-full h-2 bg-transparent appearance-none cursor-pointer pointer-events-none
                        [&::-webkit-slider-thumb]:appearance-none
@@ -137,7 +146,7 @@ export const DoubleSlider: React.FC<DoubleSliderProps> = ({
         {/* Selected Range Display */}
         <div className="text-center">
           <span className="text-lg md:text-xl font-medium text-black">
-            Rs. {localRange[0]} - Rs. {localRange[1]}
+            Rs. {localRange.min} - Rs. {localRange.max}
           </span>
         </div>
       </div>

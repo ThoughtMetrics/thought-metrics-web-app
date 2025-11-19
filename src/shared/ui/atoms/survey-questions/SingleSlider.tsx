@@ -47,8 +47,8 @@ export const SingleSlider: React.FC<SingleSliderProps> = ({
         {/* Labels */}
         {(minLabel || maxLabel) && (
           <div className="flex justify-between text-sm md:text-base text-black mb-2">
-            <span>{minLabel || `Min: ${minValue}`}</span>
-            <span>{maxLabel || `Max: ${maxValue}`}</span>
+            <span>{`${minValue} = ${minLabel}` || `Min: ${minValue}`}</span>
+            <span>{`${maxValue} = ${maxLabel}` || `Max: ${maxValue}`}</span>
           </div>
         )}
 

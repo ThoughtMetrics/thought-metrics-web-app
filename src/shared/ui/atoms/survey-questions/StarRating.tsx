@@ -13,7 +13,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
   selectedStars,
   onRatingChange,
   image,
-  ratingLabel,
+  ratingLabels,
   comment,
   onCommentChange,
   showComment,
@@ -25,7 +25,6 @@ export const StarRating: React.FC<StarRatingProps> = ({
   isLastQuestion,
 }) => {
   const stars = Array.from({ length: maxStars }, (_, i) => i + 1);
-
   return (
     <SurveyQuestionWrapper
       questionNumber={questionNumber}
@@ -43,22 +42,24 @@ export const StarRating: React.FC<StarRatingProps> = ({
       isNextDisabled={isNextDisabled}
       isLastQuestion={isLastQuestion}
     >
-      <div className="space-y-6">
+      <div className="space-y-6 flex flex-col">
         {/* Image */}
         {image && (
-          <div className="w-full max-w-2xl mx-auto">
+          <div className="w-full flex justify-center">
             <img
               src={image}
               alt="Rating content"
-              className="w-full h-auto rounded-lg"
+              className="w-auto max-h-80 rounded-lg"
             />
           </div>
         )}
 
         {/* Rating Label */}
-        {ratingLabel && (
+        {ratingLabels && (
           <p className="text-base md:text-lg text-black text-center">
-            {ratingLabel}
+            {Object.entries(ratingLabels)
+              .map((ratingLabel) => `${ratingLabel[0]}=${ratingLabel[1]}`)
+              .join(', ')}
           </p>
         )}
 

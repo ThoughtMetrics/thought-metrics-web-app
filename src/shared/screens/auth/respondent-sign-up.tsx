@@ -375,7 +375,7 @@ const RespondentSignUpPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (currentStep === 2) {
+    if (currentStep === 3) {
       void submitForm(handleFirebaseSignUp);
     } else {
       nextStep();
@@ -536,6 +536,40 @@ const RespondentSignUpPage: React.FC = () => {
                 <div className="flex flex-col">
                   <span className="font-medium">{ui.steps.step3.number}</span>
                   <span className="text-sm">{ui.steps.step3.title}</span>
+                </div>
+                {currentStep > 3 && (
+                  <svg
+                    className="w-4 h-4 ml-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+              </div>
+              <svg
+                className="w-4 h-8 text-black"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 12 38"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M0 5l14 14-14 16"
+                />
+              </svg>
+              <div
+                className={`flex items-center ${currentStep >= 4 ? 'text-primary' : 'text-black'}`}
+              >
+                <div className="flex flex-col">
+                  <span className="font-medium">{ui.steps.step4.number}</span>
+                  <span className="text-sm">{ui.steps.step4.title}</span>
                 </div>
               </div>
             </div>
@@ -802,11 +836,23 @@ const RespondentSignUpPage: React.FC = () => {
                 />
               </>
             )}
+            {currentStep === 3 && (
+              <>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                  {ui.preferences.title}
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  {ui.preferences.description}
+                </p>
+              </>
+            )}
 
             {/* General Error Message */}
             {errors.general && (
               <div className="bg-red-50 border border-red-200 rounded-md p-4">
-                <p className="text-red-600 text-sm font-medium">{errors.general}</p>
+                <p className="text-red-600 text-sm font-medium">
+                  {errors.general}
+                </p>
               </div>
             )}
 
@@ -818,7 +864,7 @@ const RespondentSignUpPage: React.FC = () => {
               <label className="text-white text-nowrap font-medium">
                 {isSubmitting
                   ? ui.buttons.processing
-                  : currentStep === 2
+                  : currentStep === 3
                     ? ui.buttons.register
                     : ui.buttons.next}
               </label>

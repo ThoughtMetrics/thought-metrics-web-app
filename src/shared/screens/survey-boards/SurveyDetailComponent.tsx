@@ -99,10 +99,10 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         );
 
       case QuestionType.LIKERT_SCALE:
-      case QuestionType.RATING:
       case QuestionType.SCALE:
-        return answer.value !== undefined && answer.value !== null;
-
+        return answer.value && answer.value > 0;
+      case QuestionType.RATING:
+        return answer.stars && answer.stars > 0;
       case QuestionType.MCQ_SINGLE:
         return !!answer.value;
 
@@ -110,13 +110,21 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         return answer.values && answer.values.length > 0;
 
       case QuestionType.DOUBLE_SLIDER:
-        return answer.range && answer.range.length === 2;
+        return (
+          answer.range &&
+          Object.values(answer.range).every((val) =>
+            typeof val === 'number' ? val > 0 : false
+          )
+        );
 
       case QuestionType.MULTI_SLIDER:
         return answer.values && Object.keys(answer.values).length > 0;
 
       case QuestionType.MATRIX:
-        return answer.values && Object.keys(answer.values).length > 0;
+        return (
+          answer.values &&
+          Object.values(answer.values).every((str) => str !== '')
+        );
 
       case QuestionType.RANKING:
         return answer.rankedItems && answer.rankedItems.length > 0;
@@ -125,10 +133,15 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         return (answer.mostImportant && answer.leastImportant) || answer;
 
       case QuestionType.CONSTANT_SUM:
-        return (
+        const totalPoints =
+          surveyData?.data?.template?.questions[currentQuestion].config.total;
+        const totalAllocatedPoints =
           answer.allocatedPoints &&
-          Object.keys(answer.allocatedPoints).length > 0
-        );
+          Object.values(answer.allocatedPoints).reduce(
+            (accumulator: any, currentValue: any) => accumulator + currentValue,
+            0
+          );
+        return totalPoints - totalAllocatedPoints === 0;
 
       default:
         return false;
@@ -255,8 +268,11 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             case QuestionType.CONSTANT_SUM:
               answer = answerData.allocatedPoints || null;
               break;
+            case QuestionType.RATING:
+              answer = answerData.stars || null;
+              break;
             default:
-              // For single value questions (TEXT, NUMBER, RATING, etc.)
+              // For single value questions (TEXT, NUMBER, etc.)
               answer =
                 answerData.value !== undefined ? answerData.value : answerData;
               break;
@@ -322,10 +338,10 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         return (
           <LickertScale
             {...commonProps}
-            minValue={config.minValue || 1}
-            maxValue={config.maxValue || 10}
-            minLabel={config.minLabel || ''}
-            maxLabel={config.maxLabel || ''}
+            minValue={config.min || 1}
+            maxValue={config.max || 10}
+            minLabel={Object.values(config.labels)[0] as string}
+            maxLabel={Object.values(config.labels)[1] as string}
             description={config.description}
             selectedValue={answers[currentQuestion]?.value}
             onValueChange={(value) =>
@@ -344,7 +360,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
               handleAnswerChange({ ...answers[currentQuestion], stars })
             }
             image={config.image}
-            ratingLabel={config.ratingLabel}
+            ratingLabels={config.labels}
           />
         );
 
@@ -372,14 +388,14 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           />
         );
 
-      case QuestionType.SCALE:
+      case QuestionType.SCALE:        
         return (
           <SingleSlider
             {...commonProps}
-            minValue={config.minValue || 0}
-            maxValue={config.maxValue || 10}
-            minLabel={config.minLabel}
-            maxLabel={config.maxLabel}
+            minValue={config.min || 1}
+            maxValue={config.max || 10}
+            minLabel={Object.values(config.labels)[0] as string}
+            maxLabel={Object.values(config.labels)[1] as string}
             selectedValue={answers[currentQuestion]?.value}
             onValueChange={(value) =>
               handleAnswerChange({ ...answers[currentQuestion], value })
@@ -391,10 +407,10 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         return (
           <DoubleSlider
             {...commonProps}
-            minValue={config.minValue || 0}
-            maxValue={config.maxValue || 100}
-            minLabel={config.minLabel}
-            maxLabel={config.maxLabel}
+            minValue={config.min || 1}
+            maxValue={config.max || 100}
+            minLabel={config.labels.min}
+            maxLabel={config.labels.max}
             selectedRange={answers[currentQuestion]?.range}
             onRangeChange={(range) =>
               handleAnswerChange({ ...answers[currentQuestion], range })
@@ -407,7 +423,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           <MultipleSlider
             {...commonProps}
             items={config.items || []}
-            minValue={config.minValue || 0}
+            minValue={config.minValue || 1}
             maxValue={config.maxValue || 10}
             selectedValues={answers[currentQuestion]?.values || {}}
             onValuesChange={(values) =>
@@ -421,6 +437,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           <MatrixGrid
             {...commonProps}
             rows={config.rows || []}
+            columns={config.columns || []}
             selectedValues={answers[currentQuestion]?.values || {}}
             onValuesChange={(values) =>
               handleAnswerChange({ ...answers[currentQuestion], values })
@@ -432,10 +449,10 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         return (
           <Ranking
             {...commonProps}
-            items={config.items || []}
+            items={config.options || []}
             rankedItems={
-              answers[currentQuestion]?.rankedItems ||
-              (config.items || []).map((item: any) => item.id)
+              answers[currentQuestion]?.rankedItems ??
+              config.options.map((option: any) => option.value)
             }
             onRankingChange={(rankedItems) =>
               handleAnswerChange({ ...answers[currentQuestion], rankedItems })
@@ -740,7 +757,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
       default:
         return (
           <div className="text-center py-12">
-            <p className="text-lg text-custom-grey-3">
+            <p className="text-lg text-text-dark">
               Question type not supported: {currentQuestionData.questionType}
             </p>
           </div>

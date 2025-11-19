@@ -52,7 +52,7 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
         <div className="px-4 py-4 md:px-12 md:py-8 max-w-4xl mx-auto">
           {/* Question Header */}
           <div className="mb-3">
-            <p className="text-xs text-custom-grey-3 mb-1">
+            <p className="text-sm text-text-dark mb-4">
               Question {questionNumber} of {totalQuestions}
             </p>
             <h2 className="text-base md:text-lg font-medium text-black mb-2">
