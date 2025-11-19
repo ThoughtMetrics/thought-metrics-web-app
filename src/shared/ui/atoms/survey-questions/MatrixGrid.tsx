@@ -23,7 +23,6 @@ export const MatrixGrid: React.FC<MatrixGridProps> = ({
   isNextDisabled,
   isLastQuestion,
 }) => {
-  console.log(question);
 
   const handleSelectionChange = (rowId: string, optionId: string) => {
     onValuesChange({

@@ -48,9 +48,6 @@ export const ConstantSum: React.FC<ConstantSumProps> = ({
         ...localAllocation,
         [optionId]: numValue,
       };
-
-      console.log(newAllocation);
-
       setLocalAllocation(newAllocation);
       onAllocationChange(newAllocation);
     }
