@@ -15,6 +15,8 @@ import { getSignInErrorDetails } from '@/core/utils/firebase-error-handler';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/core/lib/query-client';
 import { AuthProvider } from '@/shared/providers/auth-provider';
+import { useLanguage } from '@/core/hooks/use-language';
+import { LanguageToggle } from '@/shared/ui/molecules/language-toggle';
 
 const { initialFormData, storeName, validationMessages, formResetDelay, ui } =
   loginFormConstant;
@@ -121,6 +123,9 @@ const LoginPage: React.FC = () => {
   const [socialAuthLoading, setSocialAuthLoading] = useState<
     'google' | 'facebook' | null
   >(null);
+
+  // Translation hook
+  const { translations } = useLanguage();
 
   const {
     formData,
@@ -268,9 +273,9 @@ const LoginPage: React.FC = () => {
             </div>
           </div>
           <h2 className="text-2xl font-bold text-black mb-2">
-            {ui.successMessage.title}
+            {translations.auth.login.welcomeBack}
           </h2>
-          <p className="text-black">{ui.successMessage.description}</p>
+          <p className="text-black">{translations.auth.login.successMessage}</p>
         </div>
       </div>
     );
@@ -287,6 +292,7 @@ const LoginPage: React.FC = () => {
                 <Logo className="w-full h-full" />
               </div>
             </a>
+            <LanguageToggle variant="compact" />
           </nav>
         </header>
         <div className="relative md:h-[calc(100vh-3.5rem)] w-full">
@@ -295,7 +301,7 @@ const LoginPage: React.FC = () => {
             <div className="bg-white shadow-sm border border-gray-200 rounded-lg px-8 py-10 wide:py-28 flex flex-col items-center justify-center">
               <div className="mb-8 w-full max-w-[380px]">
                 <h1 className="text-2xl font-medium text-black">
-                  {ui.pageTitle}
+                  {translations.auth.login.pageTitle}
                 </h1>
               </div>
 
@@ -310,8 +316,8 @@ const LoginPage: React.FC = () => {
                   <GoogleOutlineIcon className="w-5 h-5 mr-8" />
                   <div className="left-13 absolute w-px h-full bg-white"></div>
                   {socialAuthLoading === 'google'
-                    ? 'Signing in...'
-                    : 'Sign in with Google'}
+                    ? translations.auth.login.signingIn
+                    : translations.auth.signup.continueWithGoogle}
                 </button>
                 {/* <button
                   type="button"
@@ -348,7 +354,7 @@ const LoginPage: React.FC = () => {
                 <TextInputAtom
                   id="thoughtMetricsId"
                   name="thoughtMetricsId"
-                  label={ui.fieldLabels.thoughtMetricsId}
+                  label={translations.auth.login.thoughtMetricsId}
                   value={formData.thoughtMetricsId}
                   onChange={handleInputChange}
                   error={errors.thoughtMetricsId}
@@ -359,7 +365,7 @@ const LoginPage: React.FC = () => {
                 <TextInputAtom
                   id="password"
                   name="password"
-                  label={ui.fieldLabels.password}
+                  label={translations.auth.login.password}
                   type="password"
                   value={formData.password}
                   onChange={handleInputChange}
@@ -375,8 +381,8 @@ const LoginPage: React.FC = () => {
                 >
                   <label className="text-lg">
                     {isSubmitting || signInMutation.isPending
-                      ? ui.buttons.continuing
-                      : ui.buttons.continue}
+                      ? translations.auth.login.signingIn
+                      : translations.auth.login.continueButton}
                   </label>
                   <ArrowRight className="w-8 r-8 fill-current text-white" />
                 </button>
@@ -388,7 +394,7 @@ const LoginPage: React.FC = () => {
                     name="rememberMe"
                     checked={formData.rememberMe}
                     onChange={handleInputChange}
-                    label={ui.checkboxLabels.rememberMe}
+                    label={translations.auth.login.rememberMe}
                     className="font-medium *:text-base"
                   />
                 </div>
@@ -397,14 +403,14 @@ const LoginPage: React.FC = () => {
               {/* Account Links */}
               <div className="space-y-4 max-w-[380px] shrink-0 w-full">
                 <div className="text-black my-4 font-medium">
-                  {ui.links.noAccount}
+                  {translations.auth.login.noAccount}
                 </div>
 
                 <a
                   href={ROUTES.SIGN_UP}
                   className="w-full inline-flex items-center justify-between px-4 py-2 border border-primary shadow-sm bg-transparent font-medium text-primary hover:bg-primary-50 transition-colors rounded-none"
                 >
-                  <label>{ui.buttons.createAccount}</label>
+                  <label>{translations.auth.login.createAccount}</label>
                   <ArrowRight className="w-8 r-8 fill-current text-primary" />
                 </a>
               </div>

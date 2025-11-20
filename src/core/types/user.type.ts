@@ -21,6 +21,17 @@ export interface Location {
   countryOrRegion?: string;
 }
 
+// Payment Interface - Aligned with backend IPayment
+export interface Payment {
+  upiId?: string;
+  upiFullName?: string;
+  upiMobileNumber?: string;
+
+  bankAccountNumber?: string;
+  bankIfscCode?: string;
+  bankAccountHolderName?: string;
+}
+
 // Settings Interface - Aligned with backend ISettings
 export interface UserSettings {
   notifications?: {
@@ -72,6 +83,7 @@ export interface UserProfile {
   email?: string;
   profile: UserProfileData;
   respondentInfo?: RespondentInfo;
+  paymentInfo: Payment;
   settings?: UserSettings;
   providerId: string;
   role?:
@@ -98,6 +110,8 @@ export interface SignUpData {
   participationPreferences?: string[];
   termsAccepted: boolean;
   privacyAccepted: boolean;
+  paymentMethod: 'upi' | 'bank' | 'skip' | undefined;
+  payment?: Payment;
 }
 
 // Update Profile Data Interface - For profile updates (PATCH /users/profile)
@@ -105,4 +119,5 @@ export interface UpdateProfileData {
   profile?: Partial<UserProfileData>;
   respondentInfo: Partial<RespondentInfo>;
   settings?: Partial<UserSettings>;
+  paymentInfo?: Partial<Payment>;
 }

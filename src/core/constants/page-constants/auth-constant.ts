@@ -72,6 +72,16 @@ export const signUpFormConstant = {
     participationPreferences: [],
     termsAccepted: true,
     privacyAccepted: true,
+    paymentMethod: '',
+    payment: {
+      upiId: '',
+      upiFullName: '',
+      upiMobileNumber: '', 
+      
+      bankAccountNumber: '',
+      bankIfscCode: '',
+      bankAccountHolderName: '',
+    },
   },
   participationOptions: [
     {
@@ -195,11 +205,11 @@ export const signUpFormConstant = {
       },
       step3: {
         number: 'Step 3',
-      //   title: 'Payment Info',
-      //   active: false,
-      // },
-      // step4: {
-      //   number: 'Step 4',
+        title: 'Payment Info',
+        active: false,
+      },
+      step4: {
+        number: 'Step 4',
         title: 'Surveys',
         active: false,
       },

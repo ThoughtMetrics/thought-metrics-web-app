@@ -85,10 +85,18 @@ export interface IQuestionTemplate {
 export interface ISurveyTemplate {
   _id: string;
   name: string;
-  label: string;
+  label: string; // Legacy field for backward compatibility
   description?: string;
   userId?: string;
   isDefault: boolean;
+  // Multi-language translations
+  translations?: {
+    [key: string]: {
+      label: string;
+      description?: string;
+      instructions?: string;
+    };
+  };
   questions: IQuestionTemplate[];
   settings: {
     price?: number;

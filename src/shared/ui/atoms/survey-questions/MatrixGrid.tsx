@@ -2,6 +2,7 @@
 import type { MatrixGridProps } from '@/core/types/survey.type';
 import type React from 'react';
 import { SurveyQuestionWrapper } from './SurveyQuestionWrapper';
+import { useLanguage } from '@/core/hooks/use-language';
 
 export const MatrixGrid: React.FC<MatrixGridProps> = ({
   questionNumber,
@@ -23,6 +24,7 @@ export const MatrixGrid: React.FC<MatrixGridProps> = ({
   isNextDisabled,
   isLastQuestion,
 }) => {
+  const { translations } = useLanguage();
 
   const handleSelectionChange = (rowId: string, optionId: string) => {
     onValuesChange({
@@ -62,7 +64,7 @@ export const MatrixGrid: React.FC<MatrixGridProps> = ({
               onChange={(e) => handleSelectionChange(row.value, e.target.value)}
               className="w-full px-3 py-2 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors border-custom-grey-2 focus:border-primary"
             >
-              <option value=''>Select an option</option>
+              <option value=''>{translations.surveyQuestions.selectOption}</option>
               {columns.map((column) => (
                 <option key={column.value} value={column.value}>
                   {column.label}

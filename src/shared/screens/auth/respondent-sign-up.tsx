@@ -20,6 +20,8 @@ import { ROUTES } from '@/routes/routeConfig';
 import { AuthProvider } from '@/shared/providers/auth-provider';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/core/lib/query-client';
+import { useLanguage } from '@/core/hooks/use-language';
+import { LanguageToggle } from '@/shared/ui/molecules/language-toggle';
 
 // Destructure constants
 const {
@@ -170,6 +172,38 @@ const storeImplementation = (set: any, get: any) => ({
         errors.privacyAccepted = validationMessages.privacyAccepted;
     }
 
+    if (step === 3) {
+      if (!formData.paymentMethod) {
+        errors.paymentMethod = 'Please select a payment method';
+      }
+
+      if (formData.paymentMethod === 'upi') {
+        const hasUpiId = formData.payment?.upiId?.trim();
+        const hasUpiMobile = formData.payment?.upiMobileNumber?.trim();
+
+        if (!hasUpiId && !hasUpiMobile) {
+          errors['payment.upiId'] = 'Enter UPI ID or UPI mobile number';
+          errors['payment.upiMobileNumber'] =
+            'Enter UPI ID or UPI mobile number';
+        }
+
+        if (!formData.payment?.upiFullName?.trim())
+          errors['payment.upiFullName'] = 'Full name is required';
+      }
+
+      if (formData.paymentMethod === 'bank') {
+        if (!formData.payment?.bankAccountNumber?.trim())
+          errors['payment.bankAccountNumber'] = 'Account number is required';
+        if (!formData.payment?.bankIfscCode?.trim())
+          errors['payment.bankIfscCode'] = 'IFSC code is required';
+        if (!formData.payment?.bankAccountHolderName?.trim())
+          errors['payment.bankAccountHolderName'] =
+            'Account holder name is required';
+      }
+
+      // Skip case → no validation
+    }
+
     set({ errors }, false, 'validateStep');
     return Object.keys(errors).length === 0;
   },
@@ -226,6 +260,32 @@ const RespondentSignUpPage: React.FC = () => {
   const [socialAuthLoading, setSocialAuthLoading] = useState<
     'google' | 'facebook' | null
   >(null);
+
+  // Translation hook
+  const { translations } = useLanguage();
+
+  // Translated participation options
+  const translatedParticipationOptions = React.useMemo(() => {
+    return participationOptions.map(option => ({
+      ...option,
+      label: translations.participationOptions[option.id as keyof typeof translations.participationOptions] || option.label,
+    }));
+  }, [translations]);
+
+  // Translated FAQ data
+  const translatedFaqData = React.useMemo(() => {
+    const faq = translations.auth.signup.faq;
+    return [
+      { question: faq.question1, answer: faq.answer1 },
+      { question: faq.question2, answer: faq.answer2 },
+      { question: faq.question3, answer: faq.answer3 },
+      { question: faq.question4, answer: faq.answer4 },
+      { question: faq.question5, answer: faq.answer5 },
+      { question: faq.question6, answer: faq.answer6 },
+      { question: faq.question7, answer: faq.answer7 },
+      { question: faq.question8, answer: faq.answer8 },
+    ];
+  }, [translations.auth.signup.faq]);
 
   const {
     formData,
@@ -295,6 +355,8 @@ const RespondentSignUpPage: React.FC = () => {
         participationPreferences: formData.participationPreferences,
         termsAccepted: formData.termsAccepted,
         privacyAccepted: formData.privacyAccepted,
+        paymentMethod: formData.paymentMethod,
+        payment: formData.payment,
       },
     });
 
@@ -375,7 +437,7 @@ const RespondentSignUpPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (currentStep === 2) {
+    if (currentStep === 3) {
       void submitForm(handleFirebaseSignUp);
     } else {
       nextStep();
@@ -404,9 +466,11 @@ const RespondentSignUpPage: React.FC = () => {
             </div>
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            {ui.successMessage.title}
+            {translations.auth.signup.welcomeMessage}
           </h2>
-          <p className="text-gray-600">{ui.successMessage.description}</p>
+          <p className="text-gray-600">
+            {translations.auth.signup.accountCreatedSuccess}
+          </p>
         </div>
       </div>
     );
@@ -416,18 +480,25 @@ const RespondentSignUpPage: React.FC = () => {
     <>
       <div className="common-component bg-white text-black h-full overflow-y-scroll">
         <div className="common-container px-6 py-8 md:px-24 md:py-12 block! justify-center flex-col max-w-(--breakpoint-2xl)!">
+          {/* Language Toggle */}
+          <div className="flex justify-end mb-6">
+            <LanguageToggle variant="inline" />
+          </div>
+
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-4xl font-medium tracking-tighter text-gray-900 mb-2">
-              {ui.pageTitle}
+              {translations.auth.signup.pageTitle}
             </h1>
             <a
               href="#"
               className="text-black font-medium hover:font-semibold underline text-sm"
             >
-              {ui.whyRegister}
+              {translations.auth.signup.whyRegister}
             </a>
-            <p className="text-black mt-2 text-sm">{ui.registerDescription}</p>
+            <p className="text-black mt-2 text-sm">
+              {translations.auth.signup.registerDescription}
+            </p>
           </div>
 
           {/* Social Login Buttons */}
@@ -453,20 +524,24 @@ const RespondentSignUpPage: React.FC = () => {
               <GoogleOutlineIcon className="w-5 h-5 mr-8" />
               <div className="left-13 absolute w-px h-full bg-white"></div>
               {socialAuthLoading === 'google'
-                ? 'Signing in...'
-                : ui.socialButtons.google}
+                ? translations.auth.signup.processing
+                : translations.auth.signup.continueWithGoogle}
             </button>
           </div>
 
           {/* Step Indicator */}
-          <div className="mb-8 bg-gray-200 rounded-lg p-4">
-            <div className="flex items-center gap-1.5 md:gap-6">
+          <div className="mb-8 bg-gray-200 rounded-lg">
+            <div className="flex items-center gap-1.5 md:gap-6 overflow-x-scroll overflow-y-hidden md:overflow-auto p-4">
               <div
-                className={`flex items-center ${currentStep >= 1 ? 'text-primary' : 'text-black'}`}
+                className={`shrink-0 flex items-center ${currentStep >= 1 ? 'text-primary' : 'text-black'}`}
               >
-                <div className="flex flex-col">
-                  <span className="font-medium">{ui.steps.step1.number}</span>
-                  <span className="text-sm">{ui.steps.step1.title}</span>
+                <div className="flex flex-col text-nowrap">
+                  <span className="font-medium">
+                    {translations.auth.signup.step1}
+                  </span>
+                  <span className="text-sm">
+                    {translations.auth.signup.yourInformation}
+                  </span>
                 </div>
                 {currentStep > 1 && (
                   <svg
@@ -498,9 +573,13 @@ const RespondentSignUpPage: React.FC = () => {
               <div
                 className={`flex items-center ${currentStep >= 2 ? 'text-primary' : 'text-black'}`}
               >
-                <div className="flex flex-col">
-                  <span className="font-medium">{ui.steps.step2.number}</span>
-                  <span className="text-sm">{ui.steps.step2.title}</span>
+                <div className="flex flex-col text-nowrap">
+                  <span className="font-medium">
+                    {translations.auth.signup.step2}
+                  </span>
+                  <span className="text-sm">
+                    {translations.auth.signup.preferences}
+                  </span>
                 </div>
 
                 {currentStep > 2 && (
@@ -533,9 +612,51 @@ const RespondentSignUpPage: React.FC = () => {
               <div
                 className={`flex items-center ${currentStep >= 3 ? 'text-primary' : 'text-black'}`}
               >
-                <div className="flex flex-col">
-                  <span className="font-medium">{ui.steps.step3.number}</span>
-                  <span className="text-sm">{ui.steps.step3.title}</span>
+                <div className="flex flex-col text-nowrap">
+                  <span className="font-medium">
+                    {translations.auth.signup.step3}
+                  </span>
+                  <span className="text-sm">
+                    {translations.auth.signup.paymentInfo}
+                  </span>
+                </div>
+                {currentStep > 3 && (
+                  <svg
+                    className="w-4 h-4 ml-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+              </div>
+              <svg
+                className="w-4 h-8 text-black"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 12 38"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M0 5l14 14-14 16"
+                />
+              </svg>
+              <div
+                className={`flex items-center ${currentStep >= 4 ? 'text-primary' : 'text-black'}`}
+              >
+                <div className="flex flex-col text-nowrap">
+                  <span className="font-medium">
+                    {translations.auth.signup.step4}
+                  </span>
+                  <span className="text-sm">
+                    {translations.auth.signup.surveys}
+                  </span>
                 </div>
               </div>
             </div>
@@ -545,7 +666,7 @@ const RespondentSignUpPage: React.FC = () => {
             {currentStep === 1 && (
               <>
                 <p className="text-xl font-medium tracking-tighter mb-4">
-                  {ui.notes.requiredFields}
+                  {translations.auth.signup.requiredFields}
                 </p>
 
                 {/* Name Fields */}
@@ -553,7 +674,7 @@ const RespondentSignUpPage: React.FC = () => {
                   <TextInputAtom
                     id="firstName"
                     name="firstName"
-                    label={ui.fieldLabels.firstName}
+                    label={translations.auth.signup.firstName}
                     value={formData.firstName}
                     onChange={handleInputChange}
                     error={errors.firstName}
@@ -562,7 +683,7 @@ const RespondentSignUpPage: React.FC = () => {
                   <TextInputAtom
                     id="lastName"
                     name="lastName"
-                    label={ui.fieldLabels.lastName}
+                    label={translations.auth.signup.lastName}
                     value={formData.lastName}
                     onChange={handleInputChange}
                     error={errors.lastName}
@@ -572,7 +693,7 @@ const RespondentSignUpPage: React.FC = () => {
                   <TextInputAtom
                     id="email"
                     name="email"
-                    label={ui.fieldLabels.email}
+                    label={translations.auth.signup.email}
                     type="email"
                     value={formData.email}
                     onChange={handleInputChange}
@@ -582,7 +703,7 @@ const RespondentSignUpPage: React.FC = () => {
                   <TextInputAtom
                     id="password"
                     name="password"
-                    label={ui.fieldLabels.password}
+                    label={translations.auth.signup.password}
                     type="password"
                     value={formData.password}
                     onChange={handleInputChange}
@@ -592,7 +713,7 @@ const RespondentSignUpPage: React.FC = () => {
                   <TextInputAtom
                     id="confirmPassword"
                     name="confirmPassword"
-                    label={ui.fieldLabels.confirmPassword}
+                    label={translations.auth.signup.confirmPassword}
                     type="password"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
@@ -603,7 +724,7 @@ const RespondentSignUpPage: React.FC = () => {
                   <PhoneInputAtom
                     id="phone"
                     name="phone"
-                    label={ui.fieldLabels.phone}
+                    label={translations.auth.signup.phone}
                     value={formData.phone ?? ''}
                     onChange={handleInputChange}
                     countryCode={countryCode}
@@ -614,7 +735,7 @@ const RespondentSignUpPage: React.FC = () => {
                   <SelectAtom
                     id="gender"
                     name="gender"
-                    label={ui.fieldLabels.gender}
+                    label={translations.auth.signup.gender}
                     value={formData.gender ?? ''}
                     onChange={handleInputChange}
                     options={genders}
@@ -625,7 +746,7 @@ const RespondentSignUpPage: React.FC = () => {
                   <TextInputAtom
                     id="doorNumberOrStreetName"
                     name="location.doorNumberOrStreetName"
-                    label={ui.fieldLabels.doorNumberOrStreetName}
+                    label={translations.auth.signup.doorNumber}
                     value={formData.location?.doorNumberOrStreetName ?? ''}
                     onChange={(e) =>
                       updateField(
@@ -639,7 +760,7 @@ const RespondentSignUpPage: React.FC = () => {
                   <TextInputAtom
                     id="city"
                     name="location.city"
-                    label={ui.fieldLabels.city}
+                    label={translations.auth.signup.city}
                     value={formData.location?.city ?? ''}
                     onChange={(e) =>
                       updateField('location.city', e.target.value)
@@ -650,7 +771,7 @@ const RespondentSignUpPage: React.FC = () => {
                   <TextInputAtom
                     id="district"
                     name="location.district"
-                    label={ui.fieldLabels.district}
+                    label={translations.auth.signup.district}
                     value={formData.location?.district ?? ''}
                     onChange={(e) =>
                       updateField('location.district', e.target.value)
@@ -660,7 +781,7 @@ const RespondentSignUpPage: React.FC = () => {
                   <SelectAtom
                     id="state"
                     name="location.state"
-                    label={ui.fieldLabels.state}
+                    label={translations.auth.signup.state}
                     value={formData.location?.state ?? ''}
                     onChange={(e) =>
                       updateField('location.state', e.target.value)
@@ -673,7 +794,7 @@ const RespondentSignUpPage: React.FC = () => {
                   <SelectAtom
                     id="countryOrRegion"
                     name="location.countryOrRegion"
-                    label={ui.fieldLabels.countryOrRegion}
+                    label={translations.auth.signup.country}
                     value={formData.location?.countryOrRegion ?? ''}
                     onChange={(e) =>
                       updateField('location.countryOrRegion', e.target.value)
@@ -686,7 +807,7 @@ const RespondentSignUpPage: React.FC = () => {
                   <TextInputAtom
                     id="zipCode"
                     name="location.zipCode"
-                    label={ui.fieldLabels.zipCode}
+                    label={translations.auth.signup.zipCode}
                     value={formData.location?.zipCode ?? ''}
                     onChange={handleZipCodeInputChange}
                     error={errors['location.zipCode']}
@@ -698,7 +819,7 @@ const RespondentSignUpPage: React.FC = () => {
                 {/* Date of Birth */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium">
-                    {ui.fieldLabels.dateOfBirth} (Optional)
+                    {translations.auth.signup.dateOfBirth} (Optional)
                   </label>
                   <div className="grid grid-cols-3 gap-4 w-fit">
                     <SelectAtom
@@ -750,12 +871,12 @@ const RespondentSignUpPage: React.FC = () => {
                     error={errors.termsAccepted}
                     customLabelComponent={
                       <div>
-                        {ui.checkboxLabels.termsAccepted}{' '}
+                        {translations.auth.signup.termsAccepted}{' '}
                         <a
                           href={ui.checkboxLabels.termsItem.path}
                           className="hover:text-primary underline"
                         >
-                          {ui.checkboxLabels.termsItem.terms}
+                          {translations.auth.signup.termsAndConditions}
                         </a>
                       </div>
                     }
@@ -768,12 +889,12 @@ const RespondentSignUpPage: React.FC = () => {
                     onChange={handleInputChange}
                     customLabelComponent={
                       <div>
-                        {ui.checkboxLabels.privacyAccepted.prefix}{' '}
+                        {translations.auth.signup.privacyAccepted}{' '}
                         <a
                           href={ui.checkboxLabels.privacyItem.path}
                           className="hover:text-primary underline"
                         >
-                          {ui.checkboxLabels.privacyItem.privacy}
+                          {translations.auth.signup.privacyPolicy}
                         </a>{' '}
                         {ui.checkboxLabels.privacyAccepted.suffix}
                       </div>
@@ -787,26 +908,143 @@ const RespondentSignUpPage: React.FC = () => {
             {currentStep === 2 && (
               <>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  {ui.preferences.title}
+                  {translations.auth.signup.participationPreferences}
                 </h2>
                 <p className="text-gray-600 mb-6">
-                  {ui.preferences.description}
+                  {translations.auth.signup.participationDescription}
                 </p>
 
                 <CheckboxOutlineGroupAtom
                   label=""
-                  options={participationOptions}
+                  options={translatedParticipationOptions}
                   selectedValues={formData.participationPreferences ?? []}
                   onChange={handleParticipationChange}
                   columns={1}
                 />
               </>
             )}
+            {currentStep === 3 && (
+              <>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                  {translations.auth.signup.payment.title}
+                </h2>
+
+                <p className="text-gray-600 mb-6">
+                  {translations.auth.signup.payment.description}
+                </p>
+
+                <SelectAtom
+                  id="paymentMethod"
+                  name="paymentMethod"
+                  label={translations.auth.signup.payment.methodLabel}
+                  value={formData.paymentMethod ?? ''}
+                  onChange={(e) => updateField('paymentMethod', e.target.value)}
+                  options={[
+                    { value: 'upi', label: translations.auth.signup.payment.upiPayment },
+                    { value: 'bank', label: translations.auth.signup.payment.bankTransfer },
+                    { value: 'skip', label: translations.auth.signup.payment.skipForNow },
+                  ]}
+                  error={errors.paymentMethod}
+                  placeholder={translations.auth.signup.payment.methodPlaceholder}
+                />
+
+                {formData.paymentMethod === 'upi' && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <TextInputAtom
+                      id="upiId"
+                      name="payment.upiId"
+                      label={translations.auth.signup.payment.upi.upiIdLabel}
+                      value={formData.payment?.upiId ?? ''}
+                      onChange={(e) =>
+                        updateField('payment.upiId', e.target.value)
+                      }
+                      error={errors['payment.upiId']}
+                      placeholder={translations.auth.signup.payment.upi.upiIdPlaceholder}
+                    />
+
+                    <TextInputAtom
+                      id="upiMobileNumber"
+                      name="payment.upiMobileNumber"
+                      label={translations.auth.signup.payment.upi.mobileLabel}
+                      value={formData.payment?.upiMobileNumber ?? ''}
+                      onChange={(e) =>
+                        updateField('payment.upiMobileNumber', e.target.value)
+                      }
+                      error={errors['payment.upiMobileNumber']}
+                      placeholder={translations.auth.signup.payment.upi.mobilePlaceholder}
+                    />
+
+                    <TextInputAtom
+                      id="upiFullName"
+                      name="payment.upiFullName"
+                      label={translations.auth.signup.payment.upi.fullNameLabel}
+                      value={formData.payment?.upiFullName ?? ''}
+                      onChange={(e) =>
+                        updateField('payment.upiFullName', e.target.value)
+                      }
+                      error={errors['payment.upiFullName']}
+                      required
+                    />
+                  </div>
+                )}
+
+                {formData.paymentMethod === 'bank' && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <TextInputAtom
+                      id="bankAccountNumber"
+                      name="payment.bankAccountNumber"
+                      label={translations.auth.signup.payment.bank.accountNumberLabel}
+                      value={formData.payment?.bankAccountNumber ?? ''}
+                      onChange={(e) =>
+                        updateField('payment.bankAccountNumber', e.target.value)
+                      }
+                      error={errors['payment.bankAccountNumber']}
+                      required
+                    />
+
+                    <TextInputAtom
+                      id="bankIfscCode"
+                      name="payment.bankIfscCode"
+                      label={translations.auth.signup.payment.bank.ifscLabel}
+                      value={formData.payment?.bankIfscCode ?? ''}
+                      onChange={(e) =>
+                        updateField('payment.bankIfscCode', e.target.value)
+                      }
+                      error={errors['payment.bankIfscCode']}
+                      required
+                    />
+
+                    <TextInputAtom
+                      id="bankAccountHolderName"
+                      name="payment.bankAccountHolderName"
+                      label={translations.auth.signup.payment.bank.holderNameLabel}
+                      value={formData.payment?.bankAccountHolderName ?? ''}
+                      onChange={(e) =>
+                        updateField(
+                          'payment.bankAccountHolderName',
+                          e.target.value
+                        )
+                      }
+                      error={errors['payment.bankAccountHolderName']}
+                      required
+                    />
+                  </div>
+                )}
+
+                {formData.paymentMethod === 'skip' && (
+                  <p className="text-gray-500 mt-4">
+                    {translations.auth.signup.payment.skipMessage}
+                  </p>
+                )}
+              </>
+            )}
 
             {/* General Error Message */}
             {errors.general && (
               <div className="bg-red-50 border border-red-200 rounded-md p-4">
-                <p className="text-red-600 text-sm font-medium">{errors.general}</p>
+                <p className="text-red-600 text-sm font-medium">
+                  {errors.general}
+                </p>
               </div>
             )}
 
@@ -817,16 +1055,16 @@ const RespondentSignUpPage: React.FC = () => {
             >
               <label className="text-white text-nowrap font-medium">
                 {isSubmitting
-                  ? ui.buttons.processing
-                  : currentStep === 2
-                    ? ui.buttons.register
-                    : ui.buttons.next}
+                  ? translations.auth.signup.processing
+                  : currentStep === 3
+                    ? translations.auth.signup.registerButton
+                    : translations.auth.signup.nextButton}
               </label>
               <ArrowRed className="fill-current text-white" />
             </button>
           </form>
           <div className="py-12">
-            <FaqOrganism data={ui.faqData} />
+            <FaqOrganism data={translatedFaqData} />
           </div>
         </div>
       </div>

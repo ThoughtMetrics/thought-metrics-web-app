@@ -1,5 +1,6 @@
 // src/shared/components/survey/SurveySuccessMessage.tsx
 import type React from 'react';
+import { useLanguage } from '@/core/hooks/use-language';
 
 interface SurveySuccessMessageProps {
   onClose?: () => void;
@@ -8,6 +9,8 @@ interface SurveySuccessMessageProps {
 export const SurveySuccessMessage: React.FC<SurveySuccessMessageProps> = ({
   onClose,
 }) => {
+  const { translations } = useLanguage();
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg p-8 max-w-md w-full">
@@ -28,21 +31,19 @@ export const SurveySuccessMessage: React.FC<SurveySuccessMessageProps> = ({
             </svg>
           </div>
           <h2 className="text-2xl font-bold mb-4 text-text-dark">
-            Thank you for your responses!
+            {translations.surveySuccess.title}
           </h2>
           <p className="text-text-dark mb-6">
-            Our team will review your answers. If you meet the criteria for
-            this study, a Thought Metrics representative will contact you for
-            next steps.
+            {translations.surveySuccess.message}
           </p>
           <p className="text-sm text-text-dark mb-6">
-            Stay tuned — your opinions help shape tomorrow's decisions!
+            {translations.surveySuccess.subMessage}
           </p>
           <button
             onClick={onClose || (() => (window.location.href = '/survey-boards'))}
             className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary-dark transition w-full"
           >
-            Back to Surveys
+            {translations.surveySuccess.backButton}
           </button>
         </div>
       </div>

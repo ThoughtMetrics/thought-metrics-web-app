@@ -23,6 +23,18 @@ export interface RespondentRegistrationFormData {
   participationPreferences?: string[];
   termsAccepted: boolean;
   privacyAccepted: boolean;
+
+  paymentMethod?: 'upi' | 'bank' | 'skip';
+
+  payment?: {
+    upiId?: string;
+    upiFullName?: string;
+    upiMobileNumber?: string;
+
+    bankAccountNumber?: string;
+    bankIfscCode?: string;
+    bankAccountHolderName?: string;
+  };
 }
 
 // Store Interface
@@ -34,11 +46,16 @@ export interface RespondentRegistrationFormStore {
   errors: Record<string, string | undefined>;
   countryCode: string;
 
-  updateField: (field: string, value: string | boolean | string[] | Record<string, string>) => void;
+  updateField: (
+    field: string,
+    value: string | boolean | string[] | Record<string, string>
+  ) => void;
   updateCountryCode: (code: string) => void;
   nextStep: () => void;
   previousStep: () => void;
   resetForm: () => void;
-  submitForm: (onSubmit: (formData: RespondentRegistrationFormData) => Promise<void>) => Promise<void>;
+  submitForm: (
+    onSubmit: (formData: RespondentRegistrationFormData) => Promise<void>
+  ) => Promise<void>;
   validateStep: (step: number) => boolean;
 }
