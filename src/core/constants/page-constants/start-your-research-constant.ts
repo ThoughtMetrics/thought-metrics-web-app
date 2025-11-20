@@ -116,8 +116,8 @@ export const startYourResearchConstants = {
     },
     contactInfo: {
       title: 'Headquarters',
-      phone: '+91 704 263 1654',
-      email: 'contact@thoughtmetrics.com',
+      phone: '+91 892 593 4674',
+      email: 'contactus@thoughtmetrics.com',
     },
   },
 };

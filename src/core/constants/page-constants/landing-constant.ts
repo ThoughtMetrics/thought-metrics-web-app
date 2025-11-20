@@ -159,7 +159,7 @@ export const landing = {
         {
           question: 'What incentives do you provide?',
           answer:
-            "We offer incentives in multiple forms depending on the project, but most commonly through online prepaid solutions, gift vouchers, or direct transfers. Incentives are typically sent within 2 weeks of participation.\n\nIf it's been more than 2 weeks since you participated, please email contact@thoughtmetrics.com with the following details:\n• Name of participant\n• City or facility where you participated\n• Date of participation\n• Study reference number",
+            "We offer incentives in multiple forms depending on the project, but most commonly through online prepaid solutions, gift vouchers, or direct transfers. Incentives are typically sent within 2 weeks of participation.\n\nIf it's been more than 2 weeks since you participated, please email contactus@thoughtmetrics.com with the following details:\n• Name of participant\n• City or facility where you participated\n• Date of participation\n• Study reference number",
         },
         {
           question: 'Is my information safe?',
@@ -169,12 +169,12 @@ export const landing = {
         {
           question: "I signed up but haven't heard from you. Why?",
           answer:
-            'Phone and email communication depend on the information provided in your Dashboard Profile. If your profile is complete but you are not receiving communication from Thought Metrics:\n• Double-check your email preferences and contact information under the "Edit Profile" tab.\n• Add our email contact@thoughtmetrics.com to your contacts so our emails don\'t go to spam.',
+            'Phone and email communication depend on the information provided in your Dashboard Profile. If your profile is complete but you are not receiving communication from Thought Metrics:\n• Double-check your email preferences and contact information under the "Edit Profile" tab.\n• Add our email contactus@thoughtmetrics.com to your contacts so our emails don\'t go to spam.',
         },
         {
           question: "I can't log in to my account. Can you help?",
           answer:
-            "Yes! Visit the login page to reset your password. Still having trouble? Email us at contact@thoughtmetrics.com and we'll help you regain access.",
+            "Yes! Visit the login page to reset your password. Still having trouble? Email us at contactus@thoughtmetrics.com and we'll help you regain access.",
         },
         {
           question: 'How do I unsubscribe?',

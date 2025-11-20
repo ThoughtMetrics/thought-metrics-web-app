@@ -15,6 +15,7 @@ class SurveyService {
 
   /**
    * List all published surveys (Public endpoint)
+   * @param params - Query parameters including language
    */
   async listPublicSurveys(params?: {
     status?: string;
@@ -22,6 +23,7 @@ class SurveyService {
     page?: number;
     limit?: number;
     search?: string;
+    lang?: string; // Language parameter (e.g., 'en', 'ta')
   }): Promise<ApiResponse<ISurvey[]>> {
     const user = authService.getCurrentUser();
     if (!user) throw new Error('No authenticated user');
@@ -34,16 +36,19 @@ class SurveyService {
    * Get survey details with template (Public endpoint)
    * Merged endpoint - returns survey + template + userResponse in single call
    * @param surveyId - The survey ID in TM-xxx format (e.g., TM-AD001)
+   * @param lang - Language code (e.g., 'en', 'ta')
    */
   async getSurveyDetails(
-    surveyId: string
+    surveyId: string,
+    lang?: string
   ): Promise<ApiResponse<ISurveyDetails>> {
     const user = authService.getCurrentUser();
     if (!user) throw new Error('No authenticated user');
     const token = await user.getIdToken();
     apiService.setAuthToken(token);
     // Endpoint merged: /surveys/:surveyId now returns survey + template + userResponse
-    return apiService.get<ISurveyDetails>(`${this.basePath}/${surveyId}`);
+    const params = lang ? { lang } : undefined;
+    return apiService.get<ISurveyDetails>(`${this.basePath}/${surveyId}`, params);
   }
 
   /**

@@ -63,6 +63,18 @@ class AuthService {
           dateOfBirth: additionalData.dateOfBirth,
           location: additionalData.location,
         };
+
+        // Map payment info to backend structure (only if not 'skip')
+        if (additionalData.paymentMethod && additionalData.paymentMethod !== 'skip' && additionalData.payment) {
+          syncData.paymentInfo = {
+            upiId: additionalData.payment.upiId,
+            upiMobileNumber: additionalData.payment.upiMobileNumber,
+            upiFullName: additionalData.payment.upiFullName,
+            bankAccountNumber: additionalData.payment.bankAccountNumber,
+            bankIfscCode: additionalData.payment.bankIfscCode,
+            bankAccountHolderName: additionalData.payment.bankAccountHolderName,
+          };
+        }
       } else {
         syncData.profile = {
           displayName: user.displayName ?? undefined,

@@ -2,6 +2,7 @@
 import type { RadioButtonProps } from '@/core/types/survey.type';
 import type React from 'react';
 import { SurveyQuestionWrapper } from './SurveyQuestionWrapper';
+import { useLanguage } from '@/core/hooks/use-language';
 
 export const RadioButtons: React.FC<RadioButtonProps> = ({
   questionNumber,
@@ -22,8 +23,9 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
   isNextDisabled,
   isLastQuestion,
 }) => {
-  // Use dropdown for more than 2 options, radio buttons for 2 or fewer
-  const useDropdown = options.length > 2;
+  const { translations } = useLanguage();
+  // Use dropdown for more than 5 options, radio buttons for 5 or fewer
+  const useDropdown = options.length > 5;
 
   return (
     <SurveyQuestionWrapper
@@ -48,7 +50,7 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
           onChange={(e) => onValueChange(e.target.value)}
           className="w-full px-3 py-2 border border-custom-grey-2 rounded bg-custom-grey-5 focus:bg-white focus:outline-none focus:border-primary transition-colors text-sm md:text-base"
         >
-          <option value="">Select an option</option>
+          <option value="">{translations.surveyQuestions.selectOption}</option>
           {options.map((option) => (
             <option key={option.id} value={option.value}>
               {option.label}

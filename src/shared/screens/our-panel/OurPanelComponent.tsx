@@ -20,7 +20,7 @@ const OurPanel: React.FC = () => {
   return (
     <div className="text-black">
       {/* Section 1 */}
-      <section className="common-component w-full h-full relative bg-[url('images/background_image_8_1_m.png')] md:bg-[url('images/background_image_8_1.png')] our-panel-container">
+      <section className="common-component relative bg-[url('images/background_image_8_1_m.png')] md:bg-[url('images/background_image_8_1.png')] our-panel-container">
         <div className="absolute top-0 right-0 md:min-h-[360px] xl:min-h-[480px] wide:min-h-[580px] w-[50%] flex justify-center md:items-center">
           <div className="pr-32 xxl:pr-[8rem] wide:pr-[16rem]">
             <CustomImageAtom
@@ -106,7 +106,7 @@ const OurPanel: React.FC = () => {
         </div>
       </section>
       {/* Section 2 */}
-      <section className="common-component w-full h-full relative bg-[url('images/background_image_8_2_m.png')] md:bg-[url('images/background_image_8_2.png')] our-panel-container">
+      <section className="common-component relative bg-[url('images/background_image_8_2_m.png')] md:bg-[url('images/background_image_8_2.png')] our-panel-container">
         <div className="common-container p-5 md:p-10 xxl:p-0 max-w-(--breakpoint-2xl)! flex-col">
           <div className="flex flex-col gap-6 items-center xxl:py-8">
             <label className="font-semibold text-xl md:text-2xl xl:text-3xl wide:text-4xl">
@@ -141,7 +141,7 @@ const OurPanel: React.FC = () => {
         </div>
       </section>
       {/* Section 3 */}
-      <section className="common-component w-full h-full relative z-1 bg-white px-6 pt-14 pb-8 md:p-0 text-black">
+      <section className="common-component relative z-1 bg-white px-6 pt-14 pb-8 md:p-0 text-black">
         <div
           className={cn(
             'common-container max-w-[1336px]! grid! grid-cols-1 md:grid-cols-2 items-center justify-between'

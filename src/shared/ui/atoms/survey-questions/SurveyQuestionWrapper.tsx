@@ -1,5 +1,7 @@
 // src/shared/ui/atoms/survey-questions/SurveyQuestionWrapper.tsx
 import type React from 'react';
+import { useLanguage } from '@/core/hooks/use-language';
+import { LanguageToggle } from '@/shared/ui/molecules/language-toggle';
 
 interface SurveyQuestionWrapperProps {
   questionNumber: number;
@@ -36,14 +38,19 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
   isNextDisabled = false,
   isLastQuestion = false,
 }) => {
+  const { translations } = useLanguage();
+
   return (
     <div className="common-component flex-col bg-white text-black h-full">
       {/* Survey Label Header */}
       {surveyLabel && (
         <div className="border-b border-custom-grey-2 px-4 py-3 md:px-12 md:pb-4 md:pt-8">
-          <h1 className="text-base md:text-lg font-semibold text-black truncate">
-            {surveyId}: {surveyLabel}
-          </h1>
+          <div className="flex items-center justify-between gap-4">
+            <h1 className="text-base md:text-lg font-semibold text-black truncate">
+              {surveyId}: {surveyLabel}
+            </h1>
+            <LanguageToggle variant="compact" />
+          </div>
         </div>
       )}
 
@@ -53,7 +60,7 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
           {/* Question Header */}
           <div className="mb-3">
             <p className="text-sm text-text-dark mb-4">
-              Question {questionNumber} of {totalQuestions}
+              {translations.surveyDetail.question} {questionNumber} {translations.surveyDetail.of} {totalQuestions}
             </p>
             <h2 className="text-base md:text-lg font-medium text-black mb-2">
               {question}
@@ -70,7 +77,7 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
                 htmlFor="comment"
                 className="block text-xs md:text-sm text-black mb-1"
               >
-                Add a comment (optional)
+                {translations.surveyDetail.comment}
               </label>
               <textarea
                 id="comment"
@@ -79,7 +86,7 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
                 className="w-full px-2 py-1.5 border border-custom-grey-2 rounded bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors resize-none focus:border-primary text-sm"
                 rows={2}
                 maxLength={500}
-                placeholder=""
+                placeholder={translations.surveyDetail.commentPlaceholder}
               />
               <p className="mt-0.5 text-xs text-custom-grey-3 text-right">
                 {comment.length}/500
@@ -99,7 +106,7 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
           disabled={questionNumber === 1}
           className="px-3 py-1.5 md:px-4 md:py-2 border border-black text-black rounded hover:bg-custom-grey-5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs md:text-sm"
         >
-          Back
+          {translations.common.back}
         </button>
         <button
           type="button"
@@ -111,7 +118,7 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
               : 'bg-black text-white hover:bg-custom-grey-4 disabled:bg-custom-grey-3'
           }`}
         >
-          {isLastQuestion ? 'Submit' : 'Next'}
+          {isLastQuestion ? translations.common.submit : translations.common.next}
         </button>
       </div>
 
@@ -135,13 +142,13 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
                         ? 'bg-primary'
                         : 'bg-custom-grey-2'
                   }`}
-                  title={`Question ${i + 1}`}
+                  title={`${translations.surveyDetail.question} ${i + 1}`}
                 />
               );
             })}
           </div>
           <div className="text-center text-xs text-custom-grey-3">
-            {Math.round(progress * 100)}% Complete
+            {Math.round(progress * 100)}% {translations.surveyDetail.complete}
           </div>
         </div>
       </div>

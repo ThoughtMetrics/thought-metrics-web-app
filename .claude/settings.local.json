@@ -23,7 +23,9 @@
       "Bash(yarn build:*)",
       "Bash(python -m json.tool:*)",
       "Bash(survey_response.json)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(npx tsc:*)",
+      "Bash(npx ts-node src/scripts/seed-surveys.ts)"
     ],
     "deny": [],
     "ask": []

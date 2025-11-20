@@ -5,6 +5,7 @@ import { useSubmitSurveyMutation } from '@/core/hooks/mutations/survey/use-submi
 import { QuestionType } from '@/core/types/survey.type';
 import { AuthProvider } from '@/shared/providers/auth-provider';
 import { SurveySuccessMessage } from '@/shared/components/survey/SurveySuccessMessage';
+import { toast } from 'sonner';
 import {
   Checkboxes,
   ConstantSum,
@@ -21,6 +22,7 @@ import {
 } from '@/shared/ui/atoms/survey-questions';
 import { QueryClientProvider } from '@tanstack/react-query';
 import React, { useState } from 'react';
+import { useLanguage } from '@/core/hooks/use-language';
 
 interface SurveyDetailSectionProps {
   surveyId: string;
@@ -36,6 +38,18 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
 
   const { data: surveyData, isLoading } = useSurveyDetailsQuery(surveyId);
   const submitMutation = useSubmitSurveyMutation();
+  const { translations, language } = useLanguage();
+
+  // Get translated survey label based on current language
+  const getSurveyLabel = () => {
+    const template = surveyData?.data?.template;
+    if (!template) return '';
+
+    // Try to get translated label
+    const translatedLabel = template.translations?.[language]?.label;
+    // Fallback to English translation or legacy label
+    return translatedLabel || template.translations?.en?.label || template.label || '';
+  };
 
   // Load draft on mount if exists - MUST be before any early returns
   React.useEffect(() => {
@@ -151,7 +165,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   if (isLoading) {
     return (
       <div className="min-h-full bg-white flex items-center justify-center">
-        <div className="text-lg text-custom-grey-3">Loading survey...</div>
+        <div className="text-lg text-custom-grey-3">{translations.common.loading}</div>
       </div>
     );
   }
@@ -159,7 +173,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   if (!surveyData?.data) {
     return (
       <div className="min-h-full bg-white flex items-center justify-center">
-        <div className="text-lg text-custom-grey-3">Survey not found</div>
+        <div className="text-lg text-custom-grey-3">{translations.errors.notFound}</div>
       </div>
     );
   }
@@ -173,21 +187,21 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         <div className="text-center px-6 max-w-md">
           <div className="text-6xl mb-6">✓</div>
           <h2 className="text-2xl font-semibold mb-4 text-custom-text-dark">
-            Survey Already Completed
+            {translations.surveyDetail.alreadyCompleted}
           </h2>
           <p className="text-lg text-custom-grey-3 mb-6">
             {survey.userResponse?.status === 'submitted' &&
-              'You have already submitted a response for this survey. It is currently under review.'}
+              translations.surveyDetail.submittedMessage}
             {survey.userResponse?.status === 'approved' &&
-              'Your response has been approved. Thank you for your participation!'}
+              translations.surveyDetail.approvedMessage}
             {survey.userResponse?.status === 'declined' &&
-              'Your response was reviewed. Please check your email for more details.'}
+              translations.surveyDetail.declinedMessage}
           </p>
           <button
             onClick={() => (window.location.href = '/survey-boards')}
             className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
           >
-            Back to Surveys
+            {translations.surveyDetail.backToSurveys}
           </button>
         </div>
       </div>
@@ -295,7 +309,13 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           // Clear draft from localStorage on successful submission
           const draftKey = `survey_draft_${surveyId}`;
           localStorage.removeItem(draftKey);
+          toast.success(translations.toast.surveySubmittedSuccess);
           setShowSuccess(true);
+        },
+        onError: (error: any) => {
+          toast.error(
+            error?.details?.error?.message || translations.toast.surveySubmittedError
+          );
         },
       }
     );
@@ -314,7 +334,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
       questionNumber: currentQuestion + 1,
       totalQuestions,
       question: currentQuestionData.text,
-      surveyLabel: surveyData?.data?.survey?.label || '',
+      surveyLabel: getSurveyLabel(),
       surveyId: surveyData?.data?.survey?.surveyId || '',
       comment: answers[currentQuestion]?.comment || '',
       onCommentChange: (comment: string) => {
@@ -742,12 +762,12 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
                     value: e.target.value,
                   })
                 }
-                placeholder="Enter file URL"
+                placeholder={translations.surveyQuestions.uploadFile}
                 className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors border-custom-grey-2 focus:border-primary text-base md:text-lg"
               />
               {config.allowedTypes && (
                 <p className="text-sm text-custom-grey-3">
-                  Allowed types: {config.allowedTypes.join(', ')}
+                  {translations.surveyQuestions.uploadFile}: {config.allowedTypes.join(', ')}
                 </p>
               )}
             </div>
@@ -773,7 +793,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     );
   }
 
-  return <div className="flex bg-white h-full">{renderQuestion()}</div>;
+  return <div className="flex bg-white h-full accent-primary caret-primary scheme-light">{renderQuestion()}</div>;
 };
 
 interface SurveyDetailWrapperProps {

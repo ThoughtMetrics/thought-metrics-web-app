@@ -15,6 +15,8 @@ import { ROUTES } from '@/routes/routeConfig';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/core/lib/query-client';
 import { AuthProvider } from '@/shared/providers/auth-provider';
+import { useLanguage } from '@/core/hooks/use-language';
+import { LanguageToggle } from '@/shared/ui/molecules/language-toggle';
 
 // Destructure constants
 const {
@@ -27,7 +29,6 @@ const {
   defaultCountryCode,
   validationMessages,
   emailRegex,
-  ui,
 } = editProfileFormConstant;
 
 const emailRegexPattern = new RegExp(emailRegex);
@@ -46,6 +47,15 @@ const years = Array.from({ length: currentYear - 1900 + 1 }, (_, i) => ({
 const EditProfilePage: React.FC = () => {
   const { data: profile, isLoading: isLoadingProfile } = useProfileQuery();
   const updateProfileMutation = useUpdateProfileMutation();
+  const { translations } = useLanguage();
+
+  // Translated participation options
+  const translatedParticipationOptions = React.useMemo(() => {
+    return participationOptions.map(option => ({
+      ...option,
+      label: translations.participationOptions[option.id as keyof typeof translations.participationOptions] || option.label,
+    }));
+  }, [translations]);
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -71,6 +81,15 @@ const EditProfilePage: React.FC = () => {
     participationPreferences: [] as string[],
     termsAccepted: false,
     privacyAccepted: false,
+    paymentMethod: undefined as 'upi' | 'bank' | 'skip' | undefined,
+    payment: {
+      upiId: '',
+      upiMobileNumber: '',
+      upiFullName: '',
+      bankAccountNumber: '',
+      bankIfscCode: '',
+      bankAccountHolderName: '',
+    },
   });
 
   const [countryCode, setCountryCode] = useState(defaultCountryCode);
@@ -88,6 +107,14 @@ const EditProfilePage: React.FC = () => {
           day: String(dob.getDate()).padStart(2, '0'),
           year: String(dob.getFullYear()),
         };
+      }
+
+      // Determine payment method from existing data
+      let paymentMethod: 'upi' | 'bank' | 'skip' | undefined = undefined;
+      if (profile.paymentInfo?.upiId || profile.paymentInfo?.upiMobileNumber) {
+        paymentMethod = 'upi';
+      } else if (profile.paymentInfo?.bankAccountNumber) {
+        paymentMethod = 'bank';
       }
 
       setFormData((prev) => ({
@@ -112,6 +139,15 @@ const EditProfilePage: React.FC = () => {
           profile.respondentInfo?.participationPreferences ?? [],
         termsAccepted: profile.respondentInfo?.termsAccepted ?? true,
         privacyAccepted: profile.respondentInfo?.privacyAccepted ?? true,
+        paymentMethod,
+        payment: {
+          upiId: profile.paymentInfo?.upiId ?? '',
+          upiMobileNumber: profile.paymentInfo?.upiMobileNumber ?? '',
+          upiFullName: profile.paymentInfo?.upiFullName ?? '',
+          bankAccountNumber: profile.paymentInfo?.bankAccountNumber ?? '',
+          bankIfscCode: profile.paymentInfo?.bankIfscCode ?? '',
+          bankAccountHolderName: profile.paymentInfo?.bankAccountHolderName ?? '',
+        },
       }));
     }
   }, [profile]);
@@ -252,6 +288,10 @@ const EditProfilePage: React.FC = () => {
           termsAccepted: formData.termsAccepted,
           privacyAccepted: formData.privacyAccepted,
         },
+        paymentInfo:
+          formData.paymentMethod && formData.paymentMethod !== 'skip'
+            ? formData.payment
+            : undefined,
       };
 
       await updateProfileMutation.mutateAsync(updateData);
@@ -275,9 +315,12 @@ const EditProfilePage: React.FC = () => {
         <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center block! flex-col max-w-(--breakpoint-2xl)!">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-4xl font-medium tracking-tighter text-gray-900 mb-2">
-              {ui.pageTitle || 'Manage Profile'}
-            </h1>
+            <div className="flex justify-between items-start mb-4">
+              <h1 className="text-4xl font-medium tracking-tighter text-gray-900">
+                {translations.profile.editProfile}
+              </h1>
+              <LanguageToggle variant="inline" />
+            </div>
             {/* <a
               href="#"
               className="text-black font-medium hover:font-semibold underline text-sm"
@@ -288,7 +331,7 @@ const EditProfilePage: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6 pb-8">
             <p className="text-xl font-medium tracking-tighter mb-4">
-              {ui.notes.requiredFields}
+              {translations.profile.requiredFields}
             </p>
 
             {/* Form Fields Grid */}
@@ -296,7 +339,7 @@ const EditProfilePage: React.FC = () => {
               <TextInputAtom
                 id="firstName"
                 name="firstName"
-                label={ui.fieldLabels.firstName}
+                label={translations.profile.firstName}
                 value={formData.firstName}
                 onChange={handleInputChange}
                 error={errors.firstName}
@@ -305,7 +348,7 @@ const EditProfilePage: React.FC = () => {
               <TextInputAtom
                 id="lastName"
                 name="lastName"
-                label={ui.fieldLabels.lastName}
+                label={translations.profile.lastName}
                 value={formData.lastName}
                 onChange={handleInputChange}
                 error={errors.lastName}
@@ -314,7 +357,7 @@ const EditProfilePage: React.FC = () => {
               <TextInputAtom
                 id="email"
                 name="email"
-                label={ui.fieldLabels.email}
+                label={translations.profile.email}
                 type="email"
                 value={formData.email}
                 onChange={handleInputChange}
@@ -324,7 +367,7 @@ const EditProfilePage: React.FC = () => {
               <PhoneInputAtom
                 id="phone"
                 name="phone"
-                label={ui.fieldLabels.phone}
+                label={`${translations.profile.phone} (${translations.profile.optional})`}
                 value={formData.phone}
                 onChange={handleInputChange}
                 countryCode={countryCode}
@@ -335,18 +378,18 @@ const EditProfilePage: React.FC = () => {
               <SelectAtom
                 id="gender"
                 name="gender"
-                label={ui.fieldLabels.gender}
+                label={`${translations.profile.gender} (${translations.profile.optional})`}
                 value={formData.gender}
                 onChange={handleInputChange}
                 options={genders}
                 error={errors.gender}
-                placeholder="Select gender"
+                placeholder={translations.profile.selectGender}
               />
               {/* Location Fields */}
               <TextInputAtom
                 id="doorNumberOrStreetName"
                 name="location.doorNumberOrStreetName"
-                label={ui.fieldLabels.doorNumberOrStreetName}
+                label={translations.profile.doorNumberOrStreetName}
                 value={formData.location.doorNumberOrStreetName}
                 onChange={(e) =>
                   updateField('location.doorNumberOrStreetName', e.target.value)
@@ -357,7 +400,7 @@ const EditProfilePage: React.FC = () => {
               <TextInputAtom
                 id="city"
                 name="location.city"
-                label={ui.fieldLabels.city}
+                label={translations.profile.city}
                 value={formData.location.city}
                 onChange={(e) => updateField('location.city', e.target.value)}
                 error={errors['location.city']}
@@ -366,7 +409,7 @@ const EditProfilePage: React.FC = () => {
               <TextInputAtom
                 id="district"
                 name="location.district"
-                label={ui.fieldLabels.district}
+                label={`${translations.profile.district} (${translations.profile.optional})`}
                 value={formData.location.district}
                 onChange={(e) =>
                   updateField('location.district', e.target.value)
@@ -376,18 +419,18 @@ const EditProfilePage: React.FC = () => {
               <SelectAtom
                 id="state"
                 name="location.state"
-                label={ui.fieldLabels.state}
+                label={translations.profile.state}
                 value={formData.location.state}
                 onChange={(e) => updateField('location.state', e.target.value)}
                 options={states}
                 error={errors['location.state']}
                 required
-                placeholder="Select state"
+                placeholder={translations.profile.selectState}
               />
               <SelectAtom
                 id="countryOrRegion"
                 name="location.countryOrRegion"
-                label={ui.fieldLabels.countryOrRegion}
+                label={translations.profile.country}
                 value={formData.location.countryOrRegion}
                 onChange={(e) =>
                   updateField('location.countryOrRegion', e.target.value)
@@ -395,19 +438,19 @@ const EditProfilePage: React.FC = () => {
                 options={countries}
                 error={errors['location.countryOrRegion']}
                 required
-                placeholder="Select country/region"
+                placeholder={translations.profile.selectCountry}
               />
               <TextInputAtom
                 id="zipCode"
                 name="location.zipCode"
-                label={ui.fieldLabels.zipCode}
+                label={translations.profile.zipCode}
                 value={formData.location.zipCode}
                 onChange={(e) =>
                   updateField('location.zipCode', e.target.value)
                 }
                 error={errors['location.zipCode']}
                 required
-                placeholder="Enter ZIP/PIN code"
+                placeholder={translations.profile.zipCode}
               />
               {/* Password Fields (Optional) */}
               {/* <TextInputAtom
@@ -433,7 +476,7 @@ const EditProfilePage: React.FC = () => {
             {/* Date of Birth */}
             <div className="space-y-2">
               <label className="block text-sm font-medium">
-                {ui.fieldLabels.dateOfBirth}
+                {`${translations.profile.dateOfBirth} (${translations.profile.optional})`}
               </label>
               <div className="grid grid-cols-3 gap-4 w-fit">
                 <SelectAtom
@@ -445,7 +488,7 @@ const EditProfilePage: React.FC = () => {
                     updateField('dateOfBirth.month', e.target.value)
                   }
                   options={months}
-                  placeholder="Month"
+                  placeholder={translations.profile.selectMonth}
                 />
                 <SelectAtom
                   id="day"
@@ -456,7 +499,7 @@ const EditProfilePage: React.FC = () => {
                     updateField('dateOfBirth.day', e.target.value)
                   }
                   options={days}
-                  placeholder="Day"
+                  placeholder={translations.profile.selectDay}
                 />
                 <SelectAtom
                   id="year"
@@ -467,7 +510,7 @@ const EditProfilePage: React.FC = () => {
                     updateField('dateOfBirth.year', e.target.value)
                   }
                   options={years}
-                  placeholder="Year"
+                  placeholder={translations.profile.selectYear}
                 />
               </div>
               {errors.dateOfBirth && (
@@ -478,17 +521,157 @@ const EditProfilePage: React.FC = () => {
             {/* Participation Preferences */}
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                {ui.preferences.title}
+                {translations.profile.participationPreferencesTitle}
               </h2>
-              <p className="text-gray-600 mb-6">{ui.preferences.description}</p>
+              <p className="text-gray-600 mb-6">{translations.profile.participationPreferencesDescription}</p>
 
               <CheckboxOutlineGroupAtom
                 label=""
-                options={participationOptions}
+                options={translatedParticipationOptions}
                 selectedValues={formData.participationPreferences}
                 onChange={handleParticipationChange}
                 columns={1}
               />
+            </div>
+
+            {/* Payment Information */}
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                {translations.auth.signup.payment.title}
+              </h2>
+              <p className="text-gray-600 mb-6">
+                {translations.auth.signup.payment.description}
+              </p>
+
+              <div className="space-y-4">
+                <SelectAtom
+                  id="paymentMethod"
+                  name="paymentMethod"
+                  label={translations.auth.signup.payment.methodLabel}
+                  value={formData.paymentMethod ?? ''}
+                  onChange={(e) =>
+                    updateField(
+                      'paymentMethod',
+                      e.target.value as 'upi' | 'bank' | 'skip'
+                    )
+                  }
+                  options={[
+                    {
+                      value: 'upi',
+                      label: translations.auth.signup.payment.upiPayment,
+                    },
+                    {
+                      value: 'bank',
+                      label: translations.auth.signup.payment.bankTransfer,
+                    },
+                    {
+                      value: 'skip',
+                      label: translations.auth.signup.payment.skipForNow,
+                    },
+                  ]}
+                  placeholder={translations.auth.signup.payment.methodLabel}
+                />
+
+                {/* UPI Payment Fields */}
+                {formData.paymentMethod === 'upi' && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                    <TextInputAtom
+                      id="upiId"
+                      name="payment.upiId"
+                      label={translations.auth.signup.payment.upi.upiIdLabel}
+                      value={formData.payment.upiId}
+                      onChange={(e) =>
+                        updateField('payment.upiId', e.target.value)
+                      }
+                      placeholder={
+                        translations.auth.signup.payment.upi.upiIdPlaceholder
+                      }
+                    />
+                    <TextInputAtom
+                      id="upiMobileNumber"
+                      name="payment.upiMobileNumber"
+                      label={translations.auth.signup.payment.upi.mobileLabel}
+                      value={formData.payment.upiMobileNumber}
+                      onChange={(e) =>
+                        updateField('payment.upiMobileNumber', e.target.value)
+                      }
+                      placeholder={
+                        translations.auth.signup.payment.upi.mobilePlaceholder
+                      }
+                    />
+                    <TextInputAtom
+                      id="upiFullName"
+                      name="payment.upiFullName"
+                      label={translations.auth.signup.payment.upi.fullNameLabel}
+                      value={formData.payment.upiFullName}
+                      onChange={(e) =>
+                        updateField('payment.upiFullName', e.target.value)
+                      }
+                      placeholder={
+                        translations.auth.signup.payment.upi.fullNameLabel
+                      }
+                    />
+                  </div>
+                )}
+
+                {/* Bank Transfer Fields */}
+                {formData.paymentMethod === 'bank' && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                    <TextInputAtom
+                      id="bankAccountNumber"
+                      name="payment.bankAccountNumber"
+                      label={
+                        translations.auth.signup.payment.bank.accountNumberLabel
+                      }
+                      value={formData.payment.bankAccountNumber}
+                      onChange={(e) =>
+                        updateField('payment.bankAccountNumber', e.target.value)
+                      }
+                      placeholder={
+                        translations.auth.signup.payment.bank.accountNumberLabel
+                      }
+                    />
+                    <TextInputAtom
+                      id="bankIfscCode"
+                      name="payment.bankIfscCode"
+                      label={translations.auth.signup.payment.bank.ifscLabel}
+                      value={formData.payment.bankIfscCode}
+                      onChange={(e) =>
+                        updateField('payment.bankIfscCode', e.target.value)
+                      }
+                      placeholder={
+                        translations.auth.signup.payment.bank.ifscLabel
+                      }
+                    />
+                    <TextInputAtom
+                      id="bankAccountHolderName"
+                      name="payment.bankAccountHolderName"
+                      label={
+                        translations.auth.signup.payment.bank.holderNameLabel
+                      }
+                      value={formData.payment.bankAccountHolderName}
+                      onChange={(e) =>
+                        updateField(
+                          'payment.bankAccountHolderName',
+                          e.target.value
+                        )
+                      }
+                      placeholder={
+                        translations.auth.signup.payment.bank.holderNameLabel
+                      }
+                    />
+                  </div>
+                )}
+
+                {/* Skip Message */}
+                {formData.paymentMethod === 'skip' && (
+                  <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                    <p className="text-gray-600">
+                      {translations.auth.signup.payment.skipMessage}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Submit Button */}
@@ -499,8 +682,8 @@ const EditProfilePage: React.FC = () => {
             >
               <label className="text-white text-nowrap font-medium cursor-pointer">
                 {updateProfileMutation.isPending
-                  ? ui.buttons?.saving || 'Saving...'
-                  : ui.buttons?.save || 'Save Changes'}
+                  ? translations.profile.saving
+                  : translations.profile.saveChanges}
               </label>
               <ArrowRed className="fill-current text-white" />
             </button>

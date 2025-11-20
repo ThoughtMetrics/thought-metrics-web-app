@@ -10,6 +10,9 @@ import { INDUSTRY_FILTERS } from '@/core/constants/survey.constants';
 import { AuthProvider } from '@/shared/providers/auth-provider';
 import { SelectAtom } from '@/shared/ui/atoms/custom-input';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { LanguageToggle } from '@/shared/ui/molecules/language-toggle';
+import { useLanguage } from '@/core/hooks/use-language';
+import { getIndustryLabel } from '@/core/utils/industry-translator';
 
 const SurveyBoardsSection: React.FC = () => {
   const [selectedIndustry, setSelectedIndustry] = React.useState('all');
@@ -20,7 +23,18 @@ const SurveyBoardsSection: React.FC = () => {
     limit: 100,
   });
 
+  // Translation hook
+  const { translations } = useLanguage();
+
   const surveys = surveysData?.data || [];
+
+  // Translated industry filters
+  const translatedIndustryFilters = React.useMemo(() => {
+    return INDUSTRY_FILTERS.map(filter => ({
+      value: filter.value,
+      label: getIndustryLabel(filter.label, translations.industries)
+    }));
+  }, [translations.industries]);
 
   // Filter surveys by selected industry
   const filteredSurveys = React.useMemo(() => {
@@ -54,10 +68,15 @@ const SurveyBoardsSection: React.FC = () => {
   return (
     <div className="common-component bg-white text-black! h-full overflow-y-scroll">
       <div className="common-container px-6 py-8 md:px-24 md:py-12 flex flex-col gap-6 max-w-(--breakpoint-2xl)!">
+        {/* Language Toggle - Top Right */}
+        <div className="flex justify-end">
+          <LanguageToggle variant="inline" />
+        </div>
+
         {/* Welcome Section */}
         <div className="bg-custom-grey-1 px-8 py-6 md:px-18 md:py-12 rounded-lg">
           <h1 className="text-3xl md:text-6xl font-medium mb-6">
-            Welcome,{' '}
+            {translations.surveyBoard.welcome},{' '}
             {userProfile?.profile?.displayName ??
               userProfile?.profile?.firstName}
           </h1>
@@ -72,12 +91,11 @@ const SurveyBoardsSection: React.FC = () => {
                 window.location.href = ROUTES.EDIT_PROFILE;
               }}
             >
-              Verify/update your profile
+              {translations.surveyBoard.verifyProfile}
             </span>
           </label>
           <p className="mt-6 md:mt-12 text-sm md:text-lg">
-            Start seeing if you pre-qualify for a study by filling out the
-            survey at the link(s) below.
+            {translations.surveyBoard.startMessage}
           </p>
         </div>
         {/* Filter Section */}
@@ -88,13 +106,13 @@ const SurveyBoardsSection: React.FC = () => {
             label=""
             value={selectedIndustry}
             onChange={(e) => setSelectedIndustry(e.target.value)}
-            options={INDUSTRY_FILTERS}
+            options={translatedIndustryFilters}
           />
         </div>
         {/* Survey Grid */}
         {isLoading ? (
           <div className="flex w-full h-64 justify-center items-center">
-            <div className="text-lg text-custom-grey-3">Loading surveys...</div>
+            <div className="text-lg text-custom-grey-3">{translations.common.loading}</div>
           </div>
         ) : filteredSurveys.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-8">
@@ -121,19 +139,19 @@ const SurveyBoardsSection: React.FC = () => {
               // Determine status badge text and style
               const getStatusInfo = () => {
                 if (!hasResponded) {
-                  return { text: 'Available', bgColor: 'bg-green-100', textColor: 'text-green-800' };
+                  return { text: translations.surveyBoard.available, bgColor: 'bg-green-100', textColor: 'text-green-800' };
                 }
                 if (canUpdate && responseStatus === SurveyResponseStatus.DRAFT) {
-                  return { text: 'Draft Saved', bgColor: 'bg-yellow-100', textColor: 'text-yellow-800' };
+                  return { text: translations.surveyBoard.draft, bgColor: 'bg-yellow-100', textColor: 'text-yellow-800' };
                 }
                 if (responseStatus === SurveyResponseStatus.SUBMITTED) {
-                  return { text: 'Submitted', bgColor: 'bg-blue-100', textColor: 'text-blue-800' };
+                  return { text: translations.surveyBoard.submitted, bgColor: 'bg-blue-100', textColor: 'text-blue-800' };
                 }
                 if (responseStatus === SurveyResponseStatus.APPROVED) {
-                  return { text: 'Approved', bgColor: 'bg-gray-200', textColor: 'text-gray-700' };
+                  return { text: translations.surveyBoard.approved, bgColor: 'bg-gray-200', textColor: 'text-gray-700' };
                 }
                 if (responseStatus === SurveyResponseStatus.DECLINED) {
-                  return { text: 'Declined', bgColor: 'bg-red-100', textColor: 'text-red-800' };
+                  return { text: translations.surveyBoard.declined, bgColor: 'bg-red-100', textColor: 'text-red-800' };
                 }
                 return { text: survey.status || 'Published', bgColor: 'bg-gray-100', textColor: 'text-gray-700' };
               };
@@ -169,12 +187,12 @@ const SurveyBoardsSection: React.FC = () => {
                         ₹{price.toFixed(2)}
                       </p>
                       <span className="inline-block px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs font-medium">
-                        {timeToComplete} min
+                        {timeToComplete} {translations.surveyBoard.minutes}
                       </span>
                     </div>
                     <div className="flex justify-between items-end gap-4">
                       <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
-                        {industry}
+                        {getIndustryLabel(industry, translations.industries)}
                       </span>
                       <span
                         className={`inline-block px-3 py-1 rounded text-xs font-medium ${statusInfo.bgColor} ${statusInfo.textColor}`}
@@ -191,8 +209,8 @@ const SurveyBoardsSection: React.FC = () => {
           <div className="flex w-full h-64 justify-center items-center">
             <div className="text-lg text-custom-grey-3">
               {selectedIndustry === 'all'
-                ? 'No Surveys Available Yet'
-                : 'No Surveys Available for Selected Industry'}
+                ? translations.surveyBoard.noSurveys
+                : translations.surveyBoard.noSurveysForIndustry}
             </div>
           </div>
         )}
