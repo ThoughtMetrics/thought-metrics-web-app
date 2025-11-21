@@ -27,7 +27,8 @@
       "Bash(npx tsc:*)",
       "Bash(npx ts-node src/scripts/seed-surveys.ts)",
       "Bash(node -e:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

@@ -29,22 +29,29 @@ export const useSubmitPartnership = () => {
 
       console.log('Partnership form submitted successfully:', response.data);
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Partnership form submission failed:', error);
 
-      // Show error toast with specific message
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'Failed to submit form. Please try again.';
+      // Extract error message from API response
+      let errorMessage = 'Failed to submit form. Please try again.';
 
-      toast.error('Submission failed', {
+      if (error?.error?.details && Array.isArray(error.error.details)) {
+        // Format validation errors nicely
+        errorMessage = error.error.details
+          .map((detail: any) => detail.message)
+          .join('. ');
+      } else if (error?.error?.message) {
+        errorMessage = error.error.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
+      toast.error('Submission Failed', {
         description: errorMessage,
         duration: 6000,
         action: {
           label: 'Retry',
           onClick: () => {
-            // You can add retry logic here if needed
             console.log('Retry clicked');
           },
         },
@@ -81,11 +88,22 @@ export const useUpdatePartnership = () => {
 
       toast.success('Partnership updated successfully!');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Partnership update failed:', error);
+
+      let errorMessage = 'Please try again.';
+      if (error?.error?.details && Array.isArray(error.error.details)) {
+        errorMessage = error.error.details
+          .map((detail: any) => detail.message)
+          .join('. ');
+      } else if (error?.error?.message) {
+        errorMessage = error.error.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
       toast.error('Failed to update partnership', {
-        description:
-          error instanceof Error ? error.message : 'Please try again.',
+        description: errorMessage,
       });
     },
   });
@@ -110,11 +128,18 @@ export const useDeletePartnership = () => {
 
       toast.success('Partnership deleted successfully!');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Partnership deletion failed:', error);
+
+      let errorMessage = 'Please try again.';
+      if (error?.error?.message) {
+        errorMessage = error.error.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
       toast.error('Failed to delete partnership', {
-        description:
-          error instanceof Error ? error.message : 'Please try again.',
+        description: errorMessage,
       });
     },
   });

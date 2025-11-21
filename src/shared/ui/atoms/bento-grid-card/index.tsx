@@ -1,7 +1,6 @@
 import { ArrowRight, ResourcesIllustration } from '@/assets';
 import { cn } from '@/core/utils/cn';
 
-
 export type BentoCardSize =
   | 'small'
   | 'medium'
@@ -42,7 +41,7 @@ const BentoGridCard: React.FC<BentoGridCardProps> = ({
     <a
       href={blog.link}
       className={cn(
-        'relative backdrop-blur-[40px] overflow-hidden group min-h-[280px] md:min-h-0',
+        'relative backdrop-blur-2xl overflow-hidden group min-h-[280px] md:min-h-0',
         sizeClasses[size],
         className
       )}
@@ -56,7 +55,7 @@ const BentoGridCard: React.FC<BentoGridCardProps> = ({
             className="w-full h-full origin-bottom scale-y-100 bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: `url(${blog.src})` }}
           >
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/50 to-transparent" />
           </div>
         </div>
 
@@ -68,18 +67,17 @@ const BentoGridCard: React.FC<BentoGridCardProps> = ({
             </span>
             <h2
               className={cn(
-                'font-semibold text-md mt-3 mb-4 leading-tight text-white',
-                size === 'large' || size === 'full' || size === 'tall' ? 'line-clamp-3' : 'line-clamp-1'
+                'font-semibold text-md mt-3 mb-4 leading-tight text-white line-clamp-2',
+                (size === 'large' || size === 'full' || size === 'tall') &&
+                  'md:line-clamp-3'
               )}
             >
               {blog.label}
             </h2>
             <p
               className={cn(
-                'text-md mb-4 text-white/90',
-                size === 'large' || size === 'tall'
-                  ? 'line-clamp-6'
-                  : 'line-clamp-2'
+                'text-md mb-4 text-white/90 line-clamp-2',
+                (size === 'large' || size === 'tall') && ' md:line-clamp-6'
               )}
             >
               {blog.description}

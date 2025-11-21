@@ -10,7 +10,12 @@ export const usePartnershipFormValidation = () => {
 
   const validate = useCallback((data: PartnershipFormData): boolean => {
     const newErrors: ValidationErrors = {};
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Email validation - stricter pattern matching backend requirements
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    // URL validation - matching backend URI validation
+    const urlRegex = /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/;
 
     // Required fields
     if (!data.firstName.trim()) newErrors.firstName = 'First name is required';
@@ -18,9 +23,44 @@ export const usePartnershipFormValidation = () => {
     if (!data.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!emailRegex.test(data.email)) {
-      newErrors.email = 'Invalid email format';
+      newErrors.email = 'Please enter a valid email address (e.g., name@example.com)';
     }
     if (!data.phone.trim()) newErrors.phone = 'Phone number is required';
+
+    // Social media handle validation
+    // Twitter/X handles: 1-15 characters, letters, numbers, underscores only
+    const xHandleRegex = /^@?[A-Za-z0-9_]{1,15}$/;
+    // Instagram handles: 1-30 characters, letters, numbers, underscores, periods
+    const instagramHandleRegex = /^@?[A-Za-z0-9_.]{1,30}$/;
+
+    if (data.instagramHandle && data.instagramHandle.trim()) {
+      // Allow "0" to skip, but validate if it's an actual handle
+      if (data.instagramHandle.trim() !== '0' && !instagramHandleRegex.test(data.instagramHandle.trim())) {
+        newErrors.instagramHandle = 'Please enter a valid Instagram handle (e.g., @username or username, 1-30 characters)';
+      }
+    }
+
+    if (data.xHandle && data.xHandle.trim()) {
+      // Allow "0" to skip, but validate if it's an actual handle
+      if (data.xHandle.trim() !== '0' && !xHandleRegex.test(data.xHandle.trim())) {
+        newErrors.xHandle = 'Please enter a valid X/Twitter handle (e.g., @username or username, 1-15 characters)';
+      }
+    }
+
+    // URL validation for optional fields
+    if (data.linkedinUrl && data.linkedinUrl.trim()) {
+      // Allow "0" to skip, but validate if it's an actual URL
+      if (data.linkedinUrl.trim() !== '0' && !urlRegex.test(data.linkedinUrl)) {
+        newErrors.linkedinUrl = 'Please enter a valid LinkedIn URL (e.g., https://linkedin.com/in/username)';
+      }
+    }
+
+    if (data.youtubeChannel && data.youtubeChannel.trim()) {
+      // Allow "0" to skip, but validate if it's an actual URL
+      if (data.youtubeChannel.trim() !== '0' && !urlRegex.test(data.youtubeChannel)) {
+        newErrors.youtubeChannel = 'Please enter a valid YouTube URL (e.g., https://youtube.com/@channel)';
+      }
+    }
 
     // Length validation
     if (data.firstName.length > 100)
@@ -32,10 +72,10 @@ export const usePartnershipFormValidation = () => {
       newErrors.instagramHandle = 'Max 100 characters';
     if (data.xHandle && data.xHandle.length > 100)
       newErrors.xHandle = 'Max 100 characters';
-    if (data.linkedinUrl && data.linkedinUrl.length > 500)
-      newErrors.linkedinUrl = 'Max 500 characters';
-    if (data.youtubeChannel && data.youtubeChannel.length > 200)
-      newErrors.youtubeChannel = 'Max 200 characters';
+    if (data.linkedinUrl && data.linkedinUrl.length > 255)
+      newErrors.linkedinUrl = 'Max 255 characters';
+    if (data.youtubeChannel && data.youtubeChannel.length > 255)
+      newErrors.youtubeChannel = 'Max 255 characters';
     if (data.audienceDescription && data.audienceDescription.length > 1000)
       newErrors.audienceDescription = 'Max 1000 characters';
     if (data.partnershipReason && data.partnershipReason.length > 1000)

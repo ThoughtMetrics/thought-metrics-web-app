@@ -122,7 +122,7 @@ const BentoGridOrganism: React.FC<BentoGridOrganismProps> = ({
 
         {/* Bento Grid Layout - First 15 Items */}
         {bentoItems.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 auto-rows-[200px]">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 md:auto-rows-[200px]">
             <BentoGridCard blog={firstItem} size="full" />
             {remainingBentoItems.map((blog, index) => (
               <BentoGridCard
