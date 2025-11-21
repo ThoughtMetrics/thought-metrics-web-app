@@ -6,7 +6,7 @@ import { queryClient } from '@/core/lib/query-client';
 import { AuthProvider } from '@/shared/providers/auth-provider';
 import { ErrorBoundary } from '@/shared/ui/organisms/error-boundary';
 import { Toaster } from '@/shared/ui/atoms/toaster';
-import ApiLoadingIndicator from '@/shared/components/ApiLoadingIndicator';
+import ApiLoadingIndicator from './ApiLoadingIndicator';
 
 interface AppWrapperProps {
   children: React.ReactNode;

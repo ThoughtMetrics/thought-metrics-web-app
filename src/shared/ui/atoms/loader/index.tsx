@@ -1,4 +1,6 @@
 import React from 'react';
+import { cn } from '@utils/cn';
+import { LoaderUI } from './LoaderUI';
 
 interface LoaderProps {
   size?: 'small' | 'medium' | 'large';
@@ -70,11 +72,16 @@ export const LoaderOverlay: React.FC<LoaderOverlayProps> = ({
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 bg-white/50 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-8 flex flex-col items-center gap-4 shadow-xl">
-        <Loader size="large" />
-        <p className="text-gray-700 font-medium">{message}</p>
-      </div>
+    <div
+      className={cn(
+        'fixed inset-0 z-9999 flex items-center justify-center bg-white',
+        'bg-white/90'
+      )}
+      style={{
+        animation: 'fadeIn 0.2s ease-in',
+      }}
+    >
+      <LoaderUI message={message} />
     </div>
   );
 };
