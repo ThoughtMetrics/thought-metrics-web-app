@@ -274,6 +274,42 @@ const EditProfilePage: React.FC = () => {
         );
       }
 
+      // Clean payment info based on payment method
+      let paymentInfo: any = undefined;
+      if (formData.paymentMethod && formData.paymentMethod !== 'skip') {
+        if (formData.paymentMethod === 'upi') {
+          paymentInfo = {
+            upiId: formData.payment.upiId || undefined,
+            upiMobileNumber: formData.payment.upiMobileNumber || undefined,
+            upiFullName: formData.payment.upiFullName || undefined,
+            // Clear bank fields when using UPI
+            bankAccountNumber: undefined,
+            bankIfscCode: undefined,
+            bankAccountHolderName: undefined,
+          };
+        } else if (formData.paymentMethod === 'bank') {
+          paymentInfo = {
+            // Clear UPI fields when using bank
+            upiId: undefined,
+            upiMobileNumber: undefined,
+            upiFullName: undefined,
+            bankAccountNumber: formData.payment.bankAccountNumber || undefined,
+            bankIfscCode: formData.payment.bankIfscCode || undefined,
+            bankAccountHolderName: formData.payment.bankAccountHolderName || undefined,
+          };
+        }
+      } else {
+        // When skipping, clear all payment fields
+        paymentInfo = {
+          upiId: undefined,
+          upiMobileNumber: undefined,
+          upiFullName: undefined,
+          bankAccountNumber: undefined,
+          bankIfscCode: undefined,
+          bankAccountHolderName: undefined,
+        };
+      }
+
       const updateData: UpdateProfileData = {
         profile: {
           firstName: formData.firstName,
@@ -288,10 +324,7 @@ const EditProfilePage: React.FC = () => {
           termsAccepted: formData.termsAccepted,
           privacyAccepted: formData.privacyAccepted,
         },
-        paymentInfo:
-          formData.paymentMethod && formData.paymentMethod !== 'skip'
-            ? formData.payment
-            : undefined,
+        paymentInfo,
       };
 
       await updateProfileMutation.mutateAsync(updateData);

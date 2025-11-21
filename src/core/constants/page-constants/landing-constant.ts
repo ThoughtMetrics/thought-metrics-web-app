@@ -202,7 +202,7 @@ export const landing = {
       description: 'Bring voice to our platform. Get paid.',
       signButton: {
         label: 'Sign Me Up',
-        path: ROUTES.SIGN_UP,
+        path: "#advocate-forms",
         signedInLabel: 'Take a Survey',
         signedInPath: ROUTES.SURVEY_BOARDS,
       },
@@ -284,6 +284,7 @@ export const landing = {
       description:
         'To manage the high volume of applications, we are responding only to those applicants whose profiles best match our requirements and expectations.',
       inputForm: {
+        advocateId: 'advocate-forms',
         initialFormData: {
           firstName: '',
           lastName: '',
