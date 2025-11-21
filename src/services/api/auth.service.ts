@@ -64,16 +64,29 @@ class AuthService {
           location: additionalData.location,
         };
 
-        // Map payment info to backend structure (only if not 'skip')
+        // Map payment info to backend structure based on payment method
         if (additionalData.paymentMethod && additionalData.paymentMethod !== 'skip' && additionalData.payment) {
-          syncData.paymentInfo = {
-            upiId: additionalData.payment.upiId,
-            upiMobileNumber: additionalData.payment.upiMobileNumber,
-            upiFullName: additionalData.payment.upiFullName,
-            bankAccountNumber: additionalData.payment.bankAccountNumber,
-            bankIfscCode: additionalData.payment.bankIfscCode,
-            bankAccountHolderName: additionalData.payment.bankAccountHolderName,
-          };
+          if (additionalData.paymentMethod === 'upi') {
+            syncData.paymentInfo = {
+              upiId: additionalData.payment.upiId || undefined,
+              upiMobileNumber: additionalData.payment.upiMobileNumber || undefined,
+              upiFullName: additionalData.payment.upiFullName || undefined,
+              // Clear bank fields when using UPI
+              bankAccountNumber: undefined,
+              bankIfscCode: undefined,
+              bankAccountHolderName: undefined,
+            };
+          } else if (additionalData.paymentMethod === 'bank') {
+            syncData.paymentInfo = {
+              // Clear UPI fields when using bank
+              upiId: undefined,
+              upiMobileNumber: undefined,
+              upiFullName: undefined,
+              bankAccountNumber: additionalData.payment.bankAccountNumber || undefined,
+              bankIfscCode: additionalData.payment.bankIfscCode || undefined,
+              bankAccountHolderName: additionalData.payment.bankAccountHolderName || undefined,
+            };
+          }
         }
       } else {
         syncData.profile = {

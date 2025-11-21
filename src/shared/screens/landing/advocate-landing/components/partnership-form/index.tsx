@@ -11,7 +11,7 @@ import { usePartnershipFormValidation } from '@/core/hooks/validation/use-partne
 import { useSubmitPartnership } from '@/core/hooks/queries/partnership/index.queries';
 
 // Destructure constants
-const { countryCodes, defaultCountryCode, ui } =
+const { countryCodes, defaultCountryCode, ui, advocateId } =
   landing.advocate.formsSection.inputForm;
 
 const PartnershipForm: React.FC = () => {
@@ -76,7 +76,7 @@ const PartnershipForm: React.FC = () => {
 
   if (submitMutation.isSuccess) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-linear-to-br from-purple-50 to-pink-50 flex items-center justify-center p-6">
         <div className="max-w-md text-center bg-white rounded-lg shadow-lg p-8">
           <div className="mb-4">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
@@ -106,7 +106,7 @@ const PartnershipForm: React.FC = () => {
 
   return (
     <div>
-      <div className="common-component bg-custom-pink text-black flex-col items-center relative">
+      <div className="common-component bg-custom-pink text-black flex-col items-center relative" id={advocateId}>
         <div className="absolute right-0 hidden lg:block h-full w-[45%] bg-[url('images/landing_page_6.png')] bg-cover bg-no-repeat bg-center"></div>
         <div className="container px-6 lg:px-0 py-12 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-18">

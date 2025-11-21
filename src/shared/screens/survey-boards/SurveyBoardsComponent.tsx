@@ -145,7 +145,7 @@ const SurveyBoardsSection: React.FC = () => {
                   return { text: translations.surveyBoard.draft, bgColor: 'bg-yellow-100', textColor: 'text-yellow-800' };
                 }
                 if (responseStatus === SurveyResponseStatus.SUBMITTED) {
-                  return { text: translations.surveyBoard.submitted, bgColor: 'bg-blue-100', textColor: 'text-blue-800' };
+                  return { text: translations.surveyBoard.submitted, bgColor: 'bg-custom-grey-3', textColor: 'text-grey-800' };
                 }
                 if (responseStatus === SurveyResponseStatus.APPROVED) {
                   return { text: translations.surveyBoard.approved, bgColor: 'bg-gray-200', textColor: 'text-gray-700' };
@@ -190,7 +190,7 @@ const SurveyBoardsSection: React.FC = () => {
                         {timeToComplete} {translations.surveyBoard.minutes}
                       </span>
                     </div>
-                    <div className="flex justify-between items-end gap-4">
+                    <div className="flex justify-between items-start gap-4 flex-col">
                       <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
                         {getIndustryLabel(industry, translations.industries)}
                       </span>

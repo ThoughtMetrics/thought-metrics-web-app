@@ -25,7 +25,9 @@
       "Bash(survey_response.json)",
       "Bash(done)",
       "Bash(npx tsc:*)",
-      "Bash(npx ts-node src/scripts/seed-surveys.ts)"
+      "Bash(npx ts-node src/scripts/seed-surveys.ts)",
+      "Bash(node -e:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []

@@ -4,9 +4,11 @@ import { toast } from 'sonner';
 import { QueryKeys } from '@/core/lib/query-keys';
 import type { UpdateProfileData } from '@/core/types/user.type';
 import { getFirebaseErrorDetails } from '@/core/utils/firebase-error-handler';
+import { useLanguage } from '@/core/hooks/use-language';
 
 export const useUpdateProfileMutation = () => {
   const queryClient = useQueryClient();
+  const { translations } = useLanguage();
 
   return useMutation({
     mutationFn: async (data: UpdateProfileData) => {
@@ -19,9 +21,7 @@ export const useUpdateProfileMutation = () => {
         queryKey: QueryKeys.user.profile(),
       });
 
-      toast.success('Profile updated successfully!', {
-        description: 'Your changes have been saved.',
-      });
+      toast.success(translations.toast.profileUpdatedSuccess);
     },
     onError: (error) => {
       const errorCode = 'code' in error ? (error.code as string) : '';
@@ -44,10 +44,7 @@ export const useUpdateProfileMutation = () => {
       }
 
       // Generic error handling for non-Firebase errors
-      const errorMessage = error?.message ?? 'Failed to update profile';
-      toast.error('Update failed', {
-        description: errorMessage,
-      });
+      toast.error(translations.toast.profileUpdatedError);
     },
   });
 };
