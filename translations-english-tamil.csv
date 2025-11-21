@@ -1,0 +1,324 @@
+﻿S.No,Category,Context,English,Tamil,Source,File Location
+1,Common UI,Loading state,Loading...,ஏற்றுகிறது...,Frontend,src/core/i18n/translations.ts
+2,Common UI,Error message,Error,பிழை,Frontend,src/core/i18n/translations.ts
+3,Common UI,Success message,Success,வெற்றி,Frontend,src/core/i18n/translations.ts
+4,Common UI,Submit button,Submit,சமர்ப்பிக்கவும்,Frontend,src/core/i18n/translations.ts
+5,Common UI,Cancel button,Cancel,ரத்து செய்,Frontend,src/core/i18n/translations.ts
+6,Common UI,Save button,Save,சேமி,Frontend,src/core/i18n/translations.ts
+7,Common UI,Delete button,Delete,நீக்கு,Frontend,src/core/i18n/translations.ts
+8,Common UI,Edit button,Edit,திருத்து,Frontend,src/core/i18n/translations.ts
+9,Common UI,Close button,Close,மூடு,Frontend,src/core/i18n/translations.ts
+10,Common UI,Back button,Back,பின்செல்,Frontend,src/core/i18n/translations.ts
+11,Common UI,Next button,Next,அடுத்து,Frontend,src/core/i18n/translations.ts
+12,Common UI,Finish button,Finish,முடி,Frontend,src/core/i18n/translations.ts
+13,Common UI,Yes option,Yes,ஆம்,Frontend/Backend,src/core/i18n/translations.ts
+14,Common UI,No option,No,இல்லை,Frontend/Backend,src/core/i18n/translations.ts
+15,Common UI,Optional field,Optional,விருப்பமானது,Frontend,src/core/i18n/translations.ts
+16,Common UI,Required field,Required,தேவையானது,Frontend,src/core/i18n/translations.ts
+17,Common UI,Search placeholder,Search,தேடு,Frontend,src/core/i18n/translations.ts
+18,Common UI,Filter button,Filter,வடிகட்டு,Frontend,src/core/i18n/translations.ts
+19,Common UI,Clear button,Clear,அழி,Frontend,src/core/i18n/translations.ts
+20,Common UI,Apply button,Apply,பயன்படுத்து,Frontend,src/core/i18n/translations.ts
+21,Common UI,Reset button,Reset,மீட்டமை,Frontend,src/core/i18n/translations.ts
+22,Navigation,Home link,Home,முகப்பு,Frontend,src/core/i18n/translations.ts
+23,Navigation,Surveys link,Surveys,கணக்கெடுப்புகள்,Frontend,src/core/i18n/translations.ts
+24,Navigation,Profile link,Profile,சுயவிவரம்,Frontend,src/core/i18n/translations.ts
+25,Navigation,Settings link,Settings,அமைப்புகள்,Frontend,src/core/i18n/translations.ts
+26,Navigation,Logout action,Logout,வெளியேறு,Frontend,src/core/i18n/translations.ts
+27,Navigation,Login action,Login,உள்நுழை,Frontend,src/core/i18n/translations.ts
+28,Navigation,Signup action,Sign Up,பதிவு செய்,Frontend,src/core/i18n/translations.ts
+29,Survey Board,Page title,Available Surveys,கிடைக்கும் கணக்கெடுப்புகள்,Frontend,src/core/i18n/translations.ts
+30,Survey Board,Welcome message,Welcome,வருக,Frontend,src/core/i18n/translations.ts
+31,Survey Board,Welcome back message,Welcome back,மீண்டும் வரவேற்கிறோம்,Frontend,src/core/i18n/translations.ts
+32,Survey Board,Verify profile prompt,Verify/update your profile,உங்கள் சுயவிவரத்தை சரிபார்க்கவும்/புதுப்பிக்கவும்,Frontend,src/core/i18n/translations.ts
+33,Survey Board,Start message,Start seeing if you pre-qualify for a study by filling out the survey at the link(s) below.,கீழே உள்ள இணைப்பு(களில்) உள்ள கணக்கெடுப்பை நிரப்புவதன் மூலம் நீங்கள் ஒரு ஆய்வுக்கு முன்-தகுதி பெறுகிறீர்களா என்பதைப் பார்க்கத் தொடங்குங்கள்.,Frontend,src/core/i18n/translations.ts
+34,Survey Board,No surveys message,No Surveys Available Yet,இன்னும் கணக்கெடுப்புகள் இல்லை,Frontend,src/core/i18n/translations.ts
+35,Survey Board,No surveys for industry,No Surveys Available for Selected Industry,தேர்ந்தெடுக்கப்பட்ட துறைக்கு கணக்கெடுப்புகள் இல்லை,Frontend,src/core/i18n/translations.ts
+36,Survey Board,Filter prompt,Filter by Industry,துறை வாரியாக வடிகட்டு,Frontend,src/core/i18n/translations.ts
+37,Survey Board,All industries filter,All Industries,அனைத்து துறைகள்,Frontend,src/core/i18n/translations.ts
+38,Survey Board,Available status,Available,சமர்ப்பிக்க,Frontend,src/core/i18n/translations.ts
+39,Survey Board,Draft status,Draft Saved,வரைவு சேமிக்கப்பட்டது,Frontend,src/core/i18n/translations.ts
+40,Survey Board,Submitted status,Submitted,சமர்ப்பிக்கப்பட்டது,Frontend,src/core/i18n/translations.ts
+41,Survey Board,Approved status,Approved,அங்கீகரிக்கப்பட்டது,Frontend,src/core/i18n/translations.ts
+42,Survey Board,Declined status,Declined,நிராகரிக்கப்பட்டது,Frontend,src/core/i18n/translations.ts
+43,Survey Board,Completed status,Completed,முடிக்கப்பட்டது,Frontend,src/core/i18n/translations.ts
+44,Survey Board,Minutes label,min,நிமிடம்,Frontend,src/core/i18n/translations.ts
+45,Survey Board,Resume button,Resume,தொடர்,Frontend,src/core/i18n/translations.ts
+46,Survey Board,Start button,Start,தொடங்கு,Frontend,src/core/i18n/translations.ts
+47,Survey Detail,Question label,Question,கேள்வி,Frontend,src/core/i18n/translations.ts
+48,Survey Detail,Of preposition,of,இல்,Frontend,src/core/i18n/translations.ts
+49,Survey Detail,Optional marker,(Optional),(விருப்பமானது),Frontend,src/core/i18n/translations.ts
+50,Survey Detail,Required marker,(Required),(தேவையானது),Frontend,src/core/i18n/translations.ts
+51,Survey Detail,Add comment label,Add a comment,கருத்தைச் சேர்க்கவும்,Frontend,src/core/i18n/translations.ts
+52,Survey Detail,Comment placeholder,Share your thoughts...,உங்கள் எண்ணங்களைப் பகிரவும்...,Frontend,src/core/i18n/translations.ts
+53,Survey Detail,Save draft button,Save Draft,வரைவைச் சேமி,Frontend,src/core/i18n/translations.ts
+54,Survey Detail,Continue button,Continue,தொடர்க,Frontend,src/core/i18n/translations.ts
+55,Survey Detail,Submit button,Submit Survey,கணக்கெடுப்பை சமர்ப்பிக்கவும்,Frontend,src/core/i18n/translations.ts
+56,Survey Detail,Submitting state,Submitting...,சமர்ப்பிக்கிறது...,Frontend,src/core/i18n/translations.ts
+57,Survey Detail,Back to surveys link,Back to Surveys,கணக்கெடுப்புகளுக்குத் திரும்பு,Frontend,src/core/i18n/translations.ts
+58,Survey Detail,Already completed title,Survey Already Completed,கணக்கெடுப்பு ஏற்கனவே முடிக்கப்பட்டது,Frontend,src/core/i18n/translations.ts
+59,Survey Detail,Submitted message,You have already submitted a response for this survey. It is currently under review.,இந்த கணக்கெடுப்புக்கு நீங்கள் ஏற்கனவே பதிலை சமர்ப்பித்துள்ளீர்கள். அது தற்போது மதிப்பாய்வில் உள்ளது.,Frontend,src/core/i18n/translations.ts
+60,Survey Detail,Approved message,Your response has been approved. Thank you for your participation!,உங்கள் பதில் அங்கீகரிக்கப்பட்டுள்ளது. உங்கள் பங்கேற்புக்கு நன்றி!,Frontend,src/core/i18n/translations.ts
+61,Survey Detail,Declined message,Your response was reviewed. Please check your email for more details.,உங்கள் பதில் மதிப்பாய்வு செய்யப்பட்டது. மேலும் விவரங்களுக்கு உங்கள் மின்னஞ்சலைச் சரிபார்க்கவும்.,Frontend,src/core/i18n/translations.ts
+62,Survey Detail,Thank you message,Thank You!,நன்றி!,Frontend,src/core/i18n/translations.ts
+63,Survey Detail,Survey completed title,Survey Completed Successfully,கணக்கெடுப்பு வெற்றிகரமாக முடிக்கப்பட்டது,Frontend,src/core/i18n/translations.ts
+64,Survey Detail,Response recorded,Your response has been recorded successfully.,உங்கள் பதில் வெற்றிகரமாக பதிவு செய்யப்பட்டுள்ளது.,Frontend,src/core/i18n/translations.ts
+65,Survey Detail,Please answer prompt,Please answer this question to continue,தொடர இந்த கேள்விக்கு பதிலளிக்கவும்,Frontend,src/core/i18n/translations.ts
+66,Survey Detail,Complete button,Complete,முழுமை,Frontend,src/core/i18n/translations.ts
+67,Survey Success,Title message,Thank you for your responses!,உங்கள் பதில்களுக்கு நன்றி!,Frontend,src/core/i18n/translations.ts
+68,Survey Success,Main message,Our team will review your answers. If you meet the criteria for this study, a Thought Metrics representative will contact you for next steps.,எங்கள் குழு உங்கள் பதில்களை மதிப்பாய்வு செய்யும். இந்த ஆய்வுக்கான அளவுகோல்களை நீங்கள் பூர்த்தி செய்தால், அடுத்த படிகளுக்கு Thought Metrics பிரதிநிதி உங்களைத் தொடர்பு கொள்வார்.,Frontend,src/core/i18n/translations.ts
+69,Survey Success,Sub message,Stay tuned — your opinions help shape tomorrow's decisions!,கவனமாக இருங்கள் — உங்கள் கருத்துகள் நாளைய முடிவுகளை வடிவமைக்க உதவுகின்றன!,Frontend,src/core/i18n/translations.ts
+70,Survey Success,Back button,Back to Surveys,கணக்கெடுப்புகளுக்குத் திரும்பு,Frontend,src/core/i18n/translations.ts
+71,Toast Notifications,Survey submitted success,Survey submitted successfully! You will be contacted soon.,கணக்கெடுப்பு வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது! விரைவில் உங்களைத் தொடர்பு கொள்வோம்.,Frontend,src/core/i18n/translations.ts
+72,Toast Notifications,Survey submitted error,Failed to submit survey. Please try again.,கணக்கெடுப்பை சமர்ப்பிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.,Frontend,src/core/i18n/translations.ts
+73,Toast Notifications,Profile updated success,Profile updated successfully!,சுயவிவரம் வெற்றிகரமாக புதுப்பிக்கப்பட்டது!,Frontend,src/core/i18n/translations.ts
+74,Toast Notifications,Profile updated error,Failed to update profile. Please try again.,சுயவிவரத்தை புதுப்பிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.,Frontend,src/core/i18n/translations.ts
+75,Survey Questions,Select option prompt,Select an option,ஒரு விருப்பத்தைத் தேர்ந்தெடுக்கவும்,Frontend,src/core/i18n/translations.ts
+76,Survey Questions,Select multiple prompt,Select all that apply,பொருந்தும் அனைத்தையும் தேர்ந்தெடுக்கவும்,Frontend,src/core/i18n/translations.ts
+77,Survey Questions,Enter value prompt,Enter value,மதிப்பை உள்ளிடவும்,Frontend,src/core/i18n/translations.ts
+78,Survey Questions,Type here placeholder,Type here...,இங்கே தட்டச்சு செய்யவும்...,Frontend,src/core/i18n/translations.ts
+79,Survey Questions,Select date prompt,Select date,தேதியைத் தேர்ந்தெடுக்கவும்,Frontend,src/core/i18n/translations.ts
+80,Survey Questions,Upload file button,Upload file,கோப்பைப் பதிவேற்றவும்,Frontend,src/core/i18n/translations.ts
+81,Survey Questions,Drag items instruction,Drag to reorder,மறுவரிசைப்படுத்த இழுக்கவும்,Frontend,src/core/i18n/translations.ts
+82,Survey Questions,Rank items instruction,Rank from most to least important,மிக முக்கியமானது முதல் குறைந்த முக்கியம் வரை தரவரிசைப்படுத்தவும்,Frontend,src/core/i18n/translations.ts
+83,Survey Questions,Allocate points instruction,Allocate points,புள்ளிகளை ஒதுக்கவும்,Frontend,src/core/i18n/translations.ts
+84,Survey Questions,Total points label,Total Points,மொத்த புள்ளிகள்,Frontend,src/core/i18n/translations.ts
+85,Survey Questions,Points remaining label,Points Remaining,மீதம் உள்ள புள்ளிகள்,Frontend,src/core/i18n/translations.ts
+86,Survey Questions,Select most prompt,Select most important,மிக முக்கியமானதைத் தேர்ந்தெடுக்கவும்,Frontend,src/core/i18n/translations.ts
+87,Survey Questions,Select least prompt,Select least important,குறைந்த முக்கியமானதைத் தேர்ந்தெடுக்கவும்,Frontend,src/core/i18n/translations.ts
+88,Survey Questions,No options message,No options selected,விருப்பங்கள் எதுவும் தேர்ந்தெடுக்கப்படவில்லை,Frontend,src/core/i18n/translations.ts
+89,Survey Questions,Invalid input error,Invalid input,தவறான உள்ளீடு,Frontend,src/core/i18n/translations.ts
+90,Validation,Required field error,This field is required,இந்த புலம் தேவையானது,Frontend,src/core/i18n/translations.ts
+91,Validation,Invalid email error,Invalid email address,தவறான மின்னஞ்சல் முகவரி,Frontend,src/core/i18n/translations.ts
+92,Validation,Invalid phone error,Invalid phone number,தவறான தொலைபேசி எண்,Frontend,src/core/i18n/translations.ts
+93,Validation,Min length error,Minimum {min} characters required,குறைந்தபட்சம் {min} எழுத்துக்கள் தேவை,Frontend,src/core/i18n/translations.ts
+94,Validation,Max length error,Maximum {max} characters allowed,அதிகபட்சம் {max} எழுத்துக்கள் அனுமதிக்கப்படும்,Frontend,src/core/i18n/translations.ts
+95,Validation,Min value error,Minimum value is {min},குறைந்தபட்ச மதிப்பு {min},Frontend,src/core/i18n/translations.ts
+96,Validation,Max value error,Maximum value is {max},அதிகபட்ச மதிப்பு {max},Frontend,src/core/i18n/translations.ts
+97,Validation,Invalid date error,Invalid date,தவறான தேதி,Frontend,src/core/i18n/translations.ts
+98,Validation,Invalid file error,Invalid file format,தவறான கோப்பு வடிவம்,Frontend,src/core/i18n/translations.ts
+99,Validation,Select at least error,Select at least {min} option(s),குறைந்தபட்சம் {min} விருப்பம்(களை) தேர்ந்தெடுக்கவும்,Frontend,src/core/i18n/translations.ts
+100,Validation,Select at most error,Select at most {max} option(s),அதிகபட்சம் {max} விருப்பம்(களை) தேர்ந்தெடுக்கவும்,Frontend,src/core/i18n/translations.ts
+101,Validation,Total must be error,Total must be exactly {total},மொத்தம் சரியாக {total} ஆக இருக்க வேண்டும்,Frontend,src/core/i18n/translations.ts
+102,Profile,Page title,Profile,சுயவிவரம்,Frontend,src/core/i18n/translations.ts
+103,Profile,Edit profile title,Edit Profile,சுயவிவரத்தைத் திருத்து,Frontend,src/core/i18n/translations.ts
+104,Profile,Personal info section,Personal Information,தனிப்பட்ட தகவல்,Frontend,src/core/i18n/translations.ts
+105,Profile,Contact info section,Contact Information,தொடர்பு தகவல்,Frontend,src/core/i18n/translations.ts
+106,Profile,First name field,First Name,முதல் பெயர்,Frontend,src/core/i18n/translations.ts
+107,Profile,Last name field,Last Name,கடைசி பெயர்,Frontend,src/core/i18n/translations.ts
+108,Profile,Display name field,Display Name,காட்சிப் பெயர்,Frontend,src/core/i18n/translations.ts
+109,Profile,Email field,Email,மின்னஞ்சல்,Frontend,src/core/i18n/translations.ts
+110,Profile,Phone field,Phone,தொலைபேசி,Frontend,src/core/i18n/translations.ts
+111,Profile,Date of birth field,Date of Birth,பிறந்த தேதி,Frontend,src/core/i18n/translations.ts
+112,Profile,Gender field,Gender,பாலினம்,Frontend,src/core/i18n/translations.ts
+113,Profile,City field,City,நகரம்,Frontend,src/core/i18n/translations.ts
+114,Profile,State field,State,மாநிலம்,Frontend,src/core/i18n/translations.ts
+115,Profile,Country field,Country,நாடு,Frontend,src/core/i18n/translations.ts
+116,Profile,Save changes button,Save Changes,மாற்றங்களைச் சேமி,Frontend,src/core/i18n/translations.ts
+117,Profile,Cancel button,Cancel,ரத்து செய்,Frontend,src/core/i18n/translations.ts
+118,Profile,Profile updated message,Profile updated successfully,சுயவிவரம் வெற்றிகரமாக புதுப்பிக்கப்பட்டது,Frontend,src/core/i18n/translations.ts
+119,Profile,Door number field,Door No/ Street Address,கதவு எண் / தெரு முகவரி,Frontend,src/core/i18n/translations.ts
+120,Profile,District field,District,மாவட்டம்,Frontend,src/core/i18n/translations.ts
+121,Profile,Zip code field,ZIP/PIN Code,அஞ்சல் குறியீடு,Frontend,src/core/i18n/translations.ts
+122,Profile,Select gender placeholder,Select gender,பாலினத்தைத் தேர்ந்தெடுக்கவும்,Frontend,src/core/i18n/translations.ts
+123,Profile,Select state placeholder,Select state,மாநிலத்தைத் தேர்ந்தெடுக்கவும்,Frontend,src/core/i18n/translations.ts
+124,Profile,Select country placeholder,Select country/region,நாடு/பகுதியைத் தேர்ந்தெடுக்கவும்,Frontend,src/core/i18n/translations.ts
+125,Profile,Select month placeholder,Month,மாதம்,Frontend,src/core/i18n/translations.ts
+126,Profile,Select day placeholder,Day,நாள்,Frontend,src/core/i18n/translations.ts
+127,Profile,Select year placeholder,Year,வருடம்,Frontend,src/core/i18n/translations.ts
+128,Profile,Participation preferences title,Participation Preferences,பங்கேற்பு விருப்பத்தேர்வுகள்,Frontend,src/core/i18n/translations.ts
+129,Profile,Participation preferences description,Indicate your willingness to participate in the following types of research,பின்வரும் வகையான ஆராய்ச்சியில் பங்கேற்க உங்கள் விருப்பத்தைக் குறிப்பிடவும்,Frontend,src/core/i18n/translations.ts
+130,Profile,Required fields note,* denotes required field,* தேவையான புலத்தைக் குறிக்கிறது,Frontend,src/core/i18n/translations.ts
+131,Profile,Saving state,Saving...,சேமிக்கப்படுகிறது...,Frontend,src/core/i18n/translations.ts
+132,Profile,Optional note,Optional,விருப்பமானது,Frontend,src/core/i18n/translations.ts
+133,Participation Options,Thought Metrics facilities,Interviews at Thought Metrics facilities,Thought Metrics வசதிகளில் நேர்காணல்கள்,Frontend,src/core/i18n/translations.ts
+134,Participation Options,Phone interviews,Phone Interviews,தொலைபேசி நேர்காணல்கள்,Frontend,src/core/i18n/translations.ts
+135,Participation Options,Online interviews,Online Interviews,ஆன்லைன் நேர்காணல்கள்,Frontend,src/core/i18n/translations.ts
+136,Participation Options,Interviews at home,Interviews at my home,எனது வீட்டில் நேர்காணல்கள்,Frontend,src/core/i18n/translations.ts
+137,Participation Options,Local businesses,Interviews at local businesses,உள்ளூர் வணிகங்களில் நேர்காணல்கள்,Frontend,src/core/i18n/translations.ts
+138,Language,Select language prompt,Select Language,மொழியைத் தேர்ந்தெடு,Frontend,src/core/i18n/translations.ts
+139,Language,English name,English,English,Frontend,src/core/i18n/translations.ts
+140,Language,Tamil name,Tamil,தமிழ்,Frontend,src/core/i18n/translations.ts
+141,Language,Change language action,Change Language,மொழியை மாற்று,Frontend,src/core/i18n/translations.ts
+142,Language,Language changed message,Language changed successfully,மொழி வெற்றிகரமாக மாற்றப்பட்டது,Frontend,src/core/i18n/translations.ts
+143,Errors,Generic error,Something went wrong. Please try again.,ஏதோ தவறு நடந்தது. மீண்டும் முயற்சிக்கவும்.,Frontend,src/core/i18n/translations.ts
+144,Errors,Network error,Network error. Please check your connection.,நெட்வொர்க் பிழை. உங்கள் இணைப்பைச் சரிபார்க்கவும்.,Frontend,src/core/i18n/translations.ts
+145,Errors,Timeout error,Request timeout. Please try again.,கோரிக்கை நேரமுடிந்தது. மீண்டும் முயற்சிக்கவும்.,Frontend,src/core/i18n/translations.ts
+146,Errors,Unauthorized error,Please login to continue.,தொடர உள்நுழையவும்.,Frontend,src/core/i18n/translations.ts
+147,Errors,Forbidden error,You do not have permission to access this resource.,இந்த ஆதாரத்தை அணுக உங்களுக்கு அனுமதி இல்லை.,Frontend,src/core/i18n/translations.ts
+148,Errors,Not found error,The requested resource was not found.,கோரப்பட்ட ஆதாரம் கிடைக்கவில்லை.,Frontend,src/core/i18n/translations.ts
+149,Errors,Server error,Server error. Please try again later.,சர்வர் பிழை. பின்னர் மீண்டும் முயற்சிக்கவும்.,Frontend,src/core/i18n/translations.ts
+150,Errors,Try again button,Try Again,மீண்டும் முயற்சிக்கவும்,Frontend,src/core/i18n/translations.ts
+151,Industries,All industries,All Industries,அனைத்து துறைகள்,Frontend,src/core/i18n/translations.ts
+152,Industries,Advertising & Marketing,Advertising & Marketing,விளம்பரம் & சந்தைப்படுத்தல்,Frontend,src/core/i18n/translations.ts
+153,Industries,Automotive,Automotive,வாகனத் தொழில்,Frontend,src/core/i18n/translations.ts
+154,Industries,Education,Education,கல்வி,Frontend,src/core/i18n/translations.ts
+155,Industries,Financial Services,Financial Services & Insurance,நிதிச் சேவைகள் & காப்பீடு,Frontend,src/core/i18n/translations.ts
+156,Industries,FMCG,FMCG,FMCG,Frontend,src/core/i18n/translations.ts
+157,Industries,Healthcare,Healthcare & Life Sciences,சுகாதாரம் & வாழ்க்கை அறிவியல்,Frontend,src/core/i18n/translations.ts
+158,Industries,Human Resources,Human Resources,மனித வளங்கள்,Frontend,src/core/i18n/translations.ts
+159,Industries,Internet & Media,Internet & Media,இணையம் & ஊடகம்,Frontend,src/core/i18n/translations.ts
+160,Industries,Investor & Private Equity,Investor & Private Equity,முதலீட்டாளர் & தனியார் ஈக்விட்டி,Frontend,src/core/i18n/translations.ts
+161,Industries,Retail & Merchandising,Retail & Merchandising,சில்லறை & வணிகம்,Frontend,src/core/i18n/translations.ts
+162,Industries,Technology,Technology,தொழில்நுட்பம்,Frontend,src/core/i18n/translations.ts
+163,Industries,Others,Others,பிறவை,Frontend,src/core/i18n/translations.ts
+164,Auth - Login,Page title,Log in to Thought Metrics,Thought Metrics இல் உள்நுழைக,Frontend,src/core/i18n/translations.ts
+165,Auth - Login,Thought Metrics ID field,Thought Metrics ID,Thought Metrics அடையாளம்,Frontend,src/core/i18n/translations.ts
+166,Auth - Login,Password field,Password,கடவுச்சொல்,Frontend,src/core/i18n/translations.ts
+167,Auth - Login,Remember me checkbox,Remember me,என்னை நினைவில் வைத்திருங்கள்,Frontend,src/core/i18n/translations.ts
+168,Auth - Login,Continue button,Continue,தொடர்,Frontend,src/core/i18n/translations.ts
+169,Auth - Login,Signing in state,Signing in...,உள்நுழைகிறது...,Frontend,src/core/i18n/translations.ts
+170,Auth - Login,Create account link,Create a Thought Metrics ID,Thought Metrics அடையாளத்தை உருவாக்கு,Frontend,src/core/i18n/translations.ts
+171,Auth - Login,No account message,Don't have an account?,கணக்கு இல்லையா?,Frontend,src/core/i18n/translations.ts
+172,Auth - Login,Reset password link,Click here,இங்கே கிளிக் செய்யவும்,Frontend,src/core/i18n/translations.ts
+173,Auth - Login,Welcome back message,Welcome Back!,மீண்டும் வரவேற்கிறோம்!,Frontend,src/core/i18n/translations.ts
+174,Auth - Login,Success message,You have successfully logged in to Thought Metrics.,Thought Metrics இல் வெற்றிகரமாக உள்நுழைந்துள்ளீர்கள்.,Frontend,src/core/i18n/translations.ts
+175,Auth - Login,Invalid credentials error,Invalid credentials. Please check your ID and password.,தவறான அறிமுகச் சான்றுகள். உங்கள் அடையாளம் மற்றும் கடவுச்சொல்லைச் சரிபார்க்கவும்.,Frontend,src/core/i18n/translations.ts
+176,Auth - Login,Login failed error,Login failed. Please try again.,உள்நுழைவு தோல்வியடைந்தது. மீண்டும் முயற்சிக்கவும்.,Frontend,src/core/i18n/translations.ts
+177,Auth - Login,ID required error,Thought Metrics ID is required,Thought Metrics அடையாளம் தேவை,Frontend,src/core/i18n/translations.ts
+178,Auth - Login,Password required error,Password is required,கடவுச்சொல் தேவை,Frontend,src/core/i18n/translations.ts
+179,Auth - Signup,Page title,Create an Account,கணக்கை உருவாக்கவும்,Frontend,src/core/i18n/translations.ts
+180,Auth - Signup,Why register heading,Why Register?,ஏன் பதிவு செய்ய வேண்டும்?,Frontend,src/core/i18n/translations.ts
+181,Auth - Signup,Register description,(There is a joining bonus of ₹ 50 on successful registration. This will be credited to your account after your first completed survey. T&C apply.),(வெற்றிகரமான பதிவில் ₹ 50 சேரும் போனஸ் உள்ளது. இது உங்கள் முதல் முடிக்கப்பட்ட கணக்கெடுப்புக்குப் பிறகு உங்கள் கணக்கில் வரவு வைக்கப்படும். நிபந்தனைகள் பொருந்தும்.),Frontend,src/core/i18n/translations.ts
+182,Auth - Signup,Facebook login button,Continue with Facebook,Facebook மூலம் தொடரவும்,Frontend,src/core/i18n/translations.ts
+183,Auth - Signup,Google login button,Continue with Google,Google மூலம் தொடரவும்,Frontend,src/core/i18n/translations.ts
+184,Auth - Signup,Step 1 label,Step 1,படி 1,Frontend,src/core/i18n/translations.ts
+185,Auth - Signup,Step 2 label,Step 2,படி 2,Frontend,src/core/i18n/translations.ts
+186,Auth - Signup,Step 3 label,Step 3,படி 3,Frontend,src/core/i18n/translations.ts
+187,Auth - Signup,Step 4 label,Step 4,படி 4,Frontend,src/core/i18n/translations.ts
+188,Auth - Signup,Your information step,Your Information,உங்கள் தகவல்,Frontend,src/core/i18n/translations.ts
+189,Auth - Signup,Preferences step,Preferences,விருப்பத்தேர்வுகள்,Frontend,src/core/i18n/translations.ts
+190,Auth - Signup,Payment info step,Payment Info,கட்டண தகவல்,Frontend,src/core/i18n/translations.ts
+191,Auth - Signup,Surveys step,Surveys,கணக்கெடுப்புகள்,Frontend,src/core/i18n/translations.ts
+192,Auth - Signup,First name field,First name,முதல் பெயர்,Frontend,src/core/i18n/translations.ts
+193,Auth - Signup,Last name field,Last name,கடைசி பெயர்,Frontend,src/core/i18n/translations.ts
+194,Auth - Signup,Email field,Email,மின்னஞ்சல்,Frontend,src/core/i18n/translations.ts
+195,Auth - Signup,Password field,Password,கடவுச்சொல்,Frontend,src/core/i18n/translations.ts
+196,Auth - Signup,Confirm password field,Confirm Password,கடவுச்சொல்லை உறுதிப்படுத்து,Frontend,src/core/i18n/translations.ts
+197,Auth - Signup,Phone field,Phone (Optional),தொலைபேசி (விரும்பினால்),Frontend,src/core/i18n/translations.ts
+198,Auth - Signup,Door number field,Door No/ Street Address,கதவு எண் / தெரு முகவரி,Frontend,src/core/i18n/translations.ts
+199,Auth - Signup,District field,District (Optional),மாவட்டம் (விரும்பினால்),Frontend,src/core/i18n/translations.ts
+200,Auth - Signup,City field,City,நகரம்,Frontend,src/core/i18n/translations.ts
+201,Auth - Signup,State field,State,மாநிலம்,Frontend,src/core/i18n/translations.ts
+202,Auth - Signup,Country field,Country Or Region,நாடு அல்லது பகுதி,Frontend,src/core/i18n/translations.ts
+203,Auth - Signup,Zip code field,Zip Code,அஞ்சல் குறியீடு,Frontend,src/core/i18n/translations.ts
+204,Auth - Signup,Date of birth field,Date of Birth,பிறந்த தேதி,Frontend,src/core/i18n/translations.ts
+205,Auth - Signup,Gender field,Gender (Optional),பாலினம் (விரும்பினால்),Frontend,src/core/i18n/translations.ts
+206,Auth - Signup,Participation preferences section,Participation Preferences,பங்கேற்பு விருப்பத்தேர்வுகள்,Frontend,src/core/i18n/translations.ts
+207,Auth - Signup,Participation description,Are there any types of studies in which you would not like to participate? If so unselect them below.,நீங்கள் பங்கேற்க விரும்பாத எந்த வகையான ஆய்வுகள் உள்ளதா? அப்படியென்றால் கீழே அவற்றைத் தேர்வு நீக்கவும்.,Frontend,src/core/i18n/translations.ts
+208,Auth - Signup,Thought Metrics facilities,Interviews at Thought Metrics facilities,Thought Metrics வசதிகளில் நேர்காணல்கள்,Frontend,src/core/i18n/translations.ts
+209,Auth - Signup,Phone interviews,Phone Interviews,தொலைபேசி நேர்காணல்கள்,Frontend,src/core/i18n/translations.ts
+210,Auth - Signup,Online interviews,Online Interviews,ஆன்லைன் நேர்காணல்கள்,Frontend,src/core/i18n/translations.ts
+211,Auth - Signup,Interviews at home,Interviews at my home,என் வீட்டில் நேர்காணல்கள்,Frontend,src/core/i18n/translations.ts
+212,Auth - Signup,Local businesses,Interviews at local businesses,உள்ளூர் வணிகங்களில் நேர்காணல்கள்,Frontend,src/core/i18n/translations.ts
+213,Auth - Signup,Terms accepted text,I have read and understand my responsibilities as a participant and I agree to the,நான் பங்கேற்பாளராக எனது பொறுப்புகளைப் படித்து புரிந்துகொண்டேன் மற்றும் நான் ஒப்புக்கொள்கிறேன்,Frontend,src/core/i18n/translations.ts
+214,Auth - Signup,Terms and conditions link,TERMS AND CONDITIONS,விதிமுறைகள் மற்றும் நிபந்தனைகள்,Frontend,src/core/i18n/translations.ts
+215,Auth - Signup,Privacy accepted text,"By clicking ""Next"", you are agreeing to Thought Metrics","""அடுத்து"" என்பதைக் கிளிக் செய்வதன் மூலம், Thought Metrics க்கு நீங்கள் ஒப்புக்கொள்கிறீர்கள்",Frontend,src/core/i18n/translations.ts
+216,Auth - Signup,Privacy policy link,PRIVACY POLICY,தனியுரிமைக் கொள்கை,Frontend,src/core/i18n/translations.ts
+217,Auth - Signup,Next button,Next,அடுத்து,Frontend,src/core/i18n/translations.ts
+218,Auth - Signup,Register button,Register,பதிவு செய்,Frontend,src/core/i18n/translations.ts
+219,Auth - Signup,Processing state,Processing...,செயலாக்குகிறது...,Frontend,src/core/i18n/translations.ts
+220,Auth - Signup,Required fields note,* denotes required field,* தேவையான புலத்தைக் குறிக்கிறது,Frontend,src/core/i18n/translations.ts
+221,Auth - Signup,Welcome message,Welcome to Thought Metrics!,Thought Metrics க்கு வரவேற்கிறோம்!,Frontend,src/core/i18n/translations.ts
+222,Auth - Signup,Account created success,Your account has been created successfully. You can now participate in research studies and surveys.,உங்கள் கணக்கு வெற்றிகரமாக உருவாக்கப்பட்டது. நீங்கள் இப்போது ஆராய்ச்சி ஆய்வுகள் மற்றும் கணக்கெடுப்புகளில் பங்கேற்கலாம்.,Frontend,src/core/i18n/translations.ts
+223,Auth - Signup,First name required error,First name is required,முதல் பெயர் தேவை,Frontend,src/core/i18n/translations.ts
+224,Auth - Signup,Last name required error,Last name is required,கடைசி பெயர் தேவை,Frontend,src/core/i18n/translations.ts
+225,Auth - Signup,Email required error,Email is required,மின்னஞ்சல் தேவை,Frontend,src/core/i18n/translations.ts
+226,Auth - Signup,Email invalid error,Email is invalid,மின்னஞ்சல் தவறானது,Frontend,src/core/i18n/translations.ts
+227,Auth - Signup,Password required error,Password is required,கடவுச்சொல் தேவை,Frontend,src/core/i18n/translations.ts
+228,Auth - Signup,Confirm password required error,Please confirm your password,உங்கள் கடவுச்சொல்லை உறுதிப்படுத்தவும்,Frontend,src/core/i18n/translations.ts
+229,Auth - Signup,Password mismatch error,Passwords do not match,கடவுச்சொற்கள் பொருந்தவில்லை,Frontend,src/core/i18n/translations.ts
+230,Auth - Signup,Address required error,Street address is required,தெரு முகவரி தேவை,Frontend,src/core/i18n/translations.ts
+231,Auth - Signup,City required error,City is required,நகரம் தேவை,Frontend,src/core/i18n/translations.ts
+232,Auth - Signup,State required error,State is required,மாநிலம் தேவை,Frontend,src/core/i18n/translations.ts
+233,Auth - Signup,Country required error,Country or region is required,நாடு அல்லது பகுதி தேவை,Frontend,src/core/i18n/translations.ts
+234,Auth - Signup,Zip code required error,Zip code is required,அஞ்சல் குறியீடு தேவை,Frontend,src/core/i18n/translations.ts
+235,Auth - Signup,Date of birth required error,Date of birth is required,பிறந்த தேதி தேவை,Frontend,src/core/i18n/translations.ts
+236,Auth - Signup,Gender required error,Gender is required,பாலினம் தேவை,Frontend,src/core/i18n/translations.ts
+237,Auth - Signup,Terms required error,You must accept the terms and conditions,விதிமுறைகள் மற்றும் நிபந்தனைகளை ஏற்க வேண்டும்,Frontend,src/core/i18n/translations.ts
+238,Auth - Signup,Privacy required error,You must accept the privacy policy,தனியுரிமைக் கொள்கையை ஏற்க வேண்டும்,Frontend,src/core/i18n/translations.ts
+239,Auth - Signup,Registration failed error,Registration failed. Please try again.,பதிவு தோல்வியடைந்தது. மீண்டும் முயற்சிக்கவும்.,Frontend,src/core/i18n/translations.ts
+240,Auth - Signup,Optional marker,(Optional),(விரும்பினால்),Frontend,src/core/i18n/translations.ts
+241,Auth - Signup - FAQ,Question 1,What's a focus group?,ஃபோகஸ் குழு என்றால் என்ன?,Frontend,src/core/i18n/translations.ts
+242,Auth - Signup - FAQ,Answer 1,"A focus group is a round-table discussion on products and services that you use. The discussions are led by market research professionals and usually last between 1–2 hours. While focus groups are a common type of research study, we also conduct taste tests, product trials, in-home interviews, shop-along interviews, phone interviews, and online research. When you're done, you will receive an incentive for your contribution!","ஃபோகஸ் குழு என்பது நீங்கள் பயன்படுத்தும் தயாரிப்புகள் மற்றும் சேவைகள் பற்றிய வட்ட மேசை விவாதமாகும். இந்த விவாதங்கள் சந்தை ஆராய்ச்சி நிபுணர்களால் நடத்தப்படுகின்றன மற்றும் பொதுவாக 1-2 மணி நேரம் நீடிக்கும். ஃபோகஸ் குழுக்கள் பொதுவான ஆய்வு வகையாக இருந்தாலும், நாங்கள் சுவை சோதனைகள், தயாரிப்பு சோதனைகள், வீட்டு நேர்காணல்கள், கடை-உடன் நேர்காணல்கள், தொலைபேசி நேர்காணல்கள் மற்றும் ஆன்லைன் ஆராய்ச்சியையும் நடத்துகிறோம். நீங்கள் முடித்த பிறகு, உங்கள் பங்களிப்புக்கான ஊக்கத்தொகையைப் பெறுவீர்கள்!",Frontend,src/core/i18n/translations.ts
+243,Auth - Signup - FAQ,Question 2,Why and how do I register?,நான் ஏன் மற்றும் எப்படி பதிவு செய்வது?,Frontend,src/core/i18n/translations.ts
+244,Auth - Signup - FAQ,Answer 2,"Registering will add you to Thought Metrics' participant community, giving you access to various study opportunities. During the sign-up process, we will ask for: • Contact information • Demographic details • Household information This helps us identify if you qualify for a particular project. Additional screening may be needed to confirm qualification.","பதிவு செய்வது Thought Metrics பங்கேற்பாளர் சமூகத்தில் உங்களைச் சேர்க்கும், பல்வேறு ஆய்வு வாய்ப்புகளுக்கான அணுகலை வழங்கும். பதிவு செயல்முறையின் போது, நாங்கள் கேட்போம்: • தொடர்பு தகவல் • மக்கள்தொகை விவரங்கள் • குடும்ப தகவல் இது ஒரு குறிப்பிட்ட திட்டத்திற்கு நீங்கள் தகுதியுடையவரா என்பதை அடையாளம் காண உதவுகிறது. தகுதியை உறுதிப்படுத்த கூடுதல் திரையிடல் தேவைப்படலாம்.",Frontend,src/core/i18n/translations.ts
+245,Auth - Signup - FAQ,Question 3,Where does Thought Metrics do a focus group?,Thought Metrics எங்கு ஃபோகஸ் குழுவை நடத்துகிறது?,Frontend,src/core/i18n/translations.ts
+246,Auth - Signup - FAQ,Answer 3,"Thought Metrics has focus group facilities across India. When you register, you can choose the one nearest to you. If you do not live close to any facility, you can register for our national database, and you will be eligible for phone or online interviews.",Thought Metrics இந்தியா முழுவதும் ஃபோகஸ் குழு வசதிகளைக் கொண்டுள்ளது. நீங்கள் பதிவு செய்யும்போது, உங்களுக்கு மிக அருகில் உள்ளதைத் தேர்வு செய்யலாம். நீங்கள் எந்த வசதிக்கும் அருகில் வசிக்கவில்லை என்றால், எங்கள் தேசிய தரவுத்தளத்தில் பதிவு செய்யலாம், மேலும் நீங்கள் தொலைபேசி அல்லது ஆன்லைன் நேர்காணல்களுக்கு தகுதியுடையவராக இருப்பீர்கள்.,Frontend,src/core/i18n/translations.ts
+247,Auth - Signup - FAQ,Question 4,Do you do other types of studies?,நீங்கள் வேறு வகையான ஆய்வுகளை செய்கிறீர்களா?,Frontend,src/core/i18n/translations.ts
+248,Auth - Signup - FAQ,Answer 4,"Yes! While focus groups are a common type of research study, we also conduct: • Online surveys • Phone surveys • In-home interviews • Shop-along interviews • Product trials • Taste tests","ஆம்! ஃபோகஸ் குழுக்கள் பொதுவான ஆய்வு வகையாக இருந்தாலும், நாங்கள் இதையும் நடத்துகிறோம்: • ஆன்லைன் கணக்கெடுப்புகள் • தொலைபேசி கணக்கெடுப்புகள் • வீட்டு நேர்காணல்கள் • கடை-உடன் நேர்காணல்கள் • தயாரிப்பு சோதனைகள் • சுவை சோதனைகள்",Frontend,src/core/i18n/translations.ts
+249,Auth - Signup - FAQ,Question 5,"Once I have registered, what happens?",நான் பதிவு செய்த பிறகு என்ன நடக்கும்?,Frontend,src/core/i18n/translations.ts
+250,Auth - Signup - FAQ,Answer 5,"Once you register, your details are stored in the Thought Metrics participant community. From there: • You may be contacted for projects you qualify for based on your profile • Some additional screening may be required to confirm eligibility • When selected, you will be provided with study details, timing, and incentive information","நீங்கள் பதிவு செய்த பிறகு, உங்கள் விவரங்கள் Thought Metrics பங்கேற்பாளர் சமூகத்தில் சேமிக்கப்படுகின்றன. அங்கிருந்து: • உங்கள் சுயவிவரத்தின் அடிப்படையில் நீங்கள் தகுதியுடைய திட்டங்களுக்காக தொடர்பு கொள்ளப்படலாம் • தகுதியை உறுதிப்படுத்த சில கூடுதல் திரையிடல் தேவைப்படலாம் • தேர்ந்தெடுக்கப்பட்டால், ஆய்வு விவரங்கள், நேரம் மற்றும் ஊக்கத்தொகை தகவல் உங்களுக்கு வழங்கப்படும்",Frontend,src/core/i18n/translations.ts
+251,Auth - Signup - FAQ,Question 6,Is my information safe?,என் தகவல் பாதுகாப்பானதா?,Frontend,src/core/i18n/translations.ts
+252,Auth - Signup - FAQ,Answer 6,"Yes! Thought Metrics adheres to the Insights Association Code of Standards and Ethics for Market Research and Data Analytics. Your information is kept completely confidential. We do not sell or share your information with any third party. For more information, please see our Privacy Policy.",ஆம்! Thought Metrics சந்தை ஆராய்ச்சி மற்றும் தரவு பகுப்பாய்விற்கான Insights சங்க தர நெறிமுறைகள் மற்றும் நெறிமுறைகளை கடைபிடிக்கிறது. உங்கள் தகவல் முற்றிலும் ரகசியமாக வைக்கப்படுகிறது. நாங்கள் உங்கள் தகவலை எந்த மூன்றாம் தரப்பினருக்கும் விற்கவோ அல்லது பகிரவோ மாட்டோம். மேலும் தகவலுக்கு, தயவுசெய்து எங்கள் தனியுரிமைக் கொள்கையைப் பார்க்கவும்.,Frontend,src/core/i18n/translations.ts
+253,Auth - Signup - FAQ,Question 7,What are my responsibilities as a focus group participant?,ஃபோகஸ் குழு பங்கேற்பாளராக எனது பொறுப்புகள் என்ன?,Frontend,src/core/i18n/translations.ts
+254,Auth - Signup - FAQ,Answer 7,"To make research meaningful and accurate, we ask all participants to: • Be truthful when answering questions about yourself and your habits • Arrive for your appointment on time and ready to participate in the discussion • Notify Thought Metrics if you must cancel, with as much advance notice as possible • Enjoy it! Focus groups are fun and engaging","ஆராய்ச்சியை அர்த்தமுள்ளதாகவும் துல்லியமாகவும் செய்ய, அனைத்து பங்கேற்பாளர்களையும் கேட்டுக்கொள்கிறோம்: • உங்களைப் பற்றியும் உங்கள் பழக்கவழக்கங்களைப் பற்றியும் கேள்விகளுக்கு பதிலளிக்கும்போது உண்மையாக இருங்கள் • உங்கள் சந்திப்புக்கு சரியான நேரத்தில் வந்து விவாதத்தில் பங்கேற்கத் தயாராக இருங்கள் • நீங்கள் ரத்து செய்ய வேண்டுமானால், முடிந்தவரை முன் அறிவிப்புடன் Thought Metrics க்கு தெரிவிக்கவும் • அதை அனுபவியுங்கள்! ஃபோகஸ் குழுக்கள் வேடிக்கையானவை மற்றும் ஈர்க்கக்கூடியவை",Frontend,src/core/i18n/translations.ts
+255,Auth - Signup - FAQ,Question 8,How do I unsubscribe?,நான் எப்படி குழுவிலகம் செய்வது?,Frontend,src/core/i18n/translations.ts
+256,Auth - Signup - FAQ,Answer 8,"If you would like to unsubscribe from our database and no longer receive calls or emails about upcoming focus groups, please click unsubscribe from your account settings.",எங்கள் தரவுத்தளத்திலிருந்து குழுவிலகம் செய்து, வரவிருக்கும் ஃபோகஸ் குழுக்கள் பற்றிய அழைப்புகள் அல்லது மின்னஞ்சல்களைப் பெறாமல் இருக்க விரும்பினால், உங்கள் கணக்கு அமைப்புகளில் இருந்து குழுவிலகம் என்பதைக் கிளிக் செய்யவும்.,Frontend,src/core/i18n/translations.ts
+257,Auth - Signup - Payment,Title,Payment Information,பணம் செலுத்தும் தகவல்,Frontend,src/core/i18n/translations.ts
+258,Auth - Signup - Payment,Description,Choose how you want to receive payments. You can update this later anytime.,நீங்கள் பணம் பெற விரும்பும் முறையை தேர்வு செய்யவும். நீங்கள் இதை எப்போதும் பின்னர் புதுப்பிக்கலாம்.,Frontend,src/core/i18n/translations.ts
+259,Auth - Signup - Payment,Method label,Payment Method,பணம் செலுத்தும் முறை,Frontend,src/core/i18n/translations.ts
+260,Auth - Signup - Payment,Method placeholder,Select a method,ஒரு முறையைத் தேர்ந்தெடுக்கவும்,Frontend,src/core/i18n/translations.ts
+261,Auth - Signup - Payment,UPI payment option,UPI Payment,UPI பணம் செலுத்துதல்,Frontend,src/core/i18n/translations.ts
+262,Auth - Signup - Payment,Bank transfer option,Bank Transfer,வங்கி பரிமாற்றம்,Frontend,src/core/i18n/translations.ts
+263,Auth - Signup - Payment,Skip for now option,Skip for now,இப்போதைக்கு தவிர்க்கவும்,Frontend,src/core/i18n/translations.ts
+264,Auth - Signup - Payment,Skip message,You can add your payment details later from your profile.,உங்கள் பணம் செலுத்தும் விவரங்களை உங்கள் சுயவிவரத்தில் இருந்து பின்னர் சேர்க்கலாம்.,Frontend,src/core/i18n/translations.ts
+265,Auth - Signup - Payment - UPI,UPI ID label,UPI ID (example: name@bank),UPI ஐடி (எடுத்துக்காட்டு: பெயர்@வங்கி),Frontend,src/core/i18n/translations.ts
+266,Auth - Signup - Payment - UPI,UPI ID placeholder,Optional if using mobile number,மொபைல் எண்ணைப் பயன்படுத்தினால் விருப்பமானது,Frontend,src/core/i18n/translations.ts
+267,Auth - Signup - Payment - UPI,Mobile label,UPI Mobile Number,UPI மொபைல் எண்,Frontend,src/core/i18n/translations.ts
+268,Auth - Signup - Payment - UPI,Mobile placeholder,10-digit mobile linked to UPI,UPI உடன் இணைக்கப்பட்ட 10 இலக்க மொபைல்,Frontend,src/core/i18n/translations.ts
+269,Auth - Signup - Payment - UPI,Full name label,Full Name (bank-verified),முழு பெயர் (வங்கி சரிபார்க்கப்பட்டது),Frontend,src/core/i18n/translations.ts
+270,Auth - Signup - Payment - Bank,Account number label,Bank Account Number,வங்கிக் கணக்கு எண்,Frontend,src/core/i18n/translations.ts
+271,Auth - Signup - Payment - Bank,IFSC label,IFSC Code,IFSC குறியீடு,Frontend,src/core/i18n/translations.ts
+272,Auth - Signup - Payment - Bank,Holder name label,Account Holder Name,கணக்கு வைத்திருப்பவர் பெயர்,Frontend,src/core/i18n/translations.ts
+273,Backend - Common,Not sure option,Not sure,உறுதியாக தெரியவில்லை,Backend,src/scripts/survey-data-factory.ts
+274,Backend - Common,Maybe option,Maybe,ஒருவேளை,Backend,src/scripts/survey-data-factory.ts
+275,Backend - Common,Shared option,Shared,பகிர்ந்து,Backend,src/scripts/survey-data-factory.ts
+276,Backend - Common,Daily frequency,Daily,தினசரி,Backend,src/scripts/survey-data-factory.ts
+277,Backend - Common,Weekly frequency,Weekly,வாரந்தோறும்,Backend,src/scripts/survey-data-factory.ts
+278,Backend - Common,Monthly frequency,Monthly,மாதந்தோறும்,Backend,src/scripts/survey-data-factory.ts
+279,Backend - Common,Rarely frequency,Rarely,அரிதாக,Backend,src/scripts/survey-data-factory.ts
+280,Backend - Common,Other option,Other,மற்றவை,Backend,src/scripts/survey-data-factory.ts
+281,Backend - Smartphone Brands,Apple brand,Apple,ஆப்பிள்,Backend,src/scripts/survey-data-factory.ts
+282,Backend - Smartphone Brands,Samsung brand,Samsung,சாம்சங்,Backend,src/scripts/survey-data-factory.ts
+283,Backend - Smartphone Brands,Xiaomi brand,Xiaomi,ஷியோமி,Backend,src/scripts/survey-data-factory.ts
+284,Backend - Smartphone Brands,OnePlus brand,OnePlus,ஒன் பிளஸ்,Backend,src/scripts/survey-data-factory.ts
+285,Backend - Smartphone Brands,Realme brand,Realme,ரியல்மீ,Backend,src/scripts/survey-data-factory.ts
+286,Backend - Skincare Products,Face Serum,Face Serum,முக சீரம்,Backend,src/scripts/survey-data-factory.ts
+287,Backend - Skincare Products,Moisturizer,Moisturizer,ஈரப்பதமூட்டி,Backend,src/scripts/survey-data-factory.ts
+288,Backend - Skincare Products,Cleanser,Cleanser,க்ளென்சர்,Backend,src/scripts/survey-data-factory.ts
+289,Backend - Skincare Products,Sunscreen,Sunscreen,சன்ஸ்க்ரீன்,Backend,src/scripts/survey-data-factory.ts
+290,Backend - Skincare Products,Toner,Toner,டோனர்,Backend,src/scripts/survey-data-factory.ts
+291,Backend - Banking,HDFC bank,HDFC,எச்டிஎஃப்சி,Backend,src/scripts/survey-data-factory.ts
+292,Backend - Banking,ICICI bank,ICICI,ஐசிஐசிஐ,Backend,src/scripts/survey-data-factory.ts
+293,Backend - Banking,SBI bank,SBI,எஸ்பிஐ,Backend,src/scripts/survey-data-factory.ts
+294,Backend - Banking,Axis bank,Axis,ஆக்சிஸ்,Backend,src/scripts/survey-data-factory.ts
+295,Backend - Banking,Kotak bank,Kotak,கோடக்,Backend,src/scripts/survey-data-factory.ts
+296,Backend - Survey Titles,Smartphone usage survey,Smartphone Usage Brand Preferences 2025,ஸ்மார்ட்போன் பயன்பாடு மற்றும் பிராண்ட் விருப்பத்தேர்வுகள் 2025,Backend,src/scripts/survey-data-factory.ts
+297,Backend - Survey Titles,Personal care survey,Personal Care Product Trial Feedback,தனிப்பட்ட பராமரிப்பு தயாரிப்பு சோதனை கருத்து,Backend,src/scripts/survey-data-factory.ts
+298,Backend - Survey Titles,Online banking survey,Online Banking Experience Benchmark,ஆன்லைன் வங்கி அனுபவ தரநிலை,Backend,src/scripts/survey-data-factory.ts
+299,Backend - Survey Titles,Streaming habits survey,Streaming Habits Gen Z,ஜென்-இசட் ஸ்ட்ரீமிங் பழக்கங்கள்,Backend,src/scripts/survey-data-factory.ts
+300,Backend - Survey Titles,Electric two-wheeler survey,Electric Two Wheeler Purchase Intent,மின்சார இரு சக்கர வாகன வாங்கும் நோக்கம்,Backend,src/scripts/survey-data-factory.ts
+301,Backend - Survey Titles,Grocery shopping survey,Grocery Shopping Patterns Tier2,மளிகைகடை அளவு வாங்கல் மாதிரிகள் (டையர்-2),Backend,src/scripts/survey-data-factory.ts
+302,Backend - Survey Titles,Employee wellness survey,Employee Wellness Programs Effectiveness,பணியாளர் நல திட்டங்களின் செயல்திறன்,Backend,src/scripts/survey-data-factory.ts
+303,Backend - Survey Titles,Voter awareness survey,Voter Awareness Sentiment Pulse,வாக்காளர் விழிப்புணர்வு மற்றும் உணர்வு பரிசோதனை,Backend,src/scripts/survey-data-factory.ts
+304,Backend - Survey Titles,OTT subscription survey,OTT Subscription Renewal Drivers,OTT சந்தா புதுப்பிப்பு காரணிகள்,Backend,src/scripts/survey-data-factory.ts
+305,Backend - Survey Titles,Insurance comparison survey,Insurance Plan Comparison Study,காப்பீட்டு திட்ட ஒப்பீட்டு ஆய்வு,Backend,src/scripts/survey-data-factory.ts
+306,Backend - Survey Titles,Healthy snacking survey,Healthy Snacking Preferences,ஆரோக்கியமான சிற்றுண்டி விருப்பத்தேர்வுகள்,Backend,src/scripts/survey-data-factory.ts
+307,Backend - Survey Titles,Electric appliance survey,Electric Appliance Brand Recall,மின்சார உபகரண பிராண்ட் நினைவூட்டல் ஆய்வு,Backend,src/scripts/survey-data-factory.ts
+308,Backend - Survey Titles,Ride-hailing survey,Ride Hailing App Satisfaction,சவாரி அழைப்பு பயன்பாடு திருப்தி ஆய்வு,Backend,src/scripts/survey-data-factory.ts
+309,Backend - Survey Titles,Beauty skincare survey,Beauty Skincare Product Trial,அழகு மற்றும் தோல் பராமரிப்பு தயாரிப்பு சோதனை,Backend,src/scripts/survey-data-factory.ts
+310,Backend - Survey Titles,Small business survey,Small Business Digital Transformation,சிறு வணிக டிஜிட்டல் மாற்றம்,Backend,src/scripts/survey-data-factory.ts
+311,Backend - Survey Titles,Luxury brand survey,Luxury Brand Perception Study,ஆடம்பர பிராண்ட் கருத்து ஆய்வு,Backend,src/scripts/survey-data-factory.ts
+312,Backend - Survey Titles,Healthcare app survey,Healthcare App Usage Behaviour,சுகாதார பயன்பாடு பயன்பாட்டு நடத்தை,Backend,src/scripts/survey-data-factory.ts
+313,Backend - Survey Titles,Online grocery loyalty survey,Online Grocery Loyalty Programs,ஆன்லைன் மளிகைகடை ஆதரவு திட்டங்கள்,Backend,src/scripts/survey-data-factory.ts
+314,Backend - Survey Titles,EV charging survey,EV Charging Station Preferences,மின்சார வாகன சார்ஜிங் நிலைய விருப்பத்தேர்வுகள்,Backend,src/scripts/survey-data-factory.ts
+315,Backend - Survey Titles,Social media ad survey,Social Media Ad Recall Study,சமூக ஊடக விளம்பர நினைவூட்டல் ஆய்வு,Backend,src/scripts/survey-data-factory.ts
+316,Backend - Survey Questions,Smartphone ownership,Do you currently own a smartphone?,உங்களிடம் தற்போது ஸ்மார்ட்போன் உள்ளதா?,Backend,src/scripts/survey-data-factory.ts
+317,Backend - Survey Questions,Smartphone brand usage,Which smartphone brand do you currently use?,நீங்கள் தற்போது எந்த ஸ்மார்ட்போன் பிராண்டைப் பயன்படுத்துகிறீர்கள்?,Backend,src/scripts/survey-data-factory.ts
+318,Backend - Survey Questions,Smartphone usage duration,How long have you been using your current smartphone? (in months),உங்கள் தற்போதைய ஸ்மார்ட்போனை எவ்வளவு காலமாக பயன்படுத்துகிறீர்கள்? (மாதங்களில்),Backend,src/scripts/survey-data-factory.ts
+319,Backend - Survey Questions,Purchase plan,Do you plan to purchase a new smartphone in the next 12 months?,அடுத்த 12 மாதங்களில் புதிய ஸ்மார்ட்போன் வாங்க திட்டமிட்டுள்ளீர்களா?,Backend,src/scripts/survey-data-factory.ts
+320,Backend - Survey Questions,Budget range,What is your typical smartphone budget range (in INR)?,உங்கள் வழக்கமான ஸ்மார்ட்போன் பட்ஜெட் வரம்பு (ரூபாயில்) என்ன?,Backend,src/scripts/survey-data-factory.ts
+321,Backend - Survey Questions,Decision maker,Are you the primary decision-maker for smartphone purchases?,ஸ்மார்ட்போன் வாங்குவதில் நீங்கள் முதன்மை முடிவெடுப்பவரா?,Backend,src/scripts/survey-data-factory.ts
+322,Backend - Survey Messages,Thank you for completion,Thank you for completing this survey!,இந்த கணக்கெடுப்பை முடித்ததற்கு நன்றி!,Backend,src/scripts/survey-data-factory.ts
+323,Backend - Survey Messages,Response recorded,Your response has been recorded successfully.,உங்கள் பதில் வெற்றிகரமாக பதிவு செய்யப்பட்டுள்ளது.,Backend,src/scripts/survey-data-factory.ts

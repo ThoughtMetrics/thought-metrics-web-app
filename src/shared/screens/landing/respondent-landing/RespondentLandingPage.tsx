@@ -1,4 +1,5 @@
 import type React from 'react';
+import { useHashScroll } from '@/core/hooks/use-hash-scroll';
 import LandingHeroSection from '@/shared/screens/landing/components/landing-hero-section';
 import { landing } from '@/core/constants/page-constants/landing-constant';
 import LandingCaseStudySection from '@/shared/screens/landing/components/landing-casestudy-section';
@@ -30,6 +31,9 @@ interface RespondentLandingPageProps {
 const RespondentLandingPage: React.FC<RespondentLandingPageProps> = ({
   blogData,
 }) => {
+  // Enable auto-scroll to hash anchor on page load (e.g., #respondent-faq)
+  useHashScroll();
+
   return (
     <>
       <LandingHeroSection
