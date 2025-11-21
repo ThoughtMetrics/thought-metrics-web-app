@@ -27,16 +27,18 @@ export const useSubmitDownloadReport = () => {
         duration: 5000,
       });
 
-      console.log('Download report form submitted successfully:', response.data);
+      console.log(
+        'Download report form submitted successfully:',
+        response.data
+      );
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Download report form submission failed:', error);
 
       // Show error toast with specific message
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'Failed to submit form. Please try again.';
+      const errorMessage = error
+        ? error.details.error.message
+        : 'Failed to submit form. Please try again.';
 
       toast.error('Submission failed', {
         description: errorMessage,
@@ -81,11 +83,10 @@ export const useUpdateDownloadReport = () => {
 
       toast.success('Download report updated successfully!');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Download report update failed:', error);
       toast.error('Failed to update download report', {
-        description:
-          error instanceof Error ? error.message : 'Please try again.',
+        description: error ? error.details.error.message : 'Please try again.',
       });
     },
   });
@@ -110,11 +111,10 @@ export const useDeleteDownloadReport = () => {
 
       toast.success('Download report deleted successfully!');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Download report deletion failed:', error);
       toast.error('Failed to delete download report', {
-        description:
-          error instanceof Error ? error.message : 'Please try again.',
+        description: error ? error.details.error.message : 'Please try again.',
       });
     },
   });

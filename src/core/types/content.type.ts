@@ -18,6 +18,7 @@ export const ContentCategory = {
   FIELDWORK: 'Fieldwork',
   FOCUS_GROUP: 'Focus Group',
   PARTICIPANT_EXPERIENCE: 'Participant Experience',
+  DATA_SECURITY: 'Data Security',
 } as const;
 
 export type ContentCategoryValue =
