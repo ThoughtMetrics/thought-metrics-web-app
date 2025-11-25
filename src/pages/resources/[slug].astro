@@ -2,6 +2,7 @@
 import PresentationLayout from '@/layouts/PresentationLayout.astro';
 import ResourceDetailPage from '@/shared/screens/resources/ResourceDetailPage';
 import { contentService } from '@/services/strapi-api/content.service';
+import { truncateSEOTitle, truncateSEODescription } from '@utils/seo.utils';
 
 const { slug } = Astro.params;
 
@@ -24,12 +25,16 @@ try {
 }
 
 // SEO content based on the fetched content
+// Apply truncation to ensure titles and descriptions meet Google's limits
+const rawTitle = content
+  ? `${content.label} - Thought Metrics`
+  : 'Resource - Thought Metrics';
+const rawDescription =
+  content?.description || 'Explore our research insights and resources';
+
 const seoContent = {
-  title: content
-    ? `${content.label} - Thought Metrics`
-    : 'Resource - Thought Metrics',
-  description:
-    content?.description || 'Explore our research insights and resources',
+  title: truncateSEOTitle(rawTitle),
+  description: truncateSEODescription(rawDescription),
   ogImage: content?.img?.url,
   ogType: 'article' as const,
   canonical: `https://thoughtmetrics.com/resources/${slug}`,
