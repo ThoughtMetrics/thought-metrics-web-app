@@ -12,7 +12,7 @@ import {
   SITEMAP_CUSTOM_PAGES,
   SITEMAP_EXCLUDE_PATTERNS,
   SITEMAP_PRIORITY,
-} from '@/core/constants/seo.constants';
+} from './src/core/constants/seo.constants';
 
 // https://astro.build/config
 export default defineConfig({
