@@ -335,3 +335,80 @@ export function getCharacterCountStatus(
     message: `${maxLength - count} characters remaining`,
   };
 }
+
+// ============================================
+// 6. TRUNCATION HELPERS
+// ============================================
+
+/**
+ * Truncates text to a maximum length while preserving whole words
+ * Adds ellipsis (...) if text is truncated
+ *
+ * @param text - Text to truncate
+ * @param maxLength - Maximum character length (default: 60 for title)
+ * @param ellipsis - Whether to add ellipsis (default: true)
+ * @returns Truncated text
+ *
+ * @example
+ * truncateText("The Ultimate Guide to SEO Best Practices", 30)
+ * // Returns: "The Ultimate Guide to SEO..."
+ */
+export function truncateText(
+  text: string,
+  maxLength: number = 60,
+  ellipsis: boolean = true
+): string {
+  if (!text || text.length <= maxLength) {
+    return text;
+  }
+
+  // Calculate the length we need to keep (accounting for ellipsis)
+  const targetLength = ellipsis ? maxLength - 3 : maxLength;
+
+  // Find the last space before the target length to avoid cutting words
+  let truncated = text.substring(0, targetLength);
+  const lastSpace = truncated.lastIndexOf(' ');
+
+  if (lastSpace > 0) {
+    truncated = truncated.substring(0, lastSpace);
+  }
+
+  return ellipsis ? `${truncated}...` : truncated;
+}
+
+/**
+ * Truncates SEO title to 60 characters (Google's display limit)
+ * Preserves whole words and adds ellipsis
+ *
+ * @param title - Original title
+ * @returns Truncated title
+ */
+export function truncateSEOTitle(title: string): string {
+  return truncateText(title, 60, true);
+}
+
+/**
+ * Truncates SEO meta description to 160 characters (Google's display limit)
+ * Preserves whole words and adds ellipsis
+ *
+ * @param description - Original description
+ * @returns Truncated description
+ */
+export function truncateSEODescription(description: string): string {
+  return truncateText(description, 160, true);
+}
+
+/**
+ * Optimizes SEO metadata by truncating title and description
+ * Returns optimized metadata ready for meta tags
+ *
+ * @param metadata - Original SEO metadata
+ * @returns Optimized SEO metadata
+ */
+export function optimizeSEOMetadata(metadata: SEOMetadata): SEOMetadata {
+  return {
+    ...metadata,
+    title: truncateSEOTitle(metadata.title),
+    description: truncateSEODescription(metadata.description),
+  };
+}
