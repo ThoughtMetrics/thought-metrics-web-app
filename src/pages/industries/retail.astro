@@ -1,16 +1,30 @@
 ---
 import { industries } from '@/core/constants/page-constants/industries-constant';
-import IndustryTemplate from './IndustryTemplate.astro';
+import IndustryTemplate from '@layouts/IndustryTemplate.astro';
+import { seoConfig } from '@/core/constants/seo.constants';
+import { buildStandardPageSchema } from '@/core/utils/schema-builder';
+import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
 
 const seoContent = {
   title: 'Retail & Merchandising Research | Shopper Insights',
   description: 'Turn shopping moments into lasting impressions. Understand buyer behavior, optimize shelves and screens, and design data-driven retail experiences that convert.',
   keywords: 'retail research, merchandising insights, shopper behavior, retail analytics, e-commerce research, in-store experience, shelf optimization, consumer insights, retail trends, customer journey',
 };
+
+// Generate breadcrumbs and structured data for SEO
+const breadcrumbs = generateBreadcrumbsFromPath(Astro.url.pathname);
+const pageUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).href;
+const structuredData = buildStandardPageSchema(
+  seoConfig,
+  pageUrl,
+  'Retail & Merchandising Research',
+  breadcrumbs
+);
 ---
 
 <IndustryTemplate
   title={seoContent.title}
   description={seoContent.description}
   industry={industries.retail}
+  structuredData={structuredData}
 />

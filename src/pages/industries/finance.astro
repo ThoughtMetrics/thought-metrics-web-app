@@ -1,16 +1,30 @@
 ---
 import { industries } from '@/core/constants/page-constants/industries-constant';
-import IndustryTemplate from './IndustryTemplate.astro';
+import IndustryTemplate from '@layouts/IndustryTemplate.astro';
+import { seoConfig } from '@/core/constants/seo.constants';
+import { buildStandardPageSchema } from '@/core/utils/schema-builder';
+import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
 
 const seoContent = {
   title: 'Financial Services & Insurance Research | Market Insights',
   description: 'Navigate change with confidence. Financial services and insurance research revealing customer needs, building trust, and driving smarter, data-backed decisions.',
   keywords: 'financial services research, insurance research, fintech insights, customer trust research, banking market research, financial product testing, risk perception, compliance insights, investment behavior, finance analytics',
 };
+
+// Generate breadcrumbs and structured data for SEO
+const breadcrumbs = generateBreadcrumbsFromPath(Astro.url.pathname);
+const pageUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).href;
+const structuredData = buildStandardPageSchema(
+  seoConfig,
+  pageUrl,
+  'Financial Services & Insurance Research',
+  breadcrumbs
+);
 ---
 
 <IndustryTemplate
   title={seoContent.title}
   description={seoContent.description}
   industry={industries.finance}
+  structuredData={structuredData}
 />

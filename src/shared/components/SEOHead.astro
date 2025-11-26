@@ -30,6 +30,7 @@ export interface Props {
   canonical?: string; // Canonical URL
   noindex?: boolean; // Prevent indexing
   nofollow?: boolean; // Prevent following links
+  structuredData?: object; // Schema.org structured data (JSON-LD)
 }
 
 const {
@@ -41,6 +42,7 @@ const {
   canonical,
   noindex = false,
   nofollow = false,
+  structuredData,
 } = Astro.props;
 
 const config = getAPIConfig();
@@ -109,3 +111,10 @@ if (import.meta.env.DEV) {
 <meta name="author" content="Thought Metrics" />
 <meta name="language" content="English" />
 <meta name="revisit-after" content="7 days" />
+
+<!-- Structured Data (JSON-LD) -->
+{
+  structuredData && (
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  )
+}

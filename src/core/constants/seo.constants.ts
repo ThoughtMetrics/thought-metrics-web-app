@@ -1,3 +1,24 @@
+import type { SchemaConfig } from '@/core/utils/schema-builder';
+
+/**
+ * Global SEO Configuration
+ * Used across the site for structured data and schema.org markup
+ */
+export const seoConfig: SchemaConfig = {
+  siteUrl: 'https://www.thoughtmetrics.com',
+  siteName: 'Thought Metrics',
+  logoUrl: 'https://www.thoughtmetrics.com/_astro/thought-metrics.4Gz3WWqy.png',
+  socialProfiles: [
+    'https://www.linkedin.com/company/the-thought-metrics-company',
+    'https://www.instagram.com/thethoughtmetricscompany',
+    'https://www.facebook.com/people/Thought-Metrics/61581686835321',
+  ],
+};
+
+/**
+ * Default SEO Content
+ * Used as fallback when pages don't specify their own SEO metadata
+ */
 export const seoContent = {
   title: 'Thought Metrics',
   description:
@@ -7,13 +28,6 @@ export const seoContent = {
   ogImage:
     'https://www.thoughtmetrics.com/src/images/research_methods_fieldwork_1.png',
   canonicalUrl: 'https://www.thoughtmetrics.com',
-  structuredData: {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: 'Thought Metrics',
-    url: 'https://www.thoughtmetrics.com',
-    description: 'Customer research and market intelligence platform',
-  },
 };
 
 /**
@@ -31,10 +45,9 @@ export const seoContent = {
  */
 export const SITEMAP_EXCLUDE_PATTERNS = [
   '/admin',
-  '/login',
-  '/sign-up',
   '/dashboard',
   '/edit-profile',
+  '/unsubscribe',
   '/api',
   '/not-found',
   '/_',

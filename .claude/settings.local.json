@@ -29,7 +29,8 @@
       "Bash(node -e:*)",
       "Bash(npm run build:*)",
       "Bash(node:*)",
-      "Bash(yarn astro build:*)"
+      "Bash(yarn astro build:*)",
+      "Bash(timeout 5 echo:*)"
     ],
     "deny": [],
     "ask": []

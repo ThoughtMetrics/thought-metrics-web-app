@@ -1,17 +1,31 @@
 ---
 import PresentationLayout from '@/layouts/PresentationLayout.astro';
 import ResearchMethodQuality from '@/shared/screens/research-methods/quality/QualityPage';
+import { seoConfig } from '@/core/constants/seo.constants';
+import { buildStandardPageSchema } from '@/core/utils/schema-builder';
+import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
 
 const seoContent = {
   title: 'Participant Quality & Data Security | Trusted Standards',
   description: 'Trust in every step. Rigorous screening, AI validation, and strict data security standards—delivering reliable, ethical, and compliant research worldwide.',
   keywords: 'participant quality, data security, GDPR compliance, research quality assurance, AI in research, participant screening, data protection, research automation, data integrity, secure market research',
 };
+
+// Generate breadcrumbs and structured data for SEO
+const breadcrumbs = generateBreadcrumbsFromPath(Astro.url.pathname);
+const pageUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).href;
+const structuredData = buildStandardPageSchema(
+  seoConfig,
+  pageUrl,
+  'Participant Quality',
+  breadcrumbs
+);
 ---
 
 <PresentationLayout
   title={seoContent.title}
   description={seoContent.description}
+  structuredData={structuredData}
 >
   <ResearchMethodQuality client:load />
 </PresentationLayout>

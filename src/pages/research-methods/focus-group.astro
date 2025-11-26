@@ -3,6 +3,9 @@ import PresentationLayout from '@/layouts/PresentationLayout.astro';
 import ResearchMethodFocusGroup from '@/shared/screens/research-methods/focus-group/FocusGroupPage';
 import { contentService } from '@/services/strapi-api/content.service';
 import { ContentCategory } from '@/core/types/content.type';
+import { seoConfig } from '@/core/constants/seo.constants';
+import { buildStandardPageSchema } from '@/core/utils/schema-builder';
+import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
 
 const seoContent = {
   title: 'Focus Groups | Consumer Insights - Thought Metrics',
@@ -11,6 +14,16 @@ const seoContent = {
   keywords:
     'focus group discussions, qualitative research, consumer insights, online focus groups, in-person focus groups, market research, group moderation, UX research, product testing, customer behavior',
 };
+
+// Generate breadcrumbs and structured data for SEO
+const breadcrumbs = generateBreadcrumbsFromPath(Astro.url.pathname);
+const pageUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).href;
+const structuredData = buildStandardPageSchema(
+  seoConfig,
+  pageUrl,
+  'Focus Group Discussions',
+  breadcrumbs
+);
 
 // Fetch blog data on the server for SSR
 let blogData = null;
@@ -32,6 +45,7 @@ try {
 <PresentationLayout
   title={seoContent.title}
   description={seoContent.description}
+  structuredData={structuredData}
 >
   <ResearchMethodFocusGroup client:load blogData={blogData} />
 </PresentationLayout>
