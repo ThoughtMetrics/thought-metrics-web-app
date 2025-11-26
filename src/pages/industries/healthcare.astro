@@ -1,16 +1,30 @@
 ---
 import { industries } from '@/core/constants/page-constants/industries-constant';
-import IndustryTemplate from './IndustryTemplate.astro';
+import IndustryTemplate from '@layouts/IndustryTemplate.astro';
+import { seoConfig } from '@/core/constants/seo.constants';
+import { buildStandardPageSchema } from '@/core/utils/schema-builder';
+import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
 
 const seoContent = {
   title: 'Healthcare & Life Sciences Research | Patient Insights',
   description: 'Bridge science and human experience. Compliant, patient-centric healthcare research from clinical development to market access—powering smarter decisions.',
   keywords: 'healthcare research, life sciences insights, patient research, provider research, clinical development, healthcare market research, medical device testing, pharmaceutical research, HIPAA compliant research',
 };
+
+// Generate breadcrumbs and structured data for SEO
+const breadcrumbs = generateBreadcrumbsFromPath(Astro.url.pathname);
+const pageUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).href;
+const structuredData = buildStandardPageSchema(
+  seoConfig,
+  pageUrl,
+  'Healthcare & Life Sciences Research',
+  breadcrumbs
+);
 ---
 
 <IndustryTemplate
   title={seoContent.title}
   description={seoContent.description}
   industry={industries.healthcare}
+  structuredData={structuredData}
 />

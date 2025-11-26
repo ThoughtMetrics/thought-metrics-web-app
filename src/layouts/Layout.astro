@@ -22,6 +22,7 @@ export interface Props {
   canonical?: string;
   noindex?: boolean;
   nofollow?: boolean;
+  structuredData?: object;
 }
 
 const {
@@ -33,6 +34,7 @@ const {
   canonical,
   noindex,
   nofollow,
+  structuredData,
 } = Astro.props;
 
 const config = getAPIConfig();
@@ -100,6 +102,7 @@ const config = getAPIConfig();
       canonical={canonical}
       noindex={noindex}
       nofollow={nofollow}
+      structuredData={structuredData}
     />
 
     <!-- View Transitions for smooth page navigation -->

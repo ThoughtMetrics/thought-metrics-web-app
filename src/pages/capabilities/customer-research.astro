@@ -1,17 +1,31 @@
 ---
 import PresentationLayout from '@/layouts/PresentationLayout.astro';
 import CapabilitiesCustomerResearchPage from '@/shared/screens/capabilities/customer-research/CustomerResearchPage';
+import { seoConfig } from '@/core/constants/seo.constants';
+import { buildStandardPageSchema } from '@/core/utils/schema-builder';
+import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
 
 const seoContent = {
   title: 'Customer Research & Segmentation | Build Deeper Connections',
   description: 'Understand your customers like never before. Data-driven insights into behavior, loyalty, and decision-making—creating meaningful experiences and retention.',
   keywords: 'customer research, customer segmentation, customer journey, customer loyalty, customer satisfaction, persona research, pricing research, market research, CX insights, customer experience',
 };
+
+// Generate breadcrumbs and structured data for SEO
+const breadcrumbs = generateBreadcrumbsFromPath(Astro.url.pathname);
+const pageUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).href;
+const structuredData = buildStandardPageSchema(
+  seoConfig,
+  pageUrl,
+  'Customer Research & Segmentation',
+  breadcrumbs
+);
 ---
 
 <PresentationLayout
   title={seoContent.title}
   description={seoContent.description}
+  structuredData={structuredData}
 >
   <CapabilitiesCustomerResearchPage client:load />
 </PresentationLayout>

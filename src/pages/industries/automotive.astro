@@ -1,16 +1,30 @@
 ---
 import { industries } from '@/core/constants/page-constants/industries-constant';
-import IndustryTemplate from './IndustryTemplate.astro';
+import IndustryTemplate from '@layouts/IndustryTemplate.astro';
+import { seoConfig } from '@/core/constants/seo.constants';
+import { buildStandardPageSchema } from '@/core/utils/schema-builder';
+import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
 
 const seoContent = {
   title: 'Automotive Market Research | Mobility & Consumer Insights',
   description: 'Shift gears with precision. Automotive market research uncovering what drives buyer emotion, EV adoption, and brand loyalty—helping you innovate and grow.',
   keywords: 'automotive research, mobility insights, EV market research, automotive innovation, vehicle concept testing, car buyer behavior, brand loyalty research, automotive UX, connected car research, mobility trends',
 };
+
+// Generate breadcrumbs and structured data for SEO
+const breadcrumbs = generateBreadcrumbsFromPath(Astro.url.pathname);
+const pageUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).href;
+const structuredData = buildStandardPageSchema(
+  seoConfig,
+  pageUrl,
+  'Automotive Market Research',
+  breadcrumbs
+);
 ---
 
 <IndustryTemplate
   title={seoContent.title}
   description={seoContent.description}
   industry={industries.automotive}
+  structuredData={structuredData}
 />

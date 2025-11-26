@@ -7,12 +7,19 @@ import HeroCarousel from '@screens/home/components/hero-carousel';
 import SolutionInsights from '@screens/home/components/solutions-insights';
 import Industries from '@screens/home/components/industries';
 import Blogs from '@screens/home/components/blogs';
+import { seoConfig } from '@/core/constants/seo.constants';
+import { buildHomepageSchema } from '@/core/utils/schema-builder';
 
 const seoContent = {
   title: 'Thought Metrics | User Driven Market Research & Insights',
   description: 'Full-service market research firm specializing in focus groups, surveys, and AI-powered analytics. Delivering actionable insights for data-driven decisions.',
   keywords: 'market research, AI insights, focus groups, online surveys, offline surveys, verbatim analysis, analytics platform, research technology, survey app, respondent engagement',
 };
+
+// Build enhanced structured data for homepage
+// This includes Organization, WebSite, and WebPage schemas
+// Critical for Google Sitelinks and enhanced search results
+const structuredData = buildHomepageSchema(seoConfig);
 
 // Fetch blog data on the server for SSR
 let blogData = null;
@@ -35,6 +42,7 @@ try {
   title={seoContent.title}
   description={seoContent.description}
   keywords={seoContent.keywords}
+  structuredData={structuredData}
 >
   <HeroCarousel client:load />
   <SolutionInsights client:load />

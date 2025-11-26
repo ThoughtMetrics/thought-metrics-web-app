@@ -1,16 +1,30 @@
 ---
 import { industries } from '@/core/constants/page-constants/industries-constant';
-import IndustryTemplate from './IndustryTemplate.astro';
+import IndustryTemplate from '@layouts/IndustryTemplate.astro';
+import { seoConfig } from '@/core/constants/seo.constants';
+import { buildStandardPageSchema } from '@/core/utils/schema-builder';
+import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
 
 const seoContent = {
   title: 'Investor & Private Equity Research | Market Intelligence',
   description: 'Invest with confidence. Investor-grade market research and due diligence—helping PE, VC, and growth teams validate markets, test strategies, and de-risk deals.',
   keywords: 'investor research, private equity research, due diligence, venture capital insights, market validation, investment research, TAM analysis, portfolio optimization, growth strategy research, market intelligence',
 };
+
+// Generate breadcrumbs and structured data for SEO
+const breadcrumbs = generateBreadcrumbsFromPath(Astro.url.pathname);
+const pageUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).href;
+const structuredData = buildStandardPageSchema(
+  seoConfig,
+  pageUrl,
+  'Investor & Private Equity Research',
+  breadcrumbs
+);
 ---
 
 <IndustryTemplate
   title={seoContent.title}
   description={seoContent.description}
   industry={industries.investor}
+  structuredData={structuredData}
 />

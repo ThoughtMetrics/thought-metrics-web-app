@@ -1,0 +1,21 @@
+---
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
+import NotFoundContent from '@/shared/components/error/NotFoundContent.astro';
+
+const seoContent = {
+  title: '404 - Page Not Found | Thought Metrics',
+  description:
+    "The page you are looking for doesn't exist or has been moved. Return to our homepage or explore our research methods, industries, and capabilities.",
+  noindex: true, // Prevent indexing of 404 pages
+};
+
+// Set response status to 404
+Astro.response.status = 404;
+---
+
+<PresentationLayout
+  title={seoContent.title}
+  description={seoContent.description}
+>
+  <NotFoundContent />
+</PresentationLayout>

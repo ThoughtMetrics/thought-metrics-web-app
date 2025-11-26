@@ -1,0 +1,39 @@
+---
+import PresentationLayout from '@layouts/PresentationLayout.astro';
+import { IndustryActionSection } from '@ui/templates/action-section';
+import { CaseStudySection } from '@ui/templates/casestudy-section';
+import FeatureSection from '@ui/templates/feature-section';
+import HeroSection from '@ui/templates/hero-section';
+import { QuestionarySection } from '@ui/templates/questionary-section';
+import { IndustryServiceSection } from '@ui/templates/service-section';
+
+interface Props {
+  title: string;
+  description: string;
+  industry: any;
+  featureCardClassName?: string;
+  structuredData?: object;
+}
+
+const { title, description, industry, featureCardClassName, structuredData } = Astro.props;
+
+// Modify illustration className
+if (industry.heroSection?.illustration) {
+  industry.heroSection.illustration.className = 'pt-4';
+}
+---
+
+<PresentationLayout title={title} description={description} structuredData={structuredData}>
+  <HeroSection heroSection={industry.heroSection} client:load />
+  <IndustryServiceSection serviceSection={industry.serviceSection} />
+  <QuestionarySection
+    questionarySection={industry.questionarySection}
+    client:load
+  />
+  <FeatureSection
+    featureSection={industry.featureSection}
+    featureCardClassName={featureCardClassName}
+  />
+  <CaseStudySection caseStudySection={industry.caseStudiesSection} />
+  <IndustryActionSection actionSection={industry.actionSection} />
+</PresentationLayout>

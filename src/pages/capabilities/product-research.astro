@@ -1,17 +1,31 @@
 ---
 import PresentationLayout from '@/layouts/PresentationLayout.astro';
 import CapabilitiesProductResearchPage from '@/shared/screens/capabilities/product-research/ProductResearchPage';
+import { seoConfig } from '@/core/constants/seo.constants';
+import { buildStandardPageSchema } from '@/core/utils/schema-builder';
+import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
 
 const seoContent = {
   title: 'Product Research & Testing | Validate, Refine & Launch Smart',
   description: 'Turn great ideas into market-ready products. From concept validation to packaging, pricing, and UX testing—innovate confidently and maximize product-market fit.',
   keywords: 'MaxDiff, product validation, UX research, pricing research, market simulation, product innovation',
 };
+
+// Generate breadcrumbs and structured data for SEO
+const breadcrumbs = generateBreadcrumbsFromPath(Astro.url.pathname);
+const pageUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).href;
+const structuredData = buildStandardPageSchema(
+  seoConfig,
+  pageUrl,
+  'Product Research & Testing',
+  breadcrumbs
+);
 ---
 
 <PresentationLayout
   title={seoContent.title}
   description={seoContent.description}
+  structuredData={structuredData}
 >
   <CapabilitiesProductResearchPage client:load />
 </PresentationLayout>

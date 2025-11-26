@@ -3,12 +3,25 @@ import PresentationLayout from '@layouts/PresentationLayout.astro';
 import ResearchMethodQuantitativeResearch from '@/shared/screens/research-methods/quantitative-research/QuantitativeResearchPage';
 import { contentService } from '@/services/strapi-api/content.service';
 import { ContentCategory } from '@/core/types/content.type';
+import { seoConfig } from '@/core/constants/seo.constants';
+import { buildStandardPageSchema } from '@/core/utils/schema-builder';
+import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
 
 const seoContent = {
   title: 'Quantitative Research | Data-Driven Insights & Analytics',
   description: 'Make decisions backed by data. Smart survey design, robust sampling, and advanced analytics—powering confidence, clarity, and growth. By Thought Metrics.',
   keywords: 'quantitative research, data analytics, survey design, market research, advanced analytics, conjoint analysis, MaxDiff, segmentation research, predictive analytics, statistical modeling',
 };
+
+// Generate breadcrumbs and structured data for SEO
+const breadcrumbs = generateBreadcrumbsFromPath(Astro.url.pathname);
+const pageUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).href;
+const structuredData = buildStandardPageSchema(
+  seoConfig,
+  pageUrl,
+  'Quantitative Research',
+  breadcrumbs
+);
 
 // Fetch blog data on the server for SSR
 let blogData = null;
@@ -30,6 +43,7 @@ try {
 <PresentationLayout
   title={seoContent.title}
   description={seoContent.description}
+  structuredData={structuredData}
 >
   <ResearchMethodQuantitativeResearch client:load blogData={blogData} />
 </PresentationLayout>

@@ -13,6 +13,7 @@ export interface Props {
   canonical?: string;
   noindex?: boolean;
   nofollow?: boolean;
+  structuredData?: object;
 }
 
 const {
@@ -24,6 +25,7 @@ const {
   canonical,
   noindex,
   nofollow,
+  structuredData,
 } = Astro.props;
 ---
 
@@ -36,6 +38,7 @@ const {
   canonical={canonical}
   noindex={noindex}
   nofollow={nofollow}
+  structuredData={structuredData}
 >
   <div id="full-screen" class="w-full flex flex-col justify-between overflow-y-scroll overflow-x-hidden">
     <Header client:load />
