@@ -2,9 +2,6 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth } from '@/core/configs/firebase-config';
 import ApiService from '@/services/api/api.service';
-import authService from '@/services/api/auth.service';
-import { toast } from 'sonner';
-import { getAuthErrorDetails } from '@/core/utils/firebase-error-handler';
 
 interface AuthContextType {
   user: User | null;
