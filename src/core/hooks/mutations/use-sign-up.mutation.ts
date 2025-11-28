@@ -24,14 +24,22 @@ type SignUpParams =
 
 export const useSignUpMutation = () => {
   return useMutation({
-    mutationFn: async (params: SignUpParams): Promise<UserProfile> => {
+    mutationFn: async (params: SignUpParams): Promise<UserProfile | void> => {
       switch (params.type) {
         case 'email':
           return await authService.signUpWithEmail(params.data);
-        case 'google':
-          return await authService.signInWithGoogle();
-        case 'facebook':
-          return await authService.signInWithFacebook();
+        case 'google': {
+          // On localhost: returns UserProfile from popup
+          // On production: initiates redirect (returns void)
+          const result = await authService.signInWithGoogle();
+          return result;
+        }
+        case 'facebook': {
+          // On localhost: returns UserProfile from popup
+          // On production: initiates redirect (returns void)
+          const result = await authService.signInWithFacebook();
+          return result;
+        }
         default:
           throw new Error('Invalid sign-up type');
       }
@@ -39,8 +47,6 @@ export const useSignUpMutation = () => {
     retry: (failureCount, error) => {
       const errorCode = 'code' in error ? (error.code as string) : '';
       if (
-        errorCode === 'auth/popup-closed-by-user' ||
-        errorCode === 'auth/cancelled-popup-request' ||
         errorCode === 'auth/email-already-in-use' ||
         errorCode === 'auth/invalid-email'
       ) {
@@ -50,9 +56,12 @@ export const useSignUpMutation = () => {
       return failureCount < 2;
     },
     onSuccess: (data) => {
-      toast.success('Account created successfully!', {
-        description: `Welcome, ${data.profile?.displayName ?? data.profile?.firstName}!`,
-      });
+      // Only show success toast for email sign-up (Google/Facebook handled by redirect)
+      if (data) {
+        toast.success('Account created successfully!', {
+          description: `Welcome, ${data.profile?.displayName ?? data.profile?.firstName}!`,
+        });
+      }
     },
     onError: (error: Error) => {
       const errorCode = 'code' in error ? (error.code as string) : '';
@@ -62,9 +71,6 @@ export const useSignUpMutation = () => {
         toast.error(errorDetails.title, {
           description: errorDetails.description,
         });
-      } else {
-        // User cancelled the popup - log silently
-        console.log('Authentication popup was cancelled by user');
       }
     },
   });

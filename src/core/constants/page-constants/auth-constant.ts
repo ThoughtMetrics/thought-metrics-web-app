@@ -24,7 +24,7 @@ export const loginFormConstant = {
   ui: {
     pageTitle: 'Log in to Thought Metrics',
     fieldLabels: {
-      thoughtMetricsId: 'Thought Metrics ID',
+      thoughtMetricsId: 'Email ID',
       password: 'Password',
     },
     checkboxLabels: {

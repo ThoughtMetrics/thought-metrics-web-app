@@ -257,9 +257,7 @@ const useRespondentRegistrationFormStore =
 
 const RespondentSignUpPage: React.FC = () => {
   const signUpMutation = useSignUpMutation();
-  const [socialAuthLoading, setSocialAuthLoading] = useState<
-    'google' | 'facebook' | null
-  >(null);
+  const [isNavigating, setIsNavigating] = useState(false);
 
   // Translation hook
   const { translations } = useLanguage();
@@ -368,36 +366,20 @@ const RespondentSignUpPage: React.FC = () => {
   };
 
   const handleGoogleSignUp = async () => {
-    setSocialAuthLoading('google');
     try {
       const result = await signUpMutation.mutateAsync({ type: 'google' });
+
+      // If popup returned a result (localhost), navigate to survey boards
       if (result) {
-        window.location.href = ROUTES.SURVEY_BOARDS;
+        setIsNavigating(true);
+        setTimeout(() => {
+          window.location.href = ROUTES.SURVEY_BOARDS;
+        }, 800);
       }
+      // If redirect (production), page will redirect automatically
     } catch (error) {
-      let errorCode = '';
-      if (
-        typeof error === 'object' &&
-        error !== null &&
-        'code' in error &&
-        typeof (error as { code?: unknown }).code === 'string'
-      ) {
-        errorCode = (error as { code: string }).code;
-      }
       console.error('Google sign-up failed:', error);
-      // Check if it's a user cancellation
-      if (
-        errorCode === 'auth/popup-closed-by-user' ||
-        errorCode === 'auth/cancelled-popup-request'
-      ) {
-        // Immediately re-enable button on cancellation
-        setSocialAuthLoading(null);
-      } else {
-        setSocialAuthLoading(null);
-      }
-    } finally {
-      // Ensure loading state is cleared
-      setSocialAuthLoading(null);
+      setIsNavigating(false);
     }
   };
 
@@ -478,6 +460,23 @@ const RespondentSignUpPage: React.FC = () => {
 
   return (
     <>
+      {/* Loading Overlay */}
+      {isNavigating && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-8 max-w-sm mx-4 text-center">
+            <div className="mb-4">
+              <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              {translations.auth.signup.redirecting || 'Signing you in...'}
+            </h2>
+            <p className="text-gray-600">
+              {translations.auth.signup.pleaseWait || 'Please wait while we redirect you'}
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="common-component bg-white text-black h-full overflow-y-scroll">
         <div className="common-container px-6 py-8 md:px-24 md:py-12 block! justify-center flex-col max-w-(--breakpoint-2xl)!">
           {/* Language Toggle */}
@@ -518,14 +517,11 @@ const RespondentSignUpPage: React.FC = () => {
             <button
               type="button"
               onClick={() => void handleGoogleSignUp()}
-              disabled={socialAuthLoading !== null}
-              className="relative col-span-1 flex items-center pl-4 pr-12 py-2 bg-[#DB4437] text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="relative col-span-1 flex items-center pl-4 pr-12 py-2 bg-[#DB4437] text-white rounded hover:bg-red-700 transition-colors"
             >
               <GoogleOutlineIcon className="w-5 h-5 mr-8" />
               <div className="left-13 absolute w-px h-full bg-white"></div>
-              {socialAuthLoading === 'google'
-                ? translations.auth.signup.processing
-                : translations.auth.signup.continueWithGoogle}
+              {translations.auth.signup.continueWithGoogle}
             </button>
           </div>
 

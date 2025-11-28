@@ -2,6 +2,9 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth } from '@/core/configs/firebase-config';
 import ApiService from '@/services/api/api.service';
+import authService from '@/services/api/auth.service';
+import { toast } from 'sonner';
+import { getAuthErrorDetails } from '@/core/utils/firebase-error-handler';
 
 interface AuthContextType {
   user: User | null;
@@ -37,33 +40,52 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return;
     }
 
-    try {
-      // Listen to Firebase auth state changes
-      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-        setUser(firebaseUser);
+    // Set up async initialization
+    const initAuth = async () => {
+      try {
+        // NOTE: OAuth redirect handling is done by AuthRedirectHandler component
+        // on specific pages (login/signup) to avoid race conditions
 
-        // Set or remove auth token in API service
-        if (firebaseUser) {
-          try {
-            const token = await firebaseUser.getIdToken();
-            ApiService.setAuthToken(token);
-          } catch (error) {
-            console.error('Failed to get auth token:', error);
+        // Listen to Firebase auth state changes
+        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+          setUser(firebaseUser);
+
+          // Set or remove auth token in API service
+          if (firebaseUser) {
+            try {
+              const token = await firebaseUser.getIdToken();
+              ApiService.setAuthToken(token);
+            } catch (error) {
+              console.error('Failed to get auth token:', error);
+              ApiService.removeAuthToken();
+            }
+          } else {
             ApiService.removeAuthToken();
           }
-        } else {
-          ApiService.removeAuthToken();
-        }
 
-        // Mark auth as ready after first state change
+          // Mark auth as ready after first state change
+          setIsAuthReady(true);
+        });
+
+        return unsubscribe;
+      } catch (error) {
+        console.error("Failed to set up auth state listener:", error);
         setIsAuthReady(true);
-      });
+        return () => {}; // Return empty cleanup function
+      }
+    };
 
-      return () => unsubscribe();
-    } catch (error) {
-      console.error("Failed to set up auth state listener:", error);
-      setIsAuthReady(true);
-    }
+    // Initialize and store cleanup function
+    let unsubscribe: (() => void) | undefined;
+    initAuth().then(cleanup => {
+      unsubscribe = cleanup;
+    });
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, []);
 
   return (
