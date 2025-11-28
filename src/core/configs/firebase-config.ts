@@ -51,6 +51,10 @@ const initializeFirebase = (): FirebaseApp | null => {
   }
 };
 
+// Track if persistence has been initialized
+let persistenceInitialized = false;
+let persistencePromise: Promise<void> | null = null;
+
 // Lazy getter for Firebase Auth
 const getFirebaseAuth = (): Auth | null => {
   if (!isBrowser) {
@@ -65,6 +69,52 @@ const getFirebaseAuth = (): Auth | null => {
     firebaseAuth = getAuth(app);
   }
   return firebaseAuth;
+};
+
+// Helper to wait for persistence to actually be written to storage
+const waitForPersistenceWrite = async (): Promise<void> => {
+  return new Promise((resolve) => {
+    // Give IndexedDB time to write the persistence setting
+    // This is critical for redirect flow to work
+    setTimeout(() => {
+      resolve();
+    }, 100); // 100ms delay for IndexedDB write
+  });
+};
+
+// Initialize auth persistence - MUST be called before getRedirectResult()
+export const ensureAuthPersistence = async (): Promise<void> => {
+  if (persistenceInitialized) {
+    return;
+  }
+
+  if (persistencePromise) {
+    return persistencePromise;
+  }
+
+  const auth = getFirebaseAuth();
+  if (!auth) {
+    console.warn('Cannot set auth persistence - auth not initialized');
+    return;
+  }
+
+  persistencePromise = import('firebase/auth')
+    .then(({ setPersistence, browserLocalPersistence }) => {
+      if (auth) {
+        return setPersistence(auth, browserLocalPersistence);
+      }
+    })
+    .then(async () => {
+      // CRITICAL: Wait for persistence to actually be written to storage
+      await waitForPersistenceWrite();
+      persistenceInitialized = true;
+    })
+    .catch((error) => {
+      console.error('Failed to set auth persistence:', error);
+      throw error;
+    });
+
+  return persistencePromise;
 };
 
 // Create a safe Proxy that returns null for SSR

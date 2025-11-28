@@ -30,7 +30,9 @@
       "Bash(npm run build:*)",
       "Bash(node:*)",
       "Bash(yarn astro build:*)",
-      "Bash(timeout 5 echo:*)"
+      "Bash(timeout 5 echo:*)",
+      "Bash(firebase login:*)",
+      "Bash(yarn install)"
     ],
     "deny": [],
     "ask": []

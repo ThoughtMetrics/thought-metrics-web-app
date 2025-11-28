@@ -1,7 +1,9 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInWithRedirect,
   signInWithPopup,
+  getRedirectResult,
   GoogleAuthProvider,
   FacebookAuthProvider,
   signOut,
@@ -9,13 +11,46 @@ import {
   type User,
   type UserCredential,
 } from 'firebase/auth';
-import { auth } from '@/core/configs/firebase-config';
+import { auth, ensureAuthPersistence } from '@/core/configs/firebase-config';
 import ApiService from '@/services/api/api.service';
 import type { UserProfile, SignUpData } from '@/core/types/user.type';
+
+// Helper to detect if running on localhost (third-party storage issues)
+const isLocalhost = (): boolean => {
+  return typeof window !== 'undefined' &&
+         (window.location.hostname === 'localhost' ||
+          window.location.hostname === '127.0.0.1');
+};
+
+// Helper to request storage access (Chrome/Edge/Safari support)
+const requestStorageAccess = async (): Promise<boolean> => {
+  if (!('requestStorageAccess' in document)) {
+    return false; // Browser doesn't support Storage Access API
+  }
+
+  try {
+    // Check if we already have access
+    const hasAccess = await (document as any).hasStorageAccess();
+    if (hasAccess) {
+      console.log('✅ [AuthService] Already has storage access');
+      return true;
+    }
+
+    // Request storage access
+    console.log('🔐 [AuthService] Requesting storage access...');
+    await (document as any).requestStorageAccess();
+    console.log('✅ [AuthService] Storage access granted');
+    return true;
+  } catch (error: any) {
+    console.warn('⚠️ [AuthService] Storage access denied:', error.message);
+    return false;
+  }
+};
 
 class AuthService {
   private googleProvider: GoogleAuthProvider | null = null;
   private facebookProvider: FacebookAuthProvider | null = null;
+  private redirectResultPromise: Promise<UserProfile | null> | null = null;
 
   // Lazy initialization for Google provider
   private getGoogleProvider(): GoogleAuthProvider {
@@ -65,11 +100,16 @@ class AuthService {
         };
 
         // Map payment info to backend structure based on payment method
-        if (additionalData.paymentMethod && additionalData.paymentMethod !== 'skip' && additionalData.payment) {
+        if (
+          additionalData.paymentMethod &&
+          additionalData.paymentMethod !== 'skip' &&
+          additionalData.payment
+        ) {
           if (additionalData.paymentMethod === 'upi') {
             syncData.paymentInfo = {
               upiId: additionalData.payment.upiId || undefined,
-              upiMobileNumber: additionalData.payment.upiMobileNumber || undefined,
+              upiMobileNumber:
+                additionalData.payment.upiMobileNumber || undefined,
               upiFullName: additionalData.payment.upiFullName || undefined,
               // Clear bank fields when using UPI
               bankAccountNumber: undefined,
@@ -82,9 +122,11 @@ class AuthService {
               upiId: undefined,
               upiMobileNumber: undefined,
               upiFullName: undefined,
-              bankAccountNumber: additionalData.payment.bankAccountNumber || undefined,
+              bankAccountNumber:
+                additionalData.payment.bankAccountNumber || undefined,
               bankIfscCode: additionalData.payment.bankIfscCode || undefined,
-              bankAccountHolderName: additionalData.payment.bankAccountHolderName || undefined,
+              bankAccountHolderName:
+                additionalData.payment.bankAccountHolderName || undefined,
             };
           }
         }
@@ -169,78 +211,142 @@ class AuthService {
 
   /**
    * Sign in with Google
+   * Uses popup for localhost (third-party storage blocked)
+   * Uses redirect for production (custom authDomain works)
    */
-  async signInWithGoogle(): Promise<UserProfile> {
-    try {
-      const userCredential: UserCredential = await signInWithPopup(
-        auth,
-        this.getGoogleProvider()
-      );
+  async signInWithGoogle(): Promise<UserProfile | void> {
+    // CRITICAL: Set persistence BEFORE auth
+    await ensureAuthPersistence();
 
-      // Sync to backend
-      await this.syncUserToBackend(userCredential.user);
+    const provider = this.getGoogleProvider();
 
-      // Fetch and return the full user profile from backend
-      return await this.getUserProfile();
-    } catch (error: any) {
-      // Re-throw the error immediately for popup cancellations
-      if (
-        error.code === 'auth/popup-closed-by-user' ||
-        error.code === 'auth/cancelled-popup-request'
-      ) {
-        throw error;
-      }
+    // Localhost: Use popup (third-party storage blocked by modern browsers)
+    if (isLocalhost()) {
+      try {
+        const result = await signInWithPopup(auth, provider);
 
-      // Handle account exists with different credential
-      if (error.code === 'auth/account-exists-with-different-credential') {
-        const email = error.customData?.email;
+        // Update token
+        const token = await result.user.getIdToken();
+        ApiService.setAuthToken(token);
 
-        if (email) {
-          // Get existing sign-in methods for this email
-          const methods = await fetchSignInMethodsForEmail(auth, email);
+        // Sync with backend
+        await this.syncUserToBackend(result.user);
 
-          // Map provider IDs to user-friendly names
-          const providerName = methods[0]?.includes('facebook')
-            ? 'Facebook'
-            : methods[0]?.includes('password')
-              ? 'email and password'
-              : methods[0] || 'another method';
-
+        // Return user profile
+        return await this.getUserProfile();
+      } catch (error: any) {
+        // Handle popup blocked error
+        if (error.code === 'auth/popup-blocked') {
           throw new Error(
-            `An account already exists with ${email}. Please sign in with ${providerName} first.`
+            'Popup was blocked. Please allow popups for this site or use production domain for redirect auth.'
           );
         }
+        throw error;
       }
-
-      // For other errors, also throw immediately
-      throw error;
     }
+
+    // Production: Use redirect (custom authDomain works)
+    await new Promise(resolve => setTimeout(resolve, 150));
+    await signInWithRedirect(auth, provider);
   }
 
   /**
    * Sign in with Facebook
+   * Uses popup for localhost (third-party storage blocked)
+   * Uses redirect for production (custom authDomain works)
    */
-  async signInWithFacebook(): Promise<UserProfile> {
-    try {
-      const userCredential: UserCredential = await signInWithPopup(
-        auth,
-        this.getFacebookProvider()
-      );
+  async signInWithFacebook(): Promise<UserProfile | void> {
+    // CRITICAL: Set persistence BEFORE auth
+    await ensureAuthPersistence();
 
-      // Sync to backend
-      await this.syncUserToBackend(userCredential.user);
+    const provider = this.getFacebookProvider();
 
-      // Fetch and return the full user profile from backend
-      return await this.getUserProfile();
-    } catch (error: any) {
-      // Re-throw the error immediately for popup cancellations
-      if (
-        error.code === 'auth/popup-closed-by-user' ||
-        error.code === 'auth/cancelled-popup-request'
-      ) {
+    // Localhost: Use popup (third-party storage blocked by modern browsers)
+    if (isLocalhost()) {
+      try {
+        const result = await signInWithPopup(auth, provider);
+
+        // Update token
+        const token = await result.user.getIdToken();
+        ApiService.setAuthToken(token);
+
+        // Sync with backend
+        await this.syncUserToBackend(result.user);
+
+        // Return user profile
+        return await this.getUserProfile();
+      } catch (error: any) {
+        if (error.code === 'auth/popup-blocked') {
+          throw new Error(
+            'Popup was blocked. Please allow popups for this site or use production domain for redirect auth.'
+          );
+        }
         throw error;
       }
+    }
 
+    // Production: Use redirect
+    await new Promise(resolve => setTimeout(resolve, 150));
+    await signInWithRedirect(auth, provider);
+  }
+
+  /**
+   * Handle redirect result after OAuth provider redirects back
+   * Call this on app initialization to check for pending redirect results
+   * @returns UserProfile if sign-in was successful, null if no redirect result
+   *
+   * IMPORTANT: This method uses a singleton promise to ensure getRedirectResult()
+   * is only called once, even if this method is called multiple times (React Strict Mode)
+   */
+  async handleRedirectResult(): Promise<UserProfile | null> {
+    // If we already have a promise in flight, return it (prevents duplicate calls)
+    if (this.redirectResultPromise) {
+      return this.redirectResultPromise;
+    }
+
+    // Create and cache the promise
+    this.redirectResultPromise = this.processRedirectResult();
+
+    return this.redirectResultPromise;
+  }
+
+  /**
+   * Internal method that actually processes the redirect result
+   * Should only be called once via handleRedirectResult()
+   */
+  private async processRedirectResult(): Promise<UserProfile | null> {
+    try {
+      // CRITICAL: Ensure persistence is set BEFORE calling getRedirectResult()
+      await ensureAuthPersistence();
+
+      const result = await getRedirectResult(auth);
+
+      // No redirect result means user didn't just complete OAuth flow
+      if (!result) {
+        return null;
+      }
+
+      // Sync user to backend
+      await this.syncUserToBackend(result.user);
+
+      // Fetch and return the full user profile from backend
+      try {
+        const profile = await this.getUserProfile();
+        return profile;
+      } catch (profileError) {
+        console.error('Failed to fetch profile from backend:', profileError);
+        // Return a basic profile from Firebase user data
+        return {
+          firebaseUid: result.user.uid,
+          email: result.user.email,
+          profile: {
+            displayName: result.user.displayName ?? undefined,
+            avatar: result.user.photoURL ?? undefined,
+          },
+        } as UserProfile;
+      }
+    } catch (error: any) {
+      console.error('Error in handleRedirectResult:', error);
       // Handle account exists with different credential
       if (error.code === 'auth/account-exists-with-different-credential') {
         const email = error.customData?.email;
@@ -252,9 +358,11 @@ class AuthService {
           // Map provider IDs to user-friendly names
           const providerName = methods[0]?.includes('google')
             ? 'Google'
-            : methods[0]?.includes('password')
-              ? 'email and password'
-              : methods[0] || 'another method';
+            : methods[0]?.includes('facebook')
+              ? 'Facebook'
+              : methods[0]?.includes('password')
+                ? 'email and password'
+                : methods[0] || 'another method';
 
           throw new Error(
             `An account already exists with ${email}. Please sign in with ${providerName} first.`
@@ -262,7 +370,7 @@ class AuthService {
         }
       }
 
-      // For other errors, also throw immediately
+      // For other errors, throw immediately
       throw error;
     }
   }
