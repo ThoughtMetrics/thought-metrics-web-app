@@ -243,6 +243,8 @@ export interface Translations {
       loginFailed: string;
       thoughtMetricsIdRequired: string;
       passwordRequired: string;
+      redirecting: string;
+      pleaseWait: string;
     };
     signup: {
       pageTitle: string;
@@ -307,6 +309,8 @@ export interface Translations {
       privacyRequired: string;
       registrationFailed: string;
       optional: string;
+      redirecting: string;
+      pleaseWait: string;
       faq: {
         question1: string;
         answer1: string;
@@ -586,6 +590,8 @@ const en: Translations = {
       loginFailed: 'Login failed. Please try again.',
       thoughtMetricsIdRequired: 'Thought Metrics ID is required',
       passwordRequired: 'Password is required',
+      redirecting: 'Signing you in...',
+      pleaseWait: 'Please wait while we redirect you',
     },
     signup: {
       pageTitle: 'Create an Account',
@@ -655,6 +661,8 @@ const en: Translations = {
       privacyRequired: 'You must accept the privacy policy',
       registrationFailed: 'Registration failed. Please try again.',
       optional: '(Optional)',
+      redirecting: 'Signing you in...',
+      pleaseWait: 'Please wait while we redirect you',
       faq: {
         question1: "What's a focus group?",
         answer1:
@@ -948,6 +956,8 @@ const ta: Translations = {
       loginFailed: 'உள்நுழைவு தோல்வியடைந்தது. மீண்டும் முயற்சிக்கவும்.',
       thoughtMetricsIdRequired: 'Thought Metrics அடையாளம் தேவை',
       passwordRequired: 'கடவுச்சொல் தேவை',
+      redirecting: 'உங்களை உள்நுழைக்கிறோம்...',
+      pleaseWait: 'நாங்கள் உங்களை திருப்பிவிடும் வரை காத்திருக்கவும்',
     },
     signup: {
       pageTitle: 'எங்களுடன் இணைய..',
@@ -1017,6 +1027,8 @@ const ta: Translations = {
       privacyRequired: 'தனியுரிமைக் கொள்கையை ஏற்க வேண்டும்',
       registrationFailed: 'பதிவு தோல்வியடைந்தது. மீண்டும் முயற்சிக்கவும்.',
       optional: '(விரும்பினால்)',
+      redirecting: 'உங்களை உள்நுழைக்கிறோம்...',
+      pleaseWait: 'நாங்கள் உங்களை திருப்பிவிடும் வரை காத்திருக்கவும்',
       faq: {
         question1: 'ஃபோகஸ் குழு என்றால் என்ன?',
         answer1:
