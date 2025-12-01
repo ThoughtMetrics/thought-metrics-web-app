@@ -1,6 +1,6 @@
 import { getAnalytics, type Analytics } from 'firebase/analytics';
 import { initializeApp, type FirebaseApp } from 'firebase/app';
-import { getAuth, type Auth } from 'firebase/auth';
+import { getAuth, type Auth, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { getAPIConfig } from '@configs/api-config';
 
 // Singleton instances
@@ -98,8 +98,8 @@ export const ensureAuthPersistence = async (): Promise<void> => {
     return;
   }
 
-  persistencePromise = import('firebase/auth')
-    .then(({ setPersistence, browserLocalPersistence }) => {
+  persistencePromise = Promise.resolve()
+    .then(() => {
       if (auth) {
         return setPersistence(auth, browserLocalPersistence);
       }

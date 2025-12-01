@@ -1,0 +1,62 @@
+---
+import Layout from '@/layouts/Layout.astro';
+
+const seoContent = {
+  title: 'Unauthorized Access | Thought Metrics',
+  description: 'You do not have permission to access this page',
+};
+---
+
+<Layout title={seoContent.title} description={seoContent.description}>
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div class="max-w-md w-full text-center">
+      <!-- Icon -->
+      <div class="mb-8">
+        <div class="mx-auto w-24 h-24 bg-red-100 rounded-full flex items-center justify-center">
+          <svg
+            class="w-12 h-12 text-red-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            ></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Error message -->
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">Access Denied</h1>
+      <p class="text-lg text-gray-600 mb-8">
+        You do not have permission to access this page. This area is restricted to administrators only.
+      </p>
+
+      <!-- Actions -->
+      <div class="space-y-4">
+        <a
+          href="/"
+          class="inline-block w-full bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+        >
+          Go to Homepage
+        </a>
+        <button
+          onclick="window.history.back()"
+          class="inline-block w-full bg-white text-gray-700 px-6 py-3 rounded-lg font-medium border border-gray-300 hover:bg-gray-50 transition-colors"
+        >
+          Go Back
+        </button>
+      </div>
+
+      <!-- Contact info -->
+      <p class="mt-8 text-sm text-gray-500">
+        If you believe you should have access to this page, please contact
+        <a href="/contact-us" class="text-primary hover:underline">support</a>.
+      </p>
+    </div>
+  </div>
+</Layout>

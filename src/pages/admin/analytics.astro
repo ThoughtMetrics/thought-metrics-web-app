@@ -1,0 +1,13 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import AnalyticsPage from '@/shared/screens/admin/analytics-page';
+
+const seoContent = {
+  title: 'Analytics Dashboard | Admin | Thought Metrics',
+  description: 'View campaign analytics and tracking data',
+};
+---
+
+<IntractionLayout title={seoContent.title} description={seoContent.description}>
+  <AnalyticsPage client:only="react" />
+</IntractionLayout>

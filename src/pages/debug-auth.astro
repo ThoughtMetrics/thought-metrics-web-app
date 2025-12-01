@@ -1,0 +1,13 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import AuthDebugger from '@/shared/components/debug/AuthDebugger';
+
+const seoContent = {
+  title: 'Auth Debugger | Thought Metrics',
+  description: 'Debug authentication state',
+};
+---
+
+<IntractionLayout title={seoContent.title} description={seoContent.description}>
+  <AuthDebugger client:only="react" />
+</IntractionLayout>

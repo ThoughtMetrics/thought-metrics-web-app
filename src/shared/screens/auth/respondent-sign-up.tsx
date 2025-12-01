@@ -209,14 +209,14 @@ const storeImplementation = (set: any, get: any) => ({
   },
 
   submitForm: async (
-    onSubmit: (formData: RespondentRegistrationFormData) => Promise<void>
+    onSubmit: (formData: RespondentRegistrationFormData) => Promise<any>
   ) => {
     const { formData } = get();
 
     set({ isSubmitting: true }, false, 'submitForm_start');
 
     try {
-      await onSubmit(formData);
+      const result = await onSubmit(formData);
 
       set(
         {
@@ -226,6 +226,19 @@ const storeImplementation = (set: any, get: any) => ({
         false,
         'submitForm_success'
       );
+
+      // Check if user came from tracking link and handle redirect
+      if (
+        typeof window !== 'undefined' &&
+        window.ThoughtMetrics?.isFromTrackingLink() &&
+        result
+      ) {
+        window.ThoughtMetrics.onRegistered(
+          result.firebaseUid || result._id,
+          result.email
+        );
+        return; // Don't continue - onRegistered handles redirect
+      }
 
       setTimeout(() => {
         get().resetForm();
@@ -264,9 +277,12 @@ const RespondentSignUpPage: React.FC = () => {
 
   // Translated participation options
   const translatedParticipationOptions = React.useMemo(() => {
-    return participationOptions.map(option => ({
+    return participationOptions.map((option) => ({
       ...option,
-      label: translations.participationOptions[option.id as keyof typeof translations.participationOptions] || option.label,
+      label:
+        translations.participationOptions[
+          option.id as keyof typeof translations.participationOptions
+        ] || option.label,
     }));
   }, [translations]);
 
@@ -358,11 +374,15 @@ const RespondentSignUpPage: React.FC = () => {
       },
     });
 
-    if (result) {
+    // If not from tracking link, redirect to survey boards after delay
+    if (result && typeof window !== 'undefined' && !window.ThoughtMetrics?.isFromTrackingLink()) {
       setTimeout(() => {
         window.location.href = ROUTES.SURVEY_BOARDS;
       }, 2000);
     }
+
+    // Return result so submitForm can pass it to tracking
+    return result;
   };
 
   const handleGoogleSignUp = async () => {
@@ -471,7 +491,8 @@ const RespondentSignUpPage: React.FC = () => {
               {translations.auth.signup.redirecting || 'Signing you in...'}
             </h2>
             <p className="text-gray-600">
-              {translations.auth.signup.pleaseWait || 'Please wait while we redirect you'}
+              {translations.auth.signup.pleaseWait ||
+                'Please wait while we redirect you'}
             </p>
           </div>
         </div>
@@ -936,12 +957,23 @@ const RespondentSignUpPage: React.FC = () => {
                   value={formData.paymentMethod ?? ''}
                   onChange={(e) => updateField('paymentMethod', e.target.value)}
                   options={[
-                    { value: 'upi', label: translations.auth.signup.payment.upiPayment },
-                    { value: 'bank', label: translations.auth.signup.payment.bankTransfer },
-                    { value: 'skip', label: translations.auth.signup.payment.skipForNow },
+                    {
+                      value: 'upi',
+                      label: translations.auth.signup.payment.upiPayment,
+                    },
+                    {
+                      value: 'bank',
+                      label: translations.auth.signup.payment.bankTransfer,
+                    },
+                    {
+                      value: 'skip',
+                      label: translations.auth.signup.payment.skipForNow,
+                    },
                   ]}
                   error={errors.paymentMethod}
-                  placeholder={translations.auth.signup.payment.methodPlaceholder}
+                  placeholder={
+                    translations.auth.signup.payment.methodPlaceholder
+                  }
                 />
 
                 {formData.paymentMethod === 'upi' && (
@@ -955,7 +987,9 @@ const RespondentSignUpPage: React.FC = () => {
                         updateField('payment.upiId', e.target.value)
                       }
                       error={errors['payment.upiId']}
-                      placeholder={translations.auth.signup.payment.upi.upiIdPlaceholder}
+                      placeholder={
+                        translations.auth.signup.payment.upi.upiIdPlaceholder
+                      }
                     />
 
                     <TextInputAtom
@@ -967,7 +1001,9 @@ const RespondentSignUpPage: React.FC = () => {
                         updateField('payment.upiMobileNumber', e.target.value)
                       }
                       error={errors['payment.upiMobileNumber']}
-                      placeholder={translations.auth.signup.payment.upi.mobilePlaceholder}
+                      placeholder={
+                        translations.auth.signup.payment.upi.mobilePlaceholder
+                      }
                     />
 
                     <TextInputAtom
@@ -989,7 +1025,9 @@ const RespondentSignUpPage: React.FC = () => {
                     <TextInputAtom
                       id="bankAccountNumber"
                       name="payment.bankAccountNumber"
-                      label={translations.auth.signup.payment.bank.accountNumberLabel}
+                      label={
+                        translations.auth.signup.payment.bank.accountNumberLabel
+                      }
                       value={formData.payment?.bankAccountNumber ?? ''}
                       onChange={(e) =>
                         updateField('payment.bankAccountNumber', e.target.value)
@@ -1013,7 +1051,9 @@ const RespondentSignUpPage: React.FC = () => {
                     <TextInputAtom
                       id="bankAccountHolderName"
                       name="payment.bankAccountHolderName"
-                      label={translations.auth.signup.payment.bank.holderNameLabel}
+                      label={
+                        translations.auth.signup.payment.bank.holderNameLabel
+                      }
                       value={formData.payment?.bankAccountHolderName ?? ''}
                       onChange={(e) =>
                         updateField(

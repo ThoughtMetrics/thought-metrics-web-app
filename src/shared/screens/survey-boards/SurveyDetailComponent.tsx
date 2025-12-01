@@ -4,6 +4,7 @@ import { useSurveyDetailsQuery } from '@/core/hooks/queries/survey/use-survey-de
 import { useSubmitSurveyMutation } from '@/core/hooks/mutations/survey/use-submit-survey.mutation';
 import { QuestionType } from '@/core/types/survey.type';
 import { AuthProvider } from '@/shared/providers/auth-provider';
+import { UserRouteGuard } from '@/shared/components/guards/UserRouteGuard';
 import { SurveySuccessMessage } from '@/shared/components/survey/SurveySuccessMessage';
 import { toast } from 'sonner';
 import {
@@ -806,7 +807,9 @@ const SurveyDetailWrapper: React.FC<SurveyDetailWrapperProps> = ({
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <SurveyDetailSection surveyId={surveyId} />
+        <UserRouteGuard>
+          <SurveyDetailSection surveyId={surveyId} />
+        </UserRouteGuard>
       </AuthProvider>
     </QueryClientProvider>
   );

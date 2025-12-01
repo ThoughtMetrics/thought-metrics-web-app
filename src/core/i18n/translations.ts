@@ -941,7 +941,7 @@ const ta: Translations = {
   auth: {
     login: {
       pageTitle: 'Thought Metrics இல் உள்நுழைக',
-      thoughtMetricsId: 'Thought Metrics அடையாளம்',
+      thoughtMetricsId: 'மின்னஞ்சல் அடையாளம்',
       password: 'பாஸ்வேர்டு',
       rememberMe: 'என்னை நினைவில் வைத்திருங்கள்',
       continueButton: 'தொடர்',

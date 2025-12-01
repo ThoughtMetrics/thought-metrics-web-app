@@ -32,7 +32,14 @@
       "Bash(yarn astro build:*)",
       "Bash(timeout 5 echo:*)",
       "Bash(firebase login:*)",
-      "Bash(yarn install)"
+      "Bash(yarn install)",
+      "Bash(docker buildx:*)",
+      "Bash(docker build:*)",
+      "Bash(docker run:*)",
+      "Bash(timeout 5 curl:*)",
+      "Bash(timeout 10 curl:*)",
+      "Bash(docker stats:*)",
+      "Bash(docker exec:*)"
     ],
     "deny": [],
     "ask": []
