@@ -55,7 +55,7 @@ export interface RespondentRegistrationFormStore {
   previousStep: () => void;
   resetForm: () => void;
   submitForm: (
-    onSubmit: (formData: RespondentRegistrationFormData) => Promise<void>
+    onSubmit: (formData: RespondentRegistrationFormData) => Promise<any>
   ) => Promise<void>;
   validateStep: (step: number) => boolean;
 }

@@ -1,0 +1,15 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import SurveyFormWrapper from '@/shared/screens/survey-campaign/survey-form-wrapper';
+
+const { id } = Astro.params;
+
+const seoContent = {
+  title: 'Complete Survey | Thought Metrics',
+  description: 'Complete your survey to earn rewards.',
+};
+---
+
+<IntractionLayout title={seoContent.title} description={seoContent.description}>
+  <SurveyFormWrapper client:only="react" surveyId={id || ''} />
+</IntractionLayout>

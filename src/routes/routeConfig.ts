@@ -54,6 +54,10 @@ export const ROUTES = {
   UNSUBSCRIBE: '/unsubscribe',
   EDIT_PROFILE: '/edit-profile',
   SURVEY_BOARDS: '/survey-boards',
+  SURVEY_CAMPAIGN: '/survey-campaign',
+  /* Admin Routes */
+  ADMIN_ANALYTICS: '/admin/analytics',
+  ADMIN_CREATE_LINK: '/admin/create-tracking-link',
   NOT_FOUND: '*',
 } as const;
 
@@ -120,6 +124,10 @@ export const generateBreadcrumbsFromPath = (
       unsubscribe: 'Unsubscribe',
       'edit-profile': 'Edit Profile',
       'survey-boards': 'Survey Boards',
+      'survey-campaign': 'Survey Campaign',
+      admin: 'Admin',
+      analytics: 'Analytics Dashboard',
+      'create-tracking-link': 'Create Tracking Link',
     };
 
     if (segmentLabels[segment]) {

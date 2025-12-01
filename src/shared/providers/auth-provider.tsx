@@ -2,15 +2,22 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth } from '@/core/configs/firebase-config';
 import ApiService from '@/services/api/api.service';
+import type { UserRole } from '@/core/types/user.type';
 
 interface AuthContextType {
   user: User | null;
   isAuthReady: boolean;
+  userRole: UserRole | null;
+  isAdmin: boolean;
+  isSuperAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthReady: false,
+  userRole: null,
+  isAdmin: false,
+  isSuperAdmin: false,
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -22,6 +29,9 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
   useEffect(() => {
     // Only set up auth listener on client-side
@@ -52,12 +62,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             try {
               const token = await firebaseUser.getIdToken();
               ApiService.setAuthToken(token);
+
+              // Get user role from Firebase custom claims
+              const idTokenResult = await firebaseUser.getIdTokenResult();
+              console.log('[AuthProvider] Firebase token claims:', idTokenResult.claims);
+
+              const role = idTokenResult.claims.role as UserRole | undefined;
+              const computedIsAdmin = role === 'admin' || role === 'super-admin';
+              const computedIsSuperAdmin = role === 'super-admin';
+
+              console.log('[AuthProvider] Role details:', {
+                role: role || 'respondent',
+                isAdmin: computedIsAdmin,
+                isSuperAdmin: computedIsSuperAdmin
+              });
+
+              setUserRole(role || 'respondent');
+              setIsAdmin(computedIsAdmin);
+              setIsSuperAdmin(computedIsSuperAdmin);
             } catch (error) {
               console.error('Failed to get auth token:', error);
               ApiService.removeAuthToken();
+              setUserRole(null);
+              setIsAdmin(false);
+              setIsSuperAdmin(false);
             }
           } else {
             ApiService.removeAuthToken();
+            setUserRole(null);
+            setIsAdmin(false);
+            setIsSuperAdmin(false);
           }
 
           // Mark auth as ready after first state change
@@ -86,7 +120,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isAuthReady }}>
+    <AuthContext.Provider value={{ user, isAuthReady, userRole, isAdmin, isSuperAdmin }}>
       {children}
     </AuthContext.Provider>
   );

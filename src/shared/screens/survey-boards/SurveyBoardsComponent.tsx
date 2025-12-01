@@ -13,6 +13,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { LanguageToggle } from '@/shared/ui/molecules/language-toggle';
 import { useLanguage } from '@/core/hooks/use-language';
 import { getIndustryLabel } from '@/core/utils/industry-translator';
+import { UserRouteGuard } from '@/shared/components/guards/UserRouteGuard';
 
 const SurveyBoardsSection: React.FC = () => {
   const [selectedIndustry, setSelectedIndustry] = React.useState('all');
@@ -223,7 +224,9 @@ const SurveyBoardsWrapper: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <SurveyBoardsSection />
+        <UserRouteGuard>
+          <SurveyBoardsSection />
+        </UserRouteGuard>
       </AuthProvider>
     </QueryClientProvider>
   );

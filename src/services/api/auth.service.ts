@@ -23,7 +23,8 @@ const isLocalhost = (): boolean => {
 };
 
 // Helper to request storage access (Chrome/Edge/Safari support)
-const requestStorageAccess = async (): Promise<boolean> => {
+// Reserved for future use when implementing cross-domain authentication
+const _requestStorageAccess = async (): Promise<boolean> => {
   if (!('requestStorageAccess' in document)) {
     return false; // Browser doesn't support Storage Access API
   }
