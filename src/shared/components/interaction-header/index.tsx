@@ -3,11 +3,13 @@ import { ArrowRed, Logo } from '@/assets';
 import { ROUTES } from '@/routes/routeConfig';
 import { auth } from '@/core/configs/firebase-config';
 import authService from '@/services/api/auth.service';
+import { useAuth } from '@/shared/providers/auth-provider';
 
 const InteractionHeader: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     // Only set up auth listener on client-side
@@ -75,6 +77,14 @@ const InteractionHeader: React.FC = () => {
               >
                 About Us
               </a>
+              {isAdmin && (
+                <a
+                  href="/admin"
+                  className="text-black font-medium hover:underline underline-offset-4"
+                >
+                  Admin Panel
+                </a>
+              )}
               {isAuthenticated ? (
                 <>
                   <a
@@ -136,6 +146,15 @@ const InteractionHeader: React.FC = () => {
                     >
                       Edit Profile
                     </a>
+                    {isAdmin && (
+                      <a
+                        href="/admin"
+                        onClick={() => setIsDropdownOpen(false)}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                      >
+                        Admin Panel
+                      </a>
+                    )}
                     <button
                       onClick={() => {
                         setIsDropdownOpen(false);

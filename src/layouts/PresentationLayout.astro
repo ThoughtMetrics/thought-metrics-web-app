@@ -41,8 +41,8 @@ const {
   structuredData={structuredData}
 >
   <div id="full-screen" class="w-full flex flex-col justify-between overflow-y-scroll overflow-x-hidden">
-    <Header client:load />
+    <Header client:only="react" />
     <slot />
-    <Footer client:load />
+    <Footer client:only="react" />
   </div>
 </Layout>

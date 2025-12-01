@@ -1,0 +1,13 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import AdminDashboard from '@/shared/screens/admin/admin-dashboard';
+
+const seoContent = {
+  title: 'Admin Panel | Thought Metrics',
+  description: 'Admin dashboard for managing Thought Metrics platform',
+};
+---
+
+<IntractionLayout title={seoContent.title} description={seoContent.description}>
+  <AdminDashboard client:only="react" />
+</IntractionLayout>

@@ -1,7 +1,6 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import LoginWrapper from '@/shared/screens/auth/AuthPage';
-import AuthRedirectHandler from '@/shared/components/AuthRedirectHandler';
 
 const seoContent = {
   title: 'Login | Access Your Account - Thought Metrics',
@@ -10,6 +9,5 @@ const seoContent = {
 ---
 
 <Layout title={seoContent.title} description={seoContent.description}>
-  <AuthRedirectHandler client:only="react" />
   <LoginWrapper client:only="react"/>
 </Layout>
