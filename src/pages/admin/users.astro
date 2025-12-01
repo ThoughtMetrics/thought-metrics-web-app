@@ -1,0 +1,13 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import UsersManagement from '@/shared/screens/admin/users-management';
+
+const seoContent = {
+  title: 'User Management | Thought Metrics Admin',
+  description: 'Manage users, roles, and permissions',
+};
+---
+
+<IntractionLayout title={seoContent.title} description={seoContent.description}>
+  <UsersManagement client:only="react" />
+</IntractionLayout>

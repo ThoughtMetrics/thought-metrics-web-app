@@ -50,9 +50,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Set up async initialization
     const initAuth = async () => {
       try {
-        // NOTE: OAuth redirect handling is done by AuthRedirectHandler component
-        // on specific pages (login/signup) to avoid race conditions
-
         // Listen to Firebase auth state changes
         const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
           setUser(firebaseUser);

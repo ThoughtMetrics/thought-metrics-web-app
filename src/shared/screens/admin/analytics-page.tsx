@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from '@/core/lib/query-client';
-import { AuthProvider, useAuth } from '@/shared/providers/auth-provider';
+import { useAuth } from '@/shared/providers/auth-provider';
 import { Loader2, RefreshCw } from 'lucide-react';
+import AdminSidebar from '@/shared/components/admin/AdminSidebar';
+import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 
 const API_BASE = 'http://localhost:3000/api/v1';
 
@@ -38,38 +38,12 @@ interface VisitorData {
 }
 
 const AnalyticsDashboardContent: React.FC = () => {
-  const { user, isAuthReady, isAdmin, isSuperAdmin } = useAuth();
+  const { user } = useAuth();
   const [overview, setOverview] = useState<OverviewData | null>(null);
   const [links, setLinks] = useState<LinkData[]>([]);
   const [visitors, setVisitors] = useState<VisitorData[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-
-  // Auth check
-  useEffect(() => {
-    console.log('[AnalyticsPage] Auth state:', { isAuthReady, hasUser: !!user, isAdmin, isSuperAdmin });
-
-    if (!isAuthReady) {
-      console.log('[AnalyticsPage] Waiting for auth...');
-      return;
-    }
-
-    if (!user) {
-      console.log('[AnalyticsPage] No user, redirecting to login');
-      window.location.href = '/login';
-      return;
-    }
-
-    if (!isAdmin) {
-      console.log('[AnalyticsPage] User is not admin, redirecting');
-      window.location.href = '/unauthorized';
-      return;
-    }
-
-    console.log('[AnalyticsPage] Auth check passed, user:', user.email);
-    setIsCheckingAuth(false);
-  }, [user, isAuthReady, isAdmin, isSuperAdmin]);
 
   // Get auth headers
   const getAuthHeaders = async () => {
@@ -80,8 +54,8 @@ const AnalyticsDashboardContent: React.FC = () => {
     const token = await user.getIdToken();
     console.log('[AnalyticsPage] Got auth token, length:', token.length);
     return {
-      'Authorization': `Bearer firebase:${token}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer firebase:${token}`,
+      'Content-Type': 'application/json',
     };
   };
 
@@ -129,10 +103,13 @@ const AnalyticsDashboardContent: React.FC = () => {
 
       // Load visitors
       console.log('[AnalyticsPage] Fetching visitors...');
-      const visitorsRes = await fetch(`${API_BASE}/analytics/visitors?limit=20`, {
-        headers,
-        credentials: 'include',
-      });
+      const visitorsRes = await fetch(
+        `${API_BASE}/analytics/visitors?limit=20`,
+        {
+          headers,
+          credentials: 'include',
+        }
+      );
       console.log('[AnalyticsPage] Visitors status:', visitorsRes.status);
 
       if (visitorsRes.ok) {
@@ -152,9 +129,9 @@ const AnalyticsDashboardContent: React.FC = () => {
     }
   };
 
-  // Load data when auth is ready
+  // Load data when user is ready
   useEffect(() => {
-    if (!isCheckingAuth && user) {
+    if (user) {
       console.log('[AnalyticsPage] User ready, loading data for:', user.email);
       loadData();
 
@@ -162,11 +139,13 @@ const AnalyticsDashboardContent: React.FC = () => {
       const interval = setInterval(loadData, 30000);
       return () => clearInterval(interval);
     }
-  }, [isCheckingAuth, user]);
+  }, [user]);
 
   // Format helpers
-  const formatNumber = (num: number) => new Intl.NumberFormat('en-US').format(num);
+  const formatNumber = (num: number) =>
+    new Intl.NumberFormat('en-US').format(num);
   const formatDate = (dateStr: string) => {
+    if (!dateStr) return '';
     const date = new Date(dateStr);
     return new Intl.DateTimeFormat('en-US', {
       month: 'short',
@@ -181,17 +160,6 @@ const AnalyticsDashboardContent: React.FC = () => {
     alert('Link copied to clipboard!');
   };
 
-  if (isCheckingAuth) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
-          <p className="text-gray-600">Verifying access...</p>
-        </div>
-      </div>
-    );
-  }
-
   if (isLoadingData && !overview) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -204,220 +172,347 @@ const AnalyticsDashboardContent: React.FC = () => {
   }
 
   return (
-    <div className="h-full overflow-y-scroll bg-gray-50 py-8 px-4">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
-          <div className="flex gap-4">
-            <button
-              onClick={loadData}
-              disabled={isLoadingData}
-              className="flex items-center gap-2 px-4 py-2 text-primary hover:text-primary/80 font-medium disabled:opacity-50"
-            >
-              <RefreshCw className={`w-4 h-4 ${isLoadingData ? 'animate-spin' : ''}`} />
-              Refresh
-            </button>
-            <a
-              href="/admin/create-tracking-link"
-              className="bg-primary text-white px-6 py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors"
-            >
-              + Create New Link
-            </a>
+    <div className="flex min-h-screen bg-gray-50">
+      <AdminSidebar />
+      <div className="flex-1 overflow-y-scroll py-8 px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">
+              Analytics Dashboard
+            </h1>
+            <div className="flex gap-4">
+              <button
+                onClick={loadData}
+                disabled={isLoadingData}
+                className="flex items-center gap-2 px-4 py-2 text-primary hover:text-primary/80 font-medium disabled:opacity-50"
+              >
+                <RefreshCw
+                  className={`w-4 h-4 ${isLoadingData ? 'animate-spin' : ''}`}
+                />
+                Refresh
+              </button>
+              <a
+                href="/admin/create-tracking-link"
+                className="bg-primary text-white px-6 py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+              >
+                + Create New Link
+              </a>
+            </div>
           </div>
-        </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <p className="text-red-800">{error}</p>
-          </div>
-        )}
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+              <p className="text-red-800">{error}</p>
+            </div>
+          )}
 
-        {/* Overview Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Unique Visitors</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {overview ? formatNumber(overview.uniqueVisitors) : '0'}
-                </p>
+          {/* Overview Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Unique Visitors</p>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {overview ? formatNumber(overview.uniqueVisitors) : '0'}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <svg
+                    className="w-6 h-6 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                    />
+                  </svg>
+                </div>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
+            </div>
+
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Total Sessions</p>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {overview ? formatNumber(overview.totalSessions) : '0'}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <svg
+                    className="w-6 h-6 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Page Views</p>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {overview ? formatNumber(overview.pageViews) : '0'}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                  <svg
+                    className="w-6 h-6 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Registrations</p>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {overview ? formatNumber(overview.registrations) : '0'}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                  <svg
+                    className="w-6 h-6 text-orange-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Total Sessions</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {overview ? formatNumber(overview.totalSessions) : '0'}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
+          {/* Tracking Links Table */}
+          <div className="bg-white rounded-lg shadow mb-8">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Tracking Links Performance
+              </h2>
             </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Page Views</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {overview ? formatNumber(overview.pageViews) : '0'}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Registrations</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {overview ? formatNumber(overview.registrations) : '0'}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Tracking Links Table */}
-        <div className="bg-white rounded-lg shadow mb-8">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Tracking Links Performance</h2>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Campaign Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">UTM Source</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Short Code</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Visitors</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registrations</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Conversion</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {links.length === 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
-                      No tracking links found. <a href="/admin/create-tracking-link" className="text-primary hover:underline">Create one now</a>
-                    </td>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Campaign Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      UTM Source
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Short Code
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Visitors
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Registrations
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Conversion
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
-                ) : (
-                  links.map((link) => {
-                    const visitors = link.stats?.uniqueVisitors || 0;
-                    const registrations = link.stats?.registrations || 0;
-                    const conversion = visitors > 0 ? ((registrations / visitors) * 100).toFixed(1) : '0.0';
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {links.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={7}
+                        className="px-6 py-12 text-center text-gray-500"
+                      >
+                        No tracking links found.{' '}
+                        <a
+                          href="/admin/create-tracking-link"
+                          className="text-primary hover:underline"
+                        >
+                          Create one now
+                        </a>
+                      </td>
+                    </tr>
+                  ) : (
+                    links.map((link) => {
+                      const visitors = link.stats?.uniqueVisitors || 0;
+                      const registrations = link.stats?.registrations || 0;
+                      const conversion =
+                        visitors > 0
+                          ? ((registrations / visitors) * 100).toFixed(1)
+                          : '0.0';
 
-                    return (
-                      <tr key={link.id} className="hover:bg-gray-50">
+                      return (
+                        <tr key={link.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">
+                              {link.name}
+                            </div>
+                            {link.utmCampaign && (
+                              <div className="text-xs text-gray-500">
+                                {link.utmCampaign}
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {link.utmSource || '-'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <code className="text-xs bg-gray-100 px-2 py-1 rounded">
+                              {link.shortCode}
+                            </code>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {formatNumber(visitors)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {formatNumber(registrations)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                parseFloat(conversion) >= 10
+                                  ? 'bg-green-100 text-green-800'
+                                  : parseFloat(conversion) >= 5
+                                    ? 'bg-yellow-100 text-yellow-800'
+                                    : 'bg-gray-100 text-gray-800'
+                              }`}
+                            >
+                              {conversion}%
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <button
+                              onClick={() => copyLink(link.fullTrackingUrl)}
+                              className="text-primary hover:text-primary/80 font-medium"
+                            >
+                              Copy Link
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Recent Visitors */}
+          <div className="bg-white rounded-lg shadow">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Recent Visitors
+              </h2>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Visitor ID
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Source
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Location
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Registered
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      First Seen
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {visitors.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={5}
+                        className="px-6 py-12 text-center text-gray-500"
+                      >
+                        No visitors yet
+                      </td>
+                    </tr>
+                  ) : (
+                    visitors.map((visitor) => (
+                      <tr key={visitor.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">{link.name}</div>
-                          {link.utmCampaign && <div className="text-xs text-gray-500">{link.utmCampaign}</div>}
+                          <code className="text-xs bg-gray-100 px-2 py-1 rounded">
+                            {visitor.id.slice(0, 8)}...
+                          </code>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{link.utmSource || '-'}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          {visitor.lastUtmSource || '-'}
+                          {visitor.lastUtmMedium && (
+                            <span className="text-gray-400">
+                              /{visitor.lastUtmMedium}
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          {visitor.city || ''} {visitor.country || ''}
+                        </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <code className="text-xs bg-gray-100 px-2 py-1 rounded">{link.shortCode}</code>
+                          {visitor.isRegistered ? (
+                            <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                              Yes
+                            </span>
+                          ) : (
+                            <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                              No
+                            </span>
+                          )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatNumber(visitors)}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatNumber(registrations)}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            parseFloat(conversion) >= 10 ? 'bg-green-100 text-green-800' :
-                            parseFloat(conversion) >= 5 ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-gray-100 text-gray-800'
-                          }`}>
-                            {conversion}%
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <button
-                            onClick={() => copyLink(link.fullTrackingUrl)}
-                            className="text-primary hover:text-primary/80 font-medium"
-                          >
-                            Copy Link
-                          </button>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          {formatDate(visitor.firstSeenAt)}
                         </td>
                       </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Recent Visitors */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Recent Visitors</h2>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Visitor ID</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registered</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">First Seen</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {visitors.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-gray-500">No visitors yet</td>
-                  </tr>
-                ) : (
-                  visitors.map((visitor) => (
-                    <tr key={visitor.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <code className="text-xs bg-gray-100 px-2 py-1 rounded">{visitor.id.slice(0, 8)}...</code>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {visitor.lastUtmSource || '-'}
-                        {visitor.lastUtmMedium && <span className="text-gray-400">/{visitor.lastUtmMedium}</span>}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {visitor.city || ''} {visitor.country || ''}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {visitor.isRegistered ? (
-                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Yes</span>
-                        ) : (
-                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">No</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{formatDate(visitor.firstSeenAt)}</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -425,14 +520,12 @@ const AnalyticsDashboardContent: React.FC = () => {
   );
 };
 
-// Main component with providers
+// Main component with AdminRouteGuard
 export const AnalyticsPage: React.FC = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <AnalyticsDashboardContent />
-      </AuthProvider>
-    </QueryClientProvider>
+    <AdminRouteGuard>
+      <AnalyticsDashboardContent />
+    </AdminRouteGuard>
   );
 };
 

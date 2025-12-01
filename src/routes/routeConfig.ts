@@ -56,6 +56,7 @@ export const ROUTES = {
   SURVEY_BOARDS: '/survey-boards',
   SURVEY_CAMPAIGN: '/survey-campaign',
   /* Admin Routes */
+  ADMIN : '/admin',
   ADMIN_ANALYTICS: '/admin/analytics',
   ADMIN_CREATE_LINK: '/admin/create-tracking-link',
   NOT_FOUND: '*',
