@@ -95,7 +95,7 @@ export const getAPIConfig = (): {
     baseAPIVersion: getPublicEnv('PUBLIC_BASE_API_VERSION') || '',
     firebaseConfig: {
       apiKey: getPublicEnv('PUBLIC_FIREBASE_API_KEY') || '',
-      authDomain: getFirebaseAuthDomain(),
+      authDomain: getPublicEnv('PUBLIC_FIREBASE_AUTH_DOMAIN')|| '',
       projectId: getPublicEnv('PUBLIC_FIREBASE_PROJECT_ID') || '',
       storageBucket: getPublicEnv('PUBLIC_FIREBASE_STORAGE_BUCKET') || '',
       messagingSenderId:
