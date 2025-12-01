@@ -83,69 +83,6 @@ export default defineConfig({
     ssr: {
       noExternal: ['swiper'],
     },
-    build: {
-      chunkSizeWarningLimit: 600,
-      rollupOptions: {
-        output: {
-          manualChunks: (id) => {
-            // Split vendor libraries into separate chunks
-            if (id.includes('node_modules')) {
-              // React and related libraries
-              if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-                return 'vendor-react';
-              }
-              // Firebase (already large)
-              if (id.includes('firebase')) {
-                return 'vendor-firebase';
-              }
-              // TanStack Query
-              if (id.includes('@tanstack/react-query')) {
-                return 'vendor-query';
-              }
-              // Lucide icons
-              if (id.includes('lucide-react')) {
-                return 'vendor-icons';
-              }
-              // Axios and API libraries
-              if (id.includes('axios') || id.includes('qs')) {
-                return 'vendor-api';
-              }
-              // Zustand state management
-              if (id.includes('zustand')) {
-                return 'vendor-state';
-              }
-              // UI libraries (tailwind, clsx, etc)
-              if (id.includes('tailwind') || id.includes('clsx') || id.includes('class-variance')) {
-                return 'vendor-ui';
-              }
-              // Other node_modules as vendor-misc
-              return 'vendor-misc';
-            }
-
-            // Split large asset images/constants into separate chunks
-            if (id.includes('/assets/images/') || id.includes('/assets/icons/')) {
-              return 'assets-images';
-            }
-
-            // Split constants files
-            if (id.includes('/constants/')) {
-              return 'app-constants';
-            }
-
-            // Split screens/pages by feature
-            if (id.includes('/screens/auth/')) {
-              return 'feature-auth';
-            }
-            if (id.includes('/screens/survey')) {
-              return 'feature-surveys';
-            }
-            if (id.includes('/screens/admin/')) {
-              return 'feature-admin';
-            }
-          },
-        },
-      },
-    },
   },
 
   adapter: node({
