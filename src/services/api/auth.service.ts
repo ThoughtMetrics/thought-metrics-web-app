@@ -2,7 +2,6 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithRedirect,
-  signInWithPopup,
   getRedirectResult,
   GoogleAuthProvider,
   FacebookAuthProvider,
@@ -14,39 +13,6 @@ import {
 import { auth, ensureAuthPersistence } from '@/core/configs/firebase-config';
 import ApiService from '@/services/api/api.service';
 import type { UserProfile, SignUpData } from '@/core/types/user.type';
-
-// Helper to detect if running on localhost (third-party storage issues)
-const isLocalhost = (): boolean => {
-  return typeof window !== 'undefined' &&
-         (window.location.hostname === 'localhost' ||
-          window.location.hostname === '127.0.0.1');
-};
-
-// Helper to request storage access (Chrome/Edge/Safari support)
-// Reserved for future use when implementing cross-domain authentication
-const _requestStorageAccess = async (): Promise<boolean> => {
-  if (!('requestStorageAccess' in document)) {
-    return false; // Browser doesn't support Storage Access API
-  }
-
-  try {
-    // Check if we already have access
-    const hasAccess = await (document as any).hasStorageAccess();
-    if (hasAccess) {
-      console.log('✅ [AuthService] Already has storage access');
-      return true;
-    }
-
-    // Request storage access
-    console.log('🔐 [AuthService] Requesting storage access...');
-    await (document as any).requestStorageAccess();
-    console.log('✅ [AuthService] Storage access granted');
-    return true;
-  } catch (error: any) {
-    console.warn('⚠️ [AuthService] Storage access denied:', error.message);
-    return false;
-  }
-};
 
 class AuthService {
   private googleProvider: GoogleAuthProvider | null = null;
@@ -212,49 +178,36 @@ class AuthService {
 
   /**
    * Sign in with Google
-   * Uses popup for localhost (third-party storage blocked)
-   * Uses redirect for production (custom authDomain works)
+   * Uses redirect for both localhost and production
    */
   async signInWithGoogle(): Promise<UserProfile | void> {
+    console.log('[AuthService] 🔐 Starting Google sign-in with redirect...');
+    console.log('[AuthService] Current URL:', window.location.href);
+    console.log('[AuthService] Current hostname:', window.location.hostname);
+
     // CRITICAL: Set persistence BEFORE auth
     await ensureAuthPersistence();
 
     const provider = this.getGoogleProvider();
 
-    // Localhost: Use popup (third-party storage blocked by modern browsers)
-    if (isLocalhost()) {
-      try {
-        const result = await signInWithPopup(auth, provider);
+    // Store a flag in sessionStorage to track that we initiated OAuth
+    // This helps us handle the redirect result properly
+    sessionStorage.setItem('auth_redirect_pending', 'true');
+    sessionStorage.setItem('auth_redirect_timestamp', Date.now().toString());
 
-        // Update token
-        const token = await result.user.getIdToken();
-        ApiService.setAuthToken(token);
+    console.log('[AuthService] Calling signInWithRedirect...');
+    console.log('[AuthService] Session flag set: auth_redirect_pending=true');
 
-        // Sync with backend
-        await this.syncUserToBackend(result.user);
-
-        // Return user profile
-        return await this.getUserProfile();
-      } catch (error: any) {
-        // Handle popup blocked error
-        if (error.code === 'auth/popup-blocked') {
-          throw new Error(
-            'Popup was blocked. Please allow popups for this site or use production domain for redirect auth.'
-          );
-        }
-        throw error;
-      }
-    }
-
-    // Production: Use redirect (custom authDomain works)
+    // Use redirect for all environments (localhost and production)
     await new Promise(resolve => setTimeout(resolve, 150));
     await signInWithRedirect(auth, provider);
+
+    console.log('[AuthService] Redirect initiated (this line may not execute)');
   }
 
   /**
    * Sign in with Facebook
-   * Uses popup for localhost (third-party storage blocked)
-   * Uses redirect for production (custom authDomain works)
+   * Uses redirect for both localhost and production
    */
   async signInWithFacebook(): Promise<UserProfile | void> {
     // CRITICAL: Set persistence BEFORE auth
@@ -262,31 +215,7 @@ class AuthService {
 
     const provider = this.getFacebookProvider();
 
-    // Localhost: Use popup (third-party storage blocked by modern browsers)
-    if (isLocalhost()) {
-      try {
-        const result = await signInWithPopup(auth, provider);
-
-        // Update token
-        const token = await result.user.getIdToken();
-        ApiService.setAuthToken(token);
-
-        // Sync with backend
-        await this.syncUserToBackend(result.user);
-
-        // Return user profile
-        return await this.getUserProfile();
-      } catch (error: any) {
-        if (error.code === 'auth/popup-blocked') {
-          throw new Error(
-            'Popup was blocked. Please allow popups for this site or use production domain for redirect auth.'
-          );
-        }
-        throw error;
-      }
-    }
-
-    // Production: Use redirect
+    // Use redirect for all environments (localhost and production)
     await new Promise(resolve => setTimeout(resolve, 150));
     await signInWithRedirect(auth, provider);
   }
@@ -318,6 +247,17 @@ class AuthService {
   private async processRedirectResult(): Promise<UserProfile | null> {
     try {
       console.log('[AuthService] 🔄 Processing redirect result...');
+      console.log('[AuthService] Current hostname:', window.location.hostname);
+      console.log('[AuthService] Current URL:', window.location.href);
+
+      // Check for pending redirect flag
+      const pendingRedirect = sessionStorage.getItem('auth_redirect_pending');
+      const redirectTimestamp = sessionStorage.getItem('auth_redirect_timestamp');
+      console.log('[AuthService] Redirect pending flag:', pendingRedirect);
+      if (redirectTimestamp) {
+        const elapsed = Date.now() - parseInt(redirectTimestamp);
+        console.log('[AuthService] Time since redirect initiated:', elapsed, 'ms');
+      }
 
       // CRITICAL: Ensure persistence is set BEFORE calling getRedirectResult()
       console.log('[AuthService] Setting persistence...');
@@ -325,12 +265,30 @@ class AuthService {
       console.log('[AuthService] ✅ Persistence set');
 
       console.log('[AuthService] Calling getRedirectResult()...');
+      console.log('[AuthService] AuthDomain being used:', auth.config.authDomain);
       const result = await getRedirectResult(auth);
       console.log('[AuthService] getRedirectResult() returned:', result ? 'USER DATA' : 'NULL');
+
+      // Clear the redirect flags
+      if (pendingRedirect) {
+        sessionStorage.removeItem('auth_redirect_pending');
+        sessionStorage.removeItem('auth_redirect_timestamp');
+      }
 
       // No redirect result means user didn't just complete OAuth flow
       if (!result) {
         console.log('[AuthService] ℹ️ No redirect result found');
+
+        // Provide diagnostic info if we expected a result
+        if (pendingRedirect) {
+          console.error('[AuthService] ⚠️ CROSS-ORIGIN ISSUE DETECTED:');
+          console.error('[AuthService] OAuth redirect was initiated but getRedirectResult() returned NULL.');
+          console.error('[AuthService] This happens when authDomain differs from the current hostname.');
+          console.error('[AuthService] Current hostname:', window.location.hostname);
+          console.error('[AuthService] AuthDomain used:', auth.config.authDomain);
+          console.error('[AuthService] Solution: Deploy to production (www.thoughtmetrics.com) where authDomain matches hostname.');
+        }
+
         return null;
       }
 
