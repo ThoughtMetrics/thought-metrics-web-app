@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import authService from '@/services/api/auth.service';
 import { toast } from 'sonner';
 import { getAuthErrorDetails } from '@/core/utils/firebase-error-handler';
+import { ROUTES } from '@/routes/routeConfig';
 
 /**
  * Dedicated component to handle OAuth redirects
@@ -17,6 +18,11 @@ const AuthRedirectHandler: React.FC = () => {
           toast.success('Sign in successful!', {
             description: `Welcome back, ${result.profile?.displayName ?? result.profile?.firstName}!`,
           });
+
+          // Redirect to survey boards after successful authentication
+          setTimeout(() => {
+            window.location.href = ROUTES.SURVEY_BOARDS;
+          }, 800);
         }
       } catch (error: any) {
         console.error('Redirect error:', error);
