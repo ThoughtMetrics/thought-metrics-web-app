@@ -317,27 +317,47 @@ class AuthService {
    */
   private async processRedirectResult(): Promise<UserProfile | null> {
     try {
-      // CRITICAL: Ensure persistence is set BEFORE calling getRedirectResult()
-      await ensureAuthPersistence();
+      console.log('[AuthService] 🔄 Processing redirect result...');
 
+      // CRITICAL: Ensure persistence is set BEFORE calling getRedirectResult()
+      console.log('[AuthService] Setting persistence...');
+      await ensureAuthPersistence();
+      console.log('[AuthService] ✅ Persistence set');
+
+      console.log('[AuthService] Calling getRedirectResult()...');
       const result = await getRedirectResult(auth);
+      console.log('[AuthService] getRedirectResult() returned:', result ? 'USER DATA' : 'NULL');
 
       // No redirect result means user didn't just complete OAuth flow
       if (!result) {
+        console.log('[AuthService] ℹ️ No redirect result found');
         return null;
       }
 
+      console.log('[AuthService] ✅ Redirect result found:', {
+        uid: result.user.uid,
+        email: result.user.email,
+        displayName: result.user.displayName,
+      });
+
       // Sync user to backend
+      console.log('[AuthService] Syncing user to backend...');
       await this.syncUserToBackend(result.user);
+      console.log('[AuthService] ✅ User synced to backend');
 
       // Fetch and return the full user profile from backend
       try {
+        console.log('[AuthService] Fetching user profile from backend...');
         const profile = await this.getUserProfile();
+        console.log('[AuthService] ✅ Profile fetched successfully:', {
+          email: profile.email,
+          firebaseUid: profile.firebaseUid,
+        });
         return profile;
       } catch (profileError) {
-        console.error('Failed to fetch profile from backend:', profileError);
+        console.error('[AuthService] ⚠️ Failed to fetch profile from backend:', profileError);
         // Return a basic profile from Firebase user data
-        return {
+        const basicProfile = {
           firebaseUid: result.user.uid,
           email: result.user.email,
           profile: {
@@ -345,9 +365,16 @@ class AuthService {
             avatar: result.user.photoURL ?? undefined,
           },
         } as UserProfile;
+        console.log('[AuthService] Returning basic profile:', basicProfile);
+        return basicProfile;
       }
     } catch (error: any) {
-      console.error('Error in handleRedirectResult:', error);
+      console.error('[AuthService] ❌ Error in processRedirectResult:', error);
+      console.error('[AuthService] Error details:', {
+        message: error.message,
+        code: error.code,
+        stack: error.stack,
+      });
       // Handle account exists with different credential
       if (error.code === 'auth/account-exists-with-different-credential') {
         const email = error.customData?.email;
