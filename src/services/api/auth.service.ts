@@ -9,7 +9,7 @@ import {
   type User,
   type UserCredential,
 } from 'firebase/auth';
-import { auth, ensureAuthPersistence } from '@/core/configs/firebase-config';
+import { auth } from '@/core/configs/firebase-config';
 import ApiService from '@/services/api/api.service';
 import type { UserProfile, SignUpData } from '@/core/types/user.type';
 
@@ -175,63 +175,104 @@ class AuthService {
   }
 
   /**
-   * Sign in with Google using popup
+   * Sign in with Google
    */
   async signInWithGoogle(): Promise<UserProfile> {
-    console.log('[AuthService] 🔐 Starting Google sign-in with popup...');
+    try {
+      const userCredential: UserCredential = await signInWithPopup(
+        auth,
+        this.getGoogleProvider()
+      );
 
-    // CRITICAL: Set persistence BEFORE auth
-    await ensureAuthPersistence();
+      // Sync to backend
+      await this.syncUserToBackend(userCredential.user);
 
-    const provider = this.getGoogleProvider();
+      // Fetch and return the full user profile from backend
+      return await this.getUserProfile();
+    } catch (error: any) {
+      // Re-throw the error immediately for popup cancellations
+      if (
+        error.code === 'auth/popup-closed-by-user' ||
+        error.code === 'auth/cancelled-popup-request'
+      ) {
+        throw error;
+      }
 
-    console.log('[AuthService] Opening popup for Google sign-in...');
-    const result = await signInWithPopup(auth, provider);
+      // Handle account exists with different credential
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        const email = error.customData?.email;
 
-    console.log('[AuthService] ✅ Popup sign-in successful:', {
-      uid: result.user.uid,
-      email: result.user.email,
-      displayName: result.user.displayName,
-    });
+        if (email) {
+          // Get existing sign-in methods for this email
+          const methods = await fetchSignInMethodsForEmail(auth, email);
 
-    // Sync user to backend
-    console.log('[AuthService] Syncing user to backend...');
-    await this.syncUserToBackend(result.user);
-    console.log('[AuthService] ✅ User synced to backend');
+          // Map provider IDs to user-friendly names
+          const providerName = methods[0]?.includes('facebook')
+            ? 'Facebook'
+            : methods[0]?.includes('password')
+              ? 'email and password'
+              : methods[0] || 'another method';
 
-    // Fetch and return the full user profile from backend
-    return await this.getUserProfile();
+          throw new Error(
+            `An account already exists with ${email}. Please sign in with ${providerName} first.`
+          );
+        }
+      }
+
+      // For other errors, also throw immediately
+      throw error;
+    }
   }
 
   /**
-   * Sign in with Facebook using popup
+   * Sign in with Facebook
    */
   async signInWithFacebook(): Promise<UserProfile> {
-    console.log('[AuthService] 🔐 Starting Facebook sign-in with popup...');
+    try {
+      const userCredential: UserCredential = await signInWithPopup(
+        auth,
+        this.getFacebookProvider()
+      );
 
-    // CRITICAL: Set persistence BEFORE auth
-    await ensureAuthPersistence();
+      // Sync to backend
+      await this.syncUserToBackend(userCredential.user);
 
-    const provider = this.getFacebookProvider();
+      // Fetch and return the full user profile from backend
+      return await this.getUserProfile();
+    } catch (error: any) {
+      // Re-throw the error immediately for popup cancellations
+      if (
+        error.code === 'auth/popup-closed-by-user' ||
+        error.code === 'auth/cancelled-popup-request'
+      ) {
+        throw error;
+      }
 
-    console.log('[AuthService] Opening popup for Facebook sign-in...');
-    const result = await signInWithPopup(auth, provider);
+      // Handle account exists with different credential
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        const email = error.customData?.email;
 
-    console.log('[AuthService] ✅ Popup sign-in successful:', {
-      uid: result.user.uid,
-      email: result.user.email,
-      displayName: result.user.displayName,
-    });
+        if (email) {
+          // Get existing sign-in methods for this email
+          const methods = await fetchSignInMethodsForEmail(auth, email);
 
-    // Sync user to backend
-    console.log('[AuthService] Syncing user to backend...');
-    await this.syncUserToBackend(result.user);
-    console.log('[AuthService] ✅ User synced to backend');
+          // Map provider IDs to user-friendly names
+          const providerName = methods[0]?.includes('google')
+            ? 'Google'
+            : methods[0]?.includes('password')
+              ? 'email and password'
+              : methods[0] || 'another method';
 
-    // Fetch and return the full user profile from backend
-    return await this.getUserProfile();
+          throw new Error(
+            `An account already exists with ${email}. Please sign in with ${providerName} first.`
+          );
+        }
+      }
+
+      // For other errors, also throw immediately
+      throw error;
+    }
   }
-
 
   /**
    * Sign out
