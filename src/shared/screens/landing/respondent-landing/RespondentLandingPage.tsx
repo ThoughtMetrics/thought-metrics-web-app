@@ -1,4 +1,7 @@
 import type React from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '@/core/lib/query-client';
+import { AuthProvider } from '@/shared/providers/auth-provider';
 import LandingHeroSection from '@/shared/screens/landing/components/landing-hero-section';
 import { landing } from '@/core/constants/page-constants/landing-constant';
 import LandingCaseStudySection from '@/shared/screens/landing/components/landing-casestudy-section';
@@ -27,7 +30,7 @@ interface RespondentLandingPageProps {
   blogData?: BlogData | null;
 }
 
-const RespondentLandingPage: React.FC<RespondentLandingPageProps> = ({
+const RespondentLandingPageContent: React.FC<RespondentLandingPageProps> = ({
   blogData,
 }) => {
   return (
@@ -58,6 +61,23 @@ const RespondentLandingPage: React.FC<RespondentLandingPageProps> = ({
       />
       <LandingSignUpSection signUpSection={landing.respondent.signUpSection} />
     </>
+  );
+};
+
+/**
+ * RespondentLandingPage - Separate Astro Island with its own providers
+ *
+ * IMPORTANT: Has its own AuthProvider because it's rendered as client:load
+ * in respondent-landing.astro, making it a separate island. All child components
+ * (LandingHeroSection, LandingSignUpSection, etc.) share this provider.
+ */
+const RespondentLandingPage: React.FC<RespondentLandingPageProps> = (props) => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <RespondentLandingPageContent {...props} />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 };
 

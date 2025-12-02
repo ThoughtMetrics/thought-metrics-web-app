@@ -6,13 +6,29 @@ import UserManagementService from '@/services/api/user-management.service';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 
 const AdminDashboardContent: React.FC = () => {
-  const { user, userRole, isAdmin, isSuperAdmin } = useAuth();
+  const { user, userRole, isAdmin, isSuperAdmin, isAuthReady } = useAuth();
   const [stats, setStats] = useState({ totalUsers: 0, loading: true });
+
+  // Debug log to see what useAuth returns
+  useEffect(() => {
+    console.log('[AdminDashboard] useAuth data changed', JSON.stringify(user));
+    console.log('[AdminDashboard] Auth data:', {
+      hasUser: !!user,
+      email: user?.email,
+      userRole,
+      isAdmin,
+      isSuperAdmin,
+      isAuthReady,
+    });
+  }, [user, userRole, isAdmin, isSuperAdmin, isAuthReady]);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await UserManagementService.getUsers({ page: 1, limit: 1 });
+        const response = await UserManagementService.getUsers({
+          page: 1,
+          limit: 1,
+        });
         if (response.data) {
           setStats({ totalUsers: response.data.total, loading: false });
         }
@@ -26,7 +42,7 @@ const AdminDashboardContent: React.FC = () => {
   }, []);
 
   return (
-    <div className="h-full overflow-y-scroll overflow-x-hidden flex bg-gray-50">
+    <div className="h-full overflow-y-scroll overflow-x-hidden flex bg-gray-50 text-text-dark">
       <AdminSidebar />
 
       <main className="flex-1 p-8">
@@ -66,9 +82,13 @@ const AdminDashboardContent: React.FC = () => {
                 Total Users
               </h3>
               {stats.loading ? (
-                <div className="scale-50 -my-4"><LoaderUI message="" /></div>
+                <div className="scale-50 -my-4">
+                  <LoaderUI message="" />
+                </div>
               ) : (
-                <p className="text-3xl font-bold text-gray-900">{stats.totalUsers}</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {stats.totalUsers}
+                </p>
               )}
             </div>
             <div className="bg-white rounded-lg shadow-sm p-6">
@@ -107,7 +127,9 @@ const AdminDashboardContent: React.FC = () => {
                 className="block p-4 border border-gray-200 rounded-lg hover:border-primary hover:bg-gray-50 transition-colors"
               >
                 <h3 className="font-medium text-gray-900 mb-1">Manage Users</h3>
-                <p className="text-sm text-gray-600">View and manage all users</p>
+                <p className="text-sm text-gray-600">
+                  View and manage all users
+                </p>
               </a>
               <div className="block p-4 border border-gray-200 rounded-lg opacity-50 cursor-not-allowed">
                 <h3 className="font-medium text-gray-900 mb-1">

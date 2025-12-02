@@ -1,34 +1,18 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '@/core/lib/query-client';
+import { AuthProvider, useAuth } from '@/shared/providers/auth-provider';
 import { ArrowRed, Logo } from '@/assets';
 import { ROUTES } from '@/routes/routeConfig';
-import { auth } from '@/core/configs/firebase-config';
 import authService from '@/services/api/auth.service';
-import { useAuth } from '@/shared/providers/auth-provider';
 
-const InteractionHeader: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+const InteractionHeaderContent: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
 
-  useEffect(() => {
-    // Only set up auth listener on client-side
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    // Check if auth is available (will be null/undefined during SSR or if Firebase failed to init)
-    if (!auth || typeof auth.onAuthStateChanged !== 'function') {
-      console.warn('Firebase auth not available in InteractionHeader');
-      return;
-    }
-
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setIsAuthenticated(!!user);
-    });
-
-    return () => unsubscribe();
-  }, []);
+  // Derive isAuthenticated from user object
+  const isAuthenticated = !!user;
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -65,18 +49,22 @@ const InteractionHeader: React.FC = () => {
               </div>
             </a>
             <div className="hidden md:flex items-center gap-8 text-nowrap">
-              <a
-                href={ROUTES.HOME}
-                className="text-black font-medium hover:underline underline-offset-4"
-              >
-                Home
-              </a>
-              <a
-                href={ROUTES.OUR_PANEL}
-                className="text-black font-medium hover:underline underline-offset-4"
-              >
-                About Us
-              </a>
+              {!isAdmin && (
+                <a
+                  href={ROUTES.HOME}
+                  className="text-black font-medium hover:underline underline-offset-4"
+                >
+                  Home
+                </a>
+              )}
+              {!isAdmin && (
+                <a
+                  href={ROUTES.OUR_PANEL}
+                  className="text-black font-medium hover:underline underline-offset-4"
+                >
+                  About Us
+                </a>
+              )}
               {isAdmin && (
                 <a
                   href="/admin"
@@ -179,6 +167,22 @@ const InteractionHeader: React.FC = () => {
         </div>
       </header>
     </div>
+  );
+};
+
+/**
+ * InteractionHeader - Separate Astro Island with its own providers
+ *
+ * IMPORTANT: Has its own AuthProvider because it's rendered as client:only="react"
+ * in IntractionLayout.astro, making it a separate island.
+ */
+const InteractionHeader: React.FC = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <InteractionHeaderContent />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 };
 
