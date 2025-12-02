@@ -3,6 +3,7 @@ import { useAuth } from '@/shared/providers/auth-provider';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 import UserManagementService from '@/services/api/user-management.service';
+import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 
 const AdminDashboardContent: React.FC = () => {
   const { user, userRole, isAdmin, isSuperAdmin } = useAuth();
@@ -65,7 +66,7 @@ const AdminDashboardContent: React.FC = () => {
                 Total Users
               </h3>
               {stats.loading ? (
-                <div className="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+                <div className="scale-50 -my-4"><LoaderUI message="" /></div>
               ) : (
                 <p className="text-3xl font-bold text-gray-900">{stats.totalUsers}</p>
               )}

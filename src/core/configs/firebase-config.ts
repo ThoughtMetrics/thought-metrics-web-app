@@ -40,9 +40,6 @@ const initializeFirebase = (): FirebaseApp | null => {
       return null;
     }
 
-    console.log('[Firebase] 🔧 Initializing with authDomain:', API_CONFIG.firebaseConfig.authDomain);
-    console.log('[Firebase] 🌐 Current hostname:', typeof window !== 'undefined' ? window.location.hostname : 'server-side');
-
     firebaseApp = initializeApp(API_CONFIG.firebaseConfig);
 
     firebaseAnalytics = getAnalytics(firebaseApp);

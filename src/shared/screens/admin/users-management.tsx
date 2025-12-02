@@ -5,6 +5,7 @@ import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 import UserManagementService from '@/services/api/user-management.service';
 import type { UserProfile, UserRole } from '@/core/types/user.type';
 import { toast } from 'sonner';
+import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 
 const UserManagementContent: React.FC = () => {
   const { user, userRole, isSuperAdmin } = useAuth();
@@ -206,8 +207,7 @@ const UserManagementContent: React.FC = () => {
 
             {loading ? (
               <div className="p-8 text-center">
-                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
-                <p className="mt-2 text-gray-600">Loading users...</p>
+                <LoaderUI message="Loading users..." />
               </div>
             ) : (
               <>
@@ -237,7 +237,7 @@ const UserManagementContent: React.FC = () => {
                         <tr key={userItem._id} className="hover:bg-gray-50">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
-                              <div className="h-10 w-10 flex-shrink-0">
+                              <div className="h-10 w-10 shrink-0">
                                 <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white font-medium">
                                   {(
                                     userItem.profile?.firstName?.[0] ||

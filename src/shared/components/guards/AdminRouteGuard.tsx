@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/core/lib/query-client';
 import { AuthProvider, useAuth } from '@/shared/providers/auth-provider';
+import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 
 interface AdminRouteGuardProps {
   children: React.ReactNode;
@@ -63,10 +64,7 @@ const AdminRouteGuardInternal: React.FC<AdminRouteGuardProps> = ({
   if (!isAuthReady || isChecking) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
-          <p className="text-gray-600">Verifying access...</p>
-        </div>
+        <LoaderUI message="Verifying access..." />
       </div>
     );
   }

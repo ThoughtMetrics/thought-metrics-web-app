@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/shared/providers/auth-provider';
+import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 
 interface UserRouteGuardProps {
   children: React.ReactNode;
@@ -44,10 +45,7 @@ export const UserRouteGuard: React.FC<UserRouteGuardProps> = ({ children }) => {
   if (!isAuthReady || isChecking) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
-        </div>
+        <LoaderUI message="Loading..." />
       </div>
     );
   }

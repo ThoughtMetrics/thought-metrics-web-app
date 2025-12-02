@@ -27,38 +27,38 @@ const getServerEnv = (key: string): string | undefined => {
   );
 };
 
-// Helper to get the correct Firebase authDomain
-// The authDomain MUST be a domain where Firebase Hosting is configured
-const getFirebaseAuthDomain = (): string => {
-  // Server-side: always use default
-  if (typeof window === 'undefined') {
-    return getPublicEnv('PUBLIC_FIREBASE_AUTH_DOMAIN') || 'thought-metrics.firebaseapp.com';
-  }
+// // Helper to get the correct Firebase authDomain
+// // The authDomain MUST be a domain where Firebase Hosting is configured
+// const getFirebaseAuthDomain = (): string => {
+//   // Server-side: always use default
+//   if (typeof window === 'undefined') {
+//     return getPublicEnv('PUBLIC_FIREBASE_AUTH_DOMAIN') || 'thought-metrics.firebaseapp.com';
+//   }
 
-  const hostname = window.location.hostname;
+//   const hostname = window.location.hostname;
 
-  console.log('[API Config] Determining authDomain for hostname:', hostname);
+//   console.log('[API Config] Determining authDomain for hostname:', hostname);
 
-  // For production domains with Firebase Hosting configured,
-  // use the same domain as authDomain to avoid cross-origin storage issues
-  if (hostname === 'www.thoughtmetrics.com' || hostname === 'thoughtmetrics.com') {
-    console.log('[API Config] Using production authDomain: www.thoughtmetrics.com');
-    return 'www.thoughtmetrics.com';
-  }
+//   // For production domains with Firebase Hosting configured,
+//   // use the same domain as authDomain to avoid cross-origin storage issues
+//   if (hostname === 'www.thoughtmetrics.com' || hostname === 'thoughtmetrics.com') {
+//     console.log('[API Config] Using production authDomain: www.thoughtmetrics.com');
+//     return 'www.thoughtmetrics.com';
+//   }
 
-  // For Azure staging
-  if (hostname.includes('azurewebsites.net')) {
-    console.log('[API Config] Using Azure authDomain:', hostname);
-    return hostname;
-  }
+//   // For Azure staging
+//   if (hostname.includes('azurewebsites.net')) {
+//     console.log('[API Config] Using Azure authDomain:', hostname);
+//     return hostname;
+//   }
 
-  // For localhost: Use Firebase default domain
-  // WARNING: This will cause cross-origin storage issues with redirect flow!
-  // The auth state will be stored in thought-metrics.firebaseapp.com's IndexedDB
-  // but read from localhost's IndexedDB, causing getRedirectResult() to return null.
-  console.log('[API Config] Using Firebase default authDomain (localhost detected - cross-origin issue expected)');
-  return getPublicEnv('PUBLIC_FIREBASE_AUTH_DOMAIN') || 'thought-metrics.firebaseapp.com';
-};
+//   // For localhost: Use Firebase default domain
+//   // WARNING: This will cause cross-origin storage issues with redirect flow!
+//   // The auth state will be stored in thought-metrics.firebaseapp.com's IndexedDB
+//   // but read from localhost's IndexedDB, causing getRedirectResult() to return null.
+//   console.log('[API Config] Using Firebase default authDomain (localhost detected - cross-origin issue expected)');
+//   return getPublicEnv('PUBLIC_FIREBASE_AUTH_DOMAIN') || 'thought-metrics.firebaseapp.com';
+// };
 
 // Returns API config at runtime
 export const getAPIConfig = (): {
