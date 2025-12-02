@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 
 const UserManagementContent: React.FC = () => {
-  const { user, userRole, isSuperAdmin } = useAuth();
+  const { isSuperAdmin } = useAuth();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
@@ -182,7 +182,7 @@ const UserManagementContent: React.FC = () => {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 text-text-dark">
       <AdminSidebar />
 
       <main className="flex-1 overflow-y-scroll p-8">
