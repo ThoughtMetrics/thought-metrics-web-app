@@ -74,10 +74,11 @@ const AdminRouteGuardInternal: React.FC<AdminRouteGuardProps> = ({
 };
 
 /**
- * AdminRouteGuard - Public component with providers
+ * AdminRouteGuard - Public component with providers (Astro Island)
  *
  * Protects routes that should only be accessible by admins or super admins.
- * Includes its own AuthProvider and QueryClientProvider for isolated usage.
+ * IMPORTANT: Includes its own AuthProvider because it's a separate Astro island.
+ * Each client:only="react" component in Astro is isolated and cannot share React context.
  *
  * @param children - Content to render if user is authorized
  * @param requireSuperAdmin - If true, only super admins can access (default: false)

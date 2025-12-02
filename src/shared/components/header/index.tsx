@@ -1,26 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '@/core/lib/query-client';
+import { AuthProvider, useAuth } from '@/shared/providers/auth-provider';
 import { headerDropdownData, navigationItems } from './header.constant';
 import { CurveIcon, Logo, StackIllustration } from '@/assets';
 import { ROUTES } from '@/routes/routeConfig';
 import { cn } from '@/core/utils/cn';
-import { auth } from '@/core/configs/firebase-config';
-import { useAuth } from '@/shared/providers/auth-provider';
 
-const Header: React.FC = () => {
+const HeaderContent: React.FC = () => {
   const { isAdmin, isSuperAdmin, user, userRole } = useAuth();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  // Debug log
-  useEffect(() => {
-    console.log('[Header] Auth state:', {
-      hasUser: !!user,
-      userRole,
-      isAdmin,
-      isSuperAdmin
-    });
-  }, [user, userRole, isAdmin, isSuperAdmin]);
   const [activeMobileDropdown, setActiveMobileDropdown] = useState<
     string | null
   >(null);
@@ -29,22 +19,21 @@ const Header: React.FC = () => {
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Derive isAuthenticated from user object
+  const isAuthenticated = !!user;
+
+  // Debug log
   useEffect(() => {
-    // Only set up auth listener on client-side
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    // Check if auth is available (will be null/undefined during SSR or if Firebase failed to init)
-    if (!auth || typeof auth.onAuthStateChanged !== 'function') {
-      console.warn('Firebase auth not available in HeaderWrapper');
-      return;
-    }
-
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setIsAuthenticated(!!user);
+    console.log('[Header] Auth state:', {
+      hasUser: !!user,
+      userRole,
+      isAdmin,
+      isSuperAdmin,
     });
+  }, [user, userRole, isAdmin, isSuperAdmin]);
 
+  // Handle click outside to close dropdowns
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
@@ -62,7 +51,6 @@ const Header: React.FC = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      unsubscribe();
     };
   }, []);
 
@@ -167,16 +155,18 @@ const Header: React.FC = () => {
                 ></div>
               </button>
             ))}
-            <a
-              href={ROUTES.START_YOUR_RESEARCH}
-              className="py-0.5 xl:py-[3px] xxl:py-1 px-4 text-[11px] xl:text-sm xxl:text-base border xl:border-[1.25px] xxl:border-[1.5px] font-medium cursor-pointer transition-all duration-300 ease-in-out whitespace-nowrap border-primary bg-white text-primary hover:text-custom-blue hover:border-custom-blue"
-            >
-              Start Your Research
-            </a>
+            {!isAdmin && !isSuperAdmin && (
+              <a
+                href={ROUTES.START_YOUR_RESEARCH}
+                className="py-0.5 xl:py-[3px] xxl:py-1 px-4 text-[11px] xl:text-sm xxl:text-base border xl:border-[1.25px] xxl:border-[1.5px] font-medium cursor-pointer transition-all duration-300 ease-in-out whitespace-nowrap border-primary bg-white text-primary hover:text-custom-blue hover:border-custom-blue"
+              >
+                Start Your Research
+              </a>
+            )}
             {(isAdmin || isSuperAdmin) && (
               <a
                 href="/admin"
-                className="py-0.5 xl:py-[3px] xxl:py-1 px-4 text-[11px] xl:text-sm xxl:text-base font-medium cursor-pointer transition-all duration-300 ease-in-out whitespace-nowrap bg-primary text-white hover:bg-custom-blue hover:border-custom-blue"
+                className="py-0.5 xl:py-[3px] xxl:py-1 px-4 text-[11px] xl:text-sm xxl:text-base border xl:border-[1.25px] xxl:border-[1.5px] font-medium cursor-pointer transition-all duration-300 ease-in-out whitespace-nowrap border-primary bg-white text-primary hover:text-custom-blue hover:border-custom-blue"
               >
                 Admin Panel
               </a>
@@ -434,6 +424,22 @@ const Header: React.FC = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+/**
+ * Header - Separate Astro Island with its own providers
+ *
+ * IMPORTANT: Has its own AuthProvider because it's rendered as client:only="react"
+ * in PresentationLayout.astro, making it a separate island.
+ */
+const Header: React.FC = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <HeaderContent />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 };
 

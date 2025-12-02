@@ -5,18 +5,12 @@ import CustomImageAtom from '@/shared/ui/atoms/custom-image';
 import ServiceCard from '@/shared/ui/molecules/service-card';
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
 import { PageTitle } from '@/shared/components/page-title';
-import { useEffect, useState } from 'react';
-import { auth } from '@/core/configs/firebase-config';
+import { useAuth } from '@/shared/providers/auth-provider';
+
 const OurPanel: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setIsAuthenticated(!!user);
-    });
-
-    return () => unsubscribe();
-  }, []);
+  const { user } = useAuth();
+  // Derive isAuthenticated from user object
+  const isAuthenticated = !!user;
   return (
     <div className="text-black">
       {/* Section 1 */}

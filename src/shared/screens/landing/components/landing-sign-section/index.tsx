@@ -1,19 +1,12 @@
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
 import type React from 'react';
 import '../../landing.style.css';
-import { useEffect, useState } from 'react';
-import { auth } from '@/core/configs/firebase-config';
+import { useAuth } from '@/shared/providers/auth-provider';
 
 const LandingSignUpSection: React.FC<any> = ({ signUpSection }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setIsAuthenticated(!!user);
-    });
-
-    return () => unsubscribe();
-  }, []);
+  const { user } = useAuth();
+  // Derive isAuthenticated from user object
+  const isAuthenticated = !!user;
   return (
     <section className="common-component relative md:pt-0 landing-signup-section">
       <div className="absolute top-0 w-full h-full bg-primary/72" />

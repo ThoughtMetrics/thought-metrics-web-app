@@ -175,6 +175,12 @@ const UnsubscribePage: React.FC = () => {
   );
 };
 
+/**
+ * UnsubscribeWrapper - Separate Astro Island with its own providers
+ *
+ * IMPORTANT: Has its own AuthProvider because it's rendered as client:only="react"
+ * in unsubscribe.astro, making it a separate island that cannot share context.
+ */
 const UnsubscribeWrapper: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>

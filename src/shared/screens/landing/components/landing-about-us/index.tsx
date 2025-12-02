@@ -2,23 +2,16 @@ import { cn } from '@/core/utils/cn';
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
 import CustomImageAtom from '@/shared/ui/atoms/custom-image';
 import './landing-about-us.css';
-import { useEffect, useState } from 'react';
-import { auth } from '@/core/configs/firebase-config';
+import { useAuth } from '@/shared/providers/auth-provider';
 
 const LandingAboutUsSection: React.FC<any> = ({
   aboutUsSection,
   className,
   imgClassName,
 }: any) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setIsAuthenticated(!!user);
-    });
-
-    return () => unsubscribe();
-  }, []);
+  const { user } = useAuth();
+  // Derive isAuthenticated from user object
+  const isAuthenticated = !!user;
   return (
     <section className="common-component relative text-black landing-about-us-section">
       <div

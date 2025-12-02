@@ -10,11 +10,10 @@ import type {
 } from '@/core/types/login-form.type';
 import { ArrowRight, Logo, GoogleOutlineIcon } from '@/assets';
 import { useSignInMutation } from '@/core/hooks/mutations/use-sign-in.mutation';
-import { auth } from '@/core/configs/firebase-config';
 import { getSignInErrorDetails } from '@/core/utils/firebase-error-handler';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/core/lib/query-client';
-import { AuthProvider } from '@/shared/providers/auth-provider';
+import { AuthProvider, useAuth } from '@/shared/providers/auth-provider';
 import { useLanguage } from '@/core/hooks/use-language';
 import { LanguageToggle } from '@/shared/ui/molecules/language-toggle';
 
@@ -119,8 +118,11 @@ const useLoginFormStore = create<LoginFormStore>()(
 
 const LoginPage: React.FC = () => {
   const signInMutation = useSignInMutation();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { user } = useAuth();
   const [isNavigating, setIsNavigating] = useState(false);
+
+  // Derive isAuthenticated from user object
+  const isAuthenticated = !!user;
 
   // Translation hook
   const { translations } = useLanguage();
@@ -135,20 +137,12 @@ const LoginPage: React.FC = () => {
     submitForm,
   } = useLoginFormStore();
 
+  // Redirect authenticated users to survey boards
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setIsAuthenticated(true);
-        window.location.href = ROUTES.SURVEY_BOARDS;
-      } else {
-        setIsAuthenticated(false);
-      }
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+    if (user) {
+      window.location.href = ROUTES.SURVEY_BOARDS;
+    }
+  }, [user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
@@ -441,6 +435,12 @@ const LoginPage: React.FC = () => {
   );
 };
 
+/**
+ * LoginWrapper - Separate Astro Island with its own providers
+ *
+ * IMPORTANT: Has its own AuthProvider because it's rendered as client:only="react"
+ * in login.astro, making it a separate island that cannot share context.
+ */
 const LoginWrapper: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>

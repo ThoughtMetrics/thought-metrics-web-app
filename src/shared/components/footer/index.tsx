@@ -1,30 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '@/core/lib/query-client';
+import { AuthProvider, useAuth } from '@/shared/providers/auth-provider';
 import { footerData } from './footer.constant';
 import { LogoWhite } from '@/assets';
-import { auth } from '@/core/configs/firebase-config';
 import { ROUTES } from '@/routes/routeConfig';
 
-const Footer: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    // Only set up auth listener on client-side
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    // Check if auth is available (will be null/undefined during SSR or if Firebase failed to init)
-    if (!auth || typeof auth.onAuthStateChanged !== 'function') {
-      console.warn('Firebase auth not available in FooterWrapper');
-      return;
-    }
-
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setIsAuthenticated(!!user);
-    });
-
-    return () => unsubscribe();
-  }, []);
+const FooterContent: React.FC = () => {
+  const { user } = useAuth();
+  // Derive isAuthenticated from user object
+  const isAuthenticated = !!user;
 
   const scrollToTop = () => {
     const rootElement = document.getElementById('full-screen');
@@ -118,6 +103,22 @@ const Footer: React.FC = () => {
         </div> */}
       </div>
     </footer>
+  );
+};
+
+/**
+ * Footer - Separate Astro Island with its own providers
+ *
+ * IMPORTANT: Has its own AuthProvider because it's rendered as client:only="react"
+ * in PresentationLayout.astro, making it a separate island.
+ */
+const Footer: React.FC = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <FooterContent />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 };
 
