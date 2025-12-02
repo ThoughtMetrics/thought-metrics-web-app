@@ -99,7 +99,7 @@ export const trackEvent = (
 
   // Log in development mode
   if (import.meta.env.DEV) {
-    console.log('[Analytics]', eventName, properties);
+    console.debug('[Analytics]', eventName, properties);
   }
 };
 

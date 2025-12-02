@@ -27,7 +27,7 @@ export const useSubmitResearch = () => {
         duration: 5000,
       });
 
-      console.log('Research form submitted successfully:', response.data);
+      console.debug('Research form submitted successfully:', response.data);
     },
     onError: (error: any) => {
       console.error('Research form submission failed:', error);
@@ -44,7 +44,7 @@ export const useSubmitResearch = () => {
           label: 'Retry',
           onClick: () => {
             // You can add retry logic here if needed
-            console.log('Retry clicked');
+            console.debug('Retry clicked');
           },
         },
       });

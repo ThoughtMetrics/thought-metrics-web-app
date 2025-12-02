@@ -103,7 +103,7 @@ export function logSEOValidation(
   }
 
   if (result.isValid && result.warnings.length === 0) {
-    console.log(`${prefix} ✅ SEO metadata looks good!`);
+    console.debug(`${prefix} ✅ SEO metadata looks good!`);
   }
 }
 

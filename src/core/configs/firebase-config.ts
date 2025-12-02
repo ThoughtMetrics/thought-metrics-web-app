@@ -1,6 +1,11 @@
 import { getAnalytics, type Analytics } from 'firebase/analytics';
 import { initializeApp, type FirebaseApp } from 'firebase/app';
-import { getAuth, type Auth, setPersistence, browserLocalPersistence } from 'firebase/auth';
+import {
+  getAuth,
+  type Auth,
+  setPersistence,
+  browserLocalPersistence,
+} from 'firebase/auth';
 import { getAPIConfig } from '@configs/api-config';
 
 // Singleton instances
@@ -85,36 +90,41 @@ const waitForPersistenceWrite = async (): Promise<void> => {
 // Initialize auth persistence - MUST be called before getRedirectResult()
 export const ensureAuthPersistence = async (): Promise<void> => {
   if (persistenceInitialized) {
-    console.log('[Firebase] ✅ Persistence already initialized');
+    console.debug('[Firebase] ✅ Persistence already initialized');
     return;
   }
 
   if (persistencePromise) {
-    console.log('[Firebase] ⏳ Persistence already being initialized, waiting...');
+    console.debug(
+      '[Firebase] ⏳ Persistence already being initialized, waiting...'
+    );
     return persistencePromise;
   }
 
   const auth = getFirebaseAuth();
   if (!auth) {
-    console.warn('[Firebase] ⚠️ Cannot set auth persistence - auth not initialized');
+    console.debug(
+      '[Firebase] ⚠️ Cannot set auth persistence - auth not initialized'
+    );
     return;
   }
-
-  console.log('[Firebase] 🔄 Initializing auth persistence...');
+  console.debug('[Firebase] 🔄 Initializing auth persistence...');
 
   persistencePromise = Promise.resolve()
     .then(() => {
       if (auth) {
-        console.log('[Firebase] Setting persistence to browserLocalPersistence...');
+        console.debug(
+          '[Firebase] Setting persistence to browserLocalPersistence...'
+        );
         return setPersistence(auth, browserLocalPersistence);
       }
     })
     .then(async () => {
-      console.log('[Firebase] ✅ Persistence set, waiting for storage write...');
+      console.debug('[Firebase] Waiting for persistence write to complete...');
       // CRITICAL: Wait for persistence to actually be written to storage
       await waitForPersistenceWrite();
       persistenceInitialized = true;
-      console.log('[Firebase] ✅ Persistence fully initialized');
+      console.debug('[Firebase] ✅ Auth persistence initialized');
     })
     .catch((error) => {
       console.error('[Firebase] ❌ Failed to set auth persistence:', error);

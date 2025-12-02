@@ -29,7 +29,7 @@ const SurveyFormPage: React.FC<SurveyFormWrapperProps> = ({ surveyId }) => {
       const isTracked = window.ThoughtMetrics.isFromTrackingLink();
       const utmParams = window.ThoughtMetrics.getUTMParams();
 
-      console.log('[SurveyForm] Access check:', {
+      console.debug('[SurveyForm] Access check:', {
         isFromTrackingLink: isTracked,
         trackingLinkId: utmParams.tm_link_id,
         surveyId,
@@ -37,7 +37,9 @@ const SurveyFormPage: React.FC<SurveyFormWrapperProps> = ({ surveyId }) => {
 
       // Restrict access - only allow via tracking link
       if (!isTracked || !utmParams.tm_link_id) {
-        console.log('[SurveyForm] Access denied - no tracking link detected, redirecting to home');
+        console.debug(
+          '[SurveyForm] Access denied - no tracking link detected, redirecting to home'
+        );
         window.location.href = '/';
         return;
       }
@@ -50,7 +52,7 @@ const SurveyFormPage: React.FC<SurveyFormWrapperProps> = ({ surveyId }) => {
       setIsCheckingAccess(false);
     } else {
       // If ThoughtMetrics is not available, deny access
-      console.log('[SurveyForm] Access denied - ThoughtMetrics not available');
+      console.debug('[SurveyForm] Access denied - ThoughtMetrics not available');
       window.location.href = '/';
     }
   }, [surveyId]);
@@ -165,7 +167,7 @@ const SurveyFormPage: React.FC<SurveyFormWrapperProps> = ({ surveyId }) => {
   // Success state
   if (isCompleted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-secondary/5">
+      <div className="min-h-screen bg-linear-to-br from-primary/5 via-white to-secondary/5">
         <div className="max-w-2xl mx-auto px-4 py-12">
           <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
@@ -175,8 +177,8 @@ const SurveyFormPage: React.FC<SurveyFormWrapperProps> = ({ surveyId }) => {
               Thank You for Completing Your Profile!
             </h1>
             <p className="text-lg text-gray-600 mb-8">
-              Your preferences have been saved. We'll now match you with surveys that fit your
-              interests.
+              Your preferences have been saved. We'll now match you with surveys
+              that fit your interests.
             </p>
             <a
               href="/survey-boards"
@@ -197,7 +199,7 @@ const SurveyFormPage: React.FC<SurveyFormWrapperProps> = ({ surveyId }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-secondary/5">
+    <div className="min-h-screen bg-linear-to-br from-primary/5 via-white to-secondary/5">
       <div className="max-w-5xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
@@ -205,7 +207,8 @@ const SurveyFormPage: React.FC<SurveyFormWrapperProps> = ({ surveyId }) => {
             {surveyTemplate.translations?.en?.label || surveyTemplate.label}
           </h1>
           <p className="text-lg text-gray-600">
-            {surveyTemplate.translations?.en?.description || surveyTemplate.description}
+            {surveyTemplate.translations?.en?.description ||
+              surveyTemplate.description}
           </p>
           <p className="text-sm text-gray-500 mt-4">
             {surveyTemplate.translations?.en?.instructions ||

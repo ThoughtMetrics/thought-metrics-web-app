@@ -27,7 +27,7 @@ export const useSubmitPartnership = () => {
         duration: 5000,
       });
 
-      console.log('Partnership form submitted successfully:', response.data);
+      console.debug('Partnership form submitted successfully:', response.data);
     },
     onError: (error: any) => {
       console.error('Partnership form submission failed:', error);
@@ -52,7 +52,7 @@ export const useSubmitPartnership = () => {
         action: {
           label: 'Retry',
           onClick: () => {
-            console.log('Retry clicked');
+            console.debug('Retry clicked');
           },
         },
       });

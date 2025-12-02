@@ -24,7 +24,7 @@ const HeaderContent: React.FC = () => {
 
   // Debug log
   useEffect(() => {
-    console.log('[Header] Auth state:', {
+    console.debug('[Header] Auth state:', {
       hasUser: !!user,
       userRole,
       isAdmin,

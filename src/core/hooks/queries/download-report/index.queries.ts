@@ -27,7 +27,7 @@ export const useSubmitDownloadReport = () => {
         duration: 5000,
       });
 
-      console.log(
+      console.debug(
         'Download report form submitted successfully:',
         response.data
       );
@@ -47,7 +47,7 @@ export const useSubmitDownloadReport = () => {
           label: 'Retry',
           onClick: () => {
             // You can add retry logic here if needed
-            console.log('Retry clicked');
+            console.debug('Retry clicked');
           },
         },
       });

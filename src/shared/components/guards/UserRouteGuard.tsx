@@ -19,25 +19,25 @@ export const UserRouteGuard: React.FC<UserRouteGuardProps> = ({ children }) => {
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    console.log('[UserRouteGuard] Auth state:', {
+    console.debug('[UserRouteGuard] Auth state:', {
       isAuthReady,
       hasUser: !!user,
     });
 
     if (!isAuthReady) {
-      console.log('[UserRouteGuard] Waiting for auth to be ready...');
+      console.debug('[UserRouteGuard] Waiting for auth to be ready...');
       return;
     }
 
     // Check if user is authenticated
     if (!user) {
-      console.log('[UserRouteGuard] User not authenticated, redirecting to login');
+      console.debug('[UserRouteGuard] User not authenticated, redirecting to login');
       const currentPath = window.location.pathname;
       window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
       return;
     }
 
-    console.log('[UserRouteGuard] User authenticated:', user.email);
+    console.debug('[UserRouteGuard] User authenticated:', user.email);
     setIsChecking(false);
   }, [user, isAuthReady]);
 

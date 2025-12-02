@@ -34,7 +34,9 @@ const AuthDebuggerContent: React.FC = () => {
       await user.getIdToken(true); // Force refresh
       const idTokenResult = await user.getIdTokenResult();
       setTokenClaims(idTokenResult.claims);
-      alert('Token refreshed! If you just set your role, you should now see it above.');
+      alert(
+        'Token refreshed! If you just set your role, you should now see it above.'
+      );
     } catch (error) {
       console.error('Failed to refresh token:', error);
       alert('Failed to refresh token. Check console for details.');
@@ -78,7 +80,9 @@ const AuthDebuggerContent: React.FC = () => {
                 </div>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-700 font-medium">User Logged In</span>
+                <span className="text-gray-700 font-medium">
+                  User Logged In
+                </span>
                 <div className="flex items-center gap-2">
                   <StatusIcon condition={!!user} />
                   <span className="text-sm text-gray-600">
@@ -96,7 +100,9 @@ const AuthDebuggerContent: React.FC = () => {
                 </div>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-700 font-medium">Is Super Admin</span>
+                <span className="text-gray-700 font-medium">
+                  Is Super Admin
+                </span>
                 <div className="flex items-center gap-2">
                   <StatusIcon condition={isSuperAdmin} />
                   <span className="text-sm text-gray-600">
@@ -127,13 +133,17 @@ const AuthDebuggerContent: React.FC = () => {
                   </code>
                 </div>
                 <div>
-                  <span className="text-gray-600 font-medium">Display Name:</span>
+                  <span className="text-gray-600 font-medium">
+                    Display Name:
+                  </span>
                   <code className="ml-2 bg-gray-100 px-2 py-1 rounded text-sm">
                     {user.displayName || 'Not set'}
                   </code>
                 </div>
                 <div>
-                  <span className="text-gray-600 font-medium">Computed Role:</span>
+                  <span className="text-gray-600 font-medium">
+                    Computed Role:
+                  </span>
                   <code className="ml-2 bg-gray-100 px-2 py-1 rounded text-sm">
                     {userRole || 'Not set'}
                   </code>
@@ -154,7 +164,9 @@ const AuthDebuggerContent: React.FC = () => {
                   disabled={isRefreshing}
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                  <RefreshCw
+                    className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`}
+                  />
                   {isRefreshing ? 'Refreshing...' : 'Refresh Token'}
                 </button>
               </div>
@@ -182,7 +194,8 @@ const AuthDebuggerContent: React.FC = () => {
                       Auth Not Ready
                     </p>
                     <p className="text-gray-600">
-                      Firebase auth is still initializing. If this persists, check if Firebase is properly configured.
+                      Firebase auth is still initializing. If this persists,
+                      check if Firebase is properly configured.
                     </p>
                   </div>
                 </div>
@@ -192,9 +205,7 @@ const AuthDebuggerContent: React.FC = () => {
                 <div className="flex items-start gap-2">
                   <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-semibold text-gray-900">
-                      Not Logged In
-                    </p>
+                    <p className="font-semibold text-gray-900">Not Logged In</p>
                     <p className="text-gray-600">
                       You are not logged in. Please log in first.
                     </p>
@@ -216,40 +227,48 @@ const AuthDebuggerContent: React.FC = () => {
                       Role Claim Missing
                     </p>
                     <p className="text-gray-600 mb-2">
-                      Your Firebase token does not have a "role" claim. You need to set this using the Firebase Admin SDK.
+                      Your Firebase token does not have a "role" claim. You need
+                      to set this using the Firebase Admin SDK.
                     </p>
                     <div className="bg-white p-3 rounded border border-gray-300">
                       <p className="text-gray-700 mb-2 font-medium">
                         Run this script on your API server:
                       </p>
                       <pre className="bg-gray-900 text-green-400 p-2 rounded text-xs overflow-x-auto">
-{`import admin from 'firebase-admin';
+                        {`import admin from 'firebase-admin';
 
 const user = await admin.auth().getUserByEmail('${user.email}');
 await admin.auth().setCustomUserClaims(user.uid, {
   role: 'super-admin'
 });
 
-console.log('Role set! User must sign out and sign in again.');`}
+console.debug('Role set! User must sign out and sign in again.');`}
                       </pre>
                     </div>
                   </div>
                 </div>
               )}
 
-              {user && !isAdmin && tokenClaims && tokenClaims.role && tokenClaims.role !== 'admin' && tokenClaims.role !== 'super-admin' && (
-                <div className="flex items-start gap-2">
-                  <AlertCircle className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-gray-900">
-                      Role is "{tokenClaims.role}"
-                    </p>
-                    <p className="text-gray-600">
-                      Your role is set to "{tokenClaims.role}" but admin pages require "admin" or "super-admin". Update your role claim and refresh the token above.
-                    </p>
+              {user &&
+                !isAdmin &&
+                tokenClaims &&
+                tokenClaims.role &&
+                tokenClaims.role !== 'admin' &&
+                tokenClaims.role !== 'super-admin' && (
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-gray-900">
+                        Role is "{tokenClaims.role}"
+                      </p>
+                      <p className="text-gray-600">
+                        Your role is set to "{tokenClaims.role}" but admin pages
+                        require "admin" or "super-admin". Update your role claim
+                        and refresh the token above.
+                      </p>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {user && isAdmin && (
                 <div className="flex items-start gap-2">
@@ -259,7 +278,8 @@ console.log('Role set! User must sign out and sign in again.');`}
                       Access Granted!
                     </p>
                     <p className="text-gray-600 mb-2">
-                      You have admin access. You should be able to access admin pages.
+                      You have admin access. You should be able to access admin
+                      pages.
                     </p>
                     <a
                       href="/admin/analytics"
@@ -282,7 +302,13 @@ console.log('Role set! User must sign out and sign in again.');`}
           {/* Console Logs Notice */}
           <div className="mt-6 bg-blue-100 border border-blue-300 rounded-lg p-4">
             <p className="text-sm text-blue-900">
-              <strong>💡 Tip:</strong> Open your browser's Developer Console (F12) to see detailed auth flow logs with prefixes like <code className="bg-blue-200 px-1 rounded">[AuthProvider]</code> and <code className="bg-blue-200 px-1 rounded">[AdminRouteGuard]</code>
+              <strong>💡 Tip:</strong> Open your browser's Developer Console
+              (F12) to see detailed auth flow logs with prefixes like{' '}
+              <code className="bg-blue-200 px-1 rounded">[AuthProvider]</code>{' '}
+              and{' '}
+              <code className="bg-blue-200 px-1 rounded">
+                [AdminRouteGuard]
+              </code>
             </p>
           </div>
         </div>

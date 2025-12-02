@@ -62,8 +62,8 @@ export const useBreadcrumbs = () => {
   const breadcrumbs = generateBreadcrumbsFromPath(pathname);
 
   React.useEffect(() => {
-    console.log('Current location:', pathname);
-    console.log('Generated breadcrumbs:', breadcrumbs);
+    console.debug('Current location:', pathname);
+    console.debug('Generated breadcrumbs:', breadcrumbs);
   }, [pathname, breadcrumbs]);
 
   return breadcrumbs;

@@ -11,8 +11,8 @@ const AdminDashboardContent: React.FC = () => {
 
   // Debug log to see what useAuth returns
   useEffect(() => {
-    console.log('[AdminDashboard] useAuth data changed', JSON.stringify(user));
-    console.log('[AdminDashboard] Auth data:', {
+    console.debug('[AdminDashboard] useAuth data changed', JSON.stringify(user));
+    console.debug('[AdminDashboard] Auth data:', {
       hasUser: !!user,
       email: user?.email,
       userRole,
