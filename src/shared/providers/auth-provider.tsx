@@ -62,13 +62,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
               // Get user role from Firebase custom claims
               const idTokenResult = await firebaseUser.getIdTokenResult();
-              console.log('[AuthProvider] Firebase token claims:', idTokenResult.claims);
+              console.debug('[AuthProvider] Firebase token claims:', idTokenResult.claims);
 
               const role = idTokenResult.claims.role as UserRole | undefined;
               const computedIsAdmin = role === 'admin' || role === 'super-admin';
               const computedIsSuperAdmin = role === 'super-admin';
 
-              console.log('[AuthProvider] Role details:', {
+              console.debug('[AuthProvider] Role details:', {
                 role: role || 'respondent',
                 isAdmin: computedIsAdmin,
                 isSuperAdmin: computedIsSuperAdmin

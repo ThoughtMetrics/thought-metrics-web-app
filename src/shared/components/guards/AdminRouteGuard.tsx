@@ -14,49 +14,54 @@ interface AdminRouteGuardProps {
  */
 const AdminRouteGuardInternal: React.FC<AdminRouteGuardProps> = ({
   children,
-  requireSuperAdmin = false
+  requireSuperAdmin = false,
 }) => {
   const { user, isAuthReady, isAdmin, isSuperAdmin } = useAuth();
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    console.log('[AdminRouteGuard] Auth state:', {
+    console.debug('[AdminRouteGuard] Auth state:', {
       isAuthReady,
       hasUser: !!user,
       isAdmin,
       isSuperAdmin,
-      requireSuperAdmin
+      requireSuperAdmin,
     });
 
     if (!isAuthReady) {
-      console.log('[AdminRouteGuard] Waiting for auth to be ready...');
+      console.debug('[AdminRouteGuard] Waiting for auth to be ready...');
       return;
     }
 
     // Check if user is authenticated
     if (!user) {
-      console.log('[AdminRouteGuard] User not authenticated, redirecting to login');
-      window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+      console.debug(
+        '[AdminRouteGuard] User not authenticated, redirecting to login'
+      );
+      window.location.href =
+        '/login?redirect=' + encodeURIComponent(window.location.pathname);
       return;
     }
 
     // Check if user has required permissions
     const hasAccess = requireSuperAdmin ? isSuperAdmin : isAdmin;
 
-    console.log('[AdminRouteGuard] Access check:', {
+    console.debug('[AdminRouteGuard] Access check:', {
       requireSuperAdmin,
       isAdmin,
       isSuperAdmin,
-      hasAccess
+      hasAccess,
     });
 
     if (!hasAccess) {
-      console.log('[AdminRouteGuard] User lacks required permissions, redirecting to unauthorized');
+      console.debug(
+        '[AdminRouteGuard] User lacks required permissions, redirecting to unauthorized'
+      );
       window.location.href = '/unauthorized';
       return;
     }
 
-    console.log('[AdminRouteGuard] Access granted, rendering content');
+    console.debug('[AdminRouteGuard] Access granted, rendering content');
     setIsChecking(false);
   }, [user, isAuthReady, isAdmin, isSuperAdmin, requireSuperAdmin]);
 
@@ -85,7 +90,7 @@ const AdminRouteGuardInternal: React.FC<AdminRouteGuardProps> = ({
  */
 export const AdminRouteGuard: React.FC<AdminRouteGuardProps> = ({
   children,
-  requireSuperAdmin = false
+  requireSuperAdmin = false,
 }) => {
   return (
     <QueryClientProvider client={queryClient}>

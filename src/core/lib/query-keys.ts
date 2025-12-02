@@ -49,6 +49,14 @@ export const QueryKeys = {
     details: () => [...QueryKeys.research.all, 'detail'] as const,
     detail: (id: string) => [...QueryKeys.research.details(), id] as const,
   },
+  // Analytics related queries
+  analytics: {
+    all: ['analytics'] as const,
+    overview: () => [...QueryKeys.analytics.all, 'overview'] as const,
+    links: () => [...QueryKeys.analytics.all, 'links'] as const,
+    linkDetail: (id: string) => [...QueryKeys.analytics.all, 'link', id] as const,
+    visitors: () => [...QueryKeys.analytics.all, 'visitors'] as const,
+  },
   contentKeys: {
     all: ['contents'] as const,
     lists: () => [...QueryKeys.contentKeys.all, 'list'] as const,

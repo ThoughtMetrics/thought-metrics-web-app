@@ -81,7 +81,7 @@ export class DevToolsDetector {
     // This will trigger when console is open and logs the element
     setInterval(() => {
       console.clear();
-      console.log('%c', element);
+      console.debug('%c', element);
     }, 1000);
   }
 

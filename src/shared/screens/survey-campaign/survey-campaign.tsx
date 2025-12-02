@@ -18,14 +18,14 @@ const SurveyCampaignPage: React.FC = () => {
       const isTracked = window.ThoughtMetrics.isFromTrackingLink();
       const utmParams = window.ThoughtMetrics.getUTMParams();
 
-      console.log('[SurveyCampaign] Access check:', {
+      console.debug('[SurveyCampaign] Access check:', {
         isFromTrackingLink: isTracked,
         trackingLinkId: utmParams.tm_link_id,
       });
 
       // Restrict access - only allow via tracking link
       if (!isTracked || !utmParams.tm_link_id) {
-        console.log('[SurveyCampaign] Access denied - no tracking link detected, redirecting to home');
+        console.debug('[SurveyCampaign] Access denied - no tracking link detected, redirecting to home');
         window.location.href = '/';
         return;
       }
@@ -38,7 +38,7 @@ const SurveyCampaignPage: React.FC = () => {
       setIsCheckingAccess(false);
     } else {
       // If ThoughtMetrics is not available, deny access
-      console.log('[SurveyCampaign] Access denied - ThoughtMetrics not available');
+      console.debug('[SurveyCampaign] Access denied - ThoughtMetrics not available');
       window.location.href = '/';
     }
   }, []);

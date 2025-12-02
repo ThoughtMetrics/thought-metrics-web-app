@@ -1,145 +1,50 @@
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '@/shared/providers/auth-provider';
+import React from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Loader2, RefreshCw } from 'lucide-react';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
-
-const API_BASE = 'http://localhost:3000/api/v1';
-
-interface OverviewData {
-  uniqueVisitors: number;
-  totalSessions: number;
-  pageViews: number;
-  registrations: number;
-}
-
-interface LinkData {
-  id: string;
-  name: string;
-  shortCode: string;
-  utmSource: string;
-  utmMedium: string;
-  utmCampaign: string;
-  fullTrackingUrl: string;
-  stats: {
-    uniqueVisitors: number;
-    registrations: number;
-  };
-}
-
-interface VisitorData {
-  id: string;
-  lastUtmSource: string;
-  lastUtmMedium: string;
-  city: string;
-  country: string;
-  isRegistered: boolean;
-  firstSeenAt: string;
-}
+import {
+  useAnalyticsOverview,
+  useTrackingLinks,
+  useVisitors,
+} from '@/core/hooks/queries/analytics/index.queries';
+import { QueryKeys } from '@/core/lib/query-keys';
 
 const AnalyticsDashboardContent: React.FC = () => {
-  const { user } = useAuth();
-  const [overview, setOverview] = useState<OverviewData | null>(null);
-  const [links, setLinks] = useState<LinkData[]>([]);
-  const [visitors, setVisitors] = useState<VisitorData[]>([]);
-  const [isLoadingData, setIsLoadingData] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  // Get auth headers
-  const getAuthHeaders = async () => {
-    if (!user) {
-      console.error('[AnalyticsPage] No user available');
-      throw new Error('Not authenticated');
-    }
-    const token = await user.getIdToken();
-    console.log('[AnalyticsPage] Got auth token, length:', token.length);
-    return {
-      Authorization: `Bearer firebase:${token}`,
-      'Content-Type': 'application/json',
-    };
+  // Use React Query hooks
+  const {
+    data: overviewResponse,
+    isLoading: overviewLoading,
+    error: overviewError,
+  } = useAnalyticsOverview();
+
+  const {
+    data: linksResponse,
+    isLoading: linksLoading,
+    error: linksError,
+  } = useTrackingLinks();
+
+  const {
+    data: visitorsResponse,
+    isLoading: visitorsLoading,
+    error: visitorsError,
+  } = useVisitors();
+
+  // Extract data from responses
+  const overview = overviewResponse?.data;
+  const links = linksResponse?.data || [];
+  const visitors = visitorsResponse?.data || [];
+
+  // Determine loading and error states
+  const isLoadingData = overviewLoading || linksLoading || visitorsLoading;
+  const error = overviewError || linksError || visitorsError;
+
+  // Refresh all analytics data
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: QueryKeys.analytics.all });
   };
-
-  // Load all data
-  const loadData = async () => {
-    try {
-      setError(null);
-      setIsLoadingData(true);
-      console.log('[AnalyticsPage] Loading all data...');
-      const headers = await getAuthHeaders();
-
-      // Load overview
-      console.log('[AnalyticsPage] Fetching overview...');
-      const overviewRes = await fetch(`${API_BASE}/analytics/overview`, {
-        headers,
-        credentials: 'include',
-      });
-      console.log('[AnalyticsPage] Overview status:', overviewRes.status);
-
-      if (overviewRes.ok) {
-        const overviewData = await overviewRes.json();
-        console.log('[AnalyticsPage] Overview data:', overviewData);
-        setOverview(overviewData.data);
-      } else {
-        const errorText = await overviewRes.text();
-        console.error('[AnalyticsPage] Overview error:', errorText);
-      }
-
-      // Load links
-      console.log('[AnalyticsPage] Fetching links...');
-      const linksRes = await fetch(`${API_BASE}/analytics/links`, {
-        headers,
-        credentials: 'include',
-      });
-      console.log('[AnalyticsPage] Links status:', linksRes.status);
-
-      if (linksRes.ok) {
-        const linksData = await linksRes.json();
-        console.log('[AnalyticsPage] Links data:', linksData);
-        setLinks(linksData.data || []);
-      } else {
-        const errorText = await linksRes.text();
-        console.error('[AnalyticsPage] Links error:', errorText);
-      }
-
-      // Load visitors
-      console.log('[AnalyticsPage] Fetching visitors...');
-      const visitorsRes = await fetch(
-        `${API_BASE}/analytics/visitors?limit=20`,
-        {
-          headers,
-          credentials: 'include',
-        }
-      );
-      console.log('[AnalyticsPage] Visitors status:', visitorsRes.status);
-
-      if (visitorsRes.ok) {
-        const visitorsData = await visitorsRes.json();
-        console.log('[AnalyticsPage] Visitors data:', visitorsData);
-        setVisitors(visitorsData.data || []);
-      } else {
-        const errorText = await visitorsRes.text();
-        console.error('[AnalyticsPage] Visitors error:', errorText);
-      }
-
-      setIsLoadingData(false);
-    } catch (err) {
-      console.error('[AnalyticsPage] Load error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load analytics');
-      setIsLoadingData(false);
-    }
-  };
-
-  // Load data when user is ready
-  useEffect(() => {
-    if (user) {
-      console.log('[AnalyticsPage] User ready, loading data for:', user.email);
-      loadData();
-
-      // Auto-refresh every 30 seconds
-      const interval = setInterval(loadData, 30000);
-      return () => clearInterval(interval);
-    }
-  }, [user]);
 
   // Format helpers
   const formatNumber = (num: number) =>
@@ -183,7 +88,7 @@ const AnalyticsDashboardContent: React.FC = () => {
             </h1>
             <div className="flex gap-4">
               <button
-                onClick={loadData}
+                onClick={handleRefresh}
                 disabled={isLoadingData}
                 className="flex items-center gap-2 px-4 py-2 text-primary hover:text-primary/80 font-medium disabled:opacity-50"
               >
@@ -204,7 +109,9 @@ const AnalyticsDashboardContent: React.FC = () => {
           {/* Error Message */}
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-              <p className="text-red-800">{error}</p>
+              <p className="text-red-800">
+                {error instanceof Error ? error.message : 'Failed to load analytics data'}
+              </p>
             </div>
           )}
 

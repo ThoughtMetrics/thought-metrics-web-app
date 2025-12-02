@@ -27,7 +27,7 @@ export const useSubmitContactForm = () => {
         duration: 5000,
       });
 
-      console.log('Contact form submitted successfully:', response.data);
+      console.debug('Contact form submitted successfully:', response.data);
     },
     onError: (error: any) => {
       console.error('Contact form submission failed:', error);
@@ -44,7 +44,7 @@ export const useSubmitContactForm = () => {
           label: 'Retry',
           onClick: () => {
             // You can add retry logic here if needed
-            console.log('Retry clicked');
+            console.debug('Retry clicked');
           },
         },
       });

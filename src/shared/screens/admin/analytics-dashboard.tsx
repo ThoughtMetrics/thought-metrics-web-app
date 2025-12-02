@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Loader2, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/shared/providers/auth-provider';
+import { getAPIConfig } from '@/core/configs/api-config';
 
-const API_BASE = 'http://localhost:3000/api/v1';
+const API_BASE = `${getAPIConfig().baseURL}/api/${getAPIConfig().baseAPIVersion}`;
 
 interface OverviewData {
   uniqueVisitors: number;
@@ -50,7 +51,7 @@ export const AnalyticsDashboard: React.FC = () => {
       throw new Error('Not authenticated');
     }
     const token = await user.getIdToken();
-    console.log('[Analytics] Got auth token, length:', token.length);
+    console.debug('[Analytics] Got auth token, length:', token.length);
     return {
       Authorization: `Bearer firebase:${token}`,
       'Content-Type': 'application/json',
@@ -61,20 +62,20 @@ export const AnalyticsDashboard: React.FC = () => {
   const loadData = async () => {
     try {
       setError(null);
-      console.log('[Analytics] Loading all data...');
+      console.debug('[Analytics] Loading all data...');
       const headers = await getAuthHeaders();
 
       // Load overview
-      console.log('[Analytics] Fetching overview...');
+      console.debug('[Analytics] Fetching overview...');
       const overviewRes = await fetch(`${API_BASE}/analytics/overview`, {
         headers,
         credentials: 'include',
       });
-      console.log('[Analytics] Overview status:', overviewRes.status);
+      console.debug('[Analytics] Overview status:', overviewRes.status);
 
       if (overviewRes.ok) {
         const overviewData = await overviewRes.json();
-        console.log('[Analytics] Overview data:', overviewData);
+        console.debug('[Analytics] Overview data:', overviewData);
         setOverview(overviewData.data);
       } else {
         const errorText = await overviewRes.text();
@@ -82,16 +83,16 @@ export const AnalyticsDashboard: React.FC = () => {
       }
 
       // Load links
-      console.log('[Analytics] Fetching links...');
+      console.debug('[Analytics] Fetching links...');
       const linksRes = await fetch(`${API_BASE}/analytics/links`, {
         headers,
         credentials: 'include',
       });
-      console.log('[Analytics] Links status:', linksRes.status);
+      console.debug('[Analytics] Links status:', linksRes.status);
 
       if (linksRes.ok) {
         const linksData = await linksRes.json();
-        console.log('[Analytics] Links data:', linksData);
+        console.debug('[Analytics] Links data:', linksData);
         setLinks(linksData.data || []);
       } else {
         const errorText = await linksRes.text();
@@ -99,7 +100,7 @@ export const AnalyticsDashboard: React.FC = () => {
       }
 
       // Load visitors
-      console.log('[Analytics] Fetching visitors...');
+      console.debug('[Analytics] Fetching visitors...');
       const visitorsRes = await fetch(
         `${API_BASE}/analytics/visitors?limit=20`,
         {
@@ -107,11 +108,11 @@ export const AnalyticsDashboard: React.FC = () => {
           credentials: 'include',
         }
       );
-      console.log('[Analytics] Visitors status:', visitorsRes.status);
+      console.debug('[Analytics] Visitors status:', visitorsRes.status);
 
       if (visitorsRes.ok) {
         const visitorsData = await visitorsRes.json();
-        console.log('[Analytics] Visitors data:', visitorsData);
+        console.debug('[Analytics] Visitors data:', visitorsData);
         setVisitors(visitorsData.data || []);
       } else {
         const errorText = await visitorsRes.text();
@@ -129,14 +130,14 @@ export const AnalyticsDashboard: React.FC = () => {
   // Load data when user is ready
   useEffect(() => {
     if (user) {
-      console.log('[Analytics] User ready, loading data for:', user.email);
+      console.debug('[Analytics] User ready, loading data for:', user.email);
       loadData();
 
       // Auto-refresh every 30 seconds
       const interval = setInterval(loadData, 30000);
       return () => clearInterval(interval);
     } else {
-      console.log('[Analytics] Waiting for user...');
+      console.debug('[Analytics] Waiting for user...');
     }
   }, [user]);
 
