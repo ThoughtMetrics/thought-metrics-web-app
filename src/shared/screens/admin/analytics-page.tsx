@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Loader2, RefreshCw } from 'lucide-react';
+import { toast } from 'sonner';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 import {
@@ -34,7 +35,15 @@ const AnalyticsDashboardContent: React.FC = () => {
 
   // Extract data from responses
   const overview = overviewResponse?.data;
-  const links = linksResponse?.data || [];
+  const rawLinks = linksResponse?.data || [];
+
+  // Ensure all links have fullTrackingUrl (fallback for old backend)
+  const links = rawLinks.map((link) => ({
+    ...link,
+    fullTrackingUrl:
+      link.fullTrackingUrl || `${window.location.origin}/t/${link.shortCode}`,
+  }));
+
   const visitors = visitorsResponse?.data || [];
 
   // Determine loading and error states
@@ -61,25 +70,26 @@ const AnalyticsDashboardContent: React.FC = () => {
   };
 
   const copyLink = (url: string) => {
-    navigator.clipboard.writeText(url);
-    alert('Link copied to clipboard!');
+    navigator.clipboard.writeText(url).then(
+      () => {
+        toast.success('Link Copied!', {
+          description: 'Tracking link copied to clipboard',
+          duration: 3000,
+        });
+      },
+      () => {
+        toast.error('Failed to copy link', {
+          description: 'Please try again',
+          duration: 3000,
+        });
+      }
+    );
   };
 
-  if (isLoadingData && !overview) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading analytics...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="overflow-hidden flex bg-gray-50 text-text-dark">
       <AdminSidebar />
-      <div className="flex-1 overflow-y-scroll py-8 px-4">
+      <div className="h-full flex-1 overflow-y-scroll py-8 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex justify-between items-center mb-8">
@@ -110,7 +120,9 @@ const AnalyticsDashboardContent: React.FC = () => {
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
               <p className="text-red-800">
-                {error instanceof Error ? error.message : 'Failed to load analytics data'}
+                {error instanceof Error
+                  ? error.message
+                  : 'Failed to load analytics data'}
               </p>
             </div>
           )}
@@ -327,12 +339,21 @@ const AnalyticsDashboardContent: React.FC = () => {
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            <button
-                              onClick={() => copyLink(link.fullTrackingUrl)}
-                              className="text-primary hover:text-primary/80 font-medium"
-                            >
-                              Copy Link
-                            </button>
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={() => copyLink(link.fullTrackingUrl)}
+                                className="text-primary hover:text-primary/80 font-medium"
+                              >
+                                Copy Link
+                              </button>
+                              <span className="text-gray-300">|</span>
+                              <a
+                                href={`/admin/edit-tracking-link/${link.id}`}
+                                className="text-blue-600 hover:text-blue-800 font-medium"
+                              >
+                                Edit
+                              </a>
+                            </div>
                           </td>
                         </tr>
                       );

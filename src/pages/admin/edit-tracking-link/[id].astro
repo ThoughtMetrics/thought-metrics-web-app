@@ -1,0 +1,21 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
+import EditTrackingLinkFormWrapper from '@/shared/screens/admin/tracking-links/EditTrackingLinkForm';
+
+const seoContent = {
+  title: 'Edit Tracking Link | Admin | Thought Metrics',
+  description: 'Edit tracking link settings and configuration',
+  noindex: true, // Prevent indexing of admin pages
+};
+---
+
+<IntractionLayout
+  title={seoContent.title}
+  description={seoContent.description}
+  noindex={seoContent.noindex}
+>
+  <AdminRouteGuard client:only="react">
+    <EditTrackingLinkFormWrapper client:only="react" />
+  </AdminRouteGuard>
+</IntractionLayout>
