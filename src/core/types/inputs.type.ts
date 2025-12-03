@@ -11,8 +11,9 @@ export interface BaseInputProps {
 }
 
 export interface TextInputProps extends BaseInputProps {
-  type?: 'text' | 'email' | 'tel' | 'password';
+  type?: 'text' | 'email' | 'tel' | 'password' | 'url';
   placeholder?: string;
+  helperText?: string;
 }
 
 export interface TextareaProps extends Omit<BaseInputProps, 'onChange'> {
@@ -71,6 +72,7 @@ export interface SelectProps {
   required?: boolean;
   className?: string;
   placeholder?: string;
+  helperText?: string;
 }
 
 // Checkbox Group Interface

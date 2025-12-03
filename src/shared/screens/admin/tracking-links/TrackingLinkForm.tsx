@@ -5,7 +5,7 @@ import {
 } from '@/core/hooks/queries/analytics/index.queries';
 import type { CreateTrackingLinkData } from '@/services/api/tracking-link.service';
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
-import { TextInputAtom, SelectAtom, TextareaAtom } from '@/shared/ui/atoms/custom-input';
+import { TextInputAtom, SelectAtom } from '@/shared/ui/atoms/custom-input';
 
 const TrackingLinkForm: React.FC = () => {
   const createMutation = useCreateTrackingLink();
@@ -54,23 +54,25 @@ const TrackingLinkForm: React.FC = () => {
 
     createMutation.mutate(submitData, {
       onSuccess: (response) => {
-        setCreatedLink({
-          fullTrackingUrl: response.data.fullTrackingUrl,
-          shortCode: response.data.shortCode,
-        });
-        // Reset form
-        setFormData({
-          name: '',
-          destinationUrl: 'https://www.thoughtmetrics.com/survey_campaign',
-          utmSource: '',
-          utmMedium: '',
-          utmCampaign: '',
-          utmTerm: '',
-          utmContent: '',
-          postSignupRedirect: '/survey-campaign',
-          redirectToSignup: true,
-          allocatedSurveyId: '',
-        });
+        if (response.data) {
+          setCreatedLink({
+            fullTrackingUrl: response.data.fullTrackingUrl,
+            shortCode: response.data.shortCode,
+          });
+          // Reset form
+          setFormData({
+            name: '',
+            destinationUrl: 'https://www.thoughtmetrics.com/survey_campaign',
+            utmSource: '',
+            utmMedium: '',
+            utmCampaign: '',
+            utmTerm: '',
+            utmContent: '',
+            postSignupRedirect: '/survey-campaign',
+            redirectToSignup: true,
+            allocatedSurveyId: '',
+          });
+        }
       },
     });
   };

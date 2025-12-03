@@ -20,6 +20,7 @@ const TextInputAtom: React.FC<TextInputProps> = ({
   required = false,
   type = 'text',
   placeholder,
+  helperText,
   className = '',
 }) => {
   return (
@@ -40,6 +41,7 @@ const TextInputAtom: React.FC<TextInputProps> = ({
         }`}
       />
       {error && <p className="mt-1 text-sm text-primary">{error}</p>}
+      {!error && helperText && <p className="mt-1 text-xs text-gray-500">{helperText}</p>}
     </div>
   );
 };
@@ -181,6 +183,7 @@ const SelectAtom: React.FC<SelectProps> = ({
   required = false,
   className = '',
   placeholder = 'Select an option',
+  helperText,
 }) => {
   return (
     <div className={className}>
@@ -208,6 +211,7 @@ const SelectAtom: React.FC<SelectProps> = ({
         ))}
       </select>
       {error && <p className="mt-1 text-sm text-primary">{error}</p>}
+      {!error && helperText && <p className="mt-1 text-xs text-gray-500">{helperText}</p>}
     </div>
   );
 };
