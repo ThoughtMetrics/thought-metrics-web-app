@@ -354,3 +354,12 @@ export { GoogleOutlineIcon, FacebookOutlineIcon };
 
 import right_arrow_white from 'icons/right-arrow-white.svg';
 export const right_arrow_white_src = right_arrow_white.src;
+
+import SurveyCampaignIllustrationSquare from 'icons/survey-campaign-illustration-square.svg?react';
+export { SurveyCampaignIllustrationSquare };
+
+import SurveyCampaignVector from 'icons/survey-campaign-vector.svg?react';
+export { SurveyCampaignVector };
+
+import SurveyCampaignVector1 from 'icons/survey-campaign-vector-1.svg?react';
+export { SurveyCampaignVector1 };

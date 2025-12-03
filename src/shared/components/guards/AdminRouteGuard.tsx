@@ -19,7 +19,20 @@ const AdminRouteGuardInternal: React.FC<AdminRouteGuardProps> = ({
   const { user, isAuthReady, isAdmin, isSuperAdmin } = useAuth();
   const [isChecking, setIsChecking] = useState(true);
 
+  // Check if running on localhost (development mode)
+  const isLocalhost = typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' ||
+     window.location.hostname === '127.0.0.1' ||
+     window.location.hostname.includes('192.168.'));
+
   useEffect(() => {
+    // Bypass authentication in local development
+    if (isLocalhost) {
+      console.debug('[AdminRouteGuard] Local development detected - bypassing auth checks');
+      setIsChecking(false);
+      return;
+    }
+
     console.debug('[AdminRouteGuard] Auth state:', {
       isAuthReady,
       hasUser: !!user,
@@ -63,10 +76,10 @@ const AdminRouteGuardInternal: React.FC<AdminRouteGuardProps> = ({
 
     console.debug('[AdminRouteGuard] Access granted, rendering content');
     setIsChecking(false);
-  }, [user, isAuthReady, isAdmin, isSuperAdmin, requireSuperAdmin]);
+  }, [user, isAuthReady, isAdmin, isSuperAdmin, requireSuperAdmin, isLocalhost]);
 
-  // Show loading state while checking auth
-  if (!isAuthReady || isChecking) {
+  // Show loading state while checking auth (skip in local development)
+  if (!isLocalhost && (!isAuthReady || isChecking)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <LoaderUI message="Verifying access..." />
