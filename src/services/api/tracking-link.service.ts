@@ -17,6 +17,8 @@ export interface CreateTrackingLinkData {
 }
 
 export interface TrackingLink {
+  postSignupRedirect: string;
+  redirectToSignup: boolean;
   id: string;
   name: string;
   shortCode: string;
@@ -30,6 +32,7 @@ export interface TrackingLink {
   isActive: boolean;
   allocatedSurveyId?: string;
   stats?: {
+    pageViews: number;
     uniqueVisitors?: number;
     registrations?: number;
   };

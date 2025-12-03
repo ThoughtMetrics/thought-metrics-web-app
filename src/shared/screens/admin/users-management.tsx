@@ -101,14 +101,17 @@ const UserManagementContent: React.FC = () => {
     if (!selectedUser) return;
 
     try {
-      const response = await UserManagementService.updateUser(selectedUser._id, {
-        profile: {
-          firstName: editFormData.firstName,
-          lastName: editFormData.lastName,
-          phone: editFormData.phone,
-        },
-        email: editFormData.email,
-      } as any);
+      const response = await UserManagementService.updateUser(
+        selectedUser._id,
+        {
+          profile: {
+            firstName: editFormData.firstName,
+            lastName: editFormData.lastName,
+            phone: editFormData.phone,
+          },
+          email: editFormData.email,
+        } as any
+      );
 
       if (response.data) {
         toast.success('User updated successfully');
@@ -182,10 +185,10 @@ const UserManagementContent: React.FC = () => {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="flex min-h-screen bg-gray-50 text-text-dark">
+    <div className="overflow-hidden flex bg-gray-50 text-text-dark">
       <AdminSidebar />
 
-      <main className="flex-1 overflow-y-scroll p-8">
+      <main className="h-full flex-1 overflow-y-scroll p-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8">
@@ -308,7 +311,9 @@ const UserManagementContent: React.FC = () => {
                                       Change Role
                                     </button>
                                     <button
-                                      onClick={() => handleDeleteClick(userItem)}
+                                      onClick={() =>
+                                        handleDeleteClick(userItem)
+                                      }
                                       className="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50"
                                     >
                                       Delete
@@ -371,7 +376,10 @@ const UserManagementContent: React.FC = () => {
                     type="text"
                     value={editFormData.firstName}
                     onChange={(e) =>
-                      setEditFormData({ ...editFormData, firstName: e.target.value })
+                      setEditFormData({
+                        ...editFormData,
+                        firstName: e.target.value,
+                      })
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   />
@@ -384,7 +392,10 @@ const UserManagementContent: React.FC = () => {
                     type="text"
                     value={editFormData.lastName}
                     onChange={(e) =>
-                      setEditFormData({ ...editFormData, lastName: e.target.value })
+                      setEditFormData({
+                        ...editFormData,
+                        lastName: e.target.value,
+                      })
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   />
@@ -397,7 +408,10 @@ const UserManagementContent: React.FC = () => {
                     type="email"
                     value={editFormData.email}
                     onChange={(e) =>
-                      setEditFormData({ ...editFormData, email: e.target.value })
+                      setEditFormData({
+                        ...editFormData,
+                        email: e.target.value,
+                      })
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   />
@@ -410,7 +424,10 @@ const UserManagementContent: React.FC = () => {
                     type="tel"
                     value={editFormData.phone}
                     onChange={(e) =>
-                      setEditFormData({ ...editFormData, phone: e.target.value })
+                      setEditFormData({
+                        ...editFormData,
+                        phone: e.target.value,
+                      })
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   />
@@ -444,7 +461,8 @@ const UserManagementContent: React.FC = () => {
             <p className="text-gray-600 mb-6">
               Are you sure you want to delete{' '}
               <span className="font-medium">
-                {selectedUser.profile?.firstName} {selectedUser.profile?.lastName}
+                {selectedUser.profile?.firstName}{' '}
+                {selectedUser.profile?.lastName}
               </span>
               ? This action cannot be undone.
             </p>

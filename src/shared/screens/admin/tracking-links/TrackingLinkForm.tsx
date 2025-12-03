@@ -13,14 +13,14 @@ const TrackingLinkForm: React.FC = () => {
 
   const [formData, setFormData] = useState<CreateTrackingLinkData>({
     name: '',
-    destinationUrl: 'https://www.thoughtmetrics.com/survey_campaign',
+    destinationUrl: '/survey_campaign',
     utmSource: '',
     utmMedium: '',
     utmCampaign: '',
     utmTerm: '',
     utmContent: '',
-    postSignupRedirect: '/survey-campaign',
-    redirectToSignup: true,
+    postSignupRedirect: '',
+    redirectToSignup: false,
     allocatedSurveyId: '',
   });
 
@@ -62,14 +62,14 @@ const TrackingLinkForm: React.FC = () => {
           // Reset form
           setFormData({
             name: '',
-            destinationUrl: 'https://www.thoughtmetrics.com/survey_campaign',
+            destinationUrl: '/survey_campaign',
             utmSource: '',
             utmMedium: '',
             utmCampaign: '',
             utmTerm: '',
             utmContent: '',
-            postSignupRedirect: '/survey-campaign',
-            redirectToSignup: true,
+            postSignupRedirect: '',
+            redirectToSignup: false,
             allocatedSurveyId: '',
           });
         }
@@ -108,10 +108,10 @@ const TrackingLinkForm: React.FC = () => {
               id="destinationUrl"
               name="destinationUrl"
               label="Destination URL"
-              type="url"
               value={formData.destinationUrl}
               onChange={handleInputChange}
-              helperText="Where the link redirects to"
+              placeholder="/survey_campaign or / or /advocate-landing"
+              helperText="Endpoint path where the link redirects to (e.g., /survey_campaign, /, /advocate-landing)"
               required
             />
 
@@ -183,28 +183,35 @@ const TrackingLinkForm: React.FC = () => {
               id="postSignupRedirect"
               name="postSignupRedirect"
               label="Post-Signup Redirect (Optional)"
-              value={formData.postSignupRedirect || '/survey-campaign'}
+              value={formData.postSignupRedirect || ''}
               onChange={handleInputChange}
               options={[
+                { value: '', label: 'None (uses default)' },
                 { value: '/survey-campaign', label: 'Onboarding Survey (/survey-campaign)' },
                 { value: '/survey-boards', label: 'Survey Boards (/survey-boards)' },
                 { value: '/dashboard', label: 'User Dashboard (/dashboard)' },
               ]}
-              helperText="Where user goes after signup (if no allocated survey). Defaults to /survey-boards if not specified."
+              helperText="Where user goes after signup completion (only if redirected from destination page to signup). Leave as 'None' to use default behavior."
             />
 
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                name="redirectToSignup"
-                id="redirectToSignup"
-                checked={formData.redirectToSignup}
-                onChange={handleInputChange}
-                className="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
-              />
-              <label htmlFor="redirectToSignup" className="ml-2 text-sm text-gray-700">
-                Auto-redirect to signup page
-              </label>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h4 className="font-semibold text-blue-900 mb-2">How Tracking Links Work:</h4>
+              <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
+                <li><strong>User clicks tracking link</strong> → Redirects to <strong>Destination URL</strong> with tracking params</li>
+                <li><strong>Destination page</strong> (e.g., /survey_campaign) shows:
+                  <ul className="ml-6 mt-1 list-disc list-inside">
+                    <li>Not logged in → "Register Now" button → /sign-up</li>
+                    <li>Logged in → "Take Survey" button → /surveys/[allocated_survey_id] or /survey-boards</li>
+                  </ul>
+                </li>
+                <li><strong>After signup</strong> → Redirects to:
+                  <ul className="ml-6 mt-1 list-disc list-inside">
+                    <li>/surveys/[allocated_survey_id] if provided</li>
+                    <li>Post-Signup Redirect path if specified</li>
+                    <li>/survey-boards (default)</li>
+                  </ul>
+                </li>
+              </ol>
             </div>
 
             <div className="flex gap-4">
