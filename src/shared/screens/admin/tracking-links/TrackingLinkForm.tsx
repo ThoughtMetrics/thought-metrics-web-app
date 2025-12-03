@@ -21,6 +21,7 @@ const TrackingLinkForm: React.FC = () => {
     utmContent: '',
     postSignupRedirect: '/survey-campaign',
     redirectToSignup: true,
+    allocatedSurveyId: '',
   });
 
   const [createdLink, setCreatedLink] = useState<{
@@ -68,6 +69,7 @@ const TrackingLinkForm: React.FC = () => {
           utmContent: '',
           postSignupRedirect: '/survey-campaign',
           redirectToSignup: true,
+          allocatedSurveyId: '',
         });
       },
     });
@@ -165,10 +167,20 @@ const TrackingLinkForm: React.FC = () => {
               />
             </div>
 
+            <TextInputAtom
+              id="allocatedSurveyId"
+              name="allocatedSurveyId"
+              label="Allocated Survey ID (Optional)"
+              value={formData.allocatedSurveyId || ''}
+              onChange={handleInputChange}
+              placeholder="e.g., TM-AM001, TM-LF002"
+              helperText="If specified, user will be redirected to this specific survey after signup. Leave empty to redirect to survey-boards."
+            />
+
             <SelectAtom
               id="postSignupRedirect"
               name="postSignupRedirect"
-              label="Post-Signup Redirect"
+              label="Post-Signup Redirect (Optional)"
               value={formData.postSignupRedirect || '/survey-campaign'}
               onChange={handleInputChange}
               options={[
@@ -176,7 +188,7 @@ const TrackingLinkForm: React.FC = () => {
                 { value: '/survey-boards', label: 'Survey Boards (/survey-boards)' },
                 { value: '/dashboard', label: 'User Dashboard (/dashboard)' },
               ]}
-              helperText="Where user goes after signup"
+              helperText="Where user goes after signup (if no allocated survey). Defaults to /survey-boards if not specified."
             />
 
             <div className="flex items-center">

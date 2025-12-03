@@ -1,13 +1,13 @@
 ---
 import IntractionLayout from '@/layouts/IntractionLayout.astro';
-import SurveyCampaignWrapper from '@/shared/screens/survey-campaign/survey-campaign';
+import SurveyCampaignPage from '@/shared/screens/survey-campaign/SurveyCampaignPage';
 
 const seoContent = {
   title: 'Survey Campaign | Thought Metrics',
-  description: 'Complete your survey and earn rewards.',
+  description: 'Join our research panel and earn rewards by sharing your opinions.',
 };
 ---
 
 <IntractionLayout title={seoContent.title} description={seoContent.description}>
-  <SurveyCampaignWrapper client:only="react" />
+  <SurveyCampaignPage client:only="react" />
 </IntractionLayout>
