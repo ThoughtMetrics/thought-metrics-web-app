@@ -63,12 +63,14 @@ export const useCreateTrackingLink = () => {
         queryKey: QueryKeys.analytics.links(),
       });
 
-      toast.success('Tracking Link Created!', {
-        description: `Short code: ${response.data.shortCode}`,
-        duration: 5000,
-      });
+      if (response.data) {
+        toast.success('Tracking Link Created!', {
+          description: `Short code: ${response.data.shortCode}`,
+          duration: 5000,
+        });
 
-      console.debug('Tracking link created successfully:', response.data);
+        console.debug('Tracking link created successfully:', response.data);
+      }
     },
     onError: (error: any) => {
       console.error('Tracking link creation failed:', error);

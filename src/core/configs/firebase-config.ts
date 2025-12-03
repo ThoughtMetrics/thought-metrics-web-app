@@ -11,7 +11,7 @@ import { getAPIConfig } from '@configs/api-config';
 // Singleton instances
 let firebaseApp: FirebaseApp | null = null;
 let firebaseAuth: Auth | null = null;
-let firebaseAnalytics: Analytics | null = null;
+let _firebaseAnalytics: Analytics | null = null; // Initialized for side effects
 
 // Check if we're in a browser environment
 const isBrowser = typeof window !== 'undefined';
@@ -47,7 +47,7 @@ const initializeFirebase = (): FirebaseApp | null => {
 
     firebaseApp = initializeApp(API_CONFIG.firebaseConfig);
 
-    firebaseAnalytics = getAnalytics(firebaseApp);
+    _firebaseAnalytics = getAnalytics(firebaseApp);
 
     return firebaseApp;
   } catch (error) {

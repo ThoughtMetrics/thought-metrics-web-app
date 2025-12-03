@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/core/lib/query-client';
 import { AuthProvider, useAuth } from '@/shared/providers/auth-provider';
-import { CheckCircle, ArrowRight, UserPlus, ClipboardList, Star } from 'lucide-react';
+import { ArrowRight, UserPlus, ClipboardList, Star } from 'lucide-react';
 
 const SurveyCampaignPageContent: React.FC = () => {
   const { user, isAuthReady } = useAuth();
