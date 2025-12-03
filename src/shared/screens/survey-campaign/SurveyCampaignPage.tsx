@@ -3,6 +3,10 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/core/lib/query-client';
 import { AuthProvider, useAuth } from '@/shared/providers/auth-provider';
 import { ArrowRight, UserPlus, ClipboardList, Star } from 'lucide-react';
+import { survey_campaign_constant } from './survey-campaign-constant';
+import { SurveyCampaignIllustrationSquare } from '@/assets';
+import CustomImageAtom from '@/shared/ui/atoms/custom-image';
+import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
 
 const SurveyCampaignPageContent: React.FC = () => {
   const { user, isAuthReady } = useAuth();
@@ -33,7 +37,8 @@ const SurveyCampaignPageContent: React.FC = () => {
       linkId: linkId || localStorage.getItem('tm_link_id'),
       source: source || localStorage.getItem('utm_source'),
       campaign: campaign || localStorage.getItem('utm_campaign'),
-      allocatedSurveyId: allocatedSurvey || localStorage.getItem('tm_allocated_survey'),
+      allocatedSurveyId:
+        allocatedSurvey || localStorage.getItem('tm_allocated_survey'),
     });
   }, []);
 
@@ -65,179 +70,100 @@ const SurveyCampaignPageContent: React.FC = () => {
   const isLoggedIn = !!user;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-secondary/5">
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-full mb-6">
-            <Star className="w-10 h-10 text-primary" />
-          </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Welcome to Thought Metrics Survey Campaign!
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            {isLoggedIn
-              ? `Hi ${user?.email || 'there'}! Ready to share your valuable insights?`
-              : 'Join our research panel and earn rewards by sharing your opinions.'}
-          </p>
-
-          {trackingInfo.campaign && (
-            <div className="mt-4 inline-flex items-center px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium">
-              Campaign: {trackingInfo.campaign}
-            </div>
-          )}
+    <div className="h-full overflow-hidden bg-linear-to-br from-primary/5 via-white to-secondary/5">
+      <section className="common-component w-full h-full relative">
+        <div className="absolute w-full h-full flex justify-end md:items-center pt-14 md:p-0">
+          <SurveyCampaignIllustrationSquare className="h-[58%] md:h-[90%] w-auto stroke-2 md:stroke-1 stroke-primary" />
         </div>
-
-        {/* Main Action Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-100">
-          {isLoggedIn ? (
-            // Logged In - Take Survey
-            <div className="text-center">
-              <ClipboardList className="w-16 h-16 text-green-600 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                Ready to Take the Survey?
-              </h2>
-              <p className="text-gray-600 mb-6">
-                {trackingInfo.allocatedSurveyId
-                  ? 'We have a special survey waiting for you based on this campaign!'
-                  : 'Browse available surveys and start earning rewards.'}
-              </p>
-              <button
-                onClick={handleTakeSurveyClick}
-                className="inline-flex items-center px-8 py-4 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 transition-colors shadow-lg"
-              >
-                {trackingInfo.allocatedSurveyId ? 'Start Allocated Survey' : 'Browse Surveys'}
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </button>
+        <div className="hidden md:flex absolute w-full h-full justify-end pt-18 md:pt-0 md:items-center">
+          <div className="pl-[6%] pr-[8%] relative">
+            <div className="relative p-18 h-[85%] w-[85%]">
+              {survey_campaign_constant.commonIllustration
+                ?.industryIllustration && (
+                <survey_campaign_constant.commonIllustration.industryIllustration className="absolute w-full h-full transform -translate-y-1/2 -translate-x-1/2 top-1/2 left-2/3" />
+              )}
+              {survey_campaign_constant.commonIllustration?.illustration2 && (
+                <survey_campaign_constant.commonIllustration.illustration2 className="absolute pt-12 left-6 pb-12" />
+              )}
+              <CustomImageAtom
+                src={survey_campaign_constant.heroSection.illustration.img}
+                size={
+                  survey_campaign_constant.heroSection.illustration.size as any
+                }
+                aspectRatio={
+                  survey_campaign_constant.heroSection.illustration
+                    .aspectRatio as any
+                }
+                shadowOpacity={
+                  survey_campaign_constant.heroSection.illustration
+                    .shadowOpacity as any
+                }
+                objectFit={
+                  survey_campaign_constant.heroSection.illustration
+                    .objectFit as any
+                }
+                loading={
+                  survey_campaign_constant.heroSection.illustration
+                    .loading as any
+                }
+                backgroundColor={
+                  survey_campaign_constant.heroSection.illustration
+                    .backgroundColor as any
+                }
+              />
             </div>
-          ) : (
-            // Not Logged In - Register Now
-            <div className="text-center">
-              <UserPlus className="w-16 h-16 text-primary mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                Register to Get Started
-              </h2>
-              <p className="text-gray-600 mb-6">
-                Create your free account to access surveys and start earning rewards.
-              </p>
-              <button
-                onClick={handleRegisterClick}
-                className="inline-flex items-center px-8 py-4 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 transition-colors shadow-lg"
-              >
-                Register Now
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </button>
-              <p className="text-sm text-gray-500 mt-4">
+          </div>
+        </div>
+        <div className="z-1 common-container w-full max-w-(--breakpoint-2xl)! md:min-h-[480px] xl:min-h-[580px] wide:min-h-[780px] items-center px-12 pb-8 md:py-10 md:px-24">
+          <div className="md:w-[43%] xxl:w-[43%] wide:w-[50%] h-full flex flex-col gap-8 justify-center">
+            <h1 className="w-[80%] text-primary text-2xl xl:text-[2.5rem] wide:text-[3rem] font-semibold pt-8 md:pt-0 text-nowrap">
+              {survey_campaign_constant.heroSection.title1}{' '}
+              <span className="text-black">
+                {survey_campaign_constant.heroSection.title2}
+              </span>
+            </h1>
+
+            <div className="flex flex-col gap-4 md:gap-6">
+              {survey_campaign_constant.heroSection.list.map((item, index) => (
+                <div className="flex gap-4 items-center" key={index}>
+                  <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shrink-0">
+                    <span className="text-white text-lg xl:text-[1.3rem] wide:text-[1.7rem] font-medium">
+                      {index + 1}
+                    </span>
+                  </div>
+                  <p className="w-full text-black text-lg xl:text-[1.3rem] wide:text-[1.7rem] font-semibold">
+                    <span className="text-secondary">{item.label1}</span>{' '}
+                    <span>{item.label2}</span>
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="">
+              <CustomButtonAtom
+                onClick={
+                  isLoggedIn ? handleTakeSurveyClick : handleRegisterClick
+                }
+                className="font-medium text-lg px-10 py-1 xl:text-xl xl:px-14 xl:py-2"
+                label={
+                  isLoggedIn
+                    ? survey_campaign_constant.heroSection.activeActionButton
+                        .label
+                    : survey_campaign_constant.heroSection.actionButton.label
+                }
+              />
+              <p className="text-sm text-gray-500 mt-2">
                 Already have an account?{' '}
-                <a href="/login" className="text-primary hover:underline font-medium">
+                <a
+                  href="/login"
+                  className="text-primary hover:underline font-medium"
+                >
                   Sign in here
                 </a>
               </p>
             </div>
-          )}
-        </div>
-
-        {/* Benefits */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-            Why Join Our Panel?
-          </h2>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-primary font-bold text-lg">💰</span>
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Earn Money</h3>
-              <p className="text-gray-600 text-sm">
-                Get paid for every survey you complete. Direct UPI or bank transfer.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-primary font-bold text-lg">🎯</span>
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Relevant Surveys</h3>
-              <p className="text-gray-600 text-sm">
-                Only receive surveys that match your profile and interests.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-primary font-bold text-lg">⚡</span>
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Quick & Easy</h3>
-              <p className="text-gray-600 text-sm">
-                Most surveys take 5-10 minutes. Anytime, anywhere on any device.
-              </p>
-            </div>
           </div>
         </div>
-
-        {/* How It Works */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-            How It Works
-          </h2>
-
-          <div className="space-y-6">
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                <span className="text-primary font-bold">1</span>
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-1">
-                  {isLoggedIn ? 'Browse Surveys' : 'Sign Up Free'}
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  {isLoggedIn
-                    ? 'Choose from available surveys that match your profile.'
-                    : 'Create your free account in less than 2 minutes.'}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                <span className="text-primary font-bold">2</span>
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Share Your Opinion</h3>
-                <p className="text-gray-600 text-sm">
-                  Answer questions honestly. Your insights help brands make better decisions.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                <span className="text-primary font-bold">3</span>
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Get Rewarded</h3>
-                <p className="text-gray-600 text-sm">
-                  Receive payment directly to your UPI or bank account after completion.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* CTA Footer */}
-        {!isLoggedIn && (
-          <div className="text-center mt-8">
-            <button
-              onClick={handleRegisterClick}
-              className="inline-flex items-center px-8 py-4 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 transition-colors shadow-lg"
-            >
-              Get Started - Register Free
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </button>
-          </div>
-        )}
-      </div>
+      </section>
     </div>
   );
 };

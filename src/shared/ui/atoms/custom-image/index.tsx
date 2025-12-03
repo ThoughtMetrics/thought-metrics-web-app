@@ -21,6 +21,7 @@ export interface ImageAtomProps {
   className?: string;
   onClick?: () => void;
   loading?: 'lazy' | 'eager';
+  backgroundColor?: 'light' | 'dark' | 'transparent' | 'default';
 }
 
 // Size configurations
@@ -78,6 +79,13 @@ const OBJECT_FIT_CLASSES = {
   'scale-down': 'object-scale-down',
 } as const;
 
+const BACKGROUND_COLOR_CLASSES = {
+  default: '',
+  light: 'bg-white',
+  dark: 'bg-gray-800',
+  transparent: 'bg-transparent',
+} as const;
+
 const CustomImageAtom: React.FC<ImageAtomProps> = ({
   src = '',
   size = 'md',
@@ -87,6 +95,7 @@ const CustomImageAtom: React.FC<ImageAtomProps> = ({
   aspectRatio = 'auto',
   objectFit = 'cover',
   className = '',
+  backgroundColor = 'default',
   onClick,
   loading = 'lazy',
 }) => {
@@ -96,7 +105,7 @@ const CustomImageAtom: React.FC<ImageAtomProps> = ({
     <div className="relative inline-block z-1">
       {shadowOpacity !== 'default' && (
         <div
-          className={`w-[95%] h-full z-[-1] bg-primary absolute ${ROUNDED_CLASSES[rounded]} ${SHADOW_POSITION_CLASSES[shadowPosition]} ${SHADOW_OPACITY_CLASSES[shadowOpacity]}`}
+          className={`w-[95%] h-full z-[-1] bg-primary absolute ${ROUNDED_CLASSES[rounded]} ${SHADOW_POSITION_CLASSES[shadowPosition]} ${SHADOW_OPACITY_CLASSES[shadowOpacity]} ${BACKGROUND_COLOR_CLASSES[backgroundColor]}`}
         ></div>
       )}
       <img
