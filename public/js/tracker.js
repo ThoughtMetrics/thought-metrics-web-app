@@ -147,9 +147,19 @@
 
     flushEvents();
 
-    const redirectTo = getPostSignupRedirect();
+    // Check for allocated survey first (highest priority)
+    const allocatedSurveyId = localStorage.getItem('tm_allocated_survey');
+    let redirectTo;
 
-    localStorage.removeItem('tm_redirect_after_signup');
+    if (allocatedSurveyId) {
+      // If allocated survey exists, redirect to that specific survey
+      redirectTo = `/surveys/${allocatedSurveyId}`;
+      localStorage.removeItem('tm_allocated_survey'); // Clean up after use
+    } else {
+      // Otherwise, use the redirect_after param or default to survey-boards
+      redirectTo = localStorage.getItem('tm_redirect_after_signup') || '/survey-boards';
+      localStorage.removeItem('tm_redirect_after_signup');
+    }
 
     setTimeout(() => {
       window.location.href = redirectTo;

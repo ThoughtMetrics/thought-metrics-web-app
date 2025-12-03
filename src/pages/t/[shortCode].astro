@@ -1,0 +1,70 @@
+---
+/**
+ * Tracking Link Handler
+ *
+ * This route handles tracking links in the format: /t/{shortCode}
+ *
+ * Flow:
+ * 1. Extracts shortCode from URL
+ * 2. Calls backend API to track the visit
+ * 3. Backend returns destination URL with UTM params
+ * 4. Redirects user to destination
+ */
+
+import { getAPIConfig } from '@/core/configs/api-config';
+
+const { shortCode } = Astro.params;
+
+if (!shortCode) {
+  return Astro.redirect('/404', 302);
+}
+
+try {
+  const apiConfig = getAPIConfig();
+  const backendTrackingUrl = `${apiConfig.baseURL}/t/${shortCode}`;
+
+  // Forward to backend tracking endpoint
+  // Backend will track the visit and return redirect URL
+  const response = await fetch(backendTrackingUrl, {
+    method: 'GET',
+    redirect: 'manual', // Don't auto-follow redirects
+    headers: {
+      'User-Agent': Astro.request.headers.get('user-agent') || '',
+      'X-Forwarded-For': Astro.clientAddress || '',
+      'X-Real-IP': Astro.clientAddress || '',
+    },
+  });
+
+  // Get redirect location from backend
+  const redirectUrl = response.headers.get('Location');
+
+  if (redirectUrl && (response.status === 301 || response.status === 302 || response.status === 307)) {
+    // Backend provided redirect URL
+    return Astro.redirect(redirectUrl, response.status);
+  } else if (response.status === 404) {
+    // Tracking link not found
+    return Astro.redirect('/404', 302);
+  } else {
+    // Unexpected response, redirect to home
+    console.error(`[Tracking] Unexpected response: ${response.status}`);
+    return Astro.redirect('/', 302);
+  }
+} catch (error) {
+  console.error('[Tracking] Error handling tracking link:', error);
+  // On error, redirect to home
+  return Astro.redirect('/', 302);
+}
+---
+
+<!-- This page should never render, always redirects -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
+</head>
+<body>
+  <p>Redirecting...</p>
+</body>
+</html>

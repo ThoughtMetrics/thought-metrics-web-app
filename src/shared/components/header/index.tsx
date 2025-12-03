@@ -385,20 +385,23 @@ const HeaderContent: React.FC = () => {
 
             {/* Action Buttons */}
             <div className="px-6 mt-8 flex flex-col gap-3">
-              <a
-                href={ROUTES.START_YOUR_RESEARCH}
-                className="w-full py-3 px-4 border border-white text-white font-medium rounded hover:bg-white/10 transition-colors text-center"
-              >
-                Start Your Research
-              </a>
+              {!isAdmin && !isSuperAdmin && (
+                <a
+                  href={ROUTES.START_YOUR_RESEARCH}
+                  className="w-full py-3 px-4 border border-white text-white font-medium rounded hover:bg-white/10 transition-colors text-center"
+                >
+                  Start Your Research
+                </a>
+              )}
               {(isAdmin || isSuperAdmin) && (
                 <a
                   href="/admin"
-                  className="w-full py-3 px-4 bg-white text-primary font-medium rounded hover:bg-white/90 transition-colors text-center"
+                  className="w-full py-3 px-4 border border-white text-white font-medium rounded hover:bg-white/10 transition-colors text-center"
                 >
                   Admin Panel
                 </a>
               )}
+
               <a
                 href={
                   isAuthenticated

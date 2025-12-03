@@ -13,6 +13,7 @@ export interface CreateTrackingLinkData {
   utmContent?: string;
   postSignupRedirect?: string;
   redirectToSignup?: boolean;
+  allocatedSurveyId?: string; // Optional: specific survey for this campaign
 }
 
 export interface TrackingLink {
@@ -27,6 +28,7 @@ export interface TrackingLink {
   utmTerm?: string;
   utmContent?: string;
   isActive: boolean;
+  allocatedSurveyId?: string;
   stats?: {
     uniqueVisitors?: number;
     registrations?: number;
@@ -84,6 +86,9 @@ class TrackingLinkService {
       }
       if (data.postSignupRedirect?.trim()) {
         requestData.postSignupRedirect = data.postSignupRedirect.trim();
+      }
+      if (data.allocatedSurveyId?.trim()) {
+        requestData.allocatedSurveyId = data.allocatedSurveyId.trim();
       }
 
       // Remove any null or undefined values
