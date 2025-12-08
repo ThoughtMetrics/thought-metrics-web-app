@@ -46,7 +46,7 @@ class SurveyService {
     if (!user) throw new Error('No authenticated user');
     const token = await user.getIdToken();
     apiService.setAuthToken(token);
-    // Endpoint merged: /surveys/:surveyId now returns survey + template + userResponse
+    // Endpoint merged: /survey-boards/:surveyId now returns survey + template + userResponse
     const params = lang ? { lang } : undefined;
     return apiService.get<ISurveyDetails>(`${this.basePath}/${surveyId}`, params);
   }
