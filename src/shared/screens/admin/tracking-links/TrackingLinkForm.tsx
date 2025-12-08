@@ -201,12 +201,12 @@ const TrackingLinkForm: React.FC = () => {
                 <li><strong>Destination page</strong> (e.g., /survey_campaign) shows:
                   <ul className="ml-6 mt-1 list-disc list-inside">
                     <li>Not logged in → "Register Now" button → /sign-up</li>
-                    <li>Logged in → "Take Survey" button → /survey-boards/[allocated_survey_id] or /survey-boards</li>
+                    <li>Logged in → "Take Survey" button → /survey-campaign/[allocated_survey_id] or /survey-boards</li>
                   </ul>
                 </li>
                 <li><strong>After signup</strong> → Redirects to:
                   <ul className="ml-6 mt-1 list-disc list-inside">
-                    <li>/survey-boards/[allocated_survey_id] if provided</li>
+                    <li>/survey-campaign/[allocated_survey_id] if provided</li>
                     <li>Post-Signup Redirect path if specified</li>
                     <li>/survey-boards (default)</li>
                   </ul>

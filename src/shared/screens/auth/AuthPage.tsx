@@ -137,10 +137,46 @@ const LoginPage: React.FC = () => {
     submitForm,
   } = useLoginFormStore();
 
-  // Redirect authenticated users to survey boards
+  // Extract and store tracking parameters from URL on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const linkId = params.get('tm_link_id');
+    const allocatedSurvey = params.get('allocated_survey');
+    const redirectAfter = params.get('redirect_after');
+
+    // Store tracking parameters in localStorage for persistence
+    if (linkId) {
+      localStorage.setItem('tm_link_id', linkId);
+    }
+    if (allocatedSurvey) {
+      localStorage.setItem('tm_allocated_survey', allocatedSurvey);
+    }
+    if (redirectAfter) {
+      localStorage.setItem('tm_redirect_after_signup', redirectAfter);
+    }
+  }, []);
+
+  // Get redirect URL based on tracking parameters
+  const getRedirectUrl = () => {
+    const allocatedSurveyId = localStorage.getItem('tm_allocated_survey');
+    if (allocatedSurveyId) {
+      localStorage.removeItem('tm_allocated_survey');
+      return `/survey-campaign/${allocatedSurveyId}`;
+    }
+
+    const redirectAfter = localStorage.getItem('tm_redirect_after_signup');
+    if (redirectAfter) {
+      localStorage.removeItem('tm_redirect_after_signup');
+      return redirectAfter;
+    }
+
+    return ROUTES.SURVEY_BOARDS;
+  };
+
+  // Redirect authenticated users
   useEffect(() => {
     if (user) {
-      window.location.href = ROUTES.SURVEY_BOARDS;
+      window.location.href = getRedirectUrl();
     }
   }, [user]);
 
@@ -163,7 +199,7 @@ const LoginPage: React.FC = () => {
 
     if (result) {
       setTimeout(() => {
-        window.location.href = ROUTES.SURVEY_BOARDS;
+        window.location.href = getRedirectUrl();
       }, 1500);
     }
   };
@@ -172,11 +208,11 @@ const LoginPage: React.FC = () => {
     try {
       const result = await signInMutation.mutateAsync({ type: 'google' });
 
-      // If popup returned a result (localhost), navigate to survey boards
+      // If popup returned a result (localhost), redirect appropriately
       if (result) {
         setIsNavigating(true);
         setTimeout(() => {
-          window.location.href = ROUTES.SURVEY_BOARDS;
+          window.location.href = getRedirectUrl();
         }, 800);
       }
       // If redirect (production), page will redirect automatically
