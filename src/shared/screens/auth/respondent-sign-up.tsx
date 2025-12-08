@@ -272,6 +272,25 @@ const RespondentSignUpPage: React.FC = () => {
   const signUpMutation = useSignUpMutation();
   const [isNavigating, setIsNavigating] = useState(false);
 
+  // Extract and store tracking parameters from URL on mount
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const linkId = params.get('tm_link_id');
+    const allocatedSurvey = params.get('allocated_survey');
+    const redirectAfter = params.get('redirect_after');
+
+    // Store tracking parameters in localStorage for persistence
+    if (linkId) {
+      localStorage.setItem('tm_link_id', linkId);
+    }
+    if (allocatedSurvey) {
+      localStorage.setItem('tm_allocated_survey', allocatedSurvey);
+    }
+    if (redirectAfter) {
+      localStorage.setItem('tm_redirect_after_signup', redirectAfter);
+    }
+  }, []);
+
   // Translation hook
   const { translations } = useLanguage();
 
@@ -389,11 +408,38 @@ const RespondentSignUpPage: React.FC = () => {
     try {
       const result = await signUpMutation.mutateAsync({ type: 'google' });
 
-      // If popup returned a result (localhost), navigate to survey boards
+      // If popup returned a result (localhost), handle redirect
       if (result) {
         setIsNavigating(true);
+
+        // Check if user came from tracking link and handle redirect
+        if (
+          typeof window !== 'undefined' &&
+          window.ThoughtMetrics?.isFromTrackingLink() &&
+          (result.firebaseUid || result._id) &&
+          result.email
+        ) {
+          window.ThoughtMetrics.onRegistered(
+            result.firebaseUid || result._id || '',
+            result.email || ''
+          );
+          return; // onRegistered handles redirect
+        }
+
+        // Otherwise, check for allocated survey or use default
+        const allocatedSurveyId = localStorage.getItem('tm_allocated_survey');
+        const redirectTo = allocatedSurveyId
+          ? `/survey-campaign/${allocatedSurveyId}`
+          : localStorage.getItem('tm_redirect_after_signup') || ROUTES.SURVEY_BOARDS;
+
+        // Clean up after use
+        if (allocatedSurveyId) {
+          localStorage.removeItem('tm_allocated_survey');
+        }
+        localStorage.removeItem('tm_redirect_after_signup');
+
         setTimeout(() => {
-          window.location.href = ROUTES.SURVEY_BOARDS;
+          window.location.href = redirectTo;
         }, 800);
       }
       // If redirect (production), page will redirect automatically

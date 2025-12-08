@@ -51,7 +51,7 @@ const SurveyCampaignPageContent: React.FC = () => {
   const handleTakeSurveyClick = () => {
     // If allocated survey exists, go directly to that survey
     if (trackingInfo.allocatedSurveyId) {
-      window.location.href = `/survey-boards/${trackingInfo.allocatedSurveyId}`;
+      window.location.href = `/survey-campaign/${trackingInfo.allocatedSurveyId}`;
     } else {
       // Otherwise, go to survey boards
       window.location.href = '/survey-boards';
@@ -153,7 +153,7 @@ const SurveyCampaignPageContent: React.FC = () => {
               <p className="text-sm text-gray-500 mt-2">
                 Already have an account?{' '}
                 <a
-                  href="/login"
+                  href={`/login?${new URLSearchParams(window.location.search).toString()}`}
                   className="text-primary hover:underline font-medium"
                 >
                   Sign in here
