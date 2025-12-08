@@ -153,7 +153,7 @@
 
     if (allocatedSurveyId) {
       // If allocated survey exists, redirect to that specific survey
-      redirectTo = `/surveys/${allocatedSurveyId}`;
+      redirectTo = `/survey-boards/${allocatedSurveyId}`;
       localStorage.removeItem('tm_allocated_survey'); // Clean up after use
     } else {
       // Otherwise, use the redirect_after param or default to survey-boards

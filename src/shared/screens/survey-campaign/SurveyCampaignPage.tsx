@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/core/lib/query-client';
 import { AuthProvider, useAuth } from '@/shared/providers/auth-provider';
-import { ArrowRight, UserPlus, ClipboardList, Star } from 'lucide-react';
 import { survey_campaign_constant } from './survey-campaign-constant';
 import { SurveyCampaignIllustrationSquare } from '@/assets';
 import CustomImageAtom from '@/shared/ui/atoms/custom-image';
@@ -52,7 +51,7 @@ const SurveyCampaignPageContent: React.FC = () => {
   const handleTakeSurveyClick = () => {
     // If allocated survey exists, go directly to that survey
     if (trackingInfo.allocatedSurveyId) {
-      window.location.href = `/surveys/${trackingInfo.allocatedSurveyId}`;
+      window.location.href = `/survey-boards/${trackingInfo.allocatedSurveyId}`;
     } else {
       // Otherwise, go to survey boards
       window.location.href = '/survey-boards';
