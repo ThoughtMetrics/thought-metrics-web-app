@@ -46,9 +46,118 @@ Information collected is typically retained for up to 7 years from the date of y
 <br>
 
 ## Data Security
-Our systems use industry-standard encryption and security measures to safeguard personal information. Measures include physical, electronic, and managerial procedures to prevent unauthorized access, maintain data accuracy, and ensure correct use.  
+Our systems use industry-standard encryption and security measures to safeguard personal information. Measures include physical, electronic, and managerial procedures to prevent unauthorized access, maintain data accuracy, and ensure correct use.
 
-Our website may use cookies and similar technologies to enhance functionality and analyze usage patterns.  
+<br>
+
+## Cookies and Tracking Technologies
+
+### What Are Cookies?
+Cookies are small text files stored on your device when you visit our website. They help us provide you with a better experience, analyze website usage, and improve our services.
+
+### Types of Cookies We Use
+
+We use the following categories of cookies on our website:
+
+#### 1. Strictly Necessary Cookies (Always Active)
+These cookies are essential for the website to function properly and cannot be disabled.
+
+| Cookie Name | Purpose | Duration | Provider |
+|-------------|---------|----------|----------|
+| \`tm_cookie_consent\` | Stores your cookie consent preferences | 365 days | Thought Metrics |
+| \`tm_session_id\` | Maintains your session across pages | Session | Thought Metrics |
+| \`tm_visitor_id\` | Identifies unique visitors for security | Persistent | Thought Metrics |
+
+#### 2. Analytics Cookies (Optional - Requires Consent)
+These cookies help us understand how visitors interact with our website. We only use these cookies if you accept them.
+
+| Cookie Name | Purpose | Duration | Provider |
+|-------------|---------|----------|----------|
+| \`_ga\` | Distinguishes unique users for analytics | 2 years | Google Analytics |
+| \`_gid\` | Distinguishes unique users for analytics | 24 hours | Google Analytics |
+| \`_ga_*\` | Stores and counts pageviews | 2 years | Google Analytics |
+| \`_gat\` | Throttles request rate | 1 minute | Google Analytics |
+
+#### 3. Marketing Cookies (Optional - Requires Consent)
+These cookies track your browsing behavior to provide relevant content and advertisements.
+
+| Cookie Name | Purpose | Duration | Provider |
+|-------------|---------|----------|----------|
+| \`_gcl_au\` | Google Ads conversion tracking | 90 days | Google |
+
+#### 4. Tracking Parameters
+We also use URL parameters for tracking campaign effectiveness:
+
+| Parameter | Purpose | Storage |
+|-----------|---------|---------|
+| \`tm_link_id\` | Tracks survey campaign links | localStorage (30 days) |
+| \`utm_source\`, \`utm_medium\`, \`utm_campaign\` | Marketing campaign tracking | localStorage (30 days) |
+| \`allocated_survey\` | Pre-assigns surveys to users | localStorage (until used) |
+
+### Third-Party Services
+We use the following third-party services that may set cookies:
+
+- **Google Analytics**: Web analytics service that tracks and reports website traffic
+- **Google Tag Manager**: Tag management system to manage tracking codes
+- **Microsoft Clarity**: Session recording and heatmap analytics (if applicable)
+
+### How to Manage Cookies
+
+#### Option 1: Cookie Consent Banner
+When you first visit our website, you'll see a cookie consent banner. You can:
+- Click **"Accept"** to allow all cookies
+- Click **"Decline"** to block optional cookies (only necessary cookies will be used)
+
+#### Option 2: Cookie Settings
+You can change your cookie preferences at any time by:
+1. Clicking the **"Cookie Settings"** link in the website footer
+2. Selecting your preferences
+3. Saving your choices
+
+#### Option 3: Browser Settings
+Most browsers allow you to control cookies through their settings. You can:
+- Block all cookies
+- Delete existing cookies
+- Set preferences for specific websites
+
+**Browser-specific instructions:**
+- **Chrome**: Settings > Privacy and security > Cookies and other site data
+- **Firefox**: Settings > Privacy & Security > Cookies and Site Data
+- **Safari**: Preferences > Privacy > Manage Website Data
+- **Edge**: Settings > Cookies and site permissions
+
+**Note:** Blocking all cookies may affect website functionality.
+
+#### Option 4: Opt-Out Tools
+You can opt out of Google Analytics tracking by installing the [Google Analytics Opt-out Browser Add-on](https://tools.google.com/dlpage/gaoptout).
+
+### Cookie Consent Management
+Your cookie consent is stored locally on your device and expires after **365 days**. After expiry, you'll be asked to provide consent again.
+
+You can withdraw your consent at any time by:
+1. Clearing your browser cookies
+2. Using the "Cookie Settings" link
+3. Contacting us at privacy@thoughtmetrics.com
+
+### Data Collection Through Cookies
+When you accept cookies, we collect:
+- **Usage data**: Pages visited, time spent, click behavior
+- **Device data**: Browser type, operating system, screen resolution
+- **Location data**: Country, region (based on IP address)
+- **Referral data**: How you arrived at our website
+
+This data is used to:
+- Improve website performance and user experience
+- Analyze traffic patterns and optimize content
+- Understand survey participant behavior
+- Comply with security and fraud prevention requirements
+
+### Your Cookie Rights
+Under the DPDP Act, 2023 and GDPR, you have the right to:
+- **Be informed**: Know what cookies we use and why
+- **Give or withdraw consent**: Control which cookies are placed
+- **Access your data**: Request information about data collected via cookies
+- **Delete your data**: Request deletion of cookie-related data
 
 <br>
 

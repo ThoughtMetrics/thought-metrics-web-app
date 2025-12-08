@@ -10,6 +10,8 @@ import AppWrapper from '@/shared/components/AppWrapper';
 import PageLoader from '@/shared/components/PageLoader';
 import faviconSvg from '@assets/icons/thought-metrics.svg';
 import GoogleTagManager from '@/shared/components/analytics/GoogleTagManager.astro';
+import ConsentMode from '@/shared/components/analytics/ConsentMode.astro';
+import CookieConsentBanner from '@/shared/components/CookieConsentBanner';
 import { getAPIConfig } from '@/core/configs/api-config';
 import type { ImageMetadata } from 'astro';
 
@@ -45,16 +47,12 @@ const config = getAPIConfig();
   <head>
     <!-- CRITICAL: RuntimeConfig must be first to prevent hydration errors -->
     <RuntimeConfig />
-    <!-- Analytics & Tracking (GTM manages: GA4, Clarity) -->
-    <!-- Note: Cookiebot loads BEFORE GTM to control consent -->
-    <GoogleTagManager gtmId={config.gtmId} />
 
-    <!-- CRITICAL: Cookiebot must load BEFORE any tracking scripts to manage consent
-    <script
-      id="CookieDeclaration"
-      src={`https://consent.cookiebot.com/${config.cookiebotId}/cd.js`}
-      type="text/javascript"
-      async></script> -->
+    <!-- CRITICAL: Google Consent Mode v2 must load BEFORE GTM -->
+    <ConsentMode />
+
+    <!-- Analytics & Tracking (GTM manages: GA4, Clarity) -->
+    <GoogleTagManager gtmId={config.gtmId} />
 
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href={faviconSvg.src} />
@@ -167,5 +165,8 @@ const config = getAPIConfig();
     <AppWrapper client:only="react">
       <slot />
     </AppWrapper>
+
+    <!-- Cookie Consent Banner -->
+    <CookieConsentBanner client:load />
   </body>
 </html>
