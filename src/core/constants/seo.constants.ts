@@ -7,7 +7,8 @@ import type { SchemaConfig } from '@/core/utils/schema-builder';
 export const seoConfig: SchemaConfig = {
   siteUrl: 'https://www.thoughtmetrics.com',
   siteName: 'Thought Metrics',
-  logoUrl: 'https://www.thoughtmetrics.com/_astro/thought-metrics.4Gz3WWqy.png',
+  // CRITICAL: Use static file from /public (no hashing) so Google can consistently find it
+  logoUrl: 'https://www.thoughtmetrics.com/logo.svg',
   socialProfiles: [
     'https://www.linkedin.com/company/the-thought-metrics-company',
     'https://www.instagram.com/thethoughtmetricscompany',

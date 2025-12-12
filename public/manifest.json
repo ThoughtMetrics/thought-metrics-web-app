@@ -1,0 +1,18 @@
+{
+  "name": "Thought Metrics",
+  "short_name": "Thought Metrics",
+  "description": "Leading customer research and market intelligence platform",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "theme_color": "#415AA4",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/"
+}
