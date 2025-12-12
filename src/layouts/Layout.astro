@@ -8,7 +8,6 @@ import '@styles/variables.css';
 import '@styles/markdown.css';
 import AppWrapper from '@/shared/components/AppWrapper';
 import PageLoader from '@/shared/components/PageLoader';
-import faviconSvg from '@assets/icons/thought-metrics.svg';
 import GoogleTagManager from '@/shared/components/analytics/GoogleTagManager.astro';
 import ConsentMode from '@/shared/components/analytics/ConsentMode.astro';
 import CookieConsentBanner from '@/shared/components/CookieConsentBanner';
@@ -55,7 +54,12 @@ const config = getAPIConfig();
     <GoogleTagManager gtmId={config.gtmId} />
 
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href={faviconSvg.src} />
+
+    <!-- Favicons (Static files for SEO - no hashing) -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.json" />
+
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
