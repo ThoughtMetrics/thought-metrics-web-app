@@ -26,11 +26,6 @@ export const useSubmitDownloadReport = () => {
         description: 'Your report will be sent to your email shortly.',
         duration: 5000,
       });
-
-      console.debug(
-        'Download report form submitted successfully:',
-        response.data
-      );
     },
     onError: (error: any) => {
       console.error('Download report form submission failed:', error);

@@ -26,8 +26,6 @@ export const useSubmitResearch = () => {
         description: "Thank you! We'll get back to you soon with a proposal.",
         duration: 5000,
       });
-
-      console.debug('Research form submitted successfully:', response.data);
     },
     onError: (error: any) => {
       console.error('Research form submission failed:', error);

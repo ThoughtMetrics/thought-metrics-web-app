@@ -90,41 +90,28 @@ const waitForPersistenceWrite = async (): Promise<void> => {
 // Initialize auth persistence - MUST be called before getRedirectResult()
 export const ensureAuthPersistence = async (): Promise<void> => {
   if (persistenceInitialized) {
-    console.debug('[Firebase] ✅ Persistence already initialized');
     return;
   }
 
   if (persistencePromise) {
-    console.debug(
-      '[Firebase] ⏳ Persistence already being initialized, waiting...'
-    );
     return persistencePromise;
   }
 
   const auth = getFirebaseAuth();
   if (!auth) {
-    console.debug(
-      '[Firebase] ⚠️ Cannot set auth persistence - auth not initialized'
-    );
     return;
   }
-  console.debug('[Firebase] 🔄 Initializing auth persistence...');
 
   persistencePromise = Promise.resolve()
     .then(() => {
       if (auth) {
-        console.debug(
-          '[Firebase] Setting persistence to browserLocalPersistence...'
-        );
         return setPersistence(auth, browserLocalPersistence);
       }
     })
     .then(async () => {
-      console.debug('[Firebase] Waiting for persistence write to complete...');
       // CRITICAL: Wait for persistence to actually be written to storage
       await waitForPersistenceWrite();
       persistenceInitialized = true;
-      console.debug('[Firebase] ✅ Auth persistence initialized');
     })
     .catch((error) => {
       console.error('[Firebase] ❌ Failed to set auth persistence:', error);

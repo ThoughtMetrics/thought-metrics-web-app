@@ -16,6 +16,7 @@ import {
 
 // https://astro.build/config
 export default defineConfig({
+  trailingSlash: 'never',
   site: import.meta.env.PUBLIC_SITE_URL ?? 'https://www.thoughtmetrics.com',
   integrations: [
     react(),

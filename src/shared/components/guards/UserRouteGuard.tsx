@@ -50,7 +50,6 @@ export const UserRouteGuard: React.FC<UserRouteGuardProps> = ({ children }) => {
       return;
     }
 
-    console.debug('[UserRouteGuard] User authenticated:', user.email);
     setIsChecking(false);
   }, [user, isAuthReady, isLocalhost]);
 

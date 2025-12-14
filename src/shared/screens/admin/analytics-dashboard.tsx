@@ -51,7 +51,6 @@ export const AnalyticsDashboard: React.FC = () => {
       throw new Error('Not authenticated');
     }
     const token = await user.getIdToken();
-    console.debug('[Analytics] Got auth token, length:', token.length);
     return {
       Authorization: `Bearer firebase:${token}`,
       'Content-Type': 'application/json',
@@ -71,11 +70,9 @@ export const AnalyticsDashboard: React.FC = () => {
         headers,
         credentials: 'include',
       });
-      console.debug('[Analytics] Overview status:', overviewRes.status);
 
       if (overviewRes.ok) {
         const overviewData = await overviewRes.json();
-        console.debug('[Analytics] Overview data:', overviewData);
         setOverview(overviewData.data);
       } else {
         const errorText = await overviewRes.text();
@@ -88,11 +85,9 @@ export const AnalyticsDashboard: React.FC = () => {
         headers,
         credentials: 'include',
       });
-      console.debug('[Analytics] Links status:', linksRes.status);
 
       if (linksRes.ok) {
         const linksData = await linksRes.json();
-        console.debug('[Analytics] Links data:', linksData);
         setLinks(linksData.data || []);
       } else {
         const errorText = await linksRes.text();
@@ -108,11 +103,9 @@ export const AnalyticsDashboard: React.FC = () => {
           credentials: 'include',
         }
       );
-      console.debug('[Analytics] Visitors status:', visitorsRes.status);
 
       if (visitorsRes.ok) {
         const visitorsData = await visitorsRes.json();
-        console.debug('[Analytics] Visitors data:', visitorsData);
         setVisitors(visitorsData.data || []);
       } else {
         const errorText = await visitorsRes.text();
@@ -130,7 +123,6 @@ export const AnalyticsDashboard: React.FC = () => {
   // Load data when user is ready
   useEffect(() => {
     if (user) {
-      console.debug('[Analytics] User ready, loading data for:', user.email);
       loadData();
 
       // Auto-refresh every 30 seconds
