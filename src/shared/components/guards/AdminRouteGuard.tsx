@@ -28,18 +28,9 @@ const AdminRouteGuardInternal: React.FC<AdminRouteGuardProps> = ({
   useEffect(() => {
     // Bypass authentication in local development
     if (isLocalhost) {
-      console.debug('[AdminRouteGuard] Local development detected - bypassing auth checks');
       setIsChecking(false);
       return;
     }
-
-    console.debug('[AdminRouteGuard] Auth state:', {
-      isAuthReady,
-      hasUser: !!user,
-      isAdmin,
-      isSuperAdmin,
-      requireSuperAdmin,
-    });
 
     if (!isAuthReady) {
       console.debug('[AdminRouteGuard] Waiting for auth to be ready...');
@@ -58,13 +49,6 @@ const AdminRouteGuardInternal: React.FC<AdminRouteGuardProps> = ({
 
     // Check if user has required permissions
     const hasAccess = requireSuperAdmin ? isSuperAdmin : isAdmin;
-
-    console.debug('[AdminRouteGuard] Access check:', {
-      requireSuperAdmin,
-      isAdmin,
-      isSuperAdmin,
-      hasAccess,
-    });
 
     if (!hasAccess) {
       console.debug(

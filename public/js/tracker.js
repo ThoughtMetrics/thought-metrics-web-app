@@ -430,8 +430,6 @@
       eventQueue = [...pendingEvents, ...eventQueue];
       flushEvents();
     }
-
-    console.log('ThoughtMetrics Tracker initialized');
   };
 
   if (document.readyState === 'loading') {

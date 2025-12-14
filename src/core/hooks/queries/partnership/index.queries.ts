@@ -26,8 +26,6 @@ export const useSubmitPartnership = () => {
         description: "Thank you for your interest. We'll get back to you soon.",
         duration: 5000,
       });
-
-      console.debug('Partnership form submitted successfully:', response.data);
     },
     onError: (error: any) => {
       console.error('Partnership form submission failed:', error);

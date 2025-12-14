@@ -9,19 +9,6 @@ const AdminDashboardContent: React.FC = () => {
   const { user, userRole, isAdmin, isSuperAdmin, isAuthReady } = useAuth();
   const [stats, setStats] = useState({ totalUsers: 0, loading: true });
 
-  // Debug log to see what useAuth returns
-  useEffect(() => {
-    console.debug('[AdminDashboard] useAuth data changed', JSON.stringify(user));
-    console.debug('[AdminDashboard] Auth data:', {
-      hasUser: !!user,
-      email: user?.email,
-      userRole,
-      isAdmin,
-      isSuperAdmin,
-      isAuthReady,
-    });
-  }, [user, userRole, isAdmin, isSuperAdmin, isAuthReady]);
-
   useEffect(() => {
     const fetchStats = async () => {
       try {

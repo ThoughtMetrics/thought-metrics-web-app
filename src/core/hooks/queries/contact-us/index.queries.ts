@@ -26,8 +26,6 @@ export const useSubmitContactForm = () => {
         description: "We'll get back to you soon.",
         duration: 5000,
       });
-
-      console.debug('Contact form submitted successfully:', response.data);
     },
     onError: (error: any) => {
       console.error('Contact form submission failed:', error);

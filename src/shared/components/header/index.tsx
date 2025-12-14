@@ -22,16 +22,6 @@ const HeaderContent: React.FC = () => {
   // Derive isAuthenticated from user object
   const isAuthenticated = !!user;
 
-  // Debug log
-  useEffect(() => {
-    console.debug('[Header] Auth state:', {
-      hasUser: !!user,
-      userRole,
-      isAdmin,
-      isSuperAdmin,
-    });
-  }, [user, userRole, isAdmin, isSuperAdmin]);
-
   // Handle click outside to close dropdowns
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
