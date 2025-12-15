@@ -15,6 +15,20 @@ export const parseMarkdown = (markdown: string): string => {
     }
   );
 
+  // Blockquotes - must be processed early to avoid conflicts
+  // Handle nested blockquotes (>> creates nested quotes)
+  html = html.replace(
+    /^(>+)\s*(.+)$/gm,
+    (_match: string, arrows: string, text: string) => {
+      const level = arrows.length;
+      let result = text;
+      for (let i = 0; i < level; i++) {
+        result = `<blockquote>${result}</blockquote>`;
+      }
+      return result;
+    }
+  );
+
   // Code blocks
   html = html.replace(
     /```.*\n([\s\S]*?)\n```/g,
@@ -83,7 +97,7 @@ export const parseMarkdown = (markdown: string): string => {
     .split('\n\n')
     .map((p: string) => {
       const trimmed = p.trim();
-      if (!trimmed || /^<(h[1-6]|ul|pre|img)/.exec(trimmed)) return trimmed;
+      if (!trimmed || /^<(h[1-6]|ul|pre|img|blockquote)/.exec(trimmed)) return trimmed;
       return `<p>${trimmed}</p>`;
     })
     .join('\n');
