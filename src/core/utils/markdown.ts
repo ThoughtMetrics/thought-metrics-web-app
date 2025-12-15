@@ -27,10 +27,45 @@ export const parseMarkdown = (markdown: string): string => {
     (_match: string, code: string) => `<code>${code}</code>`
   );
 
+  // Images - must be processed before links to avoid conflicts
+  html = html.replace(
+    /!\[([^\]]*)\]\(([^)]+)\)/g,
+    (_match: string, alt: string, url: string) => `<img src="${url}" alt="${alt}" />`
+  );
+
+  // Links - must be processed before bold/italic
+  html = html.replace(
+    /\[([^\]]+)\]\(([^)]+)\)/g,
+    (_match: string, text: string, url: string) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`
+  );
+
+  // Strikethrough - must be processed before bold
+  html = html.replace(
+    /~~([^~]+)~~/g,
+    (_match: string, text: string) => `<del>${text}</del>`
+  );
+
   // Bold
   html = html.replace(
     /\*\*([^*]+)\*\*/g,
     (_match: string, text: string) => `<strong>${text}</strong>`
+  );
+
+  // Italic (underscore or single asterisk) - must be after bold to avoid conflicts
+  // For underscores, only match when surrounded by whitespace or line boundaries to avoid matching in URLs/filenames
+  html = html.replace(
+    /(^|\s)_([^_]+)_(\s|$)/gm,
+    (_match: string, before: string, text: string, after: string) => `${before}<em>${text}</em>${after}`
+  );
+  html = html.replace(
+    /\*([^*]+)\*/g,
+    (_match: string, text: string) => `<em>${text}</em>`
+  );
+
+  // Auto-link plain URLs (not already in <a> or <img> tags)
+  html = html.replace(
+    /(?<!href="|src=")https?:\/\/[^\s<>")\]]+/g,
+    (url: string) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`
   );
 
   // Convert markdown list syntax (- or *) to <li>
@@ -48,7 +83,7 @@ export const parseMarkdown = (markdown: string): string => {
     .split('\n\n')
     .map((p: string) => {
       const trimmed = p.trim();
-      if (!trimmed || /^<(h[1-6]|ul|pre)/.exec(trimmed)) return trimmed;
+      if (!trimmed || /^<(h[1-6]|ul|pre|img)/.exec(trimmed)) return trimmed;
       return `<p>${trimmed}</p>`;
     })
     .join('\n');
