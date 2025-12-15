@@ -92,21 +92,6 @@ export const parseMarkdown = (markdown: string): string => {
   html = html.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>');
   html = html.replace(/<\/ul>\s*<ul>/g, '');
 
-  // Blockquotes - convert lines starting with >
-  html = html.replace(
-    /^>\s+(.+)$/gm,
-    (_match: string, text: string) => `<bq>${text}</bq>`
-  );
-
-  // Wrap each <bq> in blockquote
-  html = html.replace(/(<bq>[\s\S]*?<\/bq>)/g, '<blockquote>$1</blockquote>');
-
-  // Merge consecutive blockquotes
-  html = html.replace(/<\/blockquote>\s*<blockquote>/g, '\n');
-
-  // Remove temporary <bq> tags
-  html = html.replace(/<\/?bq>/g, '');
-
   // Paragraphs
   return html
     .split('\n\n')
