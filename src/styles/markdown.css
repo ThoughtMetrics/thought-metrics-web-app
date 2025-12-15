@@ -95,3 +95,14 @@
     text-decoration: line-through;
     color: #6b7280;
 }
+
+.prose blockquote {
+    border-left: 4px solid #e5e7eb;
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    color: #4b5563;
+    font-style: italic;
+    background-color: #f9fafb;
+    padding: 1rem 1rem 1rem 1.5rem;
+    border-radius: 0.25rem;
+}
