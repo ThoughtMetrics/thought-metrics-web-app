@@ -32,6 +32,12 @@ export default defineConfig({
       customPages: SITEMAP_CUSTOM_PAGES,
       // Customize sitemap entries
       serialize(item) {
+        // CRITICAL: Remove trailing slashes to match trailingSlash: 'never' config
+        // This prevents "Alternate page with proper canonical tag" Google Search Console errors
+        if (item.url.endsWith('/') && item.url !== 'https://www.thoughtmetrics.com/') {
+          item.url = item.url.slice(0, -1);
+        }
+
         // Set higher priority and more frequent updates for resources
         if (item.url.includes('/resources/')) {
           item.changefreq = ChangeFreqEnum.WEEKLY;
