@@ -56,8 +56,14 @@ const config = getAPIConfig();
     <meta charset="utf-8" />
 
     <!-- Favicons (Static files for SEO - no hashing) -->
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="alternate icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- ICO for legacy browsers and SERP fallback -->
+    <link rel="icon" href="/favicon.ico" />
+    <!-- PNG for Google SERP (preferred format) -->
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <!-- SVG for modern browsers -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Apple touch icon for iOS/Safari -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
 
     <meta
