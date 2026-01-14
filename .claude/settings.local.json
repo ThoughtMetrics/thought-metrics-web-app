@@ -40,7 +40,11 @@
       "Bash(timeout 10 curl:*)",
       "Bash(docker stats:*)",
       "Bash(docker exec:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(findstr:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(npx tsx:*)"
     ],
     "deny": [],
     "ask": []

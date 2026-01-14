@@ -133,7 +133,11 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         );
 
       case QuestionType.MULTI_SLIDER:
-        return answer.values && Object.keys(answer.values).length > 0;
+        // Check if all sliders have values
+        const sliders = currentQuestionData.config.sliders || currentQuestionData.config.items || [];
+        return answer.values && sliders.length > 0 && sliders.every((slider: any) =>
+          answer.values[slider.id] !== undefined && answer.values[slider.id] !== null
+        );
 
       case QuestionType.MATRIX:
         return (
@@ -361,8 +365,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             {...commonProps}
             minValue={config.min || 1}
             maxValue={config.max || 10}
-            minLabel={Object.values(config.labels)[0] as string}
-            maxLabel={Object.values(config.labels)[1] as string}
+            minLabel={config.minLabel || (config.labels ? Object.values(config.labels)[0] as string : '')}
+            maxLabel={config.maxLabel || (config.labels ? Object.values(config.labels)[1] as string : '')}
             description={config.description}
             selectedValue={answers[currentQuestion]?.value}
             onValueChange={(value) =>
@@ -386,10 +390,17 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         );
 
       case QuestionType.MCQ_SINGLE:
+        // Normalize options to have BOTH 'id' and 'value'
+        const mcqSingleOptions = (config.options || []).map((opt: any) => ({
+          ...opt,
+          id: opt.id ?? opt.value,
+          value: opt.value ?? opt.id,
+        }));
+
         return (
           <RadioButtons
             {...commonProps}
-            options={config.options || []}
+            options={mcqSingleOptions}
             selectedValue={answers[currentQuestion]?.value}
             onValueChange={(value) =>
               handleAnswerChange({ ...answers[currentQuestion], value })
@@ -398,10 +409,17 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         );
 
       case QuestionType.MCQ_MULTIPLE:
+        // Normalize options to have BOTH 'id' and 'value'
+        const mcqMultipleOptions = (config.options || []).map((opt: any) => ({
+          ...opt,
+          id: opt.id ?? opt.value,
+          value: opt.value ?? opt.id,
+        }));
+
         return (
           <Checkboxes
             {...commonProps}
-            options={config.options || []}
+            options={mcqMultipleOptions}
             selectedValues={answers[currentQuestion]?.values || []}
             onValueChange={(values) =>
               handleAnswerChange({ ...answers[currentQuestion], values })
@@ -409,14 +427,14 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           />
         );
 
-      case QuestionType.SCALE:        
+      case QuestionType.SCALE:
         return (
           <SingleSlider
             {...commonProps}
             minValue={config.min || 1}
             maxValue={config.max || 10}
-            minLabel={Object.values(config.labels)[0] as string}
-            maxLabel={Object.values(config.labels)[1] as string}
+            minLabel={config.minLabel || (config.labels ? Object.values(config.labels)[0] as string : '')}
+            maxLabel={config.maxLabel || (config.labels ? Object.values(config.labels)[1] as string : '')}
             selectedValue={answers[currentQuestion]?.value}
             onValueChange={(value) =>
               handleAnswerChange({ ...answers[currentQuestion], value })
@@ -430,8 +448,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             {...commonProps}
             minValue={config.min || 1}
             maxValue={config.max || 100}
-            minLabel={config.labels.min}
-            maxLabel={config.labels.max}
+            minLabel={config.labels ? (Array.isArray(config.labels) ? config.labels[0] : config.labels.min) : ''}
+            maxLabel={config.labels ? (Array.isArray(config.labels) ? config.labels[1] : config.labels.max) : ''}
             selectedRange={answers[currentQuestion]?.range}
             onRangeChange={(range) =>
               handleAnswerChange({ ...answers[currentQuestion], range })
@@ -440,12 +458,27 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         );
 
       case QuestionType.MULTI_SLIDER:
+        // Support both 'items' (old format) and 'sliders' (new format)
+        // Preserve all slider properties including individual min/max
+        const sliderItems = config.items || (config.sliders || []).map((slider: any) => ({
+          ...slider,
+          id: slider.id ?? slider.value,
+          value: slider.value ?? slider.id,
+          minLabel: slider.minLabel || '',
+          maxLabel: slider.maxLabel || '',
+        }));
+
+        // For global min/max, use first slider's values if available
+        const firstSlider = config.sliders?.[0];
+        const globalMinValue = config.minValue ?? firstSlider?.min ?? 0;
+        const globalMaxValue = config.maxValue ?? firstSlider?.max ?? 100;
+
         return (
           <MultipleSlider
             {...commonProps}
-            items={config.items || []}
-            minValue={config.minValue || 1}
-            maxValue={config.maxValue || 10}
+            items={sliderItems}
+            minValue={globalMinValue}
+            maxValue={globalMaxValue}
             selectedValues={answers[currentQuestion]?.values || {}}
             onValuesChange={(values) =>
               handleAnswerChange({ ...answers[currentQuestion], values })
@@ -454,11 +487,23 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         );
 
       case QuestionType.MATRIX:
+        // Normalize rows and columns to have BOTH 'id' and 'value' properties
+        const matrixRows = (config.rows || []).map((row: any) => ({
+          ...row,
+          id: row.id ?? row.value,
+          value: row.value ?? row.id,
+        }));
+        const matrixColumns = (config.columns || []).map((col: any) => ({
+          ...col,
+          id: col.id ?? col.value,
+          value: col.value ?? col.id,
+        }));
+
         return (
           <MatrixGrid
             {...commonProps}
-            rows={config.rows || []}
-            columns={config.columns || []}
+            rows={matrixRows}
+            columns={matrixColumns}
             selectedValues={answers[currentQuestion]?.values || {}}
             onValuesChange={(values) =>
               handleAnswerChange({ ...answers[currentQuestion], values })
@@ -467,13 +512,21 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         );
 
       case QuestionType.RANKING:
+        // Support both 'options' (old) and 'items' (new) formats
+        // Normalize to have BOTH 'id' and 'value' properties
+        const rankingItems = (config.options || config.items || []).map((item: any) => ({
+          ...item,
+          id: item.id ?? item.value,
+          value: item.value ?? item.id,
+        }));
+
         return (
           <Ranking
             {...commonProps}
-            items={config.options || []}
+            items={rankingItems}
             rankedItems={
               answers[currentQuestion]?.rankedItems ??
-              config.options.map((option: any) => option.value)
+              rankingItems.map((item: any) => item.value)
             }
             onRankingChange={(rankedItems) =>
               handleAnswerChange({ ...answers[currentQuestion], rankedItems })
@@ -499,11 +552,19 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         );
 
       case QuestionType.CONSTANT_SUM:
+        // Support both 'options' (old) and 'items' (new) formats
+        // Normalize to have BOTH 'id' and 'value' properties
+        const constantSumOptions = (config.options || config.items || []).map((item: any) => ({
+          ...item,
+          id: item.id ?? item.value,
+          value: item.value ?? item.id,
+        }));
+
         return (
           <ConstantSum
             {...commonProps}
-            totalPoints={config.totalPoints || 100}
-            options={config.options || []}
+            totalPoints={config.totalPoints ?? config.total ?? 100}
+            options={constantSumOptions}
             allocatedPoints={answers[currentQuestion]?.allocatedPoints || {}}
             onAllocationChange={(allocatedPoints) =>
               handleAnswerChange({
