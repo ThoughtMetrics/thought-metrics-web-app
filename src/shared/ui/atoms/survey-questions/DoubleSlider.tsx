@@ -71,10 +71,10 @@ export const DoubleSlider: React.FC<DoubleSliderProps> = ({
     >
       <div className="space-y-6">
         {/* Labels */}
-        {(minLabel || maxLabel) && (
+        {(minLabel || minValue) && (
           <div className="flex justify-between text-sm md:text-base text-black mb-2">
-            <span>{`Min: ${minLabel}` || `${minValue}`}</span>
-            <span>{`Max: ${maxLabel}` || `${maxValue}`}</span>
+            <span>{`${minLabel ?? 'Min'}: ${minValue}`}</span>
+            <span>{`${maxLabel ?? 'Max'}: ${maxValue}`}</span>
           </div>
         )}
 

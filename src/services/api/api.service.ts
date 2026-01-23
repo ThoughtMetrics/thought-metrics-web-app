@@ -213,6 +213,51 @@ class ApiService {
   }
 
   /**
+   * Upload file with FormData
+   * Note: Don't set Content-Type header - browser will set it with boundary
+   */
+  async uploadFile<T>(
+    endpoint: string,
+    file: File,
+    additionalData?: Record<string, string>
+  ): Promise<ApiResponse<T>> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    if (additionalData) {
+      Object.entries(additionalData).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+    }
+
+    const url = `${this.baseURL}${endpoint}`;
+
+    // Create abort controller for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      this.API_CONFIG.timeout
+    );
+
+    // Don't include Content-Type header - browser sets it with boundary for FormData
+    const { 'Content-Type': _, ...headersWithoutContentType } = this.defaultHeaders;
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        body: formData,
+        signal: controller.signal,
+        headers: headersWithoutContentType,
+      });
+      clearTimeout(timeoutId);
+      return await this.handleResponse<T>(response);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      return this.handleError(error);
+    }
+  }
+
+  /**
    * Set authentication token
    */
   setAuthToken(token: string) {

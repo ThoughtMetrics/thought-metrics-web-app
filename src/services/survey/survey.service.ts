@@ -164,6 +164,60 @@ class SurveyService {
     apiService.setAuthToken(token);
     return apiService.get(`${this.basePath}/${surveyId}/statistics`);
   }
+
+  /**
+   * Upload survey file to Azure Blob Storage
+   * @param file - The file to upload
+   * @param surveyId - The survey ID
+   * @param questionId - The question ID
+   */
+  async uploadFile(
+    file: File,
+    surveyId: string,
+    questionId: string
+  ): Promise<ApiResponse<{
+    url: string;
+    fileName: string;
+    fileSize: number;
+    mimeType: string;
+  }>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.uploadFile(
+      `${this.basePath}/upload`,
+      file,
+      { surveyId, questionId }
+    );
+  }
+
+  /**
+   * Upload identity document to Azure Blob Storage
+   * @param file - The file to upload
+   * @param surveyId - The survey ID
+   * @param questionId - The question ID
+   */
+  async uploadIdentityDocument(
+    file: File,
+    surveyId: string,
+    questionId: string
+  ): Promise<ApiResponse<{
+    url: string;
+    fileName: string;
+    fileSize: number;
+    mimeType: string;
+  }>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.uploadFile(
+      `${this.basePath}/upload/identity`,
+      file,
+      { surveyId, questionId }
+    );
+  }
 }
 
 export default new SurveyService();

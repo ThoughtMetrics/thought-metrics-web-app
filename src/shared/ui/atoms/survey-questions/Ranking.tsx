@@ -3,6 +3,7 @@ import type { RankingProps } from '@/core/types/survey.type';
 import type React from 'react';
 import { useState } from 'react';
 import { SurveyQuestionWrapper } from './SurveyQuestionWrapper';
+import { useLanguage } from '@/core/hooks/use-language';
 
 export const Ranking: React.FC<RankingProps> = ({
   questionNumber,
@@ -24,6 +25,7 @@ export const Ranking: React.FC<RankingProps> = ({
   isLastQuestion,
 }) => {
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
+  const { translations } = useLanguage();
 
   const handleDragStart = (itemId: string) => {
     setDraggedItem(itemId);
@@ -69,7 +71,7 @@ export const Ranking: React.FC<RankingProps> = ({
       isLastQuestion={isLastQuestion}
     >
       <div className="mb-8 text-text-dark">
-        (click and drag to reorder)
+        ({translations.surveyQuestions.dragItems})
       </div>
       <div className="space-y-3">
         {rankedItems.map((itemId, index) => (

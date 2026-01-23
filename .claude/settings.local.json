@@ -44,7 +44,8 @@
       "Bash(npx ts-node:*)",
       "Bash(findstr:*)",
       "Bash(powershell -Command:*)",
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(flutter analyze:*)"
     ],
     "deny": [],
     "ask": []

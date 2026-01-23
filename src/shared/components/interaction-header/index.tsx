@@ -39,7 +39,7 @@ const InteractionHeaderContent: React.FC = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative h-fit shrink-0">
       <header className="common-component bg-white">
         <div className="common-container justify-center max-w-(--breakpoint-2xl)!">
           <nav className="px-6 py-3 xxl:px-0 flex items-center justify-between w-full">

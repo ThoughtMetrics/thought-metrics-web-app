@@ -22,6 +22,7 @@ import type { SupportedLanguage } from '@/core/stores/language.store';
 export interface Translations {
   common: {
     loading: string;
+    uploading: string;
     error: string;
     success: string;
     submit: string;
@@ -128,6 +129,16 @@ export interface Translations {
     selectLeast: string;
     noOptionsSelected: string;
     invalidInput: string;
+    // File upload translations
+    dragDropFile: string;
+    maxFileSize: string;
+    allowedTypes: string;
+    fileTooLarge: string;
+    invalidFileType: string;
+    fileReadError: string;
+    removeFile: string;
+    supportedFormats: string;
+    maxSize: string;
   };
 
   validation: {
@@ -361,6 +372,7 @@ export interface Translations {
 const en: Translations = {
   common: {
     loading: 'Loading...',
+    uploading: 'Uploading...',
     error: 'Error',
     success: 'Success',
     submit: 'Submit',
@@ -473,6 +485,16 @@ const en: Translations = {
     selectLeast: 'Select least important',
     noOptionsSelected: 'No options selected',
     invalidInput: 'Invalid input',
+    // File upload translations
+    dragDropFile: 'Drag & drop or click to upload',
+    maxFileSize: 'Max size',
+    allowedTypes: 'Allowed',
+    fileTooLarge: 'File size exceeds',
+    invalidFileType: 'Invalid file type',
+    fileReadError: 'Error reading file',
+    removeFile: 'Remove',
+    supportedFormats: 'Supported formats',
+    maxSize: 'Max',
   },
 
   validation: {
@@ -723,6 +745,7 @@ const en: Translations = {
 const ta: Translations = {
   common: {
     loading: 'ஏற்றுகிறது...',
+    uploading: 'பதிவேற்றுகிறது...',
     error: 'பிழை',
     success: 'வெற்றி',
     submit: 'சமர்ப்பிக்கவும்',
@@ -839,6 +862,16 @@ const ta: Translations = {
     selectLeast: 'குறைந்த முக்கியமானதைத் தேர்ந்தெடுக்கவும்',
     noOptionsSelected: 'விருப்பங்கள் எதுவும் தேர்ந்தெடுக்கப்படவில்லை',
     invalidInput: 'தவறான உள்ளீடு',
+    // File upload translations
+    dragDropFile: 'இழுத்து விடுங்கள் அல்லது பதிவேற்ற கிளிக் செய்யவும்',
+    maxFileSize: 'அதிகபட்ச அளவு',
+    allowedTypes: 'அனுமதிக்கப்பட்டது',
+    fileTooLarge: 'கோப்பு அளவு அதிகமாக உள்ளது',
+    invalidFileType: 'தவறான கோப்பு வகை',
+    fileReadError: 'கோப்பைப் படிப்பதில் பிழை',
+    removeFile: 'அகற்று',
+    supportedFormats: 'ஆதரிக்கப்படும் வடிவங்கள்',
+    maxSize: 'அதிகபட்சம்',
   },
 
   validation: {

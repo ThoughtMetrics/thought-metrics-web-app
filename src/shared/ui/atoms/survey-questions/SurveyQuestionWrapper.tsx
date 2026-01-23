@@ -19,6 +19,7 @@ interface SurveyQuestionWrapperProps {
   error?: string;
   isNextDisabled?: boolean;
   isLastQuestion?: boolean;
+  isOptional?: boolean; // Indicates if the question is optional
 }
 
 export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
@@ -37,6 +38,7 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
   error,
   isNextDisabled = false,
   isLastQuestion = false,
+  isOptional = false,
 }) => {
   const { translations } = useLanguage();
 
@@ -56,11 +58,17 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
 
       {/* Main Content - Scrollable */}
       <div className="flex-1 overflow-y-auto">
-        <div className="px-4 py-4 md:px-12 md:py-8 max-w-4xl mx-auto">
+        <div className="px-4 py-4 md:px-12 md:py-8 max-w-4xl mx-auto h-full">
           {/* Question Header */}
           <div className="mb-3">
             <p className="text-sm text-text-dark mb-4">
-              {translations.surveyDetail.question} {questionNumber} {translations.surveyDetail.of} {totalQuestions}
+              {translations.surveyDetail.question} {questionNumber}{' '}
+              {translations.surveyDetail.of} {totalQuestions}
+              {isOptional && (
+                <span className="ml-2 text-custom-grey-3">
+                  ({translations.surveyDetail.optional})
+                </span>
+              )}
             </p>
             <h2 className="text-base md:text-lg font-medium text-black mb-2">
               {question}
@@ -68,7 +76,8 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
           </div>
 
           {/* Question Content */}
-          <div className="mb-2">{children}</div>
+          <div className="mb-2 h-full">{children}</div>
+          {/* <div className="h-full w-full mb-2 bg-primary"/> */}
 
           {/* Comment Section - Conditional */}
           {showComment && (
@@ -118,7 +127,9 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
               : 'bg-black text-white hover:bg-custom-grey-4 disabled:bg-custom-grey-3'
           }`}
         >
-          {isLastQuestion ? translations.common.submit : translations.common.next}
+          {isLastQuestion
+            ? translations.common.submit
+            : translations.common.next}
         </button>
       </div>
 

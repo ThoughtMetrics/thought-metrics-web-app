@@ -72,6 +72,19 @@ export interface ISurvey {
   };
 }
 
+// ========== QUESTION CONFIG TYPES ==========
+/**
+ * Config for rating questions
+ * Used when questionType is 'rating'
+ */
+export interface RatingQuestionConfig {
+  maxStars?: number;
+  maxRating?: number;
+  icon?: string;
+  image?: string;
+  labels?: Record<number, string>;
+}
+
 export interface IQuestionTemplate {
   id: string;
   order: number;
@@ -80,6 +93,16 @@ export interface IQuestionTemplate {
   config: Record<string, any>;
   required: boolean;
   allowComment?: boolean;
+  // Multi-language translations for question text and options/items
+  translations?: {
+    [key: string]: {
+      text?: string;
+      options?: Array<{ label: string; value: string }>;
+      items?: Array<{ label: string; value: string }>;
+      rows?: Array<{ label: string; value: string }>;
+      columns?: Array<{ label: string; value: string }>;
+    };
+  };
 }
 
 export interface ISurveyTemplate {
@@ -174,6 +197,7 @@ export interface BaseSurveyQuestionProps {
   error?: string;
   isNextDisabled?: boolean;
   isLastQuestion?: boolean;
+  isOptional?: boolean; // Indicates if the question can be skipped
 }
 
 export interface LickertScaleProps extends BaseSurveyQuestionProps {
@@ -283,9 +307,8 @@ export interface MaxDiffItem {
 
 export interface MaxDiffProps extends BaseSurveyQuestionProps {
   items: MaxDiffItem[];
-  mostImportant?: string;
-  leastImportant?: string;
-  onSelectionChange: (mostImportant: string, leastImportant: string) => void;
+  selections: Record<string, 'best' | 'worst' | null>;
+  onSelectionChange: (selections: Record<string, 'best' | 'worst' | null>) => void;
 }
 
 export interface ConstantSumProps extends BaseSurveyQuestionProps {

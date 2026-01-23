@@ -185,7 +185,7 @@ const UserManagementContent: React.FC = () => {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="overflow-hidden flex bg-gray-50 text-text-dark">
+    <div className="flex bg-gray-50 text-text-dark h-full">
       <AdminSidebar />
 
       <main className="h-full flex-1 overflow-y-scroll p-8">

@@ -27,13 +27,27 @@ export const ConstantSum: React.FC<ConstantSumProps> = ({
   isNextDisabled,
   isLastQuestion,
 }) => {
+  // Initialize all options with 0 if not already set
+  const getInitialAllocation = (): Record<string, number> => {
+    const initial: Record<string, number> = {};
+    options.forEach((option) => {
+      initial[option.value] = allocatedPoints?.[option.value] ?? 0;
+    });
+    return initial;
+  };
+
   const [localAllocation, setLocalAllocation] = useState<
     Record<string, number>
-  >(allocatedPoints || {});
+  >(getInitialAllocation);
 
   useEffect(() => {
-    setLocalAllocation(allocatedPoints);
-  }, [allocatedPoints]);
+    // Re-initialize when options change (e.g., language switch)
+    const newAllocation: Record<string, number> = {};
+    options.forEach((option) => {
+      newAllocation[option.value] = allocatedPoints?.[option.value] ?? localAllocation[option.value] ?? 0;
+    });
+    setLocalAllocation(newAllocation);
+  }, [options]);
 
   const currentTotal = Object.values(localAllocation).reduce(
     (sum, val) => sum + (val || 0),
@@ -116,8 +130,8 @@ export const ConstantSum: React.FC<ConstantSumProps> = ({
               <input
                 type="number"
                 min="0"
-                max={remaining + localAllocation[option.value]}
-                value={localAllocation[option.value]}
+                max={remaining + (localAllocation[option.value] ?? 0)}
+                value={localAllocation[option.value] ?? 0}
                 onChange={(e) => handleChange(option.value, e.target.value)}
                 className="w-16 py-1 border-2 border-custom-grey-2 rounded focus:border-primary outline-none bg-white text-center group-hover:border-primary"
               />
