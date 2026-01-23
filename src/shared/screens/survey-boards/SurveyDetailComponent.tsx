@@ -160,15 +160,17 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         return answer.rankedItems && answer.rankedItems.length > 0;
 
       case QuestionType.MAX_DIFF:
-        // Get items from config (support multiple formats)
-        const maxDiffItems =
-          currentQuestionData.config.items ||
-          currentQuestionData.config.options ||
-          currentQuestionData.config.sets?.[0]?.items ||
+        // Get items from config (support multiple formats) or translations
+        const maxDiffValidationItems =
+          currentQuestionData.config?.items ||
+          currentQuestionData.config?.options ||
+          currentQuestionData.config?.sets?.[0]?.items ||
+          currentQuestionData.translations?.[language]?.items ||
+          currentQuestionData.translations?.en?.items ||
           [];
 
         // If no items configured, invalid
-        if (maxDiffItems.length === 0) return false;
+        if (maxDiffValidationItems.length === 0) return false;
 
         // Check if any selection has been made
         const hasAnySelection =
@@ -183,7 +185,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         // Check that ALL items have a selection (either 'best' or 'worst')
         return (
           answer.selections &&
-          maxDiffItems.every((item: any) => {
+          maxDiffValidationItems.every((item: any) => {
             const itemId = item.id || item.value;
             return (
               answer.selections[itemId] === 'best' ||
@@ -328,6 +330,10 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
               break;
             case QuestionType.RATING:
               answer = answerData.stars || null;
+              break;
+            case QuestionType.FILE:
+              // Backend expects just the URL string
+              answer = answerData.file?.url || null;
               break;
             default:
               // For single value questions (TEXT, NUMBER, etc.)
@@ -575,11 +581,16 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         );
 
       case QuestionType.MAX_DIFF:
-        // Support both 'items' (flat) and 'sets[0].items' (nested) formats
+        // Support multiple formats: config.items, config.options, config.sets[0].items, or translations
         // Also normalize to ensure 'id' property exists (backend may use 'value')
-        const maxDiffItems = (
-          config.items || config.options || config.sets?.[0]?.items || []
-        ).map((item: any) => ({
+        const maxDiffItemsSource =
+          config.items ||
+          config.options ||
+          config.sets?.[0]?.items ||
+          currentQuestionData.translations?.[language]?.items ||
+          currentQuestionData.translations?.en?.items ||
+          [];
+        const maxDiffItems = maxDiffItemsSource.map((item: any) => ({
           id: item.id || item.value,
           label: item.label,
         }));
