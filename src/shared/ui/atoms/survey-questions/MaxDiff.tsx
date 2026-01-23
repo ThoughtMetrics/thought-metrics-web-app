@@ -4,6 +4,8 @@ import type React from 'react';
 import { SurveyQuestionWrapper } from './SurveyQuestionWrapper';
 import { useLanguage } from '@/core/hooks/use-language';
 import { cn } from '@/core/utils/cn';
+import { ThumbsUpIcon } from 'lucide-react';
+import { BackwardIcon } from '@/assets';
 
 export const MaxDiff: React.FC<MaxDiffProps> = ({
   questionNumber,
@@ -74,33 +76,41 @@ export const MaxDiff: React.FC<MaxDiffProps> = ({
                 key={item.id}
                 className={cn(
                   'flex justify-between gap-4 items-center p-4 rounded bg-custom-grey-5 mx-40',
+                  'transition-all duration-300 ease-in-out',
                   itemSelection === 'best' ? 'ml-10 mr-70' : '',
                   itemSelection === 'worst' ? 'ml-70 mr-10' : ''
                 )}
               >
-                <input
-                  type="radio"
-                  name={`maxdiff-${item.id}`}
-                  checked={itemSelection === 'best'}
-                  onChange={() => handleSelectionChange(item.id, 'best')}
-                  className="h-5 w-5 text-primary focus:ring-primary border-custom-grey-2"
-                />
-
-                <div className="">
-                  
+                {/* Best Selection Icon */}
+                <div
+                  className="cursor-pointer"
+                  onClick={() => handleSelectionChange(item.id, 'best')}
+                >
+                  {itemSelection === 'best' && (
+                    <ThumbsUpIcon className="rotate-180 stroke-primary transition-all duration-300 ease-in-out w-7 h-8" />
+                  )}
+                  {itemSelection !== 'best' && (
+                    <BackwardIcon className="transition-all duration-300 ease-in-out w-7 h-5" />
+                  )}
                 </div>
 
                 {/* Item Label */}
                 <div className="text-center text-base md:text-lg text-black whitespace-nowrap">
                   {item.label}
                 </div>
-                <input
-                  type="radio"
-                  name={`maxdiff-${item.id}`}
-                  checked={itemSelection === 'worst'}
-                  onChange={() => handleSelectionChange(item.id, 'worst')}
-                  className="h-5 w-5 text-primary focus:ring-primary border-custom-grey-2"
-                />
+
+                {/* Worst Selection Icon */}
+                <div
+                  className="cursor-pointer"
+                  onClick={() => handleSelectionChange(item.id, 'worst')}
+                >
+                  {itemSelection === 'worst' && (
+                    <ThumbsUpIcon className="stroke-primary transition-all duration-300 ease-in-out w-7 h-8" />
+                  )}
+                  {itemSelection !== 'worst' && (
+                    <BackwardIcon className="rotate-180 transition-all duration-300 ease-in-out w-7 h-5" />
+                  )}
+                </div>
               </div>
             );
           })}
