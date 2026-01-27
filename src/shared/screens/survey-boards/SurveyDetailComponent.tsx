@@ -21,6 +21,7 @@ import {
   StarRating,
   SurveyQuestionWrapper,
 } from '@/shared/ui/atoms/survey-questions';
+import { FileUpload } from '@/shared/ui/atoms/survey-questions/FileUpload';
 import { QueryClientProvider } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { useLanguage } from '@/core/hooks/use-language';
@@ -94,6 +95,11 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     if (!currentQuestionData) return false;
 
     const answer = answers[currentQuestion];
+
+    // If question is NOT required and has no answer, it's valid (can skip)
+    if (!currentQuestionData.required && !answer) return true;
+
+    // If question is required but no answer provided, invalid
     if (!answer) return false;
 
     // Check based on question type
@@ -103,8 +109,11 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
       case QuestionType.EMAIL:
       case QuestionType.PHONE:
       case QuestionType.DATE:
-      case QuestionType.FILE:
         return !!answer.value && answer.value.trim() !== '';
+
+      case QuestionType.FILE:
+        // Check if file object exists with required properties (url from Azure Blob)
+        return !!(answer.file?.fileName && answer.file?.url);
 
       case QuestionType.NUMBER:
         return (
@@ -133,7 +142,13 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         );
 
       case QuestionType.MULTI_SLIDER:
-        return answer.values && Object.keys(answer.values).length > 0;
+        // Check if all sliders have values
+        // Use same normalization as render: slider.id ?? slider.value
+        const sliders = currentQuestionData.config.sliders || currentQuestionData.config.items || [];
+        return answer.values && sliders.length > 0 && sliders.every((slider: any) => {
+          const sliderId = slider.id ?? slider.value;
+          return answer.values[sliderId] !== undefined && answer.values[sliderId] !== null;
+        });
 
       case QuestionType.MATRIX:
         return (
@@ -145,7 +160,39 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         return answer.rankedItems && answer.rankedItems.length > 0;
 
       case QuestionType.MAX_DIFF:
-        return (answer.mostImportant && answer.leastImportant) || answer;
+        // Get items from config (support multiple formats) or translations
+        const maxDiffValidationItems =
+          currentQuestionData.config?.items ||
+          currentQuestionData.config?.options ||
+          currentQuestionData.config?.sets?.[0]?.items ||
+          currentQuestionData.translations?.[language]?.items ||
+          currentQuestionData.translations?.en?.items ||
+          [];
+
+        // If no items configured, invalid
+        if (maxDiffValidationItems.length === 0) return false;
+
+        // Check if any selection has been made
+        const hasAnySelection =
+          answer.selections &&
+          Object.values(answer.selections).some(
+            (v) => v === 'best' || v === 'worst'
+          );
+
+        // If optional and no selections made, can skip
+        if (!currentQuestionData.required && !hasAnySelection) return true;
+
+        // Check that ALL items have a selection (either 'best' or 'worst')
+        return (
+          answer.selections &&
+          maxDiffValidationItems.every((item: any) => {
+            const itemId = item.id || item.value;
+            return (
+              answer.selections[itemId] === 'best' ||
+              answer.selections[itemId] === 'worst'
+            );
+          })
+        );
 
       case QuestionType.CONSTANT_SUM:
         const totalPoints =
@@ -275,16 +322,18 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
               answer = answerData.rankedItems || [];
               break;
             case QuestionType.MAX_DIFF:
-              answer = {
-                mostImportant: answerData.mostImportant,
-                leastImportant: answerData.leastImportant,
-              };
+              // Send selections as object: { itemId: 'best' | 'worst' | null }
+              answer = answerData.selections || {};
               break;
             case QuestionType.CONSTANT_SUM:
               answer = answerData.allocatedPoints || null;
               break;
             case QuestionType.RATING:
               answer = answerData.stars || null;
+              break;
+            case QuestionType.FILE:
+              // Backend expects just the URL string
+              answer = answerData.file?.url || null;
               break;
             default:
               // For single value questions (TEXT, NUMBER, etc.)
@@ -351,6 +400,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
       onSaveDraft: handleSaveDraft,
       isNextDisabled: !isValid,
       isLastQuestion,
+      isOptional: !currentQuestionData.required, // Pass optional indicator
       error: undefined,
     };
 
@@ -361,8 +411,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             {...commonProps}
             minValue={config.min || 1}
             maxValue={config.max || 10}
-            minLabel={Object.values(config.labels)[0] as string}
-            maxLabel={Object.values(config.labels)[1] as string}
+            minLabel={config.minLabel || (config.labels ? Object.values(config.labels)[0] as string : '')}
+            maxLabel={config.maxLabel || (config.labels ? Object.values(config.labels)[1] as string : '')}
             description={config.description}
             selectedValue={answers[currentQuestion]?.value}
             onValueChange={(value) =>
@@ -386,10 +436,17 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         );
 
       case QuestionType.MCQ_SINGLE:
+        // Normalize options to have BOTH 'id' and 'value'
+        const mcqSingleOptions = (config.options || []).map((opt: any) => ({
+          ...opt,
+          id: opt.id ?? opt.value,
+          value: opt.value ?? opt.id,
+        }));
+
         return (
           <RadioButtons
             {...commonProps}
-            options={config.options || []}
+            options={mcqSingleOptions}
             selectedValue={answers[currentQuestion]?.value}
             onValueChange={(value) =>
               handleAnswerChange({ ...answers[currentQuestion], value })
@@ -398,10 +455,17 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         );
 
       case QuestionType.MCQ_MULTIPLE:
+        // Normalize options to have BOTH 'id' and 'value'
+        const mcqMultipleOptions = (config.options || []).map((opt: any) => ({
+          ...opt,
+          id: opt.id ?? opt.value,
+          value: opt.value ?? opt.id,
+        }));
+
         return (
           <Checkboxes
             {...commonProps}
-            options={config.options || []}
+            options={mcqMultipleOptions}
             selectedValues={answers[currentQuestion]?.values || []}
             onValueChange={(values) =>
               handleAnswerChange({ ...answers[currentQuestion], values })
@@ -409,14 +473,14 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           />
         );
 
-      case QuestionType.SCALE:        
+      case QuestionType.SCALE:
         return (
           <SingleSlider
             {...commonProps}
             minValue={config.min || 1}
             maxValue={config.max || 10}
-            minLabel={Object.values(config.labels)[0] as string}
-            maxLabel={Object.values(config.labels)[1] as string}
+            minLabel={config.minLabel || (config.labels ? Object.values(config.labels)[0] as string : '')}
+            maxLabel={config.maxLabel || (config.labels ? Object.values(config.labels)[1] as string : '')}
             selectedValue={answers[currentQuestion]?.value}
             onValueChange={(value) =>
               handleAnswerChange({ ...answers[currentQuestion], value })
@@ -430,8 +494,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             {...commonProps}
             minValue={config.min || 1}
             maxValue={config.max || 100}
-            minLabel={config.labels.min}
-            maxLabel={config.labels.max}
+            minLabel={config.labels ? (Array.isArray(config.labels) ? config.labels[0] : config.labels.min) : ''}
+            maxLabel={config.labels ? (Array.isArray(config.labels) ? config.labels[1] : config.labels.max) : ''}
             selectedRange={answers[currentQuestion]?.range}
             onRangeChange={(range) =>
               handleAnswerChange({ ...answers[currentQuestion], range })
@@ -440,12 +504,27 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         );
 
       case QuestionType.MULTI_SLIDER:
+        // Support both 'items' (old format) and 'sliders' (new format)
+        // Preserve all slider properties including individual min/max
+        const sliderItems = (config.items || config.sliders || []).map((slider: any) => ({
+          ...slider,
+          id: slider.id ?? slider.value,
+          value: slider.value ?? slider.id,
+          minLabel: slider.minLabel || '',
+          maxLabel: slider.maxLabel || '',
+        }));
+
+        // For global min/max, use first slider's values if available
+        const firstSlider = config.sliders?.[0];
+        const globalMinValue = config.minValue ?? firstSlider?.min ?? 0;
+        const globalMaxValue = config.maxValue ?? firstSlider?.max ?? 100;
+
         return (
           <MultipleSlider
             {...commonProps}
-            items={config.items || []}
-            minValue={config.minValue || 1}
-            maxValue={config.maxValue || 10}
+            items={sliderItems}
+            minValue={globalMinValue}
+            maxValue={globalMaxValue}
             selectedValues={answers[currentQuestion]?.values || {}}
             onValuesChange={(values) =>
               handleAnswerChange({ ...answers[currentQuestion], values })
@@ -454,11 +533,23 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         );
 
       case QuestionType.MATRIX:
+        // Normalize rows and columns to have BOTH 'id' and 'value' properties
+        const matrixRows = (config.rows || []).map((row: any) => ({
+          ...row,
+          id: row.id ?? row.value,
+          value: row.value ?? row.id,
+        }));
+        const matrixColumns = (config.columns || []).map((col: any) => ({
+          ...col,
+          id: col.id ?? col.value,
+          value: col.value ?? col.id,
+        }));
+
         return (
           <MatrixGrid
             {...commonProps}
-            rows={config.rows || []}
-            columns={config.columns || []}
+            rows={matrixRows}
+            columns={matrixColumns}
             selectedValues={answers[currentQuestion]?.values || {}}
             onValuesChange={(values) =>
               handleAnswerChange({ ...answers[currentQuestion], values })
@@ -467,13 +558,21 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         );
 
       case QuestionType.RANKING:
+        // Support both 'options' (old) and 'items' (new) formats
+        // Normalize to have BOTH 'id' and 'value' properties
+        const rankingItems = (config.options || config.items || []).map((item: any) => ({
+          ...item,
+          id: item.id ?? item.value,
+          value: item.value ?? item.id,
+        }));
+
         return (
           <Ranking
             {...commonProps}
-            items={config.options || []}
+            items={rankingItems}
             rankedItems={
               answers[currentQuestion]?.rankedItems ??
-              config.options.map((option: any) => option.value)
+              rankingItems.map((item: any) => item.value)
             }
             onRankingChange={(rankedItems) =>
               handleAnswerChange({ ...answers[currentQuestion], rankedItems })
@@ -482,28 +581,47 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         );
 
       case QuestionType.MAX_DIFF:
+        // Support multiple formats: config.items, config.options, config.sets[0].items, or translations
+        // Also normalize to ensure 'id' property exists (backend may use 'value')
+        const maxDiffItemsSource =
+          config.items ||
+          config.options ||
+          config.sets?.[0]?.items ||
+          currentQuestionData.translations?.[language]?.items ||
+          currentQuestionData.translations?.en?.items ||
+          [];
+        const maxDiffItems = maxDiffItemsSource.map((item: any) => ({
+          id: item.id || item.value,
+          label: item.label,
+        }));
         return (
           <MaxDiff
             {...commonProps}
-            items={config.items || []}
-            mostImportant={answers[currentQuestion]?.mostImportant}
-            leastImportant={answers[currentQuestion]?.leastImportant}
-            onSelectionChange={(mostImportant, leastImportant) =>
+            items={maxDiffItems}
+            selections={answers[currentQuestion]?.selections || {}}
+            onSelectionChange={(selections) =>
               handleAnswerChange({
                 ...answers[currentQuestion],
-                mostImportant,
-                leastImportant,
+                selections,
               })
             }
           />
         );
 
       case QuestionType.CONSTANT_SUM:
+        // Support both 'options' (old) and 'items' (new) formats
+        // Normalize to have BOTH 'id' and 'value' properties
+        const constantSumOptions = (config.options || config.items || []).map((item: any) => ({
+          ...item,
+          id: item.id ?? item.value,
+          value: item.value ?? item.id,
+        }));
+
         return (
           <ConstantSum
             {...commonProps}
-            totalPoints={config.totalPoints || 100}
-            options={config.options || []}
+            totalPoints={config.totalPoints ?? config.total ?? 100}
+            options={constantSumOptions}
             allocatedPoints={answers[currentQuestion]?.allocatedPoints || {}}
             onAllocationChange={(allocatedPoints) =>
               handleAnswerChange({
@@ -738,41 +856,21 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
 
       case QuestionType.FILE:
         return (
-          <SurveyQuestionWrapper
-            surveyId={commonProps.surveyId}
-            surveyLabel={commonProps.surveyLabel}
-            questionNumber={commonProps.questionNumber}
-            totalQuestions={commonProps.totalQuestions}
-            question={commonProps.question}
-            comment={commonProps.comment}
-            onCommentChange={commonProps.onCommentChange}
-            progress={commonProps.progress}
-            onBack={commonProps.onBack}
-            onNext={commonProps.onNext}
-            error={commonProps.error}
-            isNextDisabled={commonProps.isNextDisabled}
-            isLastQuestion={commonProps.isLastQuestion}
-          >
-            <div className="space-y-4">
-              <input
-                type="url"
-                value={answers[currentQuestion]?.value || ''}
-                onChange={(e) =>
-                  handleAnswerChange({
-                    ...answers[currentQuestion],
-                    value: e.target.value,
-                  })
-                }
-                placeholder={translations.surveyQuestions.uploadFile}
-                className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors border-custom-grey-2 focus:border-primary text-base md:text-lg"
-              />
-              {config.allowedTypes && (
-                <p className="text-sm text-custom-grey-3">
-                  {translations.surveyQuestions.uploadFile}: {config.allowedTypes.join(', ')}
-                </p>
-              )}
-            </div>
-          </SurveyQuestionWrapper>
+          <FileUpload
+            {...commonProps}
+            questionId={currentQuestionData.id}
+            value={answers[currentQuestion]?.file}
+            onFileChange={(file) =>
+              handleAnswerChange({
+                ...answers[currentQuestion],
+                file,
+              })
+            }
+            maxSizeMB={config.maxSizeMB ?? 5}
+            allowedTypes={config.allowedTypes ?? ['image/jpeg', 'image/png', 'application/pdf']}
+            accept={config.accept}
+            subLabel={config.subLabel}
+          />
         );
 
       default:

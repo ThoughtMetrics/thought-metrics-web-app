@@ -87,7 +87,7 @@ const AnalyticsDashboardContent: React.FC = () => {
   };
 
   return (
-    <div className="overflow-hidden flex bg-gray-50 text-text-dark">
+    <div className="h-full flex bg-gray-50 text-text-dark">
       <AdminSidebar />
       <div className="h-full flex-1 overflow-y-scroll py-8 px-4">
         <div className="max-w-7xl mx-auto">

@@ -4,7 +4,7 @@ import { footerLinks } from './constant';
 
 const InteractionFooter: React.FC = () => {
   return (
-    <div className="relative">
+    <div className="relative h-fit shrink-0">
       <footer className="common-component bg-white flex flex-col">
         <div className="w-full h-1 md:h-1.5 bg-linear-to-r from-secondary to-primary"></div>
         {/* Footer Links */}

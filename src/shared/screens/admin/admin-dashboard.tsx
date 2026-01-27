@@ -29,7 +29,7 @@ const AdminDashboardContent: React.FC = () => {
   }, []);
 
   return (
-    <div className="overflow-hidden flex bg-gray-50 text-text-dark">
+    <div className="h-full flex bg-gray-50 text-text-dark">
       <AdminSidebar />
 
       <main className="h-full overflow-y-scroll flex-1 p-8">

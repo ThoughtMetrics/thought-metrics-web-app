@@ -363,3 +363,7 @@ export { SurveyCampaignVector };
 
 import SurveyCampaignVector1 from 'icons/survey-campaign-vector-1.svg?react';
 export { SurveyCampaignVector1 };
+
+import ThumbsUpIcon from 'icons/thumbs-up.svg?react';
+import BackwardIcon from 'icons/backword.svg?react';
+export { ThumbsUpIcon, BackwardIcon };
