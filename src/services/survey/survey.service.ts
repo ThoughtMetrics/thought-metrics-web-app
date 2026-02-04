@@ -15,11 +15,12 @@ class SurveyService {
 
   /**
    * List all published surveys (Public endpoint)
-   * @param params - Query parameters including language
+   * @param params - Query parameters including language and type
    */
   async listPublicSurveys(params?: {
     status?: string;
     visibility?: string;
+    type?: string; // Survey type: 'respondent' or 'agent'
     page?: number;
     limit?: number;
     search?: string;

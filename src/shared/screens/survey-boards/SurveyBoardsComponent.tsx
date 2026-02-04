@@ -5,7 +5,7 @@ import { useSurveyListQuery } from '@/core/hooks/queries/survey/use-survey-list.
 import { queryClient } from '@/core/lib/query-client';
 import { ROUTES } from '@/routes/routeConfig';
 import type { ISurvey } from '@/core/types/survey.type';
-import { SurveyResponseStatus } from '@/core/types/survey.type';
+import { SurveyResponseStatus, SurveyType } from '@/core/types/survey.type';
 import { INDUSTRY_FILTERS } from '@/core/constants/survey.constants';
 import { AuthProvider } from '@/shared/providers/auth-provider';
 import { SelectAtom } from '@/shared/ui/atoms/custom-input';
@@ -14,13 +14,23 @@ import { LanguageToggle } from '@/shared/ui/molecules/language-toggle';
 import { useLanguage } from '@/core/hooks/use-language';
 import { getIndustryLabel } from '@/core/utils/industry-translator';
 import { UserRouteGuard } from '@/shared/components/guards/UserRouteGuard';
+import { cn } from '@/core/utils/cn';
 
 const SurveyBoardsSection: React.FC = () => {
   const [selectedIndustry, setSelectedIndustry] = React.useState('all');
+  const [selectedType, setSelectedType] = React.useState<string>(
+    SurveyType.RESPONDENT
+  );
   const { data: userProfile } = useProfileQuery();
+
+  // Check if user is field-agent
+  const isFieldAgent = userProfile?.role === 'field-agent';
+
+  // Fetch surveys with type filter (only for field-agent, others always get respondent)
   const { data: surveysData, isLoading } = useSurveyListQuery({
     status: 'published',
     visibility: 'public',
+    type: isFieldAgent ? selectedType : SurveyType.RESPONDENT,
     limit: 100,
   });
 
@@ -31,9 +41,9 @@ const SurveyBoardsSection: React.FC = () => {
 
   // Translated industry filters
   const translatedIndustryFilters = React.useMemo(() => {
-    return INDUSTRY_FILTERS.map(filter => ({
+    return INDUSTRY_FILTERS.map((filter) => ({
       value: filter.value,
-      label: getIndustryLabel(filter.label, translations.industries)
+      label: getIndustryLabel(filter.label, translations.industries),
     }));
   }, [translations.industries]);
 
@@ -82,23 +92,52 @@ const SurveyBoardsSection: React.FC = () => {
               userProfile?.profile?.firstName}
           </h1>
           <label className="flex flex-col md:flex-row gap-6 relative font-medium text-md md:text-2xl w-fit">
-            <span className="">{userProfile?.profile?.phone}</span>
+            <div className="">{userProfile?.profile?.phone}</div>
             {userProfile?.profile?.phone && (
-              <div className="hidden md:block absolute h-full w-px bg-black left-22 md:left-34"></div>
+              <div className="hidden md:block max-h-min w-px bg-black left-22 md:left-34"></div>
             )}
-            <span
+            <div
               className="underline cursor-pointer"
               onClick={() => {
                 window.location.href = ROUTES.EDIT_PROFILE;
               }}
             >
               {translations.surveyBoard.verifyProfile}
-            </span>
+            </div>
           </label>
           <p className="mt-6 md:mt-12 text-sm md:text-lg">
             {translations.surveyBoard.startMessage}
           </p>
         </div>
+
+        {/* Type Selector Tabs - Only for Field Agent */}
+        {isFieldAgent && (
+          <div className="flex justify-center">
+            <div className="inline-flex bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => setSelectedType(SurveyType.RESPONDENT)}
+                className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${
+                  selectedType === SurveyType.RESPONDENT
+                    ? 'bg-white text-primary shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Respondent
+              </button>
+              <button
+                onClick={() => setSelectedType(SurveyType.AGENT)}
+                className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${
+                  selectedType === SurveyType.AGENT
+                    ? 'bg-white text-primary shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Agent
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Filter Section */}
         <div className="w-fit">
           <SelectAtom
@@ -110,10 +149,28 @@ const SurveyBoardsSection: React.FC = () => {
             options={translatedIndustryFilters}
           />
         </div>
+
+        {/* Section Title */}
+        <div className="flex items-center gap-3">
+          <div
+            className={cn(
+              'w-1 h-6 bg-primary rounded',
+              selectedType === SurveyType.AGENT && 'bg-secondary'
+            )}
+          ></div>
+          <h2 className="text-lg font-bold text-gray-900">
+            {selectedType === SurveyType.AGENT
+              ? 'Agent Surveys'
+              : 'Pre-Qualify Surveys'}
+          </h2>
+        </div>
+
         {/* Survey Grid */}
         {isLoading ? (
           <div className="flex w-full h-64 justify-center items-center">
-            <div className="text-lg text-custom-grey-3">{translations.common.loading}</div>
+            <div className="text-lg text-custom-grey-3">
+              {translations.common.loading}
+            </div>
           </div>
         ) : filteredSurveys.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-8">
@@ -140,21 +197,48 @@ const SurveyBoardsSection: React.FC = () => {
               // Determine status badge text and style
               const getStatusInfo = () => {
                 if (!hasResponded) {
-                  return { text: translations.surveyBoard.available, bgColor: 'bg-green-100', textColor: 'text-green-800' };
+                  return {
+                    text: translations.surveyBoard.available,
+                    bgColor: 'bg-green-100',
+                    textColor: 'text-green-800',
+                  };
                 }
-                if (canUpdate && responseStatus === SurveyResponseStatus.DRAFT) {
-                  return { text: translations.surveyBoard.draft, bgColor: 'bg-yellow-100', textColor: 'text-yellow-800' };
+                if (
+                  canUpdate &&
+                  responseStatus === SurveyResponseStatus.DRAFT
+                ) {
+                  return {
+                    text: translations.surveyBoard.draft,
+                    bgColor: 'bg-yellow-100',
+                    textColor: 'text-yellow-800',
+                  };
                 }
                 if (responseStatus === SurveyResponseStatus.SUBMITTED) {
-                  return { text: translations.surveyBoard.submitted, bgColor: 'bg-custom-grey-3', textColor: 'text-grey-800' };
+                  return {
+                    text: translations.surveyBoard.submitted,
+                    bgColor: 'bg-custom-grey-3',
+                    textColor: 'text-grey-800',
+                  };
                 }
                 if (responseStatus === SurveyResponseStatus.APPROVED) {
-                  return { text: translations.surveyBoard.approved, bgColor: 'bg-gray-200', textColor: 'text-gray-700' };
+                  return {
+                    text: translations.surveyBoard.approved,
+                    bgColor: 'bg-gray-200',
+                    textColor: 'text-gray-700',
+                  };
                 }
                 if (responseStatus === SurveyResponseStatus.DECLINED) {
-                  return { text: translations.surveyBoard.declined, bgColor: 'bg-red-100', textColor: 'text-red-800' };
+                  return {
+                    text: translations.surveyBoard.declined,
+                    bgColor: 'bg-red-100',
+                    textColor: 'text-red-800',
+                  };
                 }
-                return { text: survey.status || 'Published', bgColor: 'bg-gray-100', textColor: 'text-gray-700' };
+                return {
+                  text: survey.status || 'Published',
+                  bgColor: 'bg-gray-100',
+                  textColor: 'text-gray-700',
+                };
               };
 
               const statusInfo = getStatusInfo();

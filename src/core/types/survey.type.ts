@@ -17,6 +17,11 @@ export enum SurveyResponseStatus {
   DECLINED = 'declined',
 }
 
+export enum SurveyType {
+  RESPONDENT = 'respondent',
+  AGENT = 'agent',
+}
+
 export enum QuestionType {
   TEXT = 'text',
   TEXTAREA = 'textarea',
@@ -45,6 +50,7 @@ export interface ISurvey {
   label: string;
   status: SurveyStatus | string; // Backend returns string, not enum
   visibility: 'public' | 'private';
+  type?: SurveyType | string; // Survey type: respondent or agent
   price?: number | string; // Backend returns string like "90.00"
   maxResponses?: number;
   surveyId?: string;

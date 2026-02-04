@@ -7,6 +7,7 @@ import { useCurrentLanguage } from '@/core/stores/language.store';
 export const useSurveyListQuery = (params?: {
   status?: string;
   visibility?: string;
+  type?: string;
   page?: number;
   limit?: number;
   search?: string;
