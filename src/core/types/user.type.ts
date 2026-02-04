@@ -9,7 +9,8 @@ export type UserRole =
   | 'employee'
   | 'client'
   | 'respondent'
-  | 'partner';
+  | 'partner'
+  | 'field-agent';
 
 // Location Interface - Aligned with backend ILocation
 export interface Location {
@@ -92,7 +93,8 @@ export interface UserProfile {
     | 'employee'
     | 'client'
     | 'respondent'
-    | 'partner';
+    | 'partner'
+    | 'field-agent';
   createdAt: string;
   updatedAt: string;
 }

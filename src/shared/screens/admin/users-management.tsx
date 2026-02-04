@@ -177,6 +177,8 @@ const UserManagementContent: React.FC = () => {
         return 'bg-yellow-100 text-yellow-800';
       case 'partner':
         return 'bg-orange-100 text-orange-800';
+      case 'field-agent':
+        return 'bg-teal-100 text-teal-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -503,6 +505,7 @@ const UserManagementContent: React.FC = () => {
                   <option value="respondent">Respondent</option>
                   <option value="client">Client</option>
                   <option value="partner">Partner</option>
+                  <option value="field-agent">Field Agent</option>
                   <option value="employee">Employee</option>
                   <option value="admin">Admin</option>
                   {isSuperAdmin && (
