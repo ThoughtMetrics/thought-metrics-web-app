@@ -23,6 +23,8 @@ export const StarRating: React.FC<StarRatingProps> = ({
   error,
   isNextDisabled,
   isLastQuestion,
+  isOptional,
+  hasAnswer,
 }) => {
   const stars = Array.from({ length: maxStars }, (_, i) => i + 1);
   return (
@@ -41,6 +43,8 @@ export const StarRating: React.FC<StarRatingProps> = ({
       error={error}
       isNextDisabled={isNextDisabled}
       isLastQuestion={isLastQuestion}
+      isOptional={isOptional}
+      hasAnswer={hasAnswer}
     >
       <div className="space-y-6 flex flex-col">
         {/* Image */}

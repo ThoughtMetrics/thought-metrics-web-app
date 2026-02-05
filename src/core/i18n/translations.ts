@@ -33,6 +33,7 @@ export interface Translations {
     close: string;
     back: string;
     next: string;
+    skip: string;
     finish: string;
     yes: string;
     no: string;
@@ -383,6 +384,7 @@ const en: Translations = {
     close: 'Close',
     back: 'Back',
     next: 'Next',
+    skip: 'Skip',
     finish: 'Finish',
     yes: 'Yes',
     no: 'No',
@@ -756,6 +758,7 @@ const ta: Translations = {
     close: 'மூடு',
     back: 'பின்செல்',
     next: 'அடுத்து',
+    skip: 'தவிர்',
     finish: 'முடி',
     yes: 'ஆம்',
     no: 'இல்லை',

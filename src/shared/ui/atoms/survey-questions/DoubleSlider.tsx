@@ -29,6 +29,8 @@ export const DoubleSlider: React.FC<DoubleSliderProps> = ({
   error,
   isNextDisabled,
   isLastQuestion,
+  isOptional,
+  hasAnswer,
 }) => {
   const [localRange, setLocalRange] = useState<DoubleSliderItem>(selectedRange);
 
@@ -68,6 +70,8 @@ export const DoubleSlider: React.FC<DoubleSliderProps> = ({
       error={error}
       isNextDisabled={isNextDisabled}
       isLastQuestion={isLastQuestion}
+      isOptional={isOptional}
+      hasAnswer={hasAnswer}
     >
       <div className="space-y-6">
         {/* Labels */}

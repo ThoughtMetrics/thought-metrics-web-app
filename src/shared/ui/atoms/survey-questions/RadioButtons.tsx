@@ -22,6 +22,8 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
   error,
   isNextDisabled,
   isLastQuestion,
+  isOptional,
+  hasAnswer,
 }) => {
   const { translations } = useLanguage();
   // Use dropdown for more than 5 options, radio buttons for 5 or fewer
@@ -43,6 +45,8 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
       error={error}
       isNextDisabled={isNextDisabled}
       isLastQuestion={isLastQuestion}
+      isOptional={isOptional}
+      hasAnswer={hasAnswer}
     >
       {useDropdown ? (
         <select

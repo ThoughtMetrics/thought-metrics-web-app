@@ -23,6 +23,8 @@ export const Ranking: React.FC<RankingProps> = ({
   error,
   isNextDisabled,
   isLastQuestion,
+  isOptional,
+  hasAnswer,
 }) => {
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const { translations } = useLanguage();
@@ -69,6 +71,8 @@ export const Ranking: React.FC<RankingProps> = ({
       error={error}
       isNextDisabled={isNextDisabled}
       isLastQuestion={isLastQuestion}
+      isOptional={isOptional}
+      hasAnswer={hasAnswer}
     >
       <div className="mb-8 text-text-dark">
         ({translations.surveyQuestions.dragItems})

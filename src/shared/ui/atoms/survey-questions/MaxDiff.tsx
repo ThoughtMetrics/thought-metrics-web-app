@@ -25,6 +25,8 @@ export const MaxDiff: React.FC<MaxDiffProps> = ({
   error,
   isNextDisabled,
   isLastQuestion,
+  isOptional,
+  hasAnswer,
 }) => {
   const { translations } = useLanguage();
 
@@ -54,6 +56,8 @@ export const MaxDiff: React.FC<MaxDiffProps> = ({
       error={error}
       isNextDisabled={isNextDisabled}
       isLastQuestion={isLastQuestion}
+      isOptional={isOptional}
+      hasAnswer={hasAnswer}
     >
       <div className="space-y-4 md:space-y-5 lg:space-y-6 w-full relative">
         {/* Desktop: Rotated side labels (hidden on mobile & tablet) */}

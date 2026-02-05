@@ -50,6 +50,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   isNextDisabled,
   isLastQuestion,
   isOptional,
+  hasAnswer,
 }) => {
   const { translations } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -165,6 +166,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       isNextDisabled={isNextDisabled || isUploading}
       isLastQuestion={isLastQuestion}
       isOptional={isOptional}
+      hasAnswer={hasAnswer}
     >
       <div className="space-y-4">
         {/* Sub-label / Instructions */}
