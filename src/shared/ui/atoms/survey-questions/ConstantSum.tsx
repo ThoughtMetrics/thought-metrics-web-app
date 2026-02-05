@@ -26,6 +26,8 @@ export const ConstantSum: React.FC<ConstantSumProps> = ({
   requireTotal = true,
   isNextDisabled,
   isLastQuestion,
+  isOptional,
+  hasAnswer,
 }) => {
   // Initialize all options with 0 if not already set
   const getInitialAllocation = (): Record<string, number> => {
@@ -113,6 +115,8 @@ export const ConstantSum: React.FC<ConstantSumProps> = ({
       error={error}
       isNextDisabled={isNextDisabled}
       isLastQuestion={isLastQuestion}
+      isOptional={isOptional}
+      hasAnswer={hasAnswer}
     >
       <div className="space-y-6">
         {/* Instruction */}

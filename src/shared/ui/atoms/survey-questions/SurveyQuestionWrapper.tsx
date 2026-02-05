@@ -20,6 +20,7 @@ interface SurveyQuestionWrapperProps {
   isNextDisabled?: boolean;
   isLastQuestion?: boolean;
   isOptional?: boolean; // Indicates if the question is optional
+  hasAnswer?: boolean; // Indicates if user has provided an answer
 }
 
 export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
@@ -39,6 +40,7 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
   isNextDisabled = false,
   isLastQuestion = false,
   isOptional = false,
+  hasAnswer = false,
 }) => {
   const { translations } = useLanguage();
 
@@ -129,7 +131,9 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
         >
           {isLastQuestion
             ? translations.common.submit
-            : translations.common.next}
+            : isOptional && !hasAnswer
+              ? translations.common.skip || 'Skip'
+              : translations.common.next}
         </button>
       </div>
 

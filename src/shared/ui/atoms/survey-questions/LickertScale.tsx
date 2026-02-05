@@ -25,6 +25,8 @@ export const LickertScale: React.FC<LickertScaleProps> = ({
   error,
   isNextDisabled,
   isLastQuestion,
+  isOptional,
+  hasAnswer,
 }) => {
   const values = Array.from(
     { length: maxValue - minValue + 1 },
@@ -47,6 +49,8 @@ export const LickertScale: React.FC<LickertScaleProps> = ({
       error={error}
       isNextDisabled={isNextDisabled}
       isLastQuestion={isLastQuestion}
+      isOptional={isOptional}
+      hasAnswer={hasAnswer}
     >
       <div className="space-y-3">
         {/* Description */}

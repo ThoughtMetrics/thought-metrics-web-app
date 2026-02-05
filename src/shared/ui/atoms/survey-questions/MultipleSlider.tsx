@@ -23,6 +23,8 @@ export const MultipleSlider: React.FC<MultipleSliderProps> = ({
   error,
   isNextDisabled,
   isLastQuestion,
+  isOptional,
+  hasAnswer,
 }) => {
   const handleSliderChange = (itemId: string, value: number) => {
     onValuesChange({
@@ -47,6 +49,8 @@ export const MultipleSlider: React.FC<MultipleSliderProps> = ({
       error={error}
       isNextDisabled={isNextDisabled}
       isLastQuestion={isLastQuestion}
+      isOptional={isOptional}
+      hasAnswer={hasAnswer}
     >
       <div className="space-y-8">
         {items.map((item) => {

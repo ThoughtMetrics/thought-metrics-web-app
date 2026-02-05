@@ -25,6 +25,8 @@ export const SingleSlider: React.FC<SingleSliderProps> = ({
   error,
   isNextDisabled,
   isLastQuestion,
+  isOptional,
+  hasAnswer,
 }) => {
   return (
     <SurveyQuestionWrapper
@@ -42,6 +44,8 @@ export const SingleSlider: React.FC<SingleSliderProps> = ({
       error={error}
       isNextDisabled={isNextDisabled}
       isLastQuestion={isLastQuestion}
+      isOptional={isOptional}
+      hasAnswer={hasAnswer}
     >
       <div className="space-y-6">
         {/* Labels */}

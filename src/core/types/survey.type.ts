@@ -204,6 +204,7 @@ export interface BaseSurveyQuestionProps {
   isNextDisabled?: boolean;
   isLastQuestion?: boolean;
   isOptional?: boolean; // Indicates if the question can be skipped
+  hasAnswer?: boolean; // Indicates if user has provided an answer
 }
 
 export interface LickertScaleProps extends BaseSurveyQuestionProps {

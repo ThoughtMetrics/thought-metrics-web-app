@@ -23,6 +23,8 @@ export const MatrixGrid: React.FC<MatrixGridProps> = ({
   error,
   isNextDisabled,
   isLastQuestion,
+  isOptional,
+  hasAnswer,
 }) => {
   const { translations } = useLanguage();
 
@@ -49,6 +51,8 @@ export const MatrixGrid: React.FC<MatrixGridProps> = ({
       error={error}
       isNextDisabled={isNextDisabled}
       isLastQuestion={isLastQuestion}
+      isOptional={isOptional}
+      hasAnswer={hasAnswer}
     >
       <div className="space-y-6">
         {rows.map((row, index) => (

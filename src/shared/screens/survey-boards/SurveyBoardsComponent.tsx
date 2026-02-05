@@ -60,15 +60,20 @@ const SurveyBoardsSection: React.FC = () => {
 
   const handleSurveyClick = (survey: ISurvey) => {
     // Check if user has already submitted or response is completed
-    if (survey.userResponse?.isCompleted) {
+    // Exception: Field-agents can answer agent surveys multiple times
+    const isFieldAgentOnAgentSurvey =
+      isFieldAgent && survey.type === SurveyType.AGENT;
+
+    if (survey.userResponse?.isCompleted && !isFieldAgentOnAgentSurvey) {
       return; // Do nothing if survey is already completed (submitted/approved/declined)
     }
 
     // Use surveyId (TM-xxx format) instead of database UUID for user-friendly URLs
     const surveyIdentifier = survey.surveyId || survey.id;
 
-    // If user has a draft, they can resume
-    if (survey.userResponse?.canUpdate) {
+    // If user has a draft and is NOT field-agent on agent survey, they can resume
+    // Field-agents on agent surveys always start fresh
+    if (survey.userResponse?.canUpdate && !isFieldAgentOnAgentSurvey) {
       window.location.href = `/survey-boards/${surveyIdentifier}?resume=true`;
     } else {
       // Start new survey
@@ -190,9 +195,15 @@ const SurveyBoardsSection: React.FC = () => {
 
               // Check survey status based on userResponse
               const hasResponded = survey.userResponse?.hasResponded || false;
-              const isCompleted = survey.userResponse?.isCompleted || false;
               const canUpdate = survey.userResponse?.canUpdate || false;
               const responseStatus = survey.userResponse?.status;
+
+              // Field-agents can answer agent surveys multiple times
+              const isFieldAgentOnAgentSurvey =
+                isFieldAgent && survey.type === SurveyType.AGENT;
+              const isCompleted =
+                (survey.userResponse?.isCompleted || false) &&
+                !isFieldAgentOnAgentSurvey;
 
               // Determine status badge text and style
               const getStatusInfo = () => {

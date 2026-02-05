@@ -300,57 +300,74 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   };
 
   const handleSubmit = () => {
-    const submission = {
-      answers: questions.map((q, index) => {
-        const answerData = answers[index];
-        let answer = null;
+    // Build submission data - only include answered questions
+    const answersArray: Array<{
+      questionId: string;
+      questionType: string;
+      answer: any;
+      comment: string;
+    }> = [];
 
-        // Extract answer based on question type
-        if (answerData) {
-          switch (q.questionType) {
-            case QuestionType.MCQ_MULTIPLE:
-              answer = answerData.values || [];
-              break;
-            case QuestionType.DOUBLE_SLIDER:
-              answer = answerData.range || null;
-              break;
-            case QuestionType.MULTI_SLIDER:
-            case QuestionType.MATRIX:
-              answer = answerData.values || null;
-              break;
-            case QuestionType.RANKING:
-              answer = answerData.rankedItems || [];
-              break;
-            case QuestionType.MAX_DIFF:
-              // Send selections as object: { itemId: 'best' | 'worst' | null }
-              answer = answerData.selections || {};
-              break;
-            case QuestionType.CONSTANT_SUM:
-              answer = answerData.allocatedPoints || null;
-              break;
-            case QuestionType.RATING:
-              answer = answerData.stars || null;
-              break;
-            case QuestionType.FILE:
-              // Backend expects just the URL string
-              answer = answerData.file?.url || null;
-              break;
-            default:
-              // For single value questions (TEXT, NUMBER, etc.)
-              answer =
-                answerData.value !== undefined ? answerData.value : answerData;
-              break;
-          }
+    questions.forEach((q, index) => {
+      const answerData = answers[index];
+
+      // Skip unanswered optional questions
+      if (!answerData || Object.keys(answerData).length === 0) {
+        // Only skip if not required
+        if (!q.required) {
+          return;
         }
+      }
 
-        return {
-          questionId: q.id,
-          questionType: q.questionType,
-          answer,
-          comment: answerData?.comment || '',
-        };
-      }),
-    };
+      let answer = null;
+
+      // Extract answer based on question type
+      if (answerData) {
+        switch (q.questionType) {
+          case QuestionType.MCQ_MULTIPLE:
+            answer = answerData.values || [];
+            break;
+          case QuestionType.DOUBLE_SLIDER:
+            answer = answerData.range || null;
+            break;
+          case QuestionType.MULTI_SLIDER:
+          case QuestionType.MATRIX:
+            answer = answerData.values || null;
+            break;
+          case QuestionType.RANKING:
+            answer = answerData.rankedItems || [];
+            break;
+          case QuestionType.MAX_DIFF:
+            // Send selections as object: { itemId: 'best' | 'worst' | null }
+            answer = answerData.selections || {};
+            break;
+          case QuestionType.CONSTANT_SUM:
+            answer = answerData.allocatedPoints || null;
+            break;
+          case QuestionType.RATING:
+            answer = answerData.stars || null;
+            break;
+          case QuestionType.FILE:
+            // Backend expects just the URL string
+            answer = answerData.file?.url || null;
+            break;
+          default:
+            // For single value questions (TEXT, NUMBER, etc.)
+            answer =
+              answerData.value !== undefined ? answerData.value : answerData;
+            break;
+        }
+      }
+
+      answersArray.push({
+        questionId: q.id,
+        questionType: q.questionType,
+        answer,
+        comment: answerData?.comment || '',
+      });
+    });
+
+    const submission = { answers: answersArray };
 
     submitMutation.mutate(
       { surveyId, submission },
@@ -380,6 +397,9 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     const config = currentQuestionData.config || {};
     const isValid = isCurrentQuestionValid();
     const isLastQuestion = currentQuestion === totalQuestions - 1;
+    // Check if user has provided any answer for this question
+    const currentAnswer = answers[currentQuestion];
+    const hasAnswer = currentAnswer !== undefined && currentAnswer !== null && Object.keys(currentAnswer).length > 0;
     const commonProps = {
       questionNumber: currentQuestion + 1,
       totalQuestions,
@@ -401,6 +421,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
       isNextDisabled: !isValid,
       isLastQuestion,
       isOptional: !currentQuestionData.required, // Pass optional indicator
+      hasAnswer, // Pass whether user has answered
       error: undefined,
     };
 
@@ -650,6 +671,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             error={commonProps.error}
             isNextDisabled={commonProps.isNextDisabled}
             isLastQuestion={commonProps.isLastQuestion}
+            isOptional={commonProps.isOptional}
+            hasAnswer={commonProps.hasAnswer}
           >
             <input
               type="text"
@@ -689,6 +712,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             error={commonProps.error}
             isNextDisabled={commonProps.isNextDisabled}
             isLastQuestion={commonProps.isLastQuestion}
+            isOptional={commonProps.isOptional}
+            hasAnswer={commonProps.hasAnswer}
           >
             <textarea
               value={answers[currentQuestion]?.value || ''}
@@ -728,6 +753,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             error={commonProps.error}
             isNextDisabled={commonProps.isNextDisabled}
             isLastQuestion={commonProps.isLastQuestion}
+            isOptional={commonProps.isOptional}
+            hasAnswer={commonProps.hasAnswer}
           >
             <input
               type="number"
@@ -762,6 +789,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             error={commonProps.error}
             isNextDisabled={commonProps.isNextDisabled}
             isLastQuestion={commonProps.isLastQuestion}
+            isOptional={commonProps.isOptional}
+            hasAnswer={commonProps.hasAnswer}
           >
             <input
               type="email"
@@ -799,6 +828,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             error={commonProps.error}
             isNextDisabled={commonProps.isNextDisabled}
             isLastQuestion={commonProps.isLastQuestion}
+            isOptional={commonProps.isOptional}
+            hasAnswer={commonProps.hasAnswer}
           >
             <input
               type="tel"
@@ -837,6 +868,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             error={commonProps.error}
             isNextDisabled={commonProps.isNextDisabled}
             isLastQuestion={commonProps.isLastQuestion}
+            isOptional={commonProps.isOptional}
+            hasAnswer={commonProps.hasAnswer}
           >
             <input
               type="date"

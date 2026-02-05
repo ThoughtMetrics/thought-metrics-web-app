@@ -21,6 +21,8 @@ export const Checkboxes: React.FC<CheckboxProps> = ({
   error,
   isNextDisabled,
   isLastQuestion,
+  isOptional,
+  hasAnswer,
 }) => {
   const handleCheckboxChange = (value: string, isChecked: boolean) => {
     if (isChecked) {
@@ -46,6 +48,8 @@ export const Checkboxes: React.FC<CheckboxProps> = ({
       error={error}
       isNextDisabled={isNextDisabled}
       isLastQuestion={isLastQuestion}
+      isOptional={isOptional}
+      hasAnswer={hasAnswer}
     >
       <div className="space-y-2">
         {options.map((option) => (
