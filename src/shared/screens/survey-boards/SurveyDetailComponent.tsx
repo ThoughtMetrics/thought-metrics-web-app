@@ -303,7 +303,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     // Build submission data - only include answered questions
     const answersArray: Array<{
       questionId: string;
-      questionType: string;
+      questionType: QuestionType;
       answer: any;
       comment: string;
     }> = [];
