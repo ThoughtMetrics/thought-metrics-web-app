@@ -12,6 +12,16 @@ export type UserRole =
   | 'partner'
   | 'field-agent';
 
+export type UserZonal =
+  | 'chennai'
+  | 'bangalore'
+  | 'hyderabad'
+  | 'mumbai'
+  | 'delhi'
+  | 'kolkata'
+  | 'pune'
+  | 'ahmedabad';
+
 // Location Interface - Aligned with backend ILocation
 export interface Location {
   doorNumberOrStreetName?: string;
@@ -95,6 +105,7 @@ export interface UserProfile {
     | 'respondent'
     | 'partner'
     | 'field-agent';
+  zonal?: UserZonal;
   createdAt: string;
   updatedAt: string;
 }

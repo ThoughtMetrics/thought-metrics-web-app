@@ -22,6 +22,8 @@ export enum SurveyType {
   AGENT = 'agent',
 }
 
+export type SurveyFormLayout = 'paginated' | 'list';
+
 export enum QuestionType {
   TEXT = 'text',
   TEXTAREA = 'textarea',
@@ -51,6 +53,7 @@ export interface ISurvey {
   status: SurveyStatus | string; // Backend returns string, not enum
   visibility: 'public' | 'private';
   type?: SurveyType | string; // Survey type: respondent or agent
+  formLayout?: SurveyFormLayout; // Form layout: paginated or list
   price?: number | string; // Backend returns string like "90.00"
   maxResponses?: number;
   surveyId?: string;
@@ -132,6 +135,7 @@ export interface ISurveyTemplate {
     instructions?: string;
     maxResponses?: number;
     allowAnonymous: boolean;
+    defaultFormLayout?: SurveyFormLayout;
   };
   createdAt: string;
   updatedAt: string;

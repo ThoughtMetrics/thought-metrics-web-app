@@ -3,7 +3,7 @@ import { useAuth } from '@/shared/providers/auth-provider';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 import UserManagementService from '@/services/api/user-management.service';
-import type { UserProfile, UserRole } from '@/core/types/user.type';
+import type { UserProfile, UserRole, UserZonal } from '@/core/types/user.type';
 import { toast } from 'sonner';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 
@@ -19,6 +19,7 @@ const UserManagementContent: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showRoleModal, setShowRoleModal] = useState(false);
+  const [showZonalModal, setShowZonalModal] = useState(false);
   const [editFormData, setEditFormData] = useState({
     firstName: '',
     lastName: '',
@@ -26,6 +27,7 @@ const UserManagementContent: React.FC = () => {
     phone: '',
   });
   const [selectedRole, setSelectedRole] = useState<UserRole>('respondent');
+  const [selectedZonal, setSelectedZonal] = useState<UserZonal>('chennai');
   const menuRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   // Fetch users on component mount and when page changes
@@ -93,6 +95,13 @@ const UserManagementContent: React.FC = () => {
     setSelectedUser(user);
     setSelectedRole(user.role || 'respondent');
     setShowRoleModal(true);
+    setOpenMenuId(null);
+  };
+
+  const handleZonalClick = (user: UserProfile) => {
+    setSelectedUser(user);
+    setSelectedZonal(user.zonal || 'chennai');
+    setShowZonalModal(true);
     setOpenMenuId(null);
   };
 
@@ -165,6 +174,29 @@ const UserManagementContent: React.FC = () => {
     }
   };
 
+  const handleZonalSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedUser) return;
+
+    try {
+      const response = await UserManagementService.updateUserZonal(
+        selectedUser._id,
+        selectedZonal
+      );
+
+      if (response.data) {
+        toast.success('User zonal updated successfully');
+        setShowZonalModal(false);
+        fetchUsers();
+      }
+    } catch (error: any) {
+      console.error('Error updating zonal:', error);
+      toast.error('Failed to update zonal', {
+        description: error.message || 'An error occurred',
+      });
+    }
+  };
+
   const getRoleBadgeColor = (role?: string) => {
     switch (role) {
       case 'super-admin':
@@ -179,6 +211,29 @@ const UserManagementContent: React.FC = () => {
         return 'bg-orange-100 text-orange-800';
       case 'field-agent':
         return 'bg-teal-100 text-teal-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getZonalBadgeColor = (zonal?: string) => {
+    switch (zonal) {
+      case 'chennai':
+        return 'bg-red-100 text-red-800';
+      case 'bangalore':
+        return 'bg-indigo-100 text-indigo-800';
+      case 'hyderabad':
+        return 'bg-pink-100 text-pink-800';
+      case 'mumbai':
+        return 'bg-blue-100 text-blue-800';
+      case 'delhi':
+        return 'bg-amber-100 text-amber-800';
+      case 'kolkata':
+        return 'bg-emerald-100 text-emerald-800';
+      case 'pune':
+        return 'bg-violet-100 text-violet-800';
+      case 'ahmedabad':
+        return 'bg-cyan-100 text-cyan-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -230,6 +285,9 @@ const UserManagementContent: React.FC = () => {
                           Role
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Zonal
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Joined
                         </th>
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -274,6 +332,13 @@ const UserManagementContent: React.FC = () => {
                               {userItem.role || 'respondent'}
                             </span>
                           </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full capitalize ${getZonalBadgeColor(userItem.zonal)}`}
+                            >
+                              {userItem.zonal || 'chennai'}
+                            </span>
+                          </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {new Date(userItem.createdAt).toLocaleDateString()}
                           </td>
@@ -311,6 +376,12 @@ const UserManagementContent: React.FC = () => {
                                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                     >
                                       Change Role
+                                    </button>
+                                    <button
+                                      onClick={() => handleZonalClick(userItem)}
+                                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    >
+                                      Change Zonal
                                     </button>
                                     <button
                                       onClick={() =>
@@ -526,6 +597,52 @@ const UserManagementContent: React.FC = () => {
                   className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-custom-blue"
                 >
                   Update Role
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Change Zonal Modal */}
+      {showZonalModal && selectedUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Change User Zonal</h3>
+            <form onSubmit={handleZonalSubmit}>
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Select Zonal for {selectedUser.profile?.firstName}{' '}
+                  {selectedUser.profile?.lastName}
+                </label>
+                <select
+                  value={selectedZonal}
+                  onChange={(e) => setSelectedZonal(e.target.value as UserZonal)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="chennai">Chennai</option>
+                  <option value="bangalore">Bangalore</option>
+                  <option value="hyderabad">Hyderabad</option>
+                  <option value="mumbai">Mumbai</option>
+                  <option value="delhi">Delhi</option>
+                  <option value="kolkata">Kolkata</option>
+                  <option value="pune">Pune</option>
+                  <option value="ahmedabad">Ahmedabad</option>
+                </select>
+              </div>
+              <div className="flex gap-3 justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowZonalModal(false)}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-custom-blue"
+                >
+                  Update Zonal
                 </button>
               </div>
             </form>
