@@ -1,11 +1,12 @@
 import ApiService from './api.service';
 import type { ApiResponse } from './api.service';
-import type { UserProfile, UserRole } from '@/core/types/user.type';
+import type { UserProfile, UserRole, UserZonal } from '@/core/types/user.type';
 
 export interface UserListParams {
   page?: number;
   limit?: number;
   role?: UserRole;
+  zonal?: UserZonal;
   search?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
@@ -22,6 +23,11 @@ export interface UserListResponse {
 export interface UpdateUserRoleRequest {
   userId: string;
   role: UserRole;
+}
+
+export interface UpdateUserZonalRequest {
+  userId: string;
+  zonal: UserZonal;
 }
 
 class UserManagementService {
@@ -44,6 +50,13 @@ class UserManagementService {
    */
   async updateUserRole(userId: string, role: UserRole): Promise<ApiResponse<UserProfile>> {
     return await ApiService.post<UserProfile>('/users/change-role', { userId, role });
+  }
+
+  /**
+   * Update user zonal (admin only)
+   */
+  async updateUserZonal(userId: string, zonal: UserZonal): Promise<ApiResponse<UserProfile>> {
+    return await ApiService.post<UserProfile>('/users/change-zonal', { userId, zonal });
   }
 
   /**
