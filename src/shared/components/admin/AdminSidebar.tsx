@@ -8,6 +8,7 @@ interface SidebarLink {
 const sidebarLinks: SidebarLink[] = [
   { href: '/admin', label: 'Dashboard' },
   { href: '/admin/analytics', label: 'Analytics' },
+  { href: '/admin/survey-analytics', label: 'Survey Analytics' },
   { href: '/admin/users', label: 'Users' },
 ];
 

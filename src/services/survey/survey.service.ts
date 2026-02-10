@@ -219,6 +219,86 @@ class SurveyService {
       { surveyId, questionId }
     );
   }
+
+  /* -------------------------------------------------------------------------- */
+  /*                           ANALYTICS ENDPOINTS                              */
+  /* -------------------------------------------------------------------------- */
+
+  /**
+   * Get analytics summary for a survey (Admin endpoint)
+   * Includes total, today, zonal breakdown, and top users
+   */
+  async getSurveyAnalytics(surveyId: string): Promise<ApiResponse<{
+    surveyId: string;
+    totalSubmissions: number;
+    todaySubmissions: number;
+    zonalBreakdown: Array<{ zone: string; count: number }>;
+    topUsers: Array<{ userId: string; total: number; zone: string; todayCount: number }>;
+  }>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.get(`${this.basePath}/${surveyId}/analytics`);
+  }
+
+  /**
+   * Get daily breakdown for a survey (Admin endpoint)
+   * Returns submissions per day for the last N days
+   */
+  async getDailyBreakdown(
+    surveyId: string,
+    limit: number = 30
+  ): Promise<ApiResponse<Array<{ date: string; count: number }>>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.get(`${this.basePath}/${surveyId}/analytics/daily`, { limit });
+  }
+
+  /**
+   * Get zonal breakdown for a survey (Admin endpoint)
+   * Returns submissions per zone
+   */
+  async getZonalBreakdown(
+    surveyId: string
+  ): Promise<ApiResponse<Array<{ zone: string; count: number }>>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.get(`${this.basePath}/${surveyId}/analytics/zonal`);
+  }
+
+  /**
+   * Get top users for a survey (Admin endpoint)
+   * Returns users with most submissions
+   */
+  async getTopUsers(
+    surveyId: string,
+    limit: number = 10
+  ): Promise<ApiResponse<Array<{ userId: string; total: number; zone: string; todayCount: number }>>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.get(`${this.basePath}/${surveyId}/analytics/users`, { limit });
+  }
+
+  /**
+   * Get user-specific statistics for a survey (Admin/Self endpoint)
+   */
+  async getUserAnalytics(
+    surveyId: string,
+    userId: string
+  ): Promise<ApiResponse<{ userId: string; total: number; zone: string; todayCount: number }>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.get(`${this.basePath}/${surveyId}/analytics/users/${userId}`);
+  }
 }
 
 export default new SurveyService();
