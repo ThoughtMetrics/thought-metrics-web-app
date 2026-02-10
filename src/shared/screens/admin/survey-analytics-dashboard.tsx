@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Loader2, RefreshCw, TrendingUp, Users, MapPin, Calendar } from 'lucide-react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { Loader2, RefreshCw, TrendingUp, Users, MapPin, Calendar, Search, Filter } from 'lucide-react';
 import { useAuth } from '@/shared/providers/auth-provider';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
@@ -38,6 +38,20 @@ export const SurveyAnalyticsDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [typeFilter, setTypeFilter] = useState<'all' | 'respondent' | 'agent'>('all');
+
+  // Filter surveys client-side for instant feedback
+  const filteredSurveys = useMemo(() => {
+    return surveys.filter((survey) => {
+      const matchesSearch = !searchQuery ||
+        (survey.label || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (survey.surveyId || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (survey.industry || '').toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesType = typeFilter === 'all' || survey.type === typeFilter;
+      return matchesSearch && matchesType;
+    });
+  }, [surveys, searchQuery, typeFilter]);
 
   // Load surveys list with analytics
   const loadSurveys = async () => {
@@ -206,7 +220,34 @@ export const SurveyAnalyticsDashboard: React.FC = () => {
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow">
                 <div className="p-6 border-b border-gray-200">
-                  <h2 className="text-xl font-semibold text-gray-900">All Surveys</h2>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <h2 className="text-xl font-semibold text-gray-900">
+                      All Surveys ({filteredSurveys.length})
+                    </h2>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      {/* Search */}
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                          type="text"
+                          placeholder="Search surveys..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary w-full sm:w-56"
+                        />
+                      </div>
+                      {/* Type Filter */}
+                      <select
+                        value={typeFilter}
+                        onChange={(e) => setTypeFilter(e.target.value as 'all' | 'respondent' | 'agent')}
+                        className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white"
+                      >
+                        <option value="all">All Types</option>
+                        <option value="respondent">Respondent</option>
+                        <option value="agent">Agent</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full">
@@ -230,14 +271,16 @@ export const SurveyAnalyticsDashboard: React.FC = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                      {surveys.length === 0 ? (
+                      {filteredSurveys.length === 0 ? (
                         <tr>
                           <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
-                            No surveys found
+                            {searchQuery || typeFilter !== 'all'
+                              ? 'No surveys match your filters'
+                              : 'No surveys found'}
                           </td>
                         </tr>
                       ) : (
-                        surveys.map((survey) => (
+                        filteredSurveys.map((survey) => (
                           <tr
                             key={survey.id}
                             className={`hover:bg-gray-50 cursor-pointer ${
