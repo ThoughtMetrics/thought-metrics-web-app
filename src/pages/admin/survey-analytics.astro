@@ -1,0 +1,13 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import SurveyAnalyticsDashboard from '@/shared/screens/admin/survey-analytics-dashboard';
+
+const seoContent = {
+  title: 'Survey Analytics | Admin | Thought Metrics',
+  description: 'Track survey submissions with detailed analytics, zonal breakdowns, and user statistics',
+};
+---
+
+<IntractionLayout title={seoContent.title} description={seoContent.description}>
+  <SurveyAnalyticsDashboard client:only="react" />
+</IntractionLayout>
