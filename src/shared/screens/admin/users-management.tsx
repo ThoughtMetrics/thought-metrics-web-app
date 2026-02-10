@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '@/shared/providers/auth-provider';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
@@ -28,12 +28,28 @@ const UserManagementContent: React.FC = () => {
   });
   const [selectedRole, setSelectedRole] = useState<UserRole>('respondent');
   const [selectedZonal, setSelectedZonal] = useState<UserZonal>('chennai');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterRole, setFilterRole] = useState<string>('all');
+  const [filterZonal, setFilterZonal] = useState<string>('all');
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const menuRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  // Fetch users on component mount and when page changes
+  // Fetch users on component mount and when page/filters change
   useEffect(() => {
     fetchUsers();
-  }, [page]);
+  }, [page, filterRole, filterZonal]);
+
+  // Debounced search
+  useEffect(() => {
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    searchTimeoutRef.current = setTimeout(() => {
+      setPage(1);
+      fetchUsers();
+    }, 400);
+    return () => {
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    };
+  }, [searchQuery]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -54,7 +70,11 @@ const UserManagementContent: React.FC = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await UserManagementService.getUsers({ page, limit });
+      const params: Record<string, any> = { page, limit };
+      if (searchQuery.trim()) params.search = searchQuery.trim();
+      if (filterRole !== 'all') params.role = filterRole;
+      if (filterZonal !== 'all') params.zonal = filterZonal;
+      const response = await UserManagementService.getUsers(params);
       if (response.data) {
         setUsers(response.data.users);
         setTotal(response.data.total);
@@ -260,9 +280,57 @@ const UserManagementContent: React.FC = () => {
           {/* Users Table */}
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">
-                Users ({total})
-              </h2>
+              <div className="flex flex-col gap-4">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Users ({total})
+                </h2>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  {/* Search */}
+                  <div className="relative flex-1">
+                    <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <input
+                      type="text"
+                      placeholder="Search by name or email..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary w-full"
+                    />
+                  </div>
+                  {/* Role Filter */}
+                  <select
+                    value={filterRole}
+                    onChange={(e) => { setFilterRole(e.target.value); setPage(1); }}
+                    className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white"
+                  >
+                    <option value="all">All Roles</option>
+                    <option value="super-admin">Super Admin</option>
+                    <option value="admin">Admin</option>
+                    <option value="employee">Employee</option>
+                    <option value="client">Client</option>
+                    <option value="respondent">Respondent</option>
+                    <option value="partner">Partner</option>
+                    <option value="field-agent">Field Agent</option>
+                  </select>
+                  {/* Zonal Filter */}
+                  <select
+                    value={filterZonal}
+                    onChange={(e) => { setFilterZonal(e.target.value); setPage(1); }}
+                    className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white"
+                  >
+                    <option value="all">All Zones</option>
+                    <option value="chennai">Chennai</option>
+                    <option value="bangalore">Bangalore</option>
+                    <option value="hyderabad">Hyderabad</option>
+                    <option value="mumbai">Mumbai</option>
+                    <option value="delhi">Delhi</option>
+                    <option value="kolkata">Kolkata</option>
+                    <option value="pune">Pune</option>
+                    <option value="ahmedabad">Ahmedabad</option>
+                  </select>
+                </div>
+              </div>
             </div>
 
             {loading ? (
