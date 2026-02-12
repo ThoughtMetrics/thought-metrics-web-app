@@ -26,14 +26,15 @@ const AdminRouteGuardInternal: React.FC<AdminRouteGuardProps> = ({
      window.location.hostname.includes('192.168.'));
 
   useEffect(() => {
-    // Bypass authentication in local development
-    if (isLocalhost) {
-      setIsChecking(false);
+    // Always wait for Firebase auth to restore the session
+    if (!isAuthReady) {
+      console.debug('[AdminRouteGuard] Waiting for auth to be ready...');
       return;
     }
 
-    if (!isAuthReady) {
-      console.debug('[AdminRouteGuard] Waiting for auth to be ready...');
+    // In local development, skip role enforcement but still need auth ready
+    if (isLocalhost) {
+      setIsChecking(false);
       return;
     }
 
@@ -62,8 +63,8 @@ const AdminRouteGuardInternal: React.FC<AdminRouteGuardProps> = ({
     setIsChecking(false);
   }, [user, isAuthReady, isAdmin, isSuperAdmin, requireSuperAdmin, isLocalhost]);
 
-  // Show loading state while checking auth (skip in local development)
-  if (!isLocalhost && (!isAuthReady || isChecking)) {
+  // Show loading state while checking auth
+  if (!isAuthReady || isChecking) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <LoaderUI message="Verifying access..." />

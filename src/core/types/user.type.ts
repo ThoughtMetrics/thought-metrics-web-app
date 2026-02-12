@@ -12,6 +12,7 @@ export type UserRole =
   | 'partner'
   | 'field-agent';
 
+/** @deprecated Legacy city-based zonal values. Use ZonalInfo instead. */
 export type UserZonal =
   | 'chennai'
   | 'bangalore'
@@ -21,6 +22,9 @@ export type UserZonal =
   | 'kolkata'
   | 'pune'
   | 'ahmedabad';
+
+import type { ZonalInfo } from './zone.type';
+export type { ZonalInfo };
 
 // Location Interface - Aligned with backend ILocation
 export interface Location {
@@ -105,7 +109,8 @@ export interface UserProfile {
     | 'respondent'
     | 'partner'
     | 'field-agent';
-  zonal?: UserZonal;
+  zonal?: string;
+  zonalInfo?: ZonalInfo | null;
   createdAt: string;
   updatedAt: string;
 }
