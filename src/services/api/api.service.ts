@@ -69,8 +69,7 @@ class ApiService {
     // Network error
     if (
       error.name === 'TypeError' &&
-      (error.details.error.message.includes('fetch') ??
-        error.message.includes('fetch'))
+      (error.message?.includes('fetch') || error.message?.includes('Failed to fetch'))
     ) {
       throw new ApiError({
         message: 'Network error. Please check your connection.',
@@ -89,9 +88,12 @@ class ApiService {
     }
 
     // Generic error
+    const message = error?.details?.error?.message
+      || error?.message
+      || 'An unexpected error occurred';
     throw new ApiError({
-      message: error.details.error.message || 'An unexpected error occurred',
-      status: 500,
+      message,
+      status: error?.status || 500,
       details: error,
     });
   }

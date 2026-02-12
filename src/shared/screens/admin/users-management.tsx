@@ -1,14 +1,16 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/shared/providers/auth-provider';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 import UserManagementService from '@/services/api/user-management.service';
-import type { UserProfile, UserRole, UserZonal } from '@/core/types/user.type';
+import ZoneService from '@/services/api/zone.service';
+import type { UserProfile, UserRole } from '@/core/types/user.type';
+import type { ZoneHierarchy } from '@/core/types/zone.type';
 import { toast } from 'sonner';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 
 const UserManagementContent: React.FC = () => {
-  const { isSuperAdmin } = useAuth();
+  const { user, isAuthReady, isSuperAdmin } = useAuth();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
@@ -27,20 +29,43 @@ const UserManagementContent: React.FC = () => {
     phone: '',
   });
   const [selectedRole, setSelectedRole] = useState<UserRole>('respondent');
-  const [selectedZonal, setSelectedZonal] = useState<UserZonal>('chennai');
+  // Cascading zonal selection state for Change Zonal modal
+  const [zoneHierarchy, setZoneHierarchy] = useState<ZoneHierarchy>([]);
+  const [zoneHierarchyLoading, setZoneHierarchyLoading] = useState(true);
+  const [selectedDistrict, setSelectedDistrict] = useState<string>('');
+  const [selectedAcNo, setSelectedAcNo] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterRole, setFilterRole] = useState<string>('all');
-  const [filterZonal, setFilterZonal] = useState<string>('all');
+  const [filterZone, setFilterZone] = useState<string>('all');
+  const [filterDistrict, setFilterDistrict] = useState<string>('all');
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const menuRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  // Fetch users on component mount and when page/filters change
+  // Load zone hierarchy once auth is ready
   useEffect(() => {
+    if (!isAuthReady || !user) return;
+    setZoneHierarchyLoading(true);
+    ZoneService.getHierarchy()
+      .then((data) => {
+        console.debug('[UserManagement] Zone hierarchy loaded:', data.length, 'zones');
+        setZoneHierarchy(data);
+      })
+      .catch((err) => {
+        console.error('[UserManagement] Failed to load zone hierarchy:', err);
+        toast.error('Failed to load zone data', { description: err.message });
+      })
+      .finally(() => setZoneHierarchyLoading(false));
+  }, [isAuthReady, user]);
+
+  // Fetch users when auth is ready and when page/filters change
+  useEffect(() => {
+    if (!isAuthReady || !user) return;
     fetchUsers();
-  }, [page, filterRole, filterZonal]);
+  }, [isAuthReady, user, page, filterRole, filterZone, filterDistrict]);
 
   // Debounced search
   useEffect(() => {
+    if (!isAuthReady || !user) return;
     if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
     searchTimeoutRef.current = setTimeout(() => {
       setPage(1);
@@ -49,7 +74,7 @@ const UserManagementContent: React.FC = () => {
     return () => {
       if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
     };
-  }, [searchQuery]);
+  }, [searchQuery, isAuthReady, user]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -73,7 +98,8 @@ const UserManagementContent: React.FC = () => {
       const params: Record<string, any> = { page, limit };
       if (searchQuery.trim()) params.search = searchQuery.trim();
       if (filterRole !== 'all') params.role = filterRole;
-      if (filterZonal !== 'all') params.zonal = filterZonal;
+      if (filterZone !== 'all') params.zone = filterZone;
+      if (filterDistrict !== 'all') params.district = filterDistrict;
       const response = await UserManagementService.getUsers(params);
       if (response.data) {
         setUsers(response.data.users);
@@ -120,7 +146,14 @@ const UserManagementContent: React.FC = () => {
 
   const handleZonalClick = (user: UserProfile) => {
     setSelectedUser(user);
-    setSelectedZonal(user.zonal || 'chennai');
+    // Pre-select current values if user has zonalInfo
+    if (user.zonalInfo) {
+      setSelectedDistrict(user.zonalInfo.district || '');
+      setSelectedAcNo(user.zonalInfo.acNo || 0);
+    } else {
+      setSelectedDistrict('');
+      setSelectedAcNo(0);
+    }
     setShowZonalModal(true);
     setOpenMenuId(null);
   };
@@ -196,12 +229,12 @@ const UserManagementContent: React.FC = () => {
 
   const handleZonalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedUser) return;
+    if (!selectedUser || !selectedAcNo) return;
 
     try {
       const response = await UserManagementService.updateUserZonal(
         selectedUser._id,
-        selectedZonal
+        selectedAcNo
       );
 
       if (response.data) {
@@ -236,28 +269,37 @@ const UserManagementContent: React.FC = () => {
     }
   };
 
-  const getZonalBadgeColor = (zonal?: string) => {
-    switch (zonal) {
-      case 'chennai':
-        return 'bg-red-100 text-red-800';
-      case 'bangalore':
-        return 'bg-indigo-100 text-indigo-800';
-      case 'hyderabad':
-        return 'bg-pink-100 text-pink-800';
-      case 'mumbai':
+  const getZonalBadgeColor = (zone?: string) => {
+    switch (zone) {
+      case 'North':
         return 'bg-blue-100 text-blue-800';
-      case 'delhi':
-        return 'bg-amber-100 text-amber-800';
-      case 'kolkata':
-        return 'bg-emerald-100 text-emerald-800';
-      case 'pune':
-        return 'bg-violet-100 text-violet-800';
-      case 'ahmedabad':
-        return 'bg-cyan-100 text-cyan-800';
+      case 'South':
+        return 'bg-green-100 text-green-800';
+      case 'East':
+        return 'bg-purple-100 text-purple-800';
+      case 'West':
+        return 'bg-orange-100 text-orange-800';
+      case 'Central':
+        return 'bg-teal-100 text-teal-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        // Legacy city-based zones
+        return 'bg-amber-100 text-amber-800';
     }
   };
+
+  // Derived cascading dropdown data: District > AC > Zone (auto-resolved)
+  const allDistricts = zoneHierarchy.flatMap(z => z.districts);
+  const filteredAcs = selectedDistrict
+    ? allDistricts.find(d => d.name === selectedDistrict)?.acs || []
+    : [];
+  const resolvedZone = selectedDistrict
+    ? zoneHierarchy.find(z => z.districts.some(d => d.name === selectedDistrict))?.zone || ''
+    : '';
+
+  // Districts available for filter dropdown
+  const filterDistrictOptions = filterZone !== 'all'
+    ? zoneHierarchy.find(z => z.zone === filterZone)?.districts.map(d => d.name) || []
+    : allDistricts.map(d => d.name);
 
   const totalPages = Math.ceil(total / limit);
 
@@ -313,21 +355,27 @@ const UserManagementContent: React.FC = () => {
                     <option value="partner">Partner</option>
                     <option value="field-agent">Field Agent</option>
                   </select>
-                  {/* Zonal Filter */}
+                  {/* Zone Filter */}
                   <select
-                    value={filterZonal}
-                    onChange={(e) => { setFilterZonal(e.target.value); setPage(1); }}
+                    value={filterZone}
+                    onChange={(e) => { setFilterZone(e.target.value); setFilterDistrict('all'); setPage(1); }}
                     className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white"
                   >
                     <option value="all">All Zones</option>
-                    <option value="chennai">Chennai</option>
-                    <option value="bangalore">Bangalore</option>
-                    <option value="hyderabad">Hyderabad</option>
-                    <option value="mumbai">Mumbai</option>
-                    <option value="delhi">Delhi</option>
-                    <option value="kolkata">Kolkata</option>
-                    <option value="pune">Pune</option>
-                    <option value="ahmedabad">Ahmedabad</option>
+                    {zoneHierarchy.map(z => (
+                      <option key={z.zone} value={z.zone}>{z.zone}</option>
+                    ))}
+                  </select>
+                  {/* District Filter */}
+                  <select
+                    value={filterDistrict}
+                    onChange={(e) => { setFilterDistrict(e.target.value); setPage(1); }}
+                    className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white"
+                  >
+                    <option value="all">All Districts</option>
+                    {filterDistrictOptions.map(d => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -401,11 +449,26 @@ const UserManagementContent: React.FC = () => {
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span
-                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full capitalize ${getZonalBadgeColor(userItem.zonal)}`}
-                            >
-                              {userItem.zonal || 'chennai'}
-                            </span>
+                            {userItem.zonalInfo ? (
+                              <div>
+                                <span
+                                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getZonalBadgeColor(userItem.zonalInfo.zone)}`}
+                                >
+                                  {userItem.zonalInfo.zone}
+                                </span>
+                                <div className="text-xs text-gray-500 mt-0.5">
+                                  {userItem.zonalInfo.assemblyConstituency}, {userItem.zonalInfo.district}
+                                </div>
+                              </div>
+                            ) : userItem.zonal ? (
+                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">
+                                {userItem.zonal} (legacy)
+                              </span>
+                            ) : (
+                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                Not Assigned
+                              </span>
+                            )}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {new Date(userItem.createdAt).toLocaleDateString()}
@@ -672,31 +735,80 @@ const UserManagementContent: React.FC = () => {
         </div>
       )}
 
-      {/* Change Zonal Modal */}
+      {/* Change Zonal Modal - Cascading: District > AC > Zone */}
       {showZonalModal && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <h3 className="text-lg font-semibold mb-4">Change User Zonal</h3>
             <form onSubmit={handleZonalSubmit}>
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Select Zonal for {selectedUser.profile?.firstName}{' '}
+              <div className="space-y-4 mb-6">
+                <p className="text-sm text-gray-600">
+                  Assign zone for {selectedUser.profile?.firstName}{' '}
                   {selectedUser.profile?.lastName}
-                </label>
-                <select
-                  value={selectedZonal}
-                  onChange={(e) => setSelectedZonal(e.target.value as UserZonal)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <option value="chennai">Chennai</option>
-                  <option value="bangalore">Bangalore</option>
-                  <option value="hyderabad">Hyderabad</option>
-                  <option value="mumbai">Mumbai</option>
-                  <option value="delhi">Delhi</option>
-                  <option value="kolkata">Kolkata</option>
-                  <option value="pune">Pune</option>
-                  <option value="ahmedabad">Ahmedabad</option>
-                </select>
+                </p>
+
+                {zoneHierarchyLoading ? (
+                  <div className="py-4 text-center text-sm text-gray-500">Loading zone data...</div>
+                ) : allDistricts.length === 0 ? (
+                  <div className="py-4 text-center text-sm text-red-500">
+                    No zone data available. Please ensure zones are seeded in the database.
+                  </div>
+                ) : (
+                  <>
+                    {/* 1. District */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        District
+                      </label>
+                      <select
+                        value={selectedDistrict}
+                        onChange={(e) => {
+                          setSelectedDistrict(e.target.value);
+                          setSelectedAcNo(0);
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      >
+                        <option value="">Select District</option>
+                        {allDistricts.map(d => (
+                          <option key={d.name} value={d.name}>{d.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* 2. Assembly Constituency */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Assembly Constituency
+                      </label>
+                      <select
+                        value={selectedAcNo || ''}
+                        onChange={(e) => setSelectedAcNo(Number(e.target.value))}
+                        disabled={!selectedDistrict}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      >
+                        <option value="">{selectedDistrict ? 'Select Assembly Constituency' : 'Select a district first'}</option>
+                        {filteredAcs.map(ac => (
+                          <option key={ac.acNo} value={ac.acNo}>{ac.name} (#{ac.acNo})</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* 3. Zone (auto-resolved from district, read-only dropdown) */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Zone
+                      </label>
+                      <select
+                        value={resolvedZone}
+                        disabled
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed"
+                      >
+                        <option value="">{selectedDistrict ? '' : 'Auto-resolved from district'}</option>
+                        {resolvedZone && <option value={resolvedZone}>{resolvedZone}</option>}
+                      </select>
+                    </div>
+                  </>
+                )}
               </div>
               <div className="flex gap-3 justify-end">
                 <button
@@ -708,7 +820,8 @@ const UserManagementContent: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-custom-blue"
+                  disabled={!selectedAcNo}
+                  className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-custom-blue disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Update Zonal
                 </button>

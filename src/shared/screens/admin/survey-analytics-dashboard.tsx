@@ -16,6 +16,11 @@ interface ZonalStat {
   count: number;
 }
 
+interface DistrictStat {
+  district: string;
+  count: number;
+}
+
 interface DailyStat {
   date: string;
   count: number;
@@ -28,11 +33,12 @@ interface UserStat {
   todayCount: number;
 }
 
-export const SurveyAnalyticsDashboard: React.FC = () => {
-  const { user } = useAuth();
+const SurveyAnalyticsDashboardContent: React.FC = () => {
+  const { user, isAuthReady } = useAuth();
   const [surveys, setSurveys] = useState<SurveyWithAnalytics[]>([]);
   const [selectedSurvey, setSelectedSurvey] = useState<string | null>(null);
   const [zonalStats, setZonalStats] = useState<ZonalStat[]>([]);
+  const [districtStats, setDistrictStats] = useState<DistrictStat[]>([]);
   const [dailyStats, setDailyStats] = useState<DailyStat[]>([]);
   const [topUsers, setTopUsers] = useState<UserStat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -93,6 +99,7 @@ export const SurveyAnalyticsDashboard: React.FC = () => {
 
       // Clear previous data while loading
       setZonalStats([]);
+      setDistrictStats([]);
       setDailyStats([]);
       setTopUsers([]);
 
@@ -104,8 +111,9 @@ export const SurveyAnalyticsDashboard: React.FC = () => {
       }
 
       // Load analytics data in parallel
-      const [zonalRes, dailyRes, usersRes] = await Promise.all([
+      const [zonalRes, districtRes, dailyRes, usersRes] = await Promise.all([
         surveyService.getZonalBreakdown(surveyId),
+        surveyService.getDistrictBreakdown(surveyId),
         surveyService.getDailyBreakdown(surveyId, 14), // Last 14 days
         surveyService.getTopUsers(surveyId, 10),
       ]);
@@ -116,6 +124,14 @@ export const SurveyAnalyticsDashboard: React.FC = () => {
         setZonalStats(validZonalStats);
       } else {
         setZonalStats([]);
+      }
+
+      // Validate and set district stats
+      if (districtRes.success && districtRes.data && Array.isArray(districtRes.data)) {
+        const validDistrictStats = districtRes.data.filter(s => s && s.district && typeof s.count === 'number');
+        setDistrictStats(validDistrictStats);
+      } else {
+        setDistrictStats([]);
       }
 
       // Validate and set daily stats
@@ -140,16 +156,18 @@ export const SurveyAnalyticsDashboard: React.FC = () => {
       setError(err instanceof Error ? err.message : 'Failed to load survey details');
       // Clear data on error
       setZonalStats([]);
+      setDistrictStats([]);
       setDailyStats([]);
       setTopUsers([]);
       setIsLoadingDetails(false);
     }
   };
 
-  // Load surveys when component mounts
+  // Load surveys when auth is ready
   useEffect(() => {
+    if (!isAuthReady || !user) return;
     loadSurveys();
-  }, []); // Run once on mount - AdminRouteGuard ensures user is authenticated
+  }, [isAuthReady, user]);
 
   // Format helpers
   const formatNumber = (num: number) => new Intl.NumberFormat('en-US').format(num);
@@ -166,22 +184,29 @@ export const SurveyAnalyticsDashboard: React.FC = () => {
     return zone.charAt(0).toUpperCase() + zone.slice(1).toLowerCase();
   };
 
-  const getZoneColor = (index: number) => {
+  const getZoneColor = (zone: string, index: number) => {
+    const zoneColors: Record<string, string> = {
+      'North': 'bg-blue-500',
+      'South': 'bg-green-500',
+      'East': 'bg-purple-500',
+      'West': 'bg-orange-500',
+      'Central': 'bg-teal-500',
+    };
+    if (zoneColors[zone]) return zoneColors[zone];
+    // Fallback for any other values
+    const colors = ['bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-orange-500', 'bg-teal-500', 'bg-pink-500', 'bg-indigo-500', 'bg-red-500'];
+    return colors[index % colors.length];
+  };
+
+  const getDistrictColor = (index: number) => {
     const colors = [
-      'bg-blue-500',
-      'bg-green-500',
-      'bg-purple-500',
-      'bg-orange-500',
-      'bg-pink-500',
-      'bg-indigo-500',
-      'bg-teal-500',
-      'bg-red-500',
+      'bg-sky-500', 'bg-emerald-500', 'bg-violet-500', 'bg-amber-500',
+      'bg-rose-500', 'bg-cyan-500', 'bg-lime-500', 'bg-fuchsia-500',
     ];
     return colors[index % colors.length];
   };
 
   return (
-    <AdminRouteGuard>
       <div className="h-full flex bg-gray-50 text-text-dark">
         <AdminSidebar />
 
@@ -375,13 +400,57 @@ export const SurveyAnalyticsDashboard: React.FC = () => {
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2">
                                   <div
-                                    className={`h-2 rounded-full ${getZoneColor(index)}`}
+                                    className={`h-2 rounded-full ${getZoneColor(stat?.zone || '', index)}`}
                                     style={{ width: `${Math.max(percentage, 0)}%` }}
                                   />
                                 </div>
                               </div>
                             );
                           })}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* District Breakdown */}
+                    <div className="bg-white rounded-lg shadow p-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <MapPin className="w-5 h-5 text-green-600" />
+                        <h3 className="text-lg font-semibold text-gray-900">By District</h3>
+                      </div>
+                      {districtStats.length === 0 ? (
+                        <div className="text-center py-8">
+                          <p className="text-sm text-gray-500">No district data available</p>
+                          <p className="text-xs text-gray-400 mt-1">Data will appear after submissions are made</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {districtStats.slice(0, 10).map((stat, index) => {
+                            const maxCount = Math.max(...districtStats.map((s) => s?.count || 0), 1);
+                            const percentage = ((stat?.count || 0) / maxCount) * 100;
+                            return (
+                              <div key={stat.district || index}>
+                                <div className="flex justify-between text-sm mb-1">
+                                  <span className="font-medium text-gray-700">
+                                    {stat?.district || 'Unknown'}
+                                  </span>
+                                  <span className="text-gray-900 font-semibold">
+                                    {formatNumber(stat?.count || 0)}
+                                  </span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                  <div
+                                    className={`h-2 rounded-full ${getDistrictColor(index)}`}
+                                    style={{ width: `${Math.max(percentage, 0)}%` }}
+                                  />
+                                </div>
+                              </div>
+                            );
+                          })}
+                          {districtStats.length > 10 && (
+                            <p className="text-xs text-gray-400 text-center">
+                              +{districtStats.length - 10} more districts
+                            </p>
+                          )}
                         </div>
                       )}
                     </div>
@@ -474,6 +543,14 @@ export const SurveyAnalyticsDashboard: React.FC = () => {
           </div>
         </main>
       </div>
+  );
+};
+
+// Outer wrapper with AdminRouteGuard so useAuth() in content gets real context
+export const SurveyAnalyticsDashboard: React.FC = () => {
+  return (
+    <AdminRouteGuard>
+      <SurveyAnalyticsDashboardContent />
     </AdminRouteGuard>
   );
 };

@@ -299,6 +299,34 @@ class SurveyService {
     apiService.setAuthToken(token);
     return apiService.get(`${this.basePath}/${surveyId}/analytics/users/${userId}`);
   }
+
+  /**
+   * Get district breakdown for a survey (Admin endpoint)
+   * Returns submissions per district
+   */
+  async getDistrictBreakdown(
+    surveyId: string
+  ): Promise<ApiResponse<Array<{ district: string; count: number }>>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.get(`${this.basePath}/${surveyId}/analytics/district`);
+  }
+
+  /**
+   * Get assembly constituency breakdown for a survey (Admin endpoint)
+   * Returns submissions per AC
+   */
+  async getAcBreakdown(
+    surveyId: string
+  ): Promise<ApiResponse<Array<{ ac: string; count: number }>>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.get(`${this.basePath}/${surveyId}/analytics/ac`);
+  }
 }
 
 export default new SurveyService();
