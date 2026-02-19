@@ -30,7 +30,7 @@ export interface UpdateUserRoleRequest {
 
 export interface UpdateUserZonalRequest {
   userId: string;
-  acNo: number;
+  acNos: number[];
 }
 
 class UserManagementService {
@@ -66,11 +66,11 @@ class UserManagementService {
   }
 
   /**
-   * Update user zonal by assembly constituency number (admin only)
+   * Update user zonal by assembly constituency numbers (admin only) — multi-zone support
    */
-  async updateUserZonal(userId: string, acNo: number): Promise<ApiResponse<UserProfile>> {
+  async updateUserZonal(userId: string, acNos: number[]): Promise<ApiResponse<UserProfile>> {
     await this.ensureAuth();
-    return await ApiService.post<UserProfile>('/users/change-zonal', { userId, acNo });
+    return await ApiService.post<UserProfile>('/users/change-zonal', { userId, acNos });
   }
 
   /**

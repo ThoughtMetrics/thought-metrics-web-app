@@ -29,11 +29,11 @@ const UserManagementContent: React.FC = () => {
     phone: '',
   });
   const [selectedRole, setSelectedRole] = useState<UserRole>('respondent');
-  // Cascading zonal selection state for Change Zonal modal
+  // Multi-select zonal state for Change Zonal modal
   const [zoneHierarchy, setZoneHierarchy] = useState<ZoneHierarchy>([]);
   const [zoneHierarchyLoading, setZoneHierarchyLoading] = useState(true);
-  const [selectedDistrict, setSelectedDistrict] = useState<string>('');
-  const [selectedAcNo, setSelectedAcNo] = useState<number>(0);
+  const [selectedAcNos, setSelectedAcNos] = useState<number[]>([]);
+  const [acSearchText, setAcSearchText] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterRole, setFilterRole] = useState<string>('all');
   const [filterZone, setFilterZone] = useState<string>('all');
@@ -146,14 +146,13 @@ const UserManagementContent: React.FC = () => {
 
   const handleZonalClick = (user: UserProfile) => {
     setSelectedUser(user);
-    // Pre-select current values if user has zonalInfo
-    if (user.zonalInfo) {
-      setSelectedDistrict(user.zonalInfo.district || '');
-      setSelectedAcNo(user.zonalInfo.acNo || 0);
+    // Pre-select all current AC numbers if user has zonalInfo array
+    if (user.zonalInfo && user.zonalInfo.length > 0) {
+      setSelectedAcNos(user.zonalInfo.map(zi => zi.acNo));
     } else {
-      setSelectedDistrict('');
-      setSelectedAcNo(0);
+      setSelectedAcNos([]);
     }
+    setAcSearchText('');
     setShowZonalModal(true);
     setOpenMenuId(null);
   };
@@ -229,12 +228,12 @@ const UserManagementContent: React.FC = () => {
 
   const handleZonalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedUser || !selectedAcNo) return;
+    if (!selectedUser || selectedAcNos.length === 0) return;
 
     try {
       const response = await UserManagementService.updateUserZonal(
         selectedUser._id,
-        selectedAcNo
+        selectedAcNos
       );
 
       if (response.data) {
@@ -287,14 +286,31 @@ const UserManagementContent: React.FC = () => {
     }
   };
 
-  // Derived cascading dropdown data: District > AC > Zone (auto-resolved)
+  // All districts and all ACs flat list for multi-select modal
   const allDistricts = zoneHierarchy.flatMap(z => z.districts);
-  const filteredAcs = selectedDistrict
-    ? allDistricts.find(d => d.name === selectedDistrict)?.acs || []
-    : [];
-  const resolvedZone = selectedDistrict
-    ? zoneHierarchy.find(z => z.districts.some(d => d.name === selectedDistrict))?.zone || ''
-    : '';
+  const allAcFlat = zoneHierarchy.flatMap(z =>
+    z.districts.flatMap(d =>
+      d.acs.map(ac => ({ ...ac, district: d.name, zone: z.zone }))
+    )
+  );
+  // AC list filtered by search text in the zonal modal
+  const modalFilteredAcs = acSearchText.trim()
+    ? allAcFlat.filter(ac =>
+        ac.name.toLowerCase().includes(acSearchText.toLowerCase()) ||
+        ac.district.toLowerCase().includes(acSearchText.toLowerCase()) ||
+        String(ac.acNo).includes(acSearchText)
+      )
+    : allAcFlat;
+  // Details of currently selected ACs (for chip display)
+  const selectedAcDetails = selectedAcNos
+    .map(acNo => allAcFlat.find(ac => ac.acNo === acNo))
+    .filter(Boolean) as typeof allAcFlat;
+  // Toggle an AC in/out of the selection
+  const toggleAcNo = (acNo: number) => {
+    setSelectedAcNos(prev =>
+      prev.includes(acNo) ? prev.filter(n => n !== acNo) : [...prev, acNo]
+    );
+  };
 
   // Districts available for filter dropdown
   const filterDistrictOptions = filterZone !== 'all'
@@ -449,15 +465,17 @@ const UserManagementContent: React.FC = () => {
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {userItem.zonalInfo ? (
+                            {userItem.zonalInfo && userItem.zonalInfo.length > 0 ? (
                               <div>
                                 <span
-                                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getZonalBadgeColor(userItem.zonalInfo.zone)}`}
+                                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getZonalBadgeColor(userItem.zonalInfo[0].zone)}`}
                                 >
-                                  {userItem.zonalInfo.zone}
+                                  {userItem.zonalInfo[0].zone}
                                 </span>
                                 <div className="text-xs text-gray-500 mt-0.5">
-                                  {userItem.zonalInfo.assemblyConstituency}, {userItem.zonalInfo.district}
+                                  {userItem.zonalInfo.length === 1
+                                    ? `${userItem.zonalInfo[0].assemblyConstituency}, ${userItem.zonalInfo[0].district}`
+                                    : `${userItem.zonalInfo.length} constituencies`}
                                 </div>
                               </div>
                             ) : userItem.zonal ? (
@@ -735,82 +753,97 @@ const UserManagementContent: React.FC = () => {
         </div>
       )}
 
-      {/* Change Zonal Modal - Cascading: District > AC > Zone */}
+      {/* Change Zonal Modal - Multi-select Assembly Constituencies */}
       {showZonalModal && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Change User Zonal</h3>
-            <form onSubmit={handleZonalSubmit}>
-              <div className="space-y-4 mb-6">
-                <p className="text-sm text-gray-600">
-                  Assign zone for {selectedUser.profile?.firstName}{' '}
-                  {selectedUser.profile?.lastName}
-                </p>
+          <div className="bg-white rounded-lg p-6 max-w-lg w-full mx-4 max-h-[90vh] flex flex-col">
+            <h3 className="text-lg font-semibold mb-1">Change User Zonal</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Assign assembly constituencies for{' '}
+              <span className="font-medium">
+                {selectedUser.profile?.firstName} {selectedUser.profile?.lastName}
+              </span>
+            </p>
 
-                {zoneHierarchyLoading ? (
-                  <div className="py-4 text-center text-sm text-gray-500">Loading zone data...</div>
-                ) : allDistricts.length === 0 ? (
-                  <div className="py-4 text-center text-sm text-red-500">
-                    No zone data available. Please ensure zones are seeded in the database.
+            <form onSubmit={handleZonalSubmit} className="flex flex-col flex-1 min-h-0">
+              {zoneHierarchyLoading ? (
+                <div className="py-8 text-center text-sm text-gray-500">Loading zone data…</div>
+              ) : allAcFlat.length === 0 ? (
+                <div className="py-8 text-center text-sm text-red-500">
+                  No zone data available. Please ensure zones are seeded in the database.
+                </div>
+              ) : (
+                <>
+                  {/* Selected ACs chips */}
+                  {selectedAcDetails.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mb-3 p-2 bg-blue-50 rounded-md border border-blue-100">
+                      {selectedAcDetails.map(ac => (
+                        <span
+                          key={ac.acNo}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary text-white"
+                        >
+                          {ac.name}
+                          <span className="text-blue-200 text-xs">({ac.zone})</span>
+                          <button
+                            type="button"
+                            onClick={() => toggleAcNo(ac.acNo)}
+                            className="ml-0.5 text-white hover:text-red-200 leading-none"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Search */}
+                  <input
+                    type="text"
+                    placeholder="Search by AC name, district…"
+                    value={acSearchText}
+                    onChange={e => setAcSearchText(e.target.value)}
+                    className="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+
+                  {/* AC list */}
+                  <div className="overflow-y-auto flex-1 border border-gray-200 rounded-md divide-y divide-gray-100">
+                    {modalFilteredAcs.length === 0 ? (
+                      <p className="py-6 text-center text-sm text-gray-400">No results</p>
+                    ) : (
+                      modalFilteredAcs.map(ac => {
+                        const isChecked = selectedAcNos.includes(ac.acNo);
+                        return (
+                          <label
+                            key={ac.acNo}
+                            className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-gray-50 ${isChecked ? 'bg-blue-50' : ''}`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() => toggleAcNo(ac.acNo)}
+                              className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                            />
+                            <span className="flex-1 min-w-0">
+                              <span className="block text-sm font-medium text-gray-800 truncate">
+                                {ac.name}
+                              </span>
+                              <span className="block text-xs text-gray-500">
+                                {ac.district} · <span className="font-medium">{ac.zone}</span> · #{ac.acNo}
+                              </span>
+                            </span>
+                          </label>
+                        );
+                      })
+                    )}
                   </div>
-                ) : (
-                  <>
-                    {/* 1. District */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        District
-                      </label>
-                      <select
-                        value={selectedDistrict}
-                        onChange={(e) => {
-                          setSelectedDistrict(e.target.value);
-                          setSelectedAcNo(0);
-                        }}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                      >
-                        <option value="">Select District</option>
-                        {allDistricts.map(d => (
-                          <option key={d.name} value={d.name}>{d.name}</option>
-                        ))}
-                      </select>
-                    </div>
 
-                    {/* 2. Assembly Constituency */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Assembly Constituency
-                      </label>
-                      <select
-                        value={selectedAcNo || ''}
-                        onChange={(e) => setSelectedAcNo(Number(e.target.value))}
-                        disabled={!selectedDistrict}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-100 disabled:cursor-not-allowed"
-                      >
-                        <option value="">{selectedDistrict ? 'Select Assembly Constituency' : 'Select a district first'}</option>
-                        {filteredAcs.map(ac => (
-                          <option key={ac.acNo} value={ac.acNo}>{ac.name} (#{ac.acNo})</option>
-                        ))}
-                      </select>
-                    </div>
+                  <p className="mt-2 text-xs text-gray-400">
+                    {selectedAcNos.length} constituency{selectedAcNos.length !== 1 ? 's' : ''} selected
+                  </p>
+                </>
+              )}
 
-                    {/* 3. Zone (auto-resolved from district, read-only dropdown) */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Zone
-                      </label>
-                      <select
-                        value={resolvedZone}
-                        disabled
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed"
-                      >
-                        <option value="">{selectedDistrict ? '' : 'Auto-resolved from district'}</option>
-                        {resolvedZone && <option value={resolvedZone}>{resolvedZone}</option>}
-                      </select>
-                    </div>
-                  </>
-                )}
-              </div>
-              <div className="flex gap-3 justify-end">
+              <div className="flex gap-3 justify-end mt-4 pt-4 border-t border-gray-100">
                 <button
                   type="button"
                   onClick={() => setShowZonalModal(false)}
@@ -820,7 +853,7 @@ const UserManagementContent: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={!selectedAcNo}
+                  disabled={selectedAcNos.length === 0}
                   className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-custom-blue disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Update Zonal
