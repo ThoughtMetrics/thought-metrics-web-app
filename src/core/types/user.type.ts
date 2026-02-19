@@ -110,7 +110,7 @@ export interface UserProfile {
     | 'partner'
     | 'field-agent';
   zonal?: string;
-  zonalInfo?: ZonalInfo | null;
+  zonalInfo?: ZonalInfo[];
   createdAt: string;
   updatedAt: string;
 }
