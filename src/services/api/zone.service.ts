@@ -72,6 +72,25 @@ class ZoneService {
     return null;
   }
 
+  async getLocalBodies(acNo: number): Promise<Array<{ name: string; translations?: Record<string, string> }>> {
+    await this.ensureAuth();
+    const response = await ApiService.get<any>(`/zones/${acNo}/local-bodies`);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    return [];
+  }
+
+  async getVillages(acNo: number, localBodyName: string): Promise<Array<{ name: string; translations?: Record<string, string> }>> {
+    await this.ensureAuth();
+    const encodedName = encodeURIComponent(localBodyName);
+    const response = await ApiService.get<any>(`/zones/${acNo}/local-bodies/${encodedName}/villages`);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    return [];
+  }
+
   clearCache() {
     cachedHierarchy = null;
     cachedFlat = null;

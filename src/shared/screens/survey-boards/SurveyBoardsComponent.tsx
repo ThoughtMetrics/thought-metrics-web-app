@@ -27,11 +27,12 @@ const SurveyBoardsSection: React.FC = () => {
   const isFieldAgent = userProfile?.role === 'field-agent';
 
   // Fetch surveys with type filter (only for field-agent, others always get respondent)
+  // All surveys use visibility: 'public' — agent surveys are also public by default
   const { data: surveysData, isLoading } = useSurveyListQuery({
     status: 'published',
     visibility: 'public',
     type: isFieldAgent ? selectedType : SurveyType.RESPONDENT,
-    limit: 100,
+    limit: 500,
   });
 
   // Translation hook
@@ -48,13 +49,14 @@ const SurveyBoardsSection: React.FC = () => {
   }, [translations.industries]);
 
   // Filter surveys by selected industry
+  // Surveys with no industry or 'All Industries' match any filter
   const filteredSurveys = React.useMemo(() => {
     if (selectedIndustry === 'all') {
       return surveys;
     }
     return surveys.filter((survey: ISurvey) => {
       const industry = survey.industry || '';
-      return industry === selectedIndustry;
+      return !industry || industry === selectedIndustry || industry === 'All Industries';
     });
   }, [surveys, selectedIndustry]);
 
@@ -279,9 +281,22 @@ const SurveyBoardsSection: React.FC = () => {
                   {/* Content */}
                   <div className="px-4 py-4 space-y-14">
                     <div className="flex justify-between items-center">
-                      <p className="text-base md:text-lg text-black font-semibold">
-                        ₹{price.toFixed(2)}
-                      </p>
+                      {survey.type === SurveyType.AGENT ? (
+                        <div className="flex gap-4 items-center">
+                          <span className="flex items-center gap-1 text-sm text-primary font-semibold">
+                            <span>{survey.totalSubmissions ?? 0}</span>
+                            <span className="text-xs text-gray-500">total</span>
+                          </span>
+                          <span className="flex items-center gap-1 text-sm text-orange-600 font-semibold">
+                            <span>{survey.todaySubmissions ?? 0}</span>
+                            <span className="text-xs text-gray-500">today</span>
+                          </span>
+                        </div>
+                      ) : (
+                        <p className="text-base md:text-lg text-black font-semibold">
+                          ₹{price.toFixed(2)}
+                        </p>
+                      )}
                       <span className="inline-block px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs font-medium">
                         {timeToComplete} {translations.surveyBoard.minutes}
                       </span>
