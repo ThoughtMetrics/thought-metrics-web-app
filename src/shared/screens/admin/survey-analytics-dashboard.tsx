@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { Loader2, RefreshCw, TrendingUp, Users, MapPin, Calendar, Search, Filter } from 'lucide-react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
+import { Loader2, RefreshCw, TrendingUp, Users, MapPin, Calendar, Search, MoreVertical } from 'lucide-react';
 import { useAuth } from '@/shared/providers/auth-provider';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 import surveyService from '@services/survey/survey.service';
 import type { ISurvey } from '@/core/types/survey.type';
+import { INDUSTRY_FILTERS } from '@/core/constants/survey.constants';
 
 interface SurveyWithAnalytics extends ISurvey {
   totalSubmissions: number;
@@ -28,6 +29,7 @@ interface DailyStat {
 
 interface UserStat {
   userId: string;
+  displayName?: string;
   total: number;
   zone: string;
   todayCount: number;
@@ -46,6 +48,19 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | 'respondent' | 'agent'>('all');
+  const [industryFilter, setIndustryFilter] = useState('all');
+  const [page, setPage] = useState(1);
+  const limit = 10;
+  // Three-dot action menu
+  const [openActionMenuId, setOpenActionMenuId] = useState<string | null>(null);
+  const actionMenuRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  // Download modal
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [downloadSurvey, setDownloadSurvey] = useState<SurveyWithAnalytics | null>(null);
+  const [timePeriod, setTimePeriod] = useState<'1day' | '3days' | '1week' | '1month' | 'custom'>('1week');
+  const [customFromDate, setCustomFromDate] = useState('');
+  const [customToDate, setCustomToDate] = useState('');
+  const [isDownloading, setIsDownloading] = useState(false);
 
   // Filter surveys client-side for instant feedback
   const filteredSurveys = useMemo(() => {
@@ -55,37 +70,43 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
         (survey.surveyId || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (survey.industry || '').toLowerCase().includes(searchQuery.toLowerCase());
       const matchesType = typeFilter === 'all' || survey.type === typeFilter;
-      return matchesSearch && matchesType;
+      const surveyIndustry = survey.industry || survey.metadata?.industry || '';
+      const matchesIndustry =
+        industryFilter === 'all' ||
+        !surveyIndustry ||  // surveys with no industry set match any filter
+        surveyIndustry === industryFilter ||
+        surveyIndustry === 'All Industries'; // surveys tagged "All Industries" are cross-industry
+      return matchesSearch && matchesType && matchesIndustry;
     });
-  }, [surveys, searchQuery, typeFilter]);
+  }, [surveys, searchQuery, typeFilter, industryFilter]);
 
-  // Load surveys list with analytics
+  // Reset to page 1 whenever filters change
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, typeFilter, industryFilter]);
+
+  const totalPages = Math.ceil(filteredSurveys.length / limit);
+
+  const paginatedSurveys = useMemo(() => {
+    const start = (page - 1) * limit;
+    return filteredSurveys.slice(start, start + limit);
+  }, [filteredSurveys, page, limit]);
+
+  // Load all surveys regardless of type — admin should see every published survey
   const loadSurveys = async () => {
     try {
       setError(null);
       setIsLoading(true);
 
-      const response = await surveyService.listPublicSurveys({
-        status: 'published',
-        limit: 100,
-      });
+      const result = await surveyService.listPublicSurveys({ status: 'published', limit: 500 });
 
-      if (response.success && response.data) {
-        // Ensure data is an array and filter out invalid entries
-        const validSurveys = Array.isArray(response.data)
-          ? response.data.filter(s => s && s.id && s.surveyId)
-          : [];
-        setSurveys(validSurveys as SurveyWithAnalytics[]);
-      } else {
-        // If no data or failed, set empty array
-        setSurveys([]);
-      }
-
+      const allSurveys = Array.isArray(result.data) ? result.data.filter((s) => s && s.id) : [];
+      setSurveys(allSurveys as SurveyWithAnalytics[]);
       setIsLoading(false);
     } catch (err) {
       console.error('[Survey Analytics] Load error:', err);
       setError(err instanceof Error ? err.message : 'Failed to load surveys');
-      setSurveys([]); // Clear surveys on error
+      setSurveys([]);
       setIsLoading(false);
     }
   };
@@ -169,6 +190,167 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
     loadSurveys();
   }, [isAuthReady, user]);
 
+  // Close three-dot menu on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (openActionMenuId && actionMenuRef.current[openActionMenuId]) {
+        if (!actionMenuRef.current[openActionMenuId]?.contains(e.target as Node)) {
+          setOpenActionMenuId(null);
+        }
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [openActionMenuId]);
+
+  // Compute date range from time period selection
+  const getDateRange = () => {
+    const now = new Date();
+    const end = new Date(now);
+    end.setHours(23, 59, 59, 999);
+    switch (timePeriod) {
+      case '1day': {
+        const start = new Date(now); start.setDate(start.getDate() - 1); start.setHours(0, 0, 0, 0);
+        return { startDate: start.toISOString(), endDate: end.toISOString() };
+      }
+      case '3days': {
+        const start = new Date(now); start.setDate(start.getDate() - 3); start.setHours(0, 0, 0, 0);
+        return { startDate: start.toISOString(), endDate: end.toISOString() };
+      }
+      case '1week': {
+        const start = new Date(now); start.setDate(start.getDate() - 7); start.setHours(0, 0, 0, 0);
+        return { startDate: start.toISOString(), endDate: end.toISOString() };
+      }
+      case '1month': {
+        const start = new Date(now); start.setMonth(start.getMonth() - 1); start.setHours(0, 0, 0, 0);
+        return { startDate: start.toISOString(), endDate: end.toISOString() };
+      }
+      case 'custom': {
+        const start = new Date(customFromDate); start.setHours(0, 0, 0, 0);
+        const endCustom = new Date(customToDate); endCustom.setHours(23, 59, 59, 999);
+        return { startDate: start.toISOString(), endDate: endCustom.toISOString() };
+      }
+      default:
+        return { startDate: undefined, endDate: undefined };
+    }
+  };
+
+  const formatAnswerForCSV = (answer: any, questionType: string): string => {
+    if (answer === null || answer === undefined || answer === '') return '';
+    switch (questionType) {
+      case 'mcq-multiple':
+        return Array.isArray(answer) ? answer.join('; ') : String(answer);
+      case 'double-slider':
+        return answer && typeof answer === 'object' ? `${answer.min} - ${answer.max}` : String(answer);
+      case 'ranking':
+        return Array.isArray(answer) ? answer.join(' > ') : String(answer);
+      case 'max-diff':
+        if (answer && typeof answer === 'object') {
+          const best = Object.entries(answer).filter(([, v]) => v === 'best').map(([k]) => k).join('; ');
+          const worst = Object.entries(answer).filter(([, v]) => v === 'worst').map(([k]) => k).join('; ');
+          return `Best: ${best} | Worst: ${worst}`;
+        }
+        return String(answer);
+      case 'multi-slider':
+      case 'matrix':
+      case 'constant-sum':
+        if (answer && typeof answer === 'object') {
+          return Object.entries(answer).map(([k, v]) => `${k}: ${v}`).join('; ');
+        }
+        return String(answer);
+      default:
+        return typeof answer === 'object' ? JSON.stringify(answer) : String(answer);
+    }
+  };
+
+  const escapeCSVField = (value: string): string => {
+    const str = String(value ?? '');
+    if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+      return `"${str.replace(/"/g, '""')}"`;
+    }
+    return str;
+  };
+
+  const handleDownloadCSV = async () => {
+    if (!downloadSurvey?.surveyId) return;
+    try {
+      setIsDownloading(true);
+      const { startDate, endDate } = getDateRange();
+
+      // Fetch template (for question labels) and responses in parallel
+      // Use allSettled so a missing template doesn't block the download
+      const [detailsResult, responsesResult] = await Promise.allSettled([
+        surveyService.getSurveyDetails(downloadSurvey.surveyId),
+        surveyService.getSurveyResponses(downloadSurvey.surveyId, { startDate, endDate, limit: 10000 }),
+      ]);
+
+      if (responsesResult.status === 'rejected') {
+        alert('Failed to fetch responses. Please try again.');
+        return;
+      }
+
+      const responses: any[] = Array.isArray(responsesResult.value.data) ? responsesResult.value.data : [];
+
+      if (responses.length === 0) {
+        alert('No responses found for the selected time period.');
+        return;
+      }
+
+      // Use question labels from template if available; otherwise fall back to questionIds
+      let questions: any[] =
+        detailsResult.status === 'fulfilled'
+          ? detailsResult.value.data?.template?.questions || []
+          : [];
+
+      if (questions.length === 0) {
+        // Derive unique questionIds from the response data itself
+        const questionIdSet = new Set<string>();
+        responses.forEach((r: any) => {
+          (r.answers || []).forEach((a: any) => { if (a.questionId) questionIdSet.add(a.questionId); });
+        });
+        questions = Array.from(questionIdSet).map((id) => ({ id, text: id }));
+      }
+
+      const headers = [
+        'Submitted At', 'Status',
+        'Respondent Name', 'Respondent Email', 'Respondent Phone', 'User ID',
+        ...questions.map((q: any) => `${q.id}: ${q.text}`),
+      ];
+
+      const rows = responses.map((response: any) => {
+        const answerMap = new Map<string, any>();
+        (response.answers || []).forEach((a: any) => answerMap.set(a.questionId, a));
+        return [
+          new Date(response.submittedAt).toLocaleString(),
+          response.status || '',
+          response.respondent?.name || '',
+          response.respondent?.email || '',
+          response.respondent?.phone || '',
+          response.respondent?.userId || '',
+          ...questions.map((q: any) => {
+            const entry = answerMap.get(q.id);
+            return entry ? formatAnswerForCSV(entry.answer, entry.questionType || q.questionType) : '';
+          }),
+        ].map(escapeCSVField).join(',');
+      });
+
+      const csv = [headers.map(escapeCSVField).join(','), ...rows].join('\n');
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${downloadSurvey.surveyId}_${timePeriod}_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+      setShowDownloadModal(false);
+    } catch (err) {
+      console.error('[Download CSV] Error:', err);
+      alert('Failed to download responses. Please try again.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   // Format helpers
   const formatNumber = (num: number) => new Intl.NumberFormat('en-US').format(num);
 
@@ -207,6 +389,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
   };
 
   return (
+    <>
       <div className="h-full flex bg-gray-50 text-text-dark">
         <AdminSidebar />
 
@@ -248,6 +431,11 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <h2 className="text-xl font-semibold text-gray-900">
                       All Surveys ({filteredSurveys.length})
+                      {totalPages > 1 && (
+                        <span className="ml-2 text-sm font-normal text-gray-500">
+                          — page {page} of {totalPages}
+                        </span>
+                      )}
                     </h2>
                     <div className="flex flex-col sm:flex-row gap-3">
                       {/* Search */}
@@ -270,6 +458,18 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                         <option value="all">All Types</option>
                         <option value="respondent">Respondent</option>
                         <option value="agent">Agent</option>
+                      </select>
+                      {/* Industry Filter */}
+                      <select
+                        value={industryFilter}
+                        onChange={(e) => setIndustryFilter(e.target.value)}
+                        className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white"
+                      >
+                        {INDUSTRY_FILTERS.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -299,13 +499,13 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                       {filteredSurveys.length === 0 ? (
                         <tr>
                           <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
-                            {searchQuery || typeFilter !== 'all'
+                            {searchQuery || typeFilter !== 'all' || industryFilter !== 'all'
                               ? 'No surveys match your filters'
                               : 'No surveys found'}
                           </td>
                         </tr>
                       ) : (
-                        filteredSurveys.map((survey) => (
+                        paginatedSurveys.map((survey) => (
                           <tr
                             key={survey.id}
                             className={`hover:bg-gray-50 cursor-pointer ${
@@ -340,19 +540,46 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                 {formatNumber(survey.todaySubmissions ?? 0)}
                               </span>
                             </td>
-                            <td className="px-6 py-4 text-center">
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (survey.surveyId) {
-                                    loadSurveyDetails(survey.surveyId);
-                                  }
-                                }}
-                                disabled={!survey.surveyId}
-                                className="text-primary hover:underline text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            <td className="px-6 py-4 text-center" onClick={(e) => e.stopPropagation()}>
+                              <div
+                                className="relative inline-block"
+                                ref={(el) => { actionMenuRef.current[survey.id] = el; }}
                               >
-                                View Details
-                              </button>
+                                <button
+                                  onClick={() => setOpenActionMenuId(openActionMenuId === survey.id ? null : survey.id)}
+                                  disabled={!survey.surveyId}
+                                  className="p-1 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  <MoreVertical className="w-4 h-4" />
+                                </button>
+                                {openActionMenuId === survey.id && (
+                                  <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                                    <button
+                                      onClick={() => {
+                                        setOpenActionMenuId(null);
+                                        if (survey.surveyId) loadSurveyDetails(survey.surveyId);
+                                      }}
+                                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg"
+                                    >
+                                      View Details
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        setOpenActionMenuId(null);
+                                        setDownloadSurvey(survey);
+                                        setTimePeriod('1week');
+                                        setCustomFromDate('');
+                                        setCustomToDate('');
+                                        setShowDownloadModal(true);
+                                      }}
+                                      disabled={!survey.surveyId}
+                                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-b-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                      Download
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
                             </td>
                           </tr>
                         ))
@@ -360,6 +587,31 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                     </tbody>
                   </table>
                 </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+                    <div className="text-sm text-gray-700">
+                      Showing {((page - 1) * limit) + 1}–{Math.min(page * limit, filteredSurveys.length)} of {filteredSurveys.length}
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        disabled={page === 1}
+                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Previous
+                      </button>
+                      <button
+                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                        disabled={page === totalPages}
+                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -509,7 +761,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                 </div>
                                 <div>
                                   <div className="text-sm font-medium text-gray-900">
-                                    {user?.userId ? `${user.userId.slice(0, 8)}...` : 'Unknown'}
+                                    {user?.displayName || (user?.userId ? `${user.userId.slice(0, 8)}...` : 'Unknown')}
                                   </div>
                                   <div className="text-xs text-gray-500">
                                     {formatZone(user?.zone || 'Unknown')}
@@ -543,6 +795,88 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
           </div>
         </main>
       </div>
+
+      {/* Download Modal */}
+      {showDownloadModal && downloadSurvey && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Download Responses</h2>
+              <button
+                onClick={() => setShowDownloadModal(false)}
+                className="text-gray-400 hover:text-gray-600 text-xl leading-none"
+              >
+                ✕
+              </button>
+            </div>
+            <p className="text-sm text-gray-600 mb-5">
+              <span className="font-medium">{downloadSurvey.label}</span>
+              {downloadSurvey.surveyId && (
+                <span className="ml-2 text-black">({downloadSurvey.surveyId})</span>
+              )}
+            </p>
+            <div className="mb-4 text-black">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Time Period</label>
+              <select
+                value={timePeriod}
+                onChange={(e) => setTimePeriod(e.target.value as typeof timePeriod)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white"
+              >
+                <option value="1day">Last 1 Day</option>
+                <option value="3days">Last 3 Days</option>
+                <option value="1week">Last 1 Week</option>
+                <option value="1month">Last 1 Month</option>
+                <option value="custom">Custom Range</option>
+              </select>
+            </div>
+            {timePeriod === 'custom' && (
+              <div className="grid grid-cols-2 gap-4 mb-4 text-black">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+                  <input
+                    type="date"
+                    value={customFromDate}
+                    onChange={(e) => setCustomFromDate(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">To Date</label>
+                  <input
+                    type="date"
+                    value={customToDate}
+                    onChange={(e) => setCustomToDate(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                  />
+                </div>
+              </div>
+            )}
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setShowDownloadModal(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDownloadCSV}
+                disabled={isDownloading || (timePeriod === 'custom' && (!customFromDate || !customToDate))}
+                className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isDownloading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Downloading...
+                  </>
+                ) : (
+                  'Download as CSV'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

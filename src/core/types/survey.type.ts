@@ -66,6 +66,9 @@ export interface ISurvey {
   clientId?: string | null;
   publishedBy?: string | null;
   publishedAt?: string | null;
+  totalSubmissions?: number;   // enriched by backend: currentResponses
+  todaySubmissions?: number;   // enriched by backend: analytics today count
+  zonalBasedSurvey?: boolean;  // whether GPS zone validation applies
   metadata?: {
     surveyId?: string;
     industry?: string;

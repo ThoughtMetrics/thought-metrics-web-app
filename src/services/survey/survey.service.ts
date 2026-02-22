@@ -131,6 +131,27 @@ class SurveyService {
   }
 
   /**
+   * Get all responses for a survey with optional date range (Admin endpoint)
+   * Used for CSV export in the analytics dashboard
+   */
+  async getSurveyResponses(
+    surveyId: string,
+    params?: {
+      startDate?: string;
+      endDate?: string;
+      status?: string;
+      limit?: number;
+      page?: number;
+    }
+  ): Promise<ApiResponse<ISurveyResponse[]>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.get(`${this.basePath}/responses`, { surveyId, ...params });
+  }
+
+  /**
    * List survey templates (Admin endpoint)
    */
   async listTemplates(filters?: {

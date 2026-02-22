@@ -25,6 +25,8 @@ import { FileUpload } from '@/shared/ui/atoms/survey-questions/FileUpload';
 import { QueryClientProvider } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { useLanguage } from '@/core/hooks/use-language';
+import { useProfileQuery } from '@/core/hooks/queries/use-profile.query';
+import zoneService from '@/services/api/zone.service';
 
 interface SurveyDetailSectionProps {
   surveyId: string;
@@ -37,10 +39,23 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   const [answers, setAnswers] = useState<Record<number, any>>({});
   const [showSuccess, setShowSuccess] = useState(false);
   const [isDraftLoaded, setIsDraftLoaded] = useState(false);
+  const [dynamicOptions, setDynamicOptions] = useState<Record<string, Array<{ label: string; value: string }>>>({});
+  const [loadingOptions, setLoadingOptions] = useState<Record<string, boolean>>({});
+  const prevParentValues = React.useRef<Record<string, string>>({});
 
   const { data: surveyData, isLoading } = useSurveyDetailsQuery(surveyId);
+  const { data: userProfile } = useProfileQuery();
   const submitMutation = useSubmitSurveyMutation();
   const { translations, language } = useLanguage();
+
+  // Map questionId → array index for cascade resolution
+  const questionIdToIndex = React.useMemo(() => {
+    const map: Record<string, number> = {};
+    (surveyData?.data?.template?.questions || []).forEach((q, idx) => {
+      map[q.id] = idx;
+    });
+    return map;
+  }, [surveyData]);
 
   // Get translated survey label based on current language
   const getSurveyLabel = () => {
@@ -87,6 +102,93 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
       setIsDraftLoaded(true);
     }
   }, [surveyData, isDraftLoaded, surveyId]);
+
+  // Auto-populate questions from user profile (e.g., AC from zonalInfo)
+  // Runs after draft is loaded to avoid overwriting saved draft answers
+  React.useEffect(() => {
+    if (!surveyData?.data || !userProfile || !isDraftLoaded) return;
+    const qs = surveyData.data.template.questions;
+
+    qs.forEach((q, idx) => {
+      const cfg = q.config || {};
+      if (cfg.autoPopulateFrom === 'user.zonalInfo.assemblyConstituency') {
+        const zonalList = ((userProfile as any).zonalInfo || []) as any[];
+        if (zonalList.length === 1) {
+          const ac = zonalList[0];
+          const label = ac.translations?.[language]?.assemblyConstituency || ac.assemblyConstituency;
+          // Always set dynamic options for display
+          setDynamicOptions(prev => ({ ...prev, [q.id]: [{ label, value: String(ac.acNo) }] }));
+          // Only auto-set answer if not already answered (e.g. from draft)
+          setAnswers(prev => {
+            if (prev[idx]?.value) return prev;
+            return { ...prev, [idx]: { value: String(ac.acNo), displayLabel: label } };
+          });
+        } else if (zonalList.length > 1) {
+          const opts = zonalList.map((ac: any) => ({
+            label: ac.translations?.[language]?.assemblyConstituency || ac.assemblyConstituency,
+            value: String(ac.acNo),
+          }));
+          setDynamicOptions(prev => ({ ...prev, [q.id]: opts }));
+        }
+      }
+    });
+  }, [surveyData, userProfile, isDraftLoaded]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Cascade loading: fetch dependent options when parent answer changes
+  React.useEffect(() => {
+    if (!surveyData?.data) return;
+    const qs = surveyData.data.template.questions;
+
+    qs.forEach((q) => {
+      const cfg = q.config || {};
+      if (!cfg.dependsOn || !cfg.dataSource) return;
+
+      const parentIdx = questionIdToIndex[cfg.dependsOn];
+      const parentValue = parentIdx !== undefined ? answers[parentIdx]?.value : undefined;
+      if (!parentValue) return;
+
+      const parentValueStr = String(parentValue);
+      // Skip if parent value hasn't changed since last fetch
+      if (prevParentValues.current[q.id] === parentValueStr) return;
+      prevParentValues.current[q.id] = parentValueStr;
+
+      if (cfg.dataSource === 'zones:local_bodies') {
+        const acNo = parseInt(parentValueStr, 10);
+        if (isNaN(acNo)) return;
+        setLoadingOptions(prev => ({ ...prev, [q.id]: true }));
+        zoneService.getLocalBodies(acNo)
+          .then(localBodies => {
+            const opts = localBodies.map((lb: any) => ({
+              label: (lb.translations as any)?.[language] || lb.name,
+              value: lb.name,
+            }));
+            setDynamicOptions(prev => ({ ...prev, [q.id]: opts }));
+            setLoadingOptions(prev => ({ ...prev, [q.id]: false }));
+          })
+          .catch(() => setLoadingOptions(prev => ({ ...prev, [q.id]: false })));
+      }
+
+      if (cfg.dataSource === 'zones:villages') {
+        const parentChain: string[] = cfg.parentChain || [];
+        const grandParentIdx = parentChain.length > 0 ? questionIdToIndex[parentChain[0]] : undefined;
+        const grandParentValue = grandParentIdx !== undefined ? answers[grandParentIdx]?.value : undefined;
+        if (!grandParentValue) return;
+        const acNo = parseInt(String(grandParentValue), 10);
+        if (isNaN(acNo)) return;
+        setLoadingOptions(prev => ({ ...prev, [q.id]: true }));
+        zoneService.getVillages(acNo, parentValueStr)
+          .then(villages => {
+            const opts = villages.map((v: any) => ({
+              label: (v.translations as any)?.[language] || v.name,
+              value: v.name,
+            }));
+            setDynamicOptions(prev => ({ ...prev, [q.id]: opts }));
+            setLoadingOptions(prev => ({ ...prev, [q.id]: false }));
+          })
+          .catch(() => setLoadingOptions(prev => ({ ...prev, [q.id]: false })));
+      }
+    });
+  }, [answers, surveyData, questionIdToIndex]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Validate if current question has a valid answer
   const isCurrentQuestionValid = React.useCallback((): boolean => {
@@ -283,10 +385,26 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   };
 
   const handleAnswerChange = (answer: any) => {
-    setAnswers({
+    const currentQ = questions[currentQuestion];
+    const newAnswers: Record<number, any> = {
       ...answers,
       [currentQuestion]: answer,
-    });
+    };
+
+    // Reset dependent question answers when parent changes
+    if (currentQ) {
+      questions.forEach((q, idx) => {
+        const dependsOnCurrent = q.config?.dependsOn === currentQ.id;
+        const isInParentChain = (q.config?.parentChain || []).includes(currentQ.id);
+        if (dependsOnCurrent || isInParentChain) {
+          newAnswers[idx] = undefined;
+          delete prevParentValues.current[q.id];
+          setDynamicOptions(prev => ({ ...prev, [q.id]: [] }));
+        }
+      });
+    }
+
+    setAnswers(newAnswers);
   };
 
   const handleSaveDraft = () => {
@@ -456,24 +574,45 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           />
         );
 
-      case QuestionType.MCQ_SINGLE:
-        // Normalize options to have BOTH 'id' and 'value'
-        const mcqSingleOptions = (config.options || []).map((opt: any) => ({
+      case QuestionType.MCQ_SINGLE: {
+        const hasDynamicSource = !!(config.dataSource || config.autoPopulateFrom);
+        const isLoadingDynamic = loadingOptions[currentQuestionData.id] || false;
+
+        // readOnly: if config.readOnly=true AND only 1 dynamic option (single-AC case)
+        // For multi-AC case, allow selection even if readOnly is set in config
+        const rawDynOpts = dynamicOptions[currentQuestionData.id] || [];
+        const isReadOnly = !!config.readOnly && rawDynOpts.length <= 1;
+
+        const rawOptions = hasDynamicSource ? rawDynOpts : (config.options || []);
+        const mcqSingleOptions = rawOptions.map((opt: any) => ({
           ...opt,
           id: opt.id ?? opt.value,
           value: opt.value ?? opt.id,
         }));
+
+        if (isLoadingDynamic) {
+          return (
+            <SurveyQuestionWrapper {...commonProps} isNextDisabled={true}>
+              <div className="flex items-center gap-2 py-4 text-gray-500">
+                <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full" />
+                <span>Loading options...</span>
+              </div>
+            </SurveyQuestionWrapper>
+          );
+        }
 
         return (
           <RadioButtons
             {...commonProps}
             options={mcqSingleOptions}
             selectedValue={answers[currentQuestion]?.value}
-            onValueChange={(value) =>
-              handleAnswerChange({ ...answers[currentQuestion], value })
-            }
+            onValueChange={(value) => {
+              if (isReadOnly) return;
+              handleAnswerChange({ ...answers[currentQuestion], value });
+            }}
           />
         );
+      }
 
       case QuestionType.MCQ_MULTIPLE:
         // Normalize options to have BOTH 'id' and 'value'
