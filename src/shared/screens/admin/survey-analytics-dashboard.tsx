@@ -258,9 +258,29 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
           return Object.entries(answer).map(([k, v]) => `${k}: ${v}`).join('; ');
         }
         return String(answer);
+      case 'file':
+        // Stored in MongoDB as { url, fileName, fileSize, mimeType } — export just the URL
+        if (answer && typeof answer === 'object') return answer.url || '';
+        return typeof answer === 'string' ? answer : '';
+      case 'currency':
+        return answer !== null && answer !== undefined ? `₹${answer}` : '';
       default:
         return typeof answer === 'object' ? JSON.stringify(answer) : String(answer);
     }
+  };
+
+  // Converts camelCase/PascalCase keys to readable "Title Case" column labels
+  // e.g. "respondentPic" → "Respondent Pic", "conversationAudio" → "Conversation Audio"
+  const fieldKeyToLabel = (key: string): string =>
+    key.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase()).trim();
+
+  // Format a raw response-level or respondent-level value for CSV
+  // File objects stored in MongoDB come back as { url, fileName, fileSize, mimeType }
+  const formatRawFieldForCSV = (value: any): string => {
+    if (value === null || value === undefined) return '';
+    if (typeof value === 'object' && !Array.isArray(value) && value.url) return value.url;
+    if (Array.isArray(value)) return value.join('; ');
+    return String(value);
   };
 
   const escapeCSVField = (value: string): string => {
@@ -277,8 +297,8 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
       setIsDownloading(true);
       const { startDate, endDate } = getDateRange();
 
-      // Fetch template (for question labels) and responses in parallel
-      // Use allSettled so a missing template doesn't block the download
+      // Fetch template (for question labels) and responses in parallel.
+      // allSettled ensures a missing template never blocks the download.
       const [detailsResult, responsesResult] = await Promise.allSettled([
         surveyService.getSurveyDetails(downloadSurvey.surveyId),
         surveyService.getSurveyResponses(downloadSurvey.surveyId, { startDate, endDate, limit: 10000 }),
@@ -296,14 +316,14 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
         return;
       }
 
-      // Use question labels from template if available; otherwise fall back to questionIds
+      // Use question definitions from template when available (gives us human-readable
+      // labels and allowComment flags); otherwise fall back to questionIds from response data.
       let questions: any[] =
         detailsResult.status === 'fulfilled'
           ? detailsResult.value.data?.template?.questions || []
           : [];
 
       if (questions.length === 0) {
-        // Derive unique questionIds from the response data itself
         const questionIdSet = new Set<string>();
         responses.forEach((r: any) => {
           (r.answers || []).forEach((a: any) => { if (a.questionId) questionIdSet.add(a.questionId); });
@@ -311,15 +331,81 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
         questions = Array.from(questionIdSet).map((id) => ({ id, text: id }));
       }
 
+      // Sort questions by their defined order when available
+      questions = [...questions].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+      // ── Capture fields from template settings ─────────────────────────────────
+      // captureFields is configured per-survey in MongoDB (template.settings.captureFields).
+      // Each entry declares a field key, a readable label, the data type, and where the
+      // value lives on the response document (root / respondent / captureData).
+      // This replaces hardcoded field names in the mobile app — the app reads this config
+      // and shows the matching capture UI; the CSV export uses the same config for columns.
+      //
+      // Fallback: if the template has no captureFields, scan response objects at runtime
+      // to stay backward-compatible with surveys whose templates predate this config.
+      const templateCaptureFields: any[] =
+        detailsResult.status === 'fulfilled'
+          ? detailsResult.value.data?.template?.settings?.captureFields || []
+          : [];
+
+      // Helper: resolve a capture field value from the response using its storePath
+      const resolveCaptureValue = (response: any, field: any): string => {
+        const path = field.storePath || 'root';
+        let raw: any;
+        if (path === 'respondent') raw = response.respondent?.[field.key];
+        else if (path === 'captureData') raw = response.captureData?.[field.key];
+        else raw = response[field.key];
+        return formatRawFieldForCSV(raw);
+      };
+
+      // Fallback: discover extra fields at runtime when captureFields is absent
+      let fallbackCaptureFields: Array<{ key: string; label: string; storePath: 'respondent' | 'root' }> = [];
+      if (templateCaptureFields.length === 0) {
+        const STANDARD_RESPONDENT_KEYS = new Set(['name', 'email', 'phone', 'userId']);
+        const STANDARD_RESPONSE_KEYS = new Set([
+          '_id', 'surveyId', 'surveyTemplateId', 'respondent', 'answers', 'status', 'submittedAt', 'captureData',
+        ]);
+        const seenKeys = new Set<string>();
+
+        responses.forEach((response: any) => {
+          if (response.respondent && typeof response.respondent === 'object') {
+            Object.keys(response.respondent).forEach((key) => {
+              const uid = `respondent::${key}`;
+              if (!STANDARD_RESPONDENT_KEYS.has(key) && !seenKeys.has(uid)) {
+                seenKeys.add(uid);
+                fallbackCaptureFields.push({ key, label: fieldKeyToLabel(key), storePath: 'respondent' });
+              }
+            });
+          }
+          Object.keys(response).forEach((key) => {
+            const uid = `root::${key}`;
+            if (!STANDARD_RESPONSE_KEYS.has(key) && !seenKeys.has(uid)) {
+              seenKeys.add(uid);
+              fallbackCaptureFields.push({ key, label: fieldKeyToLabel(key), storePath: 'root' });
+            }
+          });
+        });
+      }
+
+      // Use template-configured fields when present, runtime-discovered fields otherwise
+      const captureFields = templateCaptureFields.length > 0 ? templateCaptureFields : fallbackCaptureFields;
+      // ─────────────────────────────────────────────────────────────────────────
+
+      // Build headers: fixed respondent info → capture fields → question columns (+ comments)
       const headers = [
         'Submitted At', 'Status',
         'Respondent Name', 'Respondent Email', 'Respondent Phone', 'User ID',
-        ...questions.map((q: any) => `${q.id}: ${q.text}`),
+        ...captureFields.map((f: any) => f.label),
+        ...questions.flatMap((q: any) => [
+          `${q.id}: ${q.text}`,
+          ...(q.allowComment ? [`${q.id}: ${q.text} (Comment)`] : []),
+        ]),
       ];
 
       const rows = responses.map((response: any) => {
         const answerMap = new Map<string, any>();
         (response.answers || []).forEach((a: any) => answerMap.set(a.questionId, a));
+
         return [
           new Date(response.submittedAt).toLocaleString(),
           response.status || '',
@@ -327,9 +413,15 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
           response.respondent?.email || '',
           response.respondent?.phone || '',
           response.respondent?.userId || '',
-          ...questions.map((q: any) => {
+          // Capture fields — resolved via storePath from template config (or fallback discovery)
+          ...captureFields.map((f: any) => resolveCaptureValue(response, f)),
+          // Question answers (file type extracts URL; other types formatted as before)
+          ...questions.flatMap((q: any) => {
             const entry = answerMap.get(q.id);
-            return entry ? formatAnswerForCSV(entry.answer, entry.questionType || q.questionType) : '';
+            return [
+              entry ? formatAnswerForCSV(entry.answer, entry.questionType || q.questionType) : '',
+              ...(q.allowComment ? [entry?.comment || ''] : []),
+            ];
           }),
         ].map(escapeCSVField).join(',');
       });

@@ -218,6 +218,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         return !!(answer.file?.fileName && answer.file?.url);
 
       case QuestionType.NUMBER:
+      case QuestionType.CURRENCY:
         return (
           answer.value !== undefined &&
           answer.value !== null &&
@@ -911,6 +912,49 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             />
           </SurveyQuestionWrapper>
         );
+
+      case QuestionType.CURRENCY: {
+        const currencySymbol = config.currency || '₹';
+        return (
+          <SurveyQuestionWrapper
+            surveyId={commonProps.surveyId}
+            surveyLabel={commonProps.surveyLabel}
+            questionNumber={commonProps.questionNumber}
+            totalQuestions={commonProps.totalQuestions}
+            question={commonProps.question}
+            comment={commonProps.comment}
+            onCommentChange={commonProps.onCommentChange}
+            progress={commonProps.progress}
+            onBack={commonProps.onBack}
+            onNext={commonProps.onNext}
+            error={commonProps.error}
+            isNextDisabled={commonProps.isNextDisabled}
+            isLastQuestion={commonProps.isLastQuestion}
+            isOptional={commonProps.isOptional}
+            hasAnswer={commonProps.hasAnswer}
+          >
+            <div className="flex items-center border-b-2 bg-custom-grey-5 focus-within:bg-white focus-within:border-primary border-custom-grey-2 transition-colors">
+              <span className="pl-4 pr-1 text-base md:text-lg font-medium text-custom-grey-3 select-none">
+                {currencySymbol}
+              </span>
+              <input
+                type="number"
+                value={answers[currentQuestion]?.value ?? ''}
+                onChange={(e) =>
+                  handleAnswerChange({
+                    ...answers[currentQuestion],
+                    value: e.target.value === '' ? undefined : parseFloat(e.target.value),
+                  })
+                }
+                min={config.min ?? 0}
+                step={config.step || 1}
+                placeholder="0"
+                className="w-full pr-4 py-3 bg-transparent focus:outline-none text-base md:text-lg"
+              />
+            </div>
+          </SurveyQuestionWrapper>
+        );
+      }
 
       case QuestionType.EMAIL:
         return (

@@ -43,6 +43,7 @@ export enum QuestionType {
   MAX_DIFF = 'max-diff',
   CONSTANT_SUM = 'constant-sum',
   FILE = 'file',
+  CURRENCY = 'currency',
 }
 
 // ========== API RESPONSE TYPES ==========
@@ -117,6 +118,33 @@ export interface IQuestionTemplate {
   };
 }
 
+/**
+ * Defines a survey-specific extra capture field stored outside the answers array.
+ * Configured in ISurveyTemplate.settings.captureFields so that mobile / web apps
+ * and the CSV export all derive the same behaviour from one source of truth in MongoDB.
+ *
+ * Examples:
+ *   { key: 'respondentPic',     label: 'Respondent Photo', type: 'image', storePath: 'root' }
+ *   { key: 'conversationAudio', label: 'Conversation Audio', type: 'audio', storePath: 'root' }
+ */
+export interface ISurveyCaptureField {
+  /** Key used when saving the value on the response document (e.g. "respondentPic") */
+  key: string;
+  /** Human-readable label shown in UI and CSV column headers */
+  label: string;
+  /** Media/data type — drives which capture UI the app renders */
+  type: 'image' | 'audio' | 'video' | 'file' | 'text';
+  /** Whether the field must be filled before submission */
+  required?: boolean;
+  /**
+   * Where on the response document this field is stored.
+   * - 'root'        → response[key]             (default)
+   * - 'respondent'  → response.respondent[key]
+   * - 'captureData' → response.captureData[key]
+   */
+  storePath?: 'root' | 'respondent' | 'captureData';
+}
+
 export interface ISurveyTemplate {
   _id: string;
   name: string;
@@ -139,6 +167,13 @@ export interface ISurveyTemplate {
     maxResponses?: number;
     allowAnonymous: boolean;
     defaultFormLayout?: SurveyFormLayout;
+    /**
+     * Optional list of extra data points to capture for this survey
+     * (beyond the standard questions). Defined once in the template so
+     * that all clients (mobile, web, CSV export) derive behaviour from
+     * this configuration rather than hardcoding field names.
+     */
+    captureFields?: ISurveyCaptureField[];
   };
   createdAt: string;
   updatedAt: string;
