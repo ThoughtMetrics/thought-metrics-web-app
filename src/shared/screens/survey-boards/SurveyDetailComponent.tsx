@@ -432,7 +432,6 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   }
   const questions = template.questions;
   const totalQuestions = questions.length;
-  const currentQuestionData = questions[currentQuestion];
 
   // Visible question ordinal and total (for progress bar and numbering)
   const visibleQuestionNumber = (visibleIndices.indexOf(currentQuestion) + 1) || 1;
