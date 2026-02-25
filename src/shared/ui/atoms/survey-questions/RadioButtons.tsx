@@ -70,7 +70,7 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
             >
               <input
                 type="radio"
-                name="radio-option"
+                name={`radio-option-${questionNumber}`}
                 value={option.value}
                 checked={selectedValue === option.value}
                 onChange={() => onValueChange(option.value)}

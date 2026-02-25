@@ -45,7 +45,6 @@ const LayoutToggle: React.FC = () => {
           layout === 'paginated' ? 'bg-white shadow-sm text-black' : 'text-custom-grey-3 hover:text-black'
         }`}
       >
-        {/* Single card icon */}
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <rect x="3" y="5" width="18" height="14" rx="2" strokeWidth="2" strokeLinejoin="round" />
         </svg>
@@ -58,7 +57,6 @@ const LayoutToggle: React.FC = () => {
           layout === 'list' ? 'bg-white shadow-sm text-black' : 'text-custom-grey-3 hover:text-black'
         }`}
       >
-        {/* List icon */}
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01" />
         </svg>
