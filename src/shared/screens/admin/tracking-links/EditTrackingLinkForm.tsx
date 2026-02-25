@@ -100,7 +100,7 @@ const EditTrackingLinkFormContent: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen bg-gray-50">
+      <div className="flex h-full bg-gray-50">
         <AdminSidebar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
@@ -114,7 +114,7 @@ const EditTrackingLinkFormContent: React.FC = () => {
 
   if (!linkResponse?.data) {
     return (
-      <div className="flex min-h-screen bg-gray-50">
+      <div className="flex h-full bg-gray-50">
         <AdminSidebar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
@@ -134,9 +134,9 @@ const EditTrackingLinkFormContent: React.FC = () => {
   const link = linkResponse.data;
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-full bg-gray-50">
       <AdminSidebar />
-      <div className="flex-1 overflow-y-scroll py-12 px-4 text-text-dark">
+      <div className="flex-1 overflow-y-auto py-12 px-4 text-text-dark">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">

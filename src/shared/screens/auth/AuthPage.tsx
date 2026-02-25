@@ -191,29 +191,22 @@ const LoginPage: React.FC = () => {
   };
 
   const handleFirebaseSignIn = async (email: string, password: string) => {
-    const result = await signInMutation.mutateAsync({
+    await signInMutation.mutateAsync({
       type: 'email',
       email,
       password,
     });
-
-    if (result) {
-      setTimeout(() => {
-        window.location.href = getRedirectUrl();
-      }, 1500);
-    }
+    // Redirect is handled by the useEffect watching `user`
   };
 
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInMutation.mutateAsync({ type: 'google' });
 
-      // If popup returned a result (localhost), redirect appropriately
+      // If popup returned a result (localhost), show loading overlay
+      // Redirect is handled by the useEffect watching `user`
       if (result) {
         setIsNavigating(true);
-        setTimeout(() => {
-          window.location.href = getRedirectUrl();
-        }, 800);
       }
       // If redirect (production), page will redirect automatically
     } catch (error) {

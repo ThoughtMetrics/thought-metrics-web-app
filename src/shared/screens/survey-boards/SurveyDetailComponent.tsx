@@ -2,7 +2,8 @@
 import { queryClient } from '@/core/lib/query-client';
 import { useSurveyDetailsQuery } from '@/core/hooks/queries/survey/use-survey-details.query';
 import { useSubmitSurveyMutation } from '@/core/hooks/mutations/survey/use-submit-survey.mutation';
-import { QuestionType } from '@/core/types/survey.type';
+import { QuestionType, type SurveyFormLayout } from '@/core/types/survey.type';
+import { SurveyLayoutContext } from './survey-layout-context';
 import { AuthProvider } from '@/shared/providers/auth-provider';
 import { UserRouteGuard } from '@/shared/components/guards/UserRouteGuard';
 import { SurveySuccessMessage } from '@/shared/components/survey/SurveySuccessMessage';
@@ -29,6 +30,42 @@ import React, { useState } from 'react';
 import { useLanguage } from '@/core/hooks/use-language';
 import { useProfileQuery } from '@/core/hooks/queries/use-profile.query';
 import zoneService from '@/services/api/zone.service';
+import { LanguageToggle } from '@/shared/ui/molecules/language-toggle';
+
+/** Two-button toggle that switches between paginated and list layouts. */
+const LayoutToggle: React.FC = () => {
+  const { layout, setLayout } = React.useContext(SurveyLayoutContext);
+  return (
+    <div className="flex items-center bg-custom-grey-1 rounded-lg p-0.5 gap-0.5">
+      <button
+        type="button"
+        title="One question at a time"
+        onClick={() => setLayout('paginated')}
+        className={`p-1.5 rounded-md transition-all ${
+          layout === 'paginated' ? 'bg-white shadow-sm text-black' : 'text-custom-grey-3 hover:text-black'
+        }`}
+      >
+        {/* Single card icon */}
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <rect x="3" y="5" width="18" height="14" rx="2" strokeWidth="2" strokeLinejoin="round" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        title="All questions in a list"
+        onClick={() => setLayout('list')}
+        className={`p-1.5 rounded-md transition-all ${
+          layout === 'list' ? 'bg-white shadow-sm text-black' : 'text-custom-grey-3 hover:text-black'
+        }`}
+      >
+        {/* List icon */}
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01" />
+        </svg>
+      </button>
+    </div>
+  );
+};
 
 interface SurveyDetailSectionProps {
   surveyId: string;
@@ -43,6 +80,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   const [isDraftLoaded, setIsDraftLoaded] = useState(false);
   const [dynamicOptions, setDynamicOptions] = useState<Record<string, Array<{ label: string; value: string }>>>({});
   const [loadingOptions, setLoadingOptions] = useState<Record<string, boolean>>({});
+  const [listErrors, setListErrors] = useState<Record<number, string>>({});
+  const [formLayout, setFormLayout] = useState<SurveyFormLayout>('paginated');
   const prevParentValues = React.useRef<Record<string, string>>({});
 
   const { data: surveyData, isLoading } = useSurveyDetailsQuery(surveyId);
@@ -220,25 +259,31 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     });
   }, [answers, surveyData, questionIdToIndex]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Validate if current question has a valid answer
-  const isCurrentQuestionValid = React.useCallback((): boolean => {
-    // Invisible questions are always valid — skipped in navigation and submission
-    if (!isQuestionVisible(currentQuestion)) return true;
+  // Initialise layout from survey/template defaults (only on first load)
+  React.useEffect(() => {
+    if (surveyData?.data) {
+      const { survey, template } = surveyData.data;
+      const serverLayout =
+        (survey as any).formLayout ||
+        template.settings?.defaultFormLayout ||
+        'paginated';
+      setFormLayout(serverLayout as SurveyFormLayout);
+    }
+  }, [surveyData]);
 
-    const currentQuestionData =
-      surveyData?.data?.template?.questions[currentQuestion];
-    if (!currentQuestionData) return false;
+  // Validate any question by index — used for both paginated and list mode
+  const isQuestionValid = React.useCallback((index: number): boolean => {
+    if (!isQuestionVisible(index)) return true;
 
-    const answer = answers[currentQuestion];
+    const qData = surveyData?.data?.template?.questions[index];
+    if (!qData) return false;
 
-    // If question is NOT required and has no answer, it's valid (can skip)
-    if (!currentQuestionData.required && !answer) return true;
+    const answer = answers[index];
 
-    // If question is required but no answer provided, invalid
+    if (!qData.required && !answer) return true;
     if (!answer) return false;
 
-    // Check based on question type
-    switch (currentQuestionData.questionType) {
+    switch (qData.questionType) {
       case QuestionType.TEXT:
       case QuestionType.TEXTAREA:
       case QuestionType.DATE:
@@ -262,22 +307,19 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
       }
 
       case QuestionType.FILE:
-        // Check if file object exists with required properties (url from Azure Blob)
         return !!(answer.file?.fileName && answer.file?.url);
 
       case QuestionType.NUMBER:
       case QuestionType.CURRENCY:
-        return (
-          answer.value !== undefined &&
-          answer.value !== null &&
-          !isNaN(answer.value)
-        );
+        return answer.value !== undefined && answer.value !== null && !isNaN(answer.value);
 
       case QuestionType.LIKERT_SCALE:
       case QuestionType.SCALE:
         return answer.value && answer.value > 0;
+
       case QuestionType.RATING:
         return answer.stars && answer.stars > 0;
+
       case QuestionType.MCQ_SINGLE:
         return !!answer.value;
 
@@ -291,74 +333,57 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           typeof answer.range.max === 'number'
         );
 
-      case QuestionType.MULTI_SLIDER:
-        // Check if all sliders have values
-        // Use same normalization as render: slider.id ?? slider.value
-        const sliders = currentQuestionData.config.sliders || currentQuestionData.config.items || [];
+      case QuestionType.MULTI_SLIDER: {
+        const sliders = qData.config.sliders || qData.config.items || [];
         return answer.values && sliders.length > 0 && sliders.every((slider: any) => {
           const sliderId = slider.id ?? slider.value;
           return answer.values[sliderId] !== undefined && answer.values[sliderId] !== null;
         });
+      }
 
       case QuestionType.MATRIX:
-        return (
-          answer.values &&
-          Object.values(answer.values).every((str) => str !== '')
-        );
+        return answer.values && Object.values(answer.values).every((str) => str !== '');
 
       case QuestionType.RANKING:
         return answer.rankedItems && answer.rankedItems.length > 0;
 
-      case QuestionType.MAX_DIFF:
-        // Get items from config (support multiple formats) or translations
-        const maxDiffValidationItems =
-          currentQuestionData.config?.items ||
-          currentQuestionData.config?.options ||
-          currentQuestionData.config?.sets?.[0]?.items ||
-          currentQuestionData.translations?.[language]?.items ||
-          currentQuestionData.translations?.en?.items ||
+      case QuestionType.MAX_DIFF: {
+        const maxDiffItems =
+          qData.config?.items ||
+          qData.config?.options ||
+          qData.config?.sets?.[0]?.items ||
+          qData.translations?.[language]?.items ||
+          qData.translations?.en?.items ||
           [];
+        if (maxDiffItems.length === 0) return false;
+        const hasAnySelection = answer.selections &&
+          Object.values(answer.selections).some((v) => v === 'best' || v === 'worst');
+        if (!qData.required && !hasAnySelection) return true;
+        return answer.selections && maxDiffItems.every((item: any) => {
+          const itemId = item.id || item.value;
+          return answer.selections[itemId] === 'best' || answer.selections[itemId] === 'worst';
+        });
+      }
 
-        // If no items configured, invalid
-        if (maxDiffValidationItems.length === 0) return false;
-
-        // Check if any selection has been made
-        const hasAnySelection =
-          answer.selections &&
-          Object.values(answer.selections).some(
-            (v) => v === 'best' || v === 'worst'
-          );
-
-        // If optional and no selections made, can skip
-        if (!currentQuestionData.required && !hasAnySelection) return true;
-
-        // Check that ALL items have a selection (either 'best' or 'worst')
-        return (
-          answer.selections &&
-          maxDiffValidationItems.every((item: any) => {
-            const itemId = item.id || item.value;
-            return (
-              answer.selections[itemId] === 'best' ||
-              answer.selections[itemId] === 'worst'
-            );
-          })
-        );
-
-      case QuestionType.CONSTANT_SUM:
-        const totalPoints =
-          surveyData?.data?.template?.questions[currentQuestion].config.total;
-        const totalAllocatedPoints =
-          answer.allocatedPoints &&
+      case QuestionType.CONSTANT_SUM: {
+        const totalPoints = qData.config.total;
+        const totalAllocated = answer.allocatedPoints &&
           Object.values(answer.allocatedPoints).reduce(
-            (accumulator: any, currentValue: any) => accumulator + currentValue,
-            0
+            (acc: any, val: any) => acc + val, 0
           );
-        return totalPoints - totalAllocatedPoints === 0;
+        return totalPoints - totalAllocated === 0;
+      }
 
       default:
         return false;
     }
-  }, [surveyData, currentQuestion, answers, visibleIndices]);
+  }, [surveyData, answers, visibleIndices, language]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Backward-compat alias for paginated navigation
+  const isCurrentQuestionValid = React.useCallback(
+    () => isQuestionValid(currentQuestion),
+    [isQuestionValid, currentQuestion],
+  );
 
   if (isLoading) {
     return (
@@ -414,6 +439,10 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   const totalVisibleQuestions = visibleIndices.length || totalQuestions;
   const isLastQuestion = visibleIndices[visibleIndices.length - 1] === currentQuestion;
 
+  // Return translated question text with English fallback
+  const getQuestionText = (q: any): string =>
+    q.translations?.[language]?.text || q.translations?.en?.text || q.text || '';
+
   const handleNext = () => {
     if (!isCurrentQuestionValid()) return;
     handleSaveDraft();
@@ -461,6 +490,59 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     }
 
     setAnswers(newAnswers);
+  };
+
+  // Answer-change handler for list mode — targets a specific question index
+  const handleAnswerChangeForIndex = (idx: number, answer: any) => {
+    const currentQ = questions[idx];
+    const newAnswers: Record<number, any> = { ...answers, [idx]: answer };
+
+    if (currentQ) {
+      questions.forEach((q, i) => {
+        const dependsOnCurrent = q.config?.dependsOn === currentQ.id;
+        const isInParentChain = (q.config?.parentChain || []).includes(currentQ.id);
+        if (dependsOnCurrent || isInParentChain) {
+          newAnswers[i] = undefined;
+          delete prevParentValues.current[q.id];
+          setDynamicOptions(prev => ({ ...prev, [q.id]: [] }));
+        }
+      });
+    }
+
+    // Clear error for this question once the user starts answering
+    setListErrors(prev => {
+      if (!prev[idx]) return prev;
+      const next = { ...prev };
+      delete next[idx];
+      return next;
+    });
+
+    setAnswers(newAnswers);
+  };
+
+  // Submit handler for list mode — validates all visible questions first
+  const handleListSubmit = () => {
+    const errors: Record<number, string> = {};
+    let firstErrorIdx: number | null = null;
+
+    visibleIndices.forEach(idx => {
+      if (!isQuestionValid(idx)) {
+        errors[idx] = 'This field is required';
+        if (firstErrorIdx === null) firstErrorIdx = idx;
+      }
+    });
+
+    if (Object.keys(errors).length > 0) {
+      setListErrors(errors);
+      if (firstErrorIdx !== null) {
+        const el = document.getElementById(`list-q-${firstErrorIdx}`);
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+
+    setListErrors({});
+    handleSubmit();
   };
 
   const handleSaveDraft = () => {
@@ -570,38 +652,53 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     return visibleQuestionNumber / totalVisibleQuestions;
   };
 
-  const renderQuestion = () => {
-    const config = currentQuestionData.config || {};
-    const isValid = isCurrentQuestionValid();
-    // Check if user has provided any answer for this question
-    const currentAnswer = answers[currentQuestion];
-    const hasAnswer = currentAnswer !== undefined && currentAnswer !== null && Object.keys(currentAnswer).length > 0;
-    const commonProps = {
-      questionNumber: visibleQuestionNumber,
-      totalQuestions: totalVisibleQuestions,
-      question: currentQuestionData.text,
-      surveyLabel: getSurveyLabel(),
-      surveyId: surveyData?.data?.survey?.surveyId || '',
-      comment: answers[currentQuestion]?.comment || '',
-      onCommentChange: (comment: string) => {
-        handleAnswerChange({
-          ...answers[currentQuestion],
-          comment,
-        });
-      },
-      showComment: currentQuestionData.allowComment === true,
-      progress: getProgress(),
-      onBack: handleBack,
-      onNext: handleNext,
-      onSaveDraft: handleSaveDraft,
-      isNextDisabled: !isValid,
-      isLastQuestion,
-      isOptional: !currentQuestionData.required, // Pass optional indicator
-      hasAnswer, // Pass whether user has answered
-      error: undefined,
+  // Renders a question for either paginated (default) or list mode.
+  // In list mode, qIdx targets any visible question; commonProps adapts accordingly.
+  const renderQuestion = (qIdx: number = currentQuestion, isListMode: boolean = false) => {
+    const qData = questions[qIdx];
+    if (!qData) return null;
+
+    const config = qData.config || {};
+    const isValid = isQuestionValid(qIdx);
+    const currentAnswer = answers[qIdx];
+    const hasAnswer =
+      currentAnswer !== undefined &&
+      currentAnswer !== null &&
+      Object.keys(currentAnswer).length > 0;
+
+    const visPos = visibleIndices.indexOf(qIdx);
+    const qNumber = visPos >= 0 ? visPos + 1 : 1;
+
+    const onChange = (newAnswer: any) => {
+      if (isListMode) {
+        handleAnswerChangeForIndex(qIdx, newAnswer);
+      } else {
+        handleAnswerChange(newAnswer);
+      }
     };
 
-    switch (currentQuestionData.questionType) {
+    const commonProps = {
+      questionNumber: isListMode ? qNumber : visibleQuestionNumber,
+      totalQuestions: totalVisibleQuestions,
+      question: getQuestionText(qData),
+      surveyLabel: isListMode ? undefined : getSurveyLabel(),
+      surveyId: surveyData?.data?.survey?.surveyId || '',
+      comment: currentAnswer?.comment || '',
+      onCommentChange: (comment: string) => onChange({ ...currentAnswer, comment }),
+      showComment: qData.allowComment === true,
+      progress: isListMode ? 0 : getProgress(),
+      onBack: isListMode ? undefined : handleBack,
+      onNext: isListMode ? undefined : handleNext,
+      onSaveDraft: isListMode ? undefined : handleSaveDraft,
+      isNextDisabled: !isValid,
+      isLastQuestion: isListMode ? false : isLastQuestion,
+      isOptional: !qData.required,
+      hasAnswer,
+      error: isListMode ? listErrors[qIdx] : undefined,
+      listMode: isListMode,
+    };
+
+    switch (qData.questionType) {
       case QuestionType.LIKERT_SCALE:
         return (
           <LickertScale
@@ -611,10 +708,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             minLabel={config.minLabel || (config.labels ? Object.values(config.labels)[0] as string : '')}
             maxLabel={config.maxLabel || (config.labels ? Object.values(config.labels)[1] as string : '')}
             description={config.description}
-            selectedValue={answers[currentQuestion]?.value}
-            onValueChange={(value) =>
-              handleAnswerChange({ ...answers[currentQuestion], value })
-            }
+            selectedValue={currentAnswer?.value}
+            onValueChange={(value) => onChange({ ...currentAnswer, value })}
           />
         );
 
@@ -623,10 +718,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           <StarRating
             {...commonProps}
             maxStars={config.maxStars || 5}
-            selectedStars={answers[currentQuestion]?.stars}
-            onRatingChange={(stars) =>
-              handleAnswerChange({ ...answers[currentQuestion], stars })
-            }
+            selectedStars={currentAnswer?.stars}
+            onRatingChange={(stars) => onChange({ ...currentAnswer, stars })}
             image={config.image}
             ratingLabels={config.labels}
           />
@@ -634,13 +727,9 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
 
       case QuestionType.MCQ_SINGLE: {
         const hasDynamicSource = !!(config.dataSource || config.autoPopulateFrom);
-        const isLoadingDynamic = loadingOptions[currentQuestionData.id] || false;
-
-        // readOnly: if config.readOnly=true AND only 1 dynamic option (single-AC case)
-        // For multi-AC case, allow selection even if readOnly is set in config
-        const rawDynOpts = dynamicOptions[currentQuestionData.id] || [];
+        const isLoadingDynamic = loadingOptions[qData.id] || false;
+        const rawDynOpts = dynamicOptions[qData.id] || [];
         const isReadOnly = !!config.readOnly && rawDynOpts.length <= 1;
-
         const rawOptions = hasDynamicSource ? rawDynOpts : (config.options || []);
         const mcqSingleOptions = rawOptions.map((opt: any) => ({
           ...opt,
@@ -663,33 +752,30 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           <RadioButtons
             {...commonProps}
             options={mcqSingleOptions}
-            selectedValue={answers[currentQuestion]?.value}
+            selectedValue={currentAnswer?.value}
             onValueChange={(value) => {
               if (isReadOnly) return;
-              handleAnswerChange({ ...answers[currentQuestion], value });
+              onChange({ ...currentAnswer, value });
             }}
           />
         );
       }
 
-      case QuestionType.MCQ_MULTIPLE:
-        // Normalize options to have BOTH 'id' and 'value'
+      case QuestionType.MCQ_MULTIPLE: {
         const mcqMultipleOptions = (config.options || []).map((opt: any) => ({
           ...opt,
           id: opt.id ?? opt.value,
           value: opt.value ?? opt.id,
         }));
-
         return (
           <Checkboxes
             {...commonProps}
             options={mcqMultipleOptions}
-            selectedValues={answers[currentQuestion]?.values || []}
-            onValueChange={(values) =>
-              handleAnswerChange({ ...answers[currentQuestion], values })
-            }
+            selectedValues={currentAnswer?.values || []}
+            onValueChange={(values) => onChange({ ...currentAnswer, values })}
           />
         );
+      }
 
       case QuestionType.SCALE:
         return (
@@ -699,10 +785,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             maxValue={config.max || 10}
             minLabel={config.minLabel || (config.labels ? Object.values(config.labels)[0] as string : '')}
             maxLabel={config.maxLabel || (config.labels ? Object.values(config.labels)[1] as string : '')}
-            selectedValue={answers[currentQuestion]?.value}
-            onValueChange={(value) =>
-              handleAnswerChange({ ...answers[currentQuestion], value })
-            }
+            selectedValue={currentAnswer?.value}
+            onValueChange={(value) => onChange({ ...currentAnswer, value })}
           />
         );
 
@@ -715,16 +799,12 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             minLabel={config.labels ? (Array.isArray(config.labels) ? config.labels[0] : (config.labels.start ?? config.labels.min ?? '')) : ''}
             maxLabel={config.labels ? (Array.isArray(config.labels) ? config.labels[1] : (config.labels.end ?? config.labels.max ?? '')) : ''}
             step={config.step}
-            selectedRange={answers[currentQuestion]?.range}
-            onRangeChange={(range) =>
-              handleAnswerChange({ ...answers[currentQuestion], range })
-            }
+            selectedRange={currentAnswer?.range}
+            onRangeChange={(range) => onChange({ ...currentAnswer, range })}
           />
         );
 
-      case QuestionType.MULTI_SLIDER:
-        // Support both 'items' (old format) and 'sliders' (new format)
-        // Preserve all slider properties including individual min/max
+      case QuestionType.MULTI_SLIDER: {
         const sliderItems = (config.items || config.sliders || []).map((slider: any) => ({
           ...slider,
           id: slider.id ?? slider.value,
@@ -732,27 +812,22 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           minLabel: slider.minLabel || '',
           maxLabel: slider.maxLabel || '',
         }));
-
-        // For global min/max, use first slider's values if available
         const firstSlider = config.sliders?.[0];
         const globalMinValue = config.minValue ?? firstSlider?.min ?? 0;
         const globalMaxValue = config.maxValue ?? firstSlider?.max ?? 100;
-
         return (
           <MultipleSlider
             {...commonProps}
             items={sliderItems}
             minValue={globalMinValue}
             maxValue={globalMaxValue}
-            selectedValues={answers[currentQuestion]?.values || {}}
-            onValuesChange={(values) =>
-              handleAnswerChange({ ...answers[currentQuestion], values })
-            }
+            selectedValues={currentAnswer?.values || {}}
+            onValuesChange={(values) => onChange({ ...currentAnswer, values })}
           />
         );
+      }
 
-      case QuestionType.MATRIX:
-        // Normalize rows and columns to have BOTH 'id' and 'value' properties
+      case QuestionType.MATRIX: {
         const matrixRows = (config.rows || []).map((row: any) => ({
           ...row,
           id: row.id ?? row.value,
@@ -763,51 +838,42 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           id: col.id ?? col.value,
           value: col.value ?? col.id,
         }));
-
         return (
           <MatrixGrid
             {...commonProps}
             rows={matrixRows}
             columns={matrixColumns}
-            selectedValues={answers[currentQuestion]?.values || {}}
-            onValuesChange={(values) =>
-              handleAnswerChange({ ...answers[currentQuestion], values })
-            }
+            selectedValues={currentAnswer?.values || {}}
+            onValuesChange={(values) => onChange({ ...currentAnswer, values })}
           />
         );
+      }
 
-      case QuestionType.RANKING:
-        // Support both 'options' (old) and 'items' (new) formats
-        // Normalize to have BOTH 'id' and 'value' properties
+      case QuestionType.RANKING: {
         const rankingItems = (config.options || config.items || []).map((item: any) => ({
           ...item,
           id: item.id ?? item.value,
           value: item.value ?? item.id,
         }));
-
         return (
           <Ranking
             {...commonProps}
             items={rankingItems}
             rankedItems={
-              answers[currentQuestion]?.rankedItems ??
-              rankingItems.map((item: any) => item.value)
+              currentAnswer?.rankedItems ?? rankingItems.map((item: any) => item.value)
             }
-            onRankingChange={(rankedItems) =>
-              handleAnswerChange({ ...answers[currentQuestion], rankedItems })
-            }
+            onRankingChange={(rankedItems) => onChange({ ...currentAnswer, rankedItems })}
           />
         );
+      }
 
-      case QuestionType.MAX_DIFF:
-        // Support multiple formats: config.items, config.options, config.sets[0].items, or translations
-        // Also normalize to ensure 'id' property exists (backend may use 'value')
+      case QuestionType.MAX_DIFF: {
         const maxDiffItemsSource =
           config.items ||
           config.options ||
           config.sets?.[0]?.items ||
-          currentQuestionData.translations?.[language]?.items ||
-          currentQuestionData.translations?.en?.items ||
+          qData.translations?.[language]?.items ||
+          qData.translations?.en?.items ||
           [];
         const maxDiffItems = maxDiffItemsSource.map((item: any) => ({
           id: item.id || item.value,
@@ -817,119 +883,65 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           <MaxDiff
             {...commonProps}
             items={maxDiffItems}
-            selections={answers[currentQuestion]?.selections || {}}
-            onSelectionChange={(selections) =>
-              handleAnswerChange({
-                ...answers[currentQuestion],
-                selections,
-              })
-            }
+            selections={currentAnswer?.selections || {}}
+            onSelectionChange={(selections) => onChange({ ...currentAnswer, selections })}
           />
         );
+      }
 
-      case QuestionType.CONSTANT_SUM:
-        // Support both 'options' (old) and 'items' (new) formats
-        // Normalize to have BOTH 'id' and 'value' properties
+      case QuestionType.CONSTANT_SUM: {
         const constantSumOptions = (config.options || config.items || []).map((item: any) => ({
           ...item,
           id: item.id ?? item.value,
           value: item.value ?? item.id,
         }));
-
         return (
           <ConstantSum
             {...commonProps}
             totalPoints={config.totalPoints ?? config.total ?? 100}
             options={constantSumOptions}
-            allocatedPoints={answers[currentQuestion]?.allocatedPoints || {}}
+            allocatedPoints={currentAnswer?.allocatedPoints || {}}
             onAllocationChange={(allocatedPoints) =>
-              handleAnswerChange({
-                ...answers[currentQuestion],
-                allocatedPoints,
-              })
+              onChange({ ...currentAnswer, allocatedPoints })
             }
             allowZero={config.allowZero}
             requireTotal={config.requireTotal}
           />
         );
+      }
 
       case QuestionType.TEXT:
         return (
-          <SurveyQuestionWrapper
-            surveyId={commonProps.surveyId}
-            surveyLabel={commonProps.surveyLabel}
-            questionNumber={commonProps.questionNumber}
-            totalQuestions={commonProps.totalQuestions}
-            question={commonProps.question}
-            comment={commonProps.comment}
-            onCommentChange={commonProps.onCommentChange}
-            progress={commonProps.progress}
-            onBack={commonProps.onBack}
-            onNext={commonProps.onNext}
-            error={commonProps.error}
-            isNextDisabled={commonProps.isNextDisabled}
-            isLastQuestion={commonProps.isLastQuestion}
-            isOptional={commonProps.isOptional}
-            hasAnswer={commonProps.hasAnswer}
-          >
+          <SurveyQuestionWrapper {...commonProps}>
             <input
               type="text"
-              value={answers[currentQuestion]?.value || ''}
-              onChange={(e) =>
-                handleAnswerChange({
-                  ...answers[currentQuestion],
-                  value: e.target.value,
-                })
-              }
-              placeholder={config.placeholder || ''}
+              value={currentAnswer?.value || ''}
+              onChange={(e) => onChange({ ...currentAnswer, value: e.target.value })}
+              placeholder={qData.translations?.[language]?.placeholder || config.placeholder || ''}
               minLength={config.minLength}
               maxLength={config.maxLength}
               className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors border-custom-grey-2 focus:border-primary text-base md:text-lg"
             />
             {config.helpText && (
-              <p className="mt-2 text-sm text-custom-grey-3">
-                {config.helpText}
-              </p>
+              <p className="mt-2 text-sm text-custom-grey-3">{config.helpText}</p>
             )}
           </SurveyQuestionWrapper>
         );
 
       case QuestionType.TEXTAREA:
         return (
-          <SurveyQuestionWrapper
-            questionNumber={commonProps.questionNumber}
-            totalQuestions={commonProps.totalQuestions}
-            question={commonProps.question}
-            surveyId={commonProps.surveyId}
-            surveyLabel={commonProps.surveyLabel}
-            comment={commonProps.comment}
-            onCommentChange={commonProps.onCommentChange}
-            progress={commonProps.progress}
-            onBack={commonProps.onBack}
-            onNext={commonProps.onNext}
-            error={commonProps.error}
-            isNextDisabled={commonProps.isNextDisabled}
-            isLastQuestion={commonProps.isLastQuestion}
-            isOptional={commonProps.isOptional}
-            hasAnswer={commonProps.hasAnswer}
-          >
+          <SurveyQuestionWrapper {...commonProps}>
             <textarea
-              value={answers[currentQuestion]?.value || ''}
-              onChange={(e) =>
-                handleAnswerChange({
-                  ...answers[currentQuestion],
-                  value: e.target.value,
-                })
-              }
-              placeholder={config.placeholder || ''}
+              value={currentAnswer?.value || ''}
+              onChange={(e) => onChange({ ...currentAnswer, value: e.target.value })}
+              placeholder={qData.translations?.[language]?.placeholder || config.placeholder || ''}
               maxLength={config.maxLength}
               rows={6}
               className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors resize-vertical border-custom-grey-2 focus:border-primary text-base md:text-lg"
             />
             {config.maxLength && (
               <p className="mt-1 text-sm text-custom-grey-3 text-right">
-                {(answers[currentQuestion]?.value || '').length}/
-                {config.maxLength}
+                {(currentAnswer?.value || '').length}/{config.maxLength}
               </p>
             )}
           </SurveyQuestionWrapper>
@@ -937,32 +949,11 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
 
       case QuestionType.NUMBER:
         return (
-          <SurveyQuestionWrapper
-            surveyId={commonProps.surveyId}
-            surveyLabel={commonProps.surveyLabel}
-            questionNumber={commonProps.questionNumber}
-            totalQuestions={commonProps.totalQuestions}
-            question={commonProps.question}
-            comment={commonProps.comment}
-            onCommentChange={commonProps.onCommentChange}
-            progress={commonProps.progress}
-            onBack={commonProps.onBack}
-            onNext={commonProps.onNext}
-            error={commonProps.error}
-            isNextDisabled={commonProps.isNextDisabled}
-            isLastQuestion={commonProps.isLastQuestion}
-            isOptional={commonProps.isOptional}
-            hasAnswer={commonProps.hasAnswer}
-          >
+          <SurveyQuestionWrapper {...commonProps}>
             <input
               type="number"
-              value={answers[currentQuestion]?.value || ''}
-              onChange={(e) =>
-                handleAnswerChange({
-                  ...answers[currentQuestion],
-                  value: parseFloat(e.target.value),
-                })
-              }
+              value={currentAnswer?.value || ''}
+              onChange={(e) => onChange({ ...currentAnswer, value: parseFloat(e.target.value) })}
               min={config.min}
               max={config.max}
               step={config.step || 1}
@@ -974,33 +965,17 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
       case QuestionType.CURRENCY: {
         const currencySymbol = config.currency || '₹';
         return (
-          <SurveyQuestionWrapper
-            surveyId={commonProps.surveyId}
-            surveyLabel={commonProps.surveyLabel}
-            questionNumber={commonProps.questionNumber}
-            totalQuestions={commonProps.totalQuestions}
-            question={commonProps.question}
-            comment={commonProps.comment}
-            onCommentChange={commonProps.onCommentChange}
-            progress={commonProps.progress}
-            onBack={commonProps.onBack}
-            onNext={commonProps.onNext}
-            error={commonProps.error}
-            isNextDisabled={commonProps.isNextDisabled}
-            isLastQuestion={commonProps.isLastQuestion}
-            isOptional={commonProps.isOptional}
-            hasAnswer={commonProps.hasAnswer}
-          >
+          <SurveyQuestionWrapper {...commonProps}>
             <div className="flex items-center border-b-2 bg-custom-grey-5 focus-within:bg-white focus-within:border-primary border-custom-grey-2 transition-colors">
               <span className="pl-4 pr-1 text-base md:text-lg font-medium text-custom-grey-3 select-none">
                 {currencySymbol}
               </span>
               <input
                 type="number"
-                value={answers[currentQuestion]?.value ?? ''}
+                value={currentAnswer?.value ?? ''}
                 onChange={(e) =>
-                  handleAnswerChange({
-                    ...answers[currentQuestion],
+                  onChange({
+                    ...currentAnswer,
                     value: e.target.value === '' ? undefined : parseFloat(e.target.value),
                   })
                 }
@@ -1016,103 +991,41 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
 
       case QuestionType.EMAIL:
         return (
-          <SurveyQuestionWrapper
-            surveyId={commonProps.surveyId}
-            surveyLabel={commonProps.surveyLabel}
-            questionNumber={commonProps.questionNumber}
-            totalQuestions={commonProps.totalQuestions}
-            question={commonProps.question}
-            comment={commonProps.comment}
-            onCommentChange={commonProps.onCommentChange}
-            progress={commonProps.progress}
-            onBack={commonProps.onBack}
-            onNext={commonProps.onNext}
-            error={commonProps.error}
-            isNextDisabled={commonProps.isNextDisabled}
-            isLastQuestion={commonProps.isLastQuestion}
-            isOptional={commonProps.isOptional}
-            hasAnswer={commonProps.hasAnswer}
-          >
+          <SurveyQuestionWrapper {...commonProps}>
             <input
               type="email"
-              value={answers[currentQuestion]?.value || ''}
-              onChange={(e) =>
-                handleAnswerChange({
-                  ...answers[currentQuestion],
-                  value: e.target.value,
-                })
-              }
+              value={currentAnswer?.value || ''}
+              onChange={(e) => onChange({ ...currentAnswer, value: e.target.value })}
               placeholder="example@email.com"
               className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors border-custom-grey-2 focus:border-primary text-base md:text-lg"
             />
             {config.customMessage && (
-              <p className="mt-2 text-sm text-custom-grey-3">
-                {config.customMessage}
-              </p>
+              <p className="mt-2 text-sm text-custom-grey-3">{config.customMessage}</p>
             )}
           </SurveyQuestionWrapper>
         );
 
       case QuestionType.PHONE:
         return (
-          <SurveyQuestionWrapper
-            surveyId={commonProps.surveyId}
-            surveyLabel={commonProps.surveyLabel}
-            questionNumber={commonProps.questionNumber}
-            totalQuestions={commonProps.totalQuestions}
-            question={commonProps.question}
-            comment={commonProps.comment}
-            onCommentChange={commonProps.onCommentChange}
-            progress={commonProps.progress}
-            onBack={commonProps.onBack}
-            onNext={commonProps.onNext}
-            error={commonProps.error}
-            isNextDisabled={commonProps.isNextDisabled}
-            isLastQuestion={commonProps.isLastQuestion}
-            isOptional={commonProps.isOptional}
-            hasAnswer={commonProps.hasAnswer}
-          >
+          <SurveyQuestionWrapper {...commonProps}>
             <PhoneInputField
-              answer={answers[currentQuestion]}
-              onChange={(phoneAnswer) => handleAnswerChange(phoneAnswer)}
+              answer={currentAnswer}
+              onChange={(phoneAnswer) => onChange(phoneAnswer)}
               placeholder={config.placeholder ?? 'Enter phone number'}
             />
             {config.customMessage && (
-              <p className="mt-2 text-sm text-custom-grey-3">
-                {config.customMessage}
-              </p>
+              <p className="mt-2 text-sm text-custom-grey-3">{config.customMessage}</p>
             )}
           </SurveyQuestionWrapper>
         );
 
       case QuestionType.DATE:
         return (
-          <SurveyQuestionWrapper
-            surveyId={commonProps.surveyId}
-            surveyLabel={commonProps.surveyLabel}
-            questionNumber={commonProps.questionNumber}
-            totalQuestions={commonProps.totalQuestions}
-            question={commonProps.question}
-            comment={commonProps.comment}
-            onCommentChange={commonProps.onCommentChange}
-            progress={commonProps.progress}
-            onBack={commonProps.onBack}
-            onNext={commonProps.onNext}
-            error={commonProps.error}
-            isNextDisabled={commonProps.isNextDisabled}
-            isLastQuestion={commonProps.isLastQuestion}
-            isOptional={commonProps.isOptional}
-            hasAnswer={commonProps.hasAnswer}
-          >
+          <SurveyQuestionWrapper {...commonProps}>
             <input
               type="date"
-              value={answers[currentQuestion]?.value || ''}
-              onChange={(e) =>
-                handleAnswerChange({
-                  ...answers[currentQuestion],
-                  value: e.target.value,
-                })
-              }
+              value={currentAnswer?.value || ''}
+              onChange={(e) => onChange({ ...currentAnswer, value: e.target.value })}
               min={config.minDate}
               max={config.maxDate}
               className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors border-custom-grey-2 focus:border-primary text-base md:text-lg"
@@ -1124,14 +1037,9 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         return (
           <FileUpload
             {...commonProps}
-            questionId={currentQuestionData.id}
-            value={answers[currentQuestion]?.file}
-            onFileChange={(file) =>
-              handleAnswerChange({
-                ...answers[currentQuestion],
-                file,
-              })
-            }
+            questionId={qData.id}
+            value={currentAnswer?.file}
+            onFileChange={(file) => onChange({ ...currentAnswer, file })}
             maxSizeMB={config.maxSizeMB ?? 5}
             allowedTypes={config.allowedTypes ?? ['image/jpeg', 'image/png', 'application/pdf']}
             accept={config.accept}
@@ -1143,11 +1051,82 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         return (
           <div className="text-center py-12">
             <p className="text-lg text-text-dark">
-              Question type not supported: {currentQuestionData.questionType}
+              Question type not supported: {qData.questionType}
             </p>
           </div>
         );
     }
+  };
+
+  // ── List layout ────────────────────────────────────────────────────────────
+  const renderListLayout = () => {
+    const answeredCount = visibleIndices.filter(i => {
+      const a = answers[i];
+      return a !== undefined && a !== null && Object.keys(a).length > 0;
+    }).length;
+    const progress = visibleIndices.length > 0 ? answeredCount / visibleIndices.length : 0;
+
+    return (
+      <div className="flex flex-col bg-white text-black h-full accent-primary caret-primary scheme-light">
+        {/* Sticky header */}
+        <div className="shrink-0 border-b border-custom-grey-2 px-4 py-3 md:px-12 md:py-4 bg-white z-10 sticky top-0">
+          <div className="flex items-center justify-between gap-4 mb-3 max-w-4xl mx-auto">
+            <h1 className="text-base md:text-lg font-semibold text-black truncate">
+              {surveyData?.data?.survey?.surveyId}: {getSurveyLabel()}
+            </h1>
+            <div className="flex items-center gap-2 shrink-0">
+              <LayoutToggle />
+              <LanguageToggle variant="compact" />
+            </div>
+          </div>
+          {/* Progress bar */}
+          <div className="max-w-4xl mx-auto">
+            <div className="w-full h-1.5 bg-custom-grey-2 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-primary rounded-full transition-all duration-300"
+                style={{ width: `${Math.round(progress * 100)}%` }}
+              />
+            </div>
+            <p className="text-xs text-custom-grey-3 text-right mt-1">
+              {answeredCount} / {visibleIndices.length} answered
+            </p>
+          </div>
+        </div>
+
+        {/* Scrollable question list */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="px-4 py-6 md:px-12 md:py-8 max-w-4xl mx-auto space-y-4">
+            {visibleIndices.map((qIdx) => (
+              <div
+                key={qIdx}
+                id={`list-q-${qIdx}`}
+                className={`p-4 md:p-6 border rounded-xl transition-colors ${
+                  listErrors[qIdx]
+                    ? 'border-primary bg-red-50'
+                    : 'border-custom-grey-2 bg-white'
+                }`}
+              >
+                {renderQuestion(qIdx, true)}
+              </div>
+            ))}
+
+            {/* Submit */}
+            <div className="flex justify-end pt-4 border-t border-custom-grey-2">
+              <button
+                type="button"
+                onClick={handleListSubmit}
+                disabled={submitMutation.isPending}
+                className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-sm md:text-base"
+              >
+                {submitMutation.isPending
+                  ? translations.common.loading
+                  : translations.common.submit}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   if (showSuccess) {
@@ -1158,7 +1137,17 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     );
   }
 
-  return <div className="flex bg-white h-full accent-primary caret-primary scheme-light">{renderQuestion()}</div>;
+  return (
+    <SurveyLayoutContext.Provider value={{ layout: formLayout, setLayout: setFormLayout }}>
+      {formLayout === 'list' ? (
+        renderListLayout()
+      ) : (
+        <div className="flex bg-white h-full accent-primary caret-primary scheme-light">
+          {renderQuestion()}
+        </div>
+      )}
+    </SurveyLayoutContext.Provider>
+  );
 };
 
 interface SurveyDetailWrapperProps {
