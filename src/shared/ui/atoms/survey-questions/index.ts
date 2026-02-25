@@ -11,3 +11,4 @@ export { MatrixGrid } from './MatrixGrid';
 export { Ranking } from './Ranking';
 export { MaxDiff } from './MaxDiff';
 export { ConstantSum } from './ConstantSum';
+export { PhoneInputField } from './PhoneInputField';

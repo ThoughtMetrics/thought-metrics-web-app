@@ -45,7 +45,8 @@
       "Bash(findstr:*)",
       "Bash(powershell -Command:*)",
       "Bash(npx tsx:*)",
-      "Bash(flutter analyze:*)"
+      "Bash(flutter analyze:*)",
+      "Bash(ts-node:*)"
     ],
     "deny": [],
     "ask": []

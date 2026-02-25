@@ -15,12 +15,14 @@ import {
   MatrixGrid,
   MaxDiff,
   MultipleSlider,
+  PhoneInputField,
   RadioButtons,
   Ranking,
   SingleSlider,
   StarRating,
   SurveyQuestionWrapper,
 } from '@/shared/ui/atoms/survey-questions';
+import { COUNTRY_CODES } from '@/core/constants/country-codes';
 import { FileUpload } from '@/shared/ui/atoms/survey-questions/FileUpload';
 import { QueryClientProvider } from '@tanstack/react-query';
 import React, { useState } from 'react';
@@ -56,6 +58,34 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     });
     return map;
   }, [surveyData]);
+
+  // Indices of questions that are currently visible, evaluated against current answers.
+  // Supports showIf (single condition) and showIfAll (AND logic).
+  const visibleIndices = React.useMemo(() => {
+    const allQs = surveyData?.data?.template?.questions || [];
+    const evalCond = (cond: any): boolean => {
+      const refIdx = questionIdToIndex[cond.questionId];
+      if (refIdx === undefined) return true;
+      const actual = answers[refIdx]?.value?.toString();
+      const expected = cond.value?.toString();
+      switch (cond.operator ?? 'equals') {
+        case 'equals':     return actual === expected;
+        case 'not_equals': return actual !== expected;
+        case 'contains':   return actual?.includes(expected ?? '') ?? false;
+        default:           return true;
+      }
+    };
+    return allQs
+      .map((_, i) => i)
+      .filter(i => {
+        const cfg = allQs[i]?.config || {};
+        if (cfg.showIf && !evalCond(cfg.showIf)) return false;
+        if (cfg.showIfAll?.some((c: any) => !evalCond(c))) return false;
+        return true;
+      });
+  }, [surveyData, questionIdToIndex, answers]);
+
+  const isQuestionVisible = (index: number) => visibleIndices.includes(index);
 
   // Get translated survey label based on current language
   const getSurveyLabel = () => {
@@ -192,6 +222,9 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
 
   // Validate if current question has a valid answer
   const isCurrentQuestionValid = React.useCallback((): boolean => {
+    // Invisible questions are always valid — skipped in navigation and submission
+    if (!isQuestionVisible(currentQuestion)) return true;
+
     const currentQuestionData =
       surveyData?.data?.template?.questions[currentQuestion];
     if (!currentQuestionData) return false;
@@ -208,10 +241,25 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     switch (currentQuestionData.questionType) {
       case QuestionType.TEXT:
       case QuestionType.TEXTAREA:
-      case QuestionType.EMAIL:
-      case QuestionType.PHONE:
       case QuestionType.DATE:
         return !!answer.value && answer.value.trim() !== '';
+
+      case QuestionType.EMAIL: {
+        const emailVal = answer.value?.trim() ?? '';
+        if (!emailVal) return false;
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal);
+      }
+
+      case QuestionType.PHONE: {
+        const digits = (answer.value ?? '').replace(/\D/g, '');
+        if (digits.length === 0) return false;
+        const countryCode = answer.countryCode as string | undefined;
+        const country = countryCode
+          ? COUNTRY_CODES.find(c => c.code === countryCode)
+          : undefined;
+        const expected = country?.length;
+        return expected != null ? digits.length === expected : digits.length >= 7 && digits.length <= 15;
+      }
 
       case QuestionType.FILE:
         // Check if file object exists with required properties (url from Azure Blob)
@@ -238,10 +286,9 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
 
       case QuestionType.DOUBLE_SLIDER:
         return (
-          answer.range &&
-          Object.values(answer.range).every((val) =>
-            typeof val === 'number' ? val > 0 : false
-          )
+          answer.range !== undefined &&
+          typeof answer.range.min === 'number' &&
+          typeof answer.range.max === 'number'
         );
 
       case QuestionType.MULTI_SLIDER:
@@ -311,7 +358,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
       default:
         return false;
     }
-  }, [surveyData, currentQuestion, answers]);
+  }, [surveyData, currentQuestion, answers, visibleIndices]);
 
   if (isLoading) {
     return (
@@ -362,26 +409,34 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   const totalQuestions = questions.length;
   const currentQuestionData = questions[currentQuestion];
 
-  const handleNext = () => {
-    // Validate before moving to next question
-    if (!isCurrentQuestionValid()) {
-      return;
-    }
+  // Visible question ordinal and total (for progress bar and numbering)
+  const visibleQuestionNumber = (visibleIndices.indexOf(currentQuestion) + 1) || 1;
+  const totalVisibleQuestions = visibleIndices.length || totalQuestions;
+  const isLastQuestion = visibleIndices[visibleIndices.length - 1] === currentQuestion;
 
-    // Auto-save draft before moving to next question
+  const handleNext = () => {
+    if (!isCurrentQuestionValid()) return;
     handleSaveDraft();
 
-    if (currentQuestion < totalQuestions - 1) {
-      setCurrentQuestion(currentQuestion + 1);
+    // Skip hidden questions when advancing
+    let next = currentQuestion + 1;
+    while (next < totalQuestions && !isQuestionVisible(next)) {
+      next++;
+    }
+    if (next < totalQuestions) {
+      setCurrentQuestion(next);
     } else {
-      // Submit survey
       handleSubmit();
     }
   };
 
   const handleBack = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
+    let prev = currentQuestion - 1;
+    while (prev >= 0 && !isQuestionVisible(prev)) {
+      prev--;
+    }
+    if (prev >= 0) {
+      setCurrentQuestion(prev);
     }
   };
 
@@ -428,6 +483,9 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     }> = [];
 
     questions.forEach((q, index) => {
+      // Skip questions hidden by conditional logic (showIf / showIfAll)
+      if (!isQuestionVisible(index)) return;
+
       const answerData = answers[index];
 
       // Skip unanswered optional questions
@@ -508,20 +566,19 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   };
 
   const getProgress = () => {
-    // Return actual progress from 0 to 1
-    return (currentQuestion + 1) / totalQuestions;
+    if (totalVisibleQuestions === 0) return 0;
+    return visibleQuestionNumber / totalVisibleQuestions;
   };
 
   const renderQuestion = () => {
     const config = currentQuestionData.config || {};
     const isValid = isCurrentQuestionValid();
-    const isLastQuestion = currentQuestion === totalQuestions - 1;
     // Check if user has provided any answer for this question
     const currentAnswer = answers[currentQuestion];
     const hasAnswer = currentAnswer !== undefined && currentAnswer !== null && Object.keys(currentAnswer).length > 0;
     const commonProps = {
-      questionNumber: currentQuestion + 1,
-      totalQuestions,
+      questionNumber: visibleQuestionNumber,
+      totalQuestions: totalVisibleQuestions,
       question: currentQuestionData.text,
       surveyLabel: getSurveyLabel(),
       surveyId: surveyData?.data?.survey?.surveyId || '',
@@ -653,10 +710,11 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         return (
           <DoubleSlider
             {...commonProps}
-            minValue={config.min || 1}
+            minValue={config.min ?? 0}
             maxValue={config.max || 100}
-            minLabel={config.labels ? (Array.isArray(config.labels) ? config.labels[0] : config.labels.min) : ''}
-            maxLabel={config.labels ? (Array.isArray(config.labels) ? config.labels[1] : config.labels.max) : ''}
+            minLabel={config.labels ? (Array.isArray(config.labels) ? config.labels[0] : (config.labels.start ?? config.labels.min ?? '')) : ''}
+            maxLabel={config.labels ? (Array.isArray(config.labels) ? config.labels[1] : (config.labels.end ?? config.labels.max ?? '')) : ''}
+            step={config.step}
             selectedRange={answers[currentQuestion]?.range}
             onRangeChange={(range) =>
               handleAnswerChange({ ...answers[currentQuestion], range })
@@ -1014,18 +1072,10 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             isOptional={commonProps.isOptional}
             hasAnswer={commonProps.hasAnswer}
           >
-            <input
-              type="tel"
-              value={answers[currentQuestion]?.value || ''}
-              onChange={(e) =>
-                handleAnswerChange({
-                  ...answers[currentQuestion],
-                  value: e.target.value,
-                })
-              }
-              placeholder="+1234567890"
-              minLength={config.minLength}
-              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors border-custom-grey-2 focus:border-primary text-base md:text-lg"
+            <PhoneInputField
+              answer={answers[currentQuestion]}
+              onChange={(phoneAnswer) => handleAnswerChange(phoneAnswer)}
+              placeholder={config.placeholder ?? 'Enter phone number'}
             />
             {config.customMessage && (
               <p className="mt-2 text-sm text-custom-grey-3">
