@@ -110,6 +110,7 @@ export interface IQuestionTemplate {
   translations?: {
     [key: string]: {
       text?: string;
+      placeholder?: string;
       options?: Array<{ label: string; value: string }>;
       items?: Array<{ label: string; value: string }>;
       rows?: Array<{ label: string; value: string }>;
@@ -234,7 +235,7 @@ export interface BaseSurveyQuestionProps {
   totalQuestions: number;
   question: string;
   surveyId: string;
-  surveyLabel: string;
+  surveyLabel?: string;
   comment?: string;
   onCommentChange?: (value: string) => void;
   showComment?: boolean;
