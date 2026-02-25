@@ -66,7 +66,7 @@ const AdminRouteGuardInternal: React.FC<AdminRouteGuardProps> = ({
   // Show loading state while checking auth
   if (!isAuthReady || isChecking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="h-full flex items-center justify-center bg-gray-50">
         <LoaderUI message="Verifying access..." />
       </div>
     );

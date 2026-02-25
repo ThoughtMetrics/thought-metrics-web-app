@@ -6,6 +6,7 @@ import { survey_campaign_constant } from './survey-campaign-constant';
 import { SurveyCampaignIllustrationSquare } from '@/assets';
 import CustomImageAtom from '@/shared/ui/atoms/custom-image';
 import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
+import analyticsService from '@/services/api/analytics.service';
 
 const SurveyCampaignPageContent: React.FC = () => {
   const { user, isAuthReady } = useAuth();
@@ -21,7 +22,10 @@ const SurveyCampaignPageContent: React.FC = () => {
     const params = new URLSearchParams(window.location.search);
     const linkId = params.get('tm_link_id');
     const source = params.get('utm_source');
+    const medium = params.get('utm_medium');
     const campaign = params.get('utm_campaign');
+    const term = params.get('utm_term');
+    const content = params.get('utm_content');
     const allocatedSurvey = params.get('allocated_survey');
 
     // Store in localStorage for persistence
@@ -39,6 +43,18 @@ const SurveyCampaignPageContent: React.FC = () => {
       allocatedSurveyId:
         allocatedSurvey || localStorage.getItem('tm_allocated_survey'),
     });
+
+    // Fire a page_view tracking event when arriving via a tracking link
+    if (linkId) {
+      void analyticsService.trackPageView({
+        tm_link_id: linkId,
+        ...(source && { utm_source: source }),
+        ...(medium && { utm_medium: medium }),
+        ...(campaign && { utm_campaign: campaign }),
+        ...(term && { utm_term: term }),
+        ...(content && { utm_content: content }),
+      });
+    }
   }, []);
 
   const handleRegisterClick = () => {
