@@ -25,36 +25,30 @@ const SurveyFormPage: React.FC<SurveyFormWrapperProps> = ({ surveyId }) => {
 
   // Check if user came from tracking link and enforce access restriction
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.ThoughtMetrics) {
-      const isTracked = window.ThoughtMetrics.isFromTrackingLink();
-      const utmParams = window.ThoughtMetrics.getUTMParams();
+    if (typeof window === 'undefined') return;
 
-      console.debug('[SurveyForm] Access check:', {
-        isFromTrackingLink: isTracked,
-        trackingLinkId: utmParams.tm_link_id,
-        surveyId,
-      });
-
-      // Restrict access - only allow via tracking link
-      if (!isTracked || !utmParams.tm_link_id) {
-        console.debug(
-          '[SurveyForm] Access denied - no tracking link detected, redirecting to home'
-        );
-        window.location.href = '/';
-        return;
-      }
-
-      setTrackingInfo({
-        linkId: utmParams.tm_link_id,
-        source: utmParams.utm_source,
-        campaign: utmParams.utm_campaign,
-      });
-      setIsCheckingAccess(false);
-    } else {
-      // If ThoughtMetrics is not available, deny access
-      console.debug('[SurveyForm] Access denied - ThoughtMetrics not available');
-      window.location.href = '/';
+    // Try ThoughtMetrics external script first (reads current URL params)
+    let resolvedLinkId: string | null = null;
+    if (window.ThoughtMetrics) {
+      resolvedLinkId = window.ThoughtMetrics.getUTMParams().tm_link_id;
     }
+    // Fallback: localStorage (present after post-login redirect when URL params are gone)
+    if (!resolvedLinkId) {
+      resolvedLinkId = localStorage.getItem('tm_link_id');
+    }
+
+    if (!resolvedLinkId) {
+      console.debug('[SurveyForm] Access denied - no tracking link in URL or localStorage');
+      window.location.href = '/';
+      return;
+    }
+
+    setTrackingInfo({
+      linkId: resolvedLinkId,
+      source: window.ThoughtMetrics?.getUTMParams().utm_source ?? null,
+      campaign: window.ThoughtMetrics?.getUTMParams().utm_campaign ?? null,
+    });
+    setIsCheckingAccess(false);
   }, [surveyId]);
 
   // Fetch survey
