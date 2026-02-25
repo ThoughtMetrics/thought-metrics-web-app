@@ -31,6 +31,8 @@ const InteractionHeaderContent: React.FC = () => {
 
   const handleLogout = async () => {
     try {
+      localStorage.removeItem('tm_survey_lock');
+      localStorage.removeItem('tm_link_id');
       await authService.signOut();
       window.location.href = ROUTES.HOME;
     } catch (error) {

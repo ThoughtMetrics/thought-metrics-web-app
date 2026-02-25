@@ -271,6 +271,25 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     }
   }, [surveyData]);
 
+  // Set navigation lock if user arrived via tracking link
+  React.useEffect(() => {
+    const tmLinkId = localStorage.getItem('tm_link_id');
+    if (tmLinkId && surveyId) {
+      localStorage.setItem(
+        'tm_survey_lock',
+        JSON.stringify({ surveyId, linkId: tmLinkId, lockedAt: new Date().toISOString() })
+      );
+    }
+  }, [surveyId]);
+
+  // Clear lock if survey is already completed (don't trap user)
+  React.useEffect(() => {
+    if (surveyData?.data?.survey?.userResponse?.isCompleted) {
+      localStorage.removeItem('tm_survey_lock');
+      localStorage.removeItem('tm_link_id');
+    }
+  }, [surveyData]);
+
   // Validate any question by index — used for both paginated and list mode
   const isQuestionValid = React.useCallback((index: number): boolean => {
     if (!isQuestionVisible(index)) return true;
@@ -631,7 +650,9 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
       { surveyId, submission },
       {
         onSuccess: () => {
-          // Clear draft from localStorage on successful submission
+          // Clear navigation lock — survey complete
+          localStorage.removeItem('tm_survey_lock');
+          localStorage.removeItem('tm_link_id');
           const draftKey = `survey_draft_${surveyId}`;
           localStorage.removeItem(draftKey);
           toast.success(translations.toast.surveySubmittedSuccess);
