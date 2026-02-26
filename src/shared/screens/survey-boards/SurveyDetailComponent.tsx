@@ -533,6 +533,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     });
 
     setAnswers(newAnswers);
+    // Auto-save on every answer change in list mode (mirrors mobile app behaviour)
+    handleSaveDraft(newAnswers);
   };
 
   // Submit handler for list mode — validates all visible questions first
@@ -560,11 +562,13 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     handleSubmit();
   };
 
-  const handleSaveDraft = () => {
+  const handleSaveDraft = (answersToSave?: Record<number, any>) => {
     // Save draft to localStorage (silent save, no toast notification)
+    // Accepts explicit answers to avoid stale-closure issues when called
+    // immediately after setAnswers (React state updates are async).
     const draftKey = `survey_draft_${surveyId}`;
     const draftData = {
-      answers,
+      answers: answersToSave ?? answers,
       timestamp: new Date().toISOString(),
     };
     localStorage.setItem(draftKey, JSON.stringify(draftData));
