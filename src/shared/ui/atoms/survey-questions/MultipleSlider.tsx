@@ -85,7 +85,7 @@ export const MultipleSlider: React.FC<MultipleSliderProps> = ({
                 onChange={(e) =>
                   handleSliderChange(item.id, Number(e.target.value))
                 }
-                className="w-full h-2 bg-custom-grey-5 rounded-lg appearance-none cursor-pointer
+                className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer
                            [&::-webkit-slider-thumb]:appearance-none
                            [&::-webkit-slider-thumb]:w-6
                            [&::-webkit-slider-thumb]:h-6
@@ -99,7 +99,7 @@ export const MultipleSlider: React.FC<MultipleSliderProps> = ({
                            [&::-moz-range-thumb]:border-0
                            [&::-moz-range-thumb]:cursor-pointer"
                 style={{
-                  background: `linear-gradient(to right, #E63946 0%, #E63946 ${((currentValue - itemMinValue) / (itemMaxValue - itemMinValue) * 100)}%, #E5E5E5 ${((currentValue - itemMinValue) / (itemMaxValue - itemMinValue) * 100)}%, #E5E5E5 100%)`,
+                  background: `linear-gradient(to right, #E8505E 0%, #E8505E ${((currentValue - itemMinValue) / (itemMaxValue - itemMinValue) * 100)}%, #E5E5E5 ${((currentValue - itemMinValue) / (itemMaxValue - itemMinValue) * 100)}%, #E5E5E5 100%)`,
                 }}
               />
             </div>

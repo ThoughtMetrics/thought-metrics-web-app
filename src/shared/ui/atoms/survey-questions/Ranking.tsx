@@ -85,10 +85,10 @@ export const Ranking: React.FC<RankingProps> = ({
             onDragStart={() => handleDragStart(itemId)}
             onDragOver={handleDragOver}
             onDrop={() => handleDrop(index)}
-            className="flex items-center space-x-3 p-4 border-2 border-custom-grey-2 rounded-lg cursor-move hover:border-primary transition-colors bg-custom-grey-5"
+            className="flex items-center space-x-3 p-4 border border-custom-grey-1 rounded-lg cursor-move hover:border-primary transition-colors bg-white"
           >
             {/* Rank Number */}
-            <div className="flex items-center justify-center w-8 h-8 rounded border border-custom-grey-2 bg-white text-sm font-medium">
+            <div className="flex items-center justify-center w-8 h-8 rounded border border-custom-grey-1 bg-white text-sm font-medium">
               {index + 1}
             </div>
 

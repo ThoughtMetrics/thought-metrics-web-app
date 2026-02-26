@@ -55,7 +55,11 @@ export const Checkboxes: React.FC<CheckboxProps> = ({
         {options.map((option) => (
           <label
             key={option.id}
-            className="flex items-center space-x-2 p-2.5 border border-custom-grey-2 rounded cursor-pointer hover:border-primary transition-colors bg-custom-grey-5"
+            className={`flex items-center space-x-2 p-2.5 border rounded cursor-pointer hover:border-primary transition-colors ${
+              selectedValues.includes(option.value)
+                ? 'bg-primary/10 border-primary'
+                : 'bg-white border-custom-grey-1'
+            }`}
           >
             <input
               type="checkbox"

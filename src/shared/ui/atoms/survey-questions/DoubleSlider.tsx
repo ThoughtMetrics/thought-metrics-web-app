@@ -85,7 +85,7 @@ export const DoubleSlider: React.FC<DoubleSliderProps> = ({
         {/* Double Slider */}
         <div className="relative h-16">
           {/* Background Track */}
-          <div className="absolute top-1/2 -translate-y-1/2 w-full h-2 bg-custom-grey-5 rounded-lg" />
+          <div className="absolute top-1/2 -translate-y-1/2 w-full h-2 bg-gray-300 rounded-lg" />
 
           {/* Active Range */}
           <div

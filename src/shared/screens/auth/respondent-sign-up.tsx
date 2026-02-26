@@ -13,6 +13,7 @@ import {
   SelectAtom,
   TextInputAtom,
 } from '@/shared/ui/atoms/custom-input';
+import { COUNTRY_CODES } from '@/core/constants/country-codes';
 import { ArrowRed, GoogleOutlineIcon } from '@/assets';
 import FaqOrganism from '@/shared/ui/organisms/faq-organism';
 import { useSignUpMutation } from '@/core/hooks/mutations/use-sign-up.mutation';
@@ -128,7 +129,7 @@ const storeImplementation = (set: any, get: any) => ({
     ),
 
   validateStep: (step: number) => {
-    const { formData } = get();
+    const { formData, countryCode } = get();
     const errors: Record<string, string> = {};
 
     if (step === 1) {
@@ -140,6 +141,17 @@ const storeImplementation = (set: any, get: any) => ({
         errors.email = validationMessages.email.required;
       else if (!emailRegexPattern.test(formData.email))
         errors.email = validationMessages.email.invalid;
+      // Phone is optional but must match country-specific length when provided
+      if (formData.phone?.trim()) {
+        const digits = formData.phone.replace(/\D/g, '');
+        const country = COUNTRY_CODES.find((c) => c.code === countryCode);
+        const expected = country?.length;
+        const valid = expected != null
+          ? digits.length === expected
+          : digits.length >= 7 && digits.length <= 15;
+        if (!valid)
+          errors.phone = validationMessages.phone.invalid;
+      }
       if (!formData.password.trim())
         errors.password = validationMessages.password;
       if (!formData.confirmPassword.trim())

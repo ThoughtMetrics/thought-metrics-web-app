@@ -120,7 +120,7 @@ export const ConstantSum: React.FC<ConstantSumProps> = ({
     >
       <div className="space-y-6">
         {/* Instruction */}
-        <p className="text-md text-custom-grey-3">
+        <p className="text-md text-text-dark">
           Distribute {totalPoints} points across the options below
         </p>
 
@@ -129,7 +129,7 @@ export const ConstantSum: React.FC<ConstantSumProps> = ({
           {options.map((option) => (
             <div
               key={option.value}
-              className="flex items-center gap-4 p-2 border-2 border-custom-grey-2 rounded-lg bg-custom-grey-5 hover:border-primary group"
+              className="flex items-center gap-4 p-2 border border-custom-grey-1 rounded-lg bg-white hover:border-primary group"
             >
               <input
                 type="number"
@@ -137,23 +137,23 @@ export const ConstantSum: React.FC<ConstantSumProps> = ({
                 max={remaining + (localAllocation[option.value] ?? 0)}
                 value={localAllocation[option.value] ?? 0}
                 onChange={(e) => handleChange(option.value, e.target.value)}
-                className="w-16 py-1 border-2 border-custom-grey-2 rounded focus:border-primary outline-none bg-white text-center group-hover:border-primary"
+                className="w-16 py-1 border border-custom-grey-1 rounded focus:border-primary outline-none bg-white text-center group-hover:border-primary"
               />
               <label className="flex-1 text-base md:text-lg text-black">
                 {option.label}
               </label>
               <button
-                className="h-8 w-8 bg-white rounded-lg flex justify-center items-center relative group/button border-2 border-custom-grey-2 focus:border-primary outline-none"
+                className="h-8 w-8 bg-white rounded-lg flex justify-center items-center relative group/button border border-custom-grey-1 focus:border-primary outline-none"
                 onClick={() => decreaseVal(option.value)}
               >
-                <div className="w-4 h-0.5 bg-custom-grey-2 group-hover/button:bg-primary"></div>
+                <div className="w-4 h-0.5 bg-custom-grey-1 group-hover/button:bg-primary"></div>
               </button>
               <button
-                className="h-8 w-8 bg-white rounded-lg flex justify-center items-center relative group/button border-2 border-custom-grey-2 focus:border-primary outline-none"
+                className="h-8 w-8 bg-white rounded-lg flex justify-center items-center relative group/button border border-custom-grey-1 focus:border-primary outline-none"
                 onClick={() => increaseVal(option.value)}
               >
-                <div className="w-4 h-0.5 bg-custom-grey-2 group-hover/button:bg-primary"></div>
-                <div className="absolute w-0.5 h-4 bg-custom-grey-2 group-hover/button:bg-primary"></div>
+                <div className="w-4 h-0.5 bg-custom-grey-1 group-hover/button:bg-primary"></div>
+                <div className="absolute w-0.5 h-4 bg-custom-grey-1 group-hover/button:bg-primary"></div>
               </button>
             </div>
           ))}

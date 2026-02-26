@@ -91,7 +91,7 @@ export const MaxDiff: React.FC<MaxDiffProps> = ({
               <div
                 key={item.id}
                 className={cn(
-                  'flex justify-between gap-2 sm:gap-3 md:gap-4 items-center p-3 sm:p-3.5 md:p-4 rounded bg-custom-grey-5',
+                  'flex justify-between gap-2 sm:gap-3 md:gap-4 items-center p-3 sm:p-3.5 md:p-4 rounded bg-white border border-custom-grey-1',
                   'mx-2 sm:mx-4 md:mx-8 lg:mx-40 transition-all duration-300 ease-in-out',
                   itemSelection === 'best' ? 'lg:ml-10 lg:mr-70' : '',
                   itemSelection === 'worst' ? 'lg:ml-70 lg:mr-10' : ''

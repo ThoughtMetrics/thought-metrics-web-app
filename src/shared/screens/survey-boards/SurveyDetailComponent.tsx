@@ -42,7 +42,7 @@ const LayoutToggle: React.FC = () => {
         title="One question at a time"
         onClick={() => setLayout('paginated')}
         className={`p-1.5 rounded-md transition-all ${
-          layout === 'paginated' ? 'bg-white shadow-sm text-black' : 'text-custom-grey-3 hover:text-black'
+          layout === 'paginated' ? 'bg-white shadow-sm text-black' : 'text-text-dark hover:text-black'
         }`}
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -54,7 +54,7 @@ const LayoutToggle: React.FC = () => {
         title="All questions in a list"
         onClick={() => setLayout('list')}
         className={`p-1.5 rounded-md transition-all ${
-          layout === 'list' ? 'bg-white shadow-sm text-black' : 'text-custom-grey-3 hover:text-black'
+          layout === 'list' ? 'bg-white shadow-sm text-black' : 'text-text-dark hover:text-black'
         }`}
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -394,7 +394,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   if (isLoading) {
     return (
       <div className="min-h-full bg-white flex items-center justify-center">
-        <div className="text-lg text-custom-grey-3">{translations.common.loading}</div>
+        <div className="text-lg text-text-dark">{translations.common.loading}</div>
       </div>
     );
   }
@@ -402,7 +402,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   if (!surveyData?.data) {
     return (
       <div className="min-h-full bg-white flex items-center justify-center">
-        <div className="text-lg text-custom-grey-3">{translations.errors.notFound}</div>
+        <div className="text-lg text-text-dark">{translations.errors.notFound}</div>
       </div>
     );
   }
@@ -988,7 +988,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         return (
           <SurveyQuestionWrapper {...commonProps}>
             <div className="flex items-center border-b-2 bg-custom-grey-5 focus-within:bg-white focus-within:border-primary border-custom-grey-2 transition-colors">
-              <span className="pl-4 pr-1 text-base md:text-lg font-medium text-custom-grey-3 select-none">
+              <span className="pl-4 pr-1 text-base md:text-lg font-medium text-text-dark select-none">
                 {currencySymbol}
               </span>
               <input
@@ -1021,7 +1021,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
               className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors border-custom-grey-2 focus:border-primary text-base md:text-lg"
             />
             {config.customMessage && (
-              <p className="mt-2 text-sm text-custom-grey-3">{config.customMessage}</p>
+              <p className="mt-2 text-sm text-text-dark">{config.customMessage}</p>
             )}
           </SurveyQuestionWrapper>
         );
@@ -1035,7 +1035,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
               placeholder={config.placeholder ?? 'Enter phone number'}
             />
             {config.customMessage && (
-              <p className="mt-2 text-sm text-custom-grey-3">{config.customMessage}</p>
+              <p className="mt-2 text-sm text-text-dark">{config.customMessage}</p>
             )}
           </SurveyQuestionWrapper>
         );
@@ -1108,7 +1108,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
                 style={{ width: `${Math.round(progress * 100)}%` }}
               />
             </div>
-            <p className="text-xs text-custom-grey-3 text-right mt-1">
+            <p className="text-xs text-text-dark text-right mt-1">
               {answeredCount} / {visibleIndices.length} answered
             </p>
           </div>
