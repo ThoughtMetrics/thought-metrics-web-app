@@ -52,7 +52,7 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
         <select
           value={selectedValue || ''}
           onChange={(e) => onValueChange(e.target.value)}
-          className="w-full px-3 py-2 border border-custom-grey-2 rounded bg-custom-grey-5 focus:bg-white focus:outline-none focus:border-primary transition-colors text-sm md:text-base"
+          className="w-full px-3 py-2 border border-custom-grey-2 rounded bg-custom-grey-5 focus:bg-white focus:outline-none focus:border-primary transition-colors text-sm md:text-base text-black"
         >
           <option value="">{translations.surveyQuestions.selectOption}</option>
           {options.map((option) => (
