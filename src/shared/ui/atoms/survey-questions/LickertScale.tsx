@@ -68,7 +68,7 @@ export const LickertScale: React.FC<LickertScaleProps> = ({
               className={`aspect-square flex items-center justify-center text-sm md:text-base font-medium border transition-all ${
                 selectedValue === value
                   ? 'bg-primary text-white border-primary'
-                  : 'bg-custom-grey-5 text-black border-custom-grey-2 hover:border-primary'
+                  : 'bg-white text-black border-custom-grey-1 hover:border-primary'
               }`}
             >
               {value}

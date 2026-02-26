@@ -66,7 +66,7 @@ export const MatrixGrid: React.FC<MatrixGridProps> = ({
             <select
               value={selectedValues[row.value] || ''}
               onChange={(e) => handleSelectionChange(row.value, e.target.value)}
-              className="w-full px-3 py-2 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors border-custom-grey-2 focus:border-primary"
+              className="w-full px-3 py-2 border-b-2 bg-white focus:bg-white focus:outline-none transition-colors border-custom-grey-1 focus:border-primary text-black"
             >
               <option value=''>{translations.surveyQuestions.selectOption}</option>
               {columns.map((column) => (

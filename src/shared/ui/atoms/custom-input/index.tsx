@@ -7,6 +7,7 @@ import type {
   TextareaProps,
   TextInputProps,
 } from '@/core/types/inputs.type';
+import { COUNTRY_CODES } from '@/core/constants/country-codes';
 import type React from 'react';
 
 // Text Input Atom
@@ -132,6 +133,10 @@ const PhoneInputAtom: React.FC<PhoneInputProps> = ({
   required = false,
   className = '',
 }) => {
+  // Resolve max digit length from COUNTRY_CODES — same logic as PhoneInputField and mobile app
+  const selectedCountry = COUNTRY_CODES.find((c) => c.code === countryCode);
+  const maxLen = selectedCountry?.length ?? 15;
+
   return (
     <div className={className}>
       <label htmlFor={id} className="block text-sm font-medium text-black mb-2">
@@ -156,10 +161,16 @@ const PhoneInputAtom: React.FC<PhoneInputProps> = ({
         </select>
         <input
           type="tel"
+          inputMode="numeric"
           id={id}
           name={name}
           value={value}
-          onChange={onChange}
+          maxLength={maxLen}
+          onChange={(e) => {
+            // Strip non-digits and enforce country-specific max length
+            e.target.value = e.target.value.replace(/\D/g, '').slice(0, maxLen);
+            onChange(e);
+          }}
           className={`flex-1 px-3 py-2 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors ${
             error
               ? 'border-primary'

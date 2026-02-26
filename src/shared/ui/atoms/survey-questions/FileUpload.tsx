@@ -182,11 +182,11 @@ export const FileUpload: React.FC<FileUploadProps> = ({
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             className={`
-              border-2 border-dashed rounded-lg p-8 text-center transition-colors
+              border border-dashed rounded-lg p-8 text-center transition-colors
               ${isUploading ? 'cursor-wait opacity-70' : 'cursor-pointer'}
               ${isDragging
                 ? 'border-primary bg-primary/5'
-                : 'border-custom-grey-2 hover:border-primary bg-custom-grey-5'
+                : 'border-custom-grey-1 hover:border-primary bg-white'
               }
             `}
           >
@@ -233,7 +233,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
           </div>
         ) : (
           /* File Preview */
-          <div className="border-2 border-custom-grey-2 rounded-lg p-4 bg-custom-grey-5">
+          <div className="border border-custom-grey-1 rounded-lg p-4 bg-white">
             <div className="flex items-center gap-4">
               {/* Preview or Icon */}
               {isImage(value.mimeType) ? (

@@ -14,7 +14,7 @@ const LayoutToggle: React.FC = () => {
         title="One question at a time"
         onClick={() => setLayout('paginated')}
         className={`p-1.5 rounded-md transition-all ${
-          layout === 'paginated' ? 'bg-white shadow-sm text-black' : 'text-custom-grey-3 hover:text-black'
+          layout === 'paginated' ? 'bg-white shadow-sm text-black' : 'text-text-dark hover:text-black'
         }`}
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -26,7 +26,7 @@ const LayoutToggle: React.FC = () => {
         title="All questions in a list"
         onClick={() => setLayout('list')}
         className={`p-1.5 rounded-md transition-all ${
-          layout === 'list' ? 'bg-white shadow-sm text-black' : 'text-custom-grey-3 hover:text-black'
+          layout === 'list' ? 'bg-white shadow-sm text-black' : 'text-text-dark hover:text-black'
         }`}
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,7 +89,7 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
   if (isListMode) {
     return (
       <div>
-        <p className="text-xs text-custom-grey-3 mb-1 font-medium">
+        <p className="text-xs text-primary mb-1 font-medium">
           {translations.surveyDetail.question} {questionNumber}
           {isOptional && (
             <span className="ml-2 font-normal">
@@ -152,8 +152,8 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
               {translations.surveyDetail.question} {questionNumber}{' '}
               {translations.surveyDetail.of} {totalQuestions}
               {isOptional && (
-                <span className="ml-2 text-custom-grey-3">
-                  ({translations.surveyDetail.optional})
+                <span className="ml-2 text-text-dark">
+                  {translations.surveyDetail.optional}
                 </span>
               )}
             </p>
@@ -184,7 +184,7 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
                 maxLength={500}
                 placeholder={translations.surveyDetail.commentPlaceholder}
               />
-              <p className="mt-0.5 text-xs text-custom-grey-3 text-right">
+              <p className="mt-0.5 text-xs text-text-dark text-right">
                 {comment.length}/500
               </p>
             </div>
@@ -223,7 +223,7 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
       </div>
 
       {/* Fixed Bottom Section */}
-      <div className="border-t border-custom-grey-2 bg-white">
+      <div className="border-t border-primary bg-white">
         {/* Progress Indicator */}
         <div className="px-4 py-2 md:px-12 md:py-2 border-b border-custom-grey-2">
           <div className="flex justify-center gap-1 mb-1">
@@ -247,7 +247,7 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
               );
             })}
           </div>
-          <div className="text-center text-xs text-custom-grey-3">
+          <div className="text-center text-xs text-text-dark">
             {Math.round(progress * 100)}% {translations.surveyDetail.complete}
           </div>
         </div>

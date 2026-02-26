@@ -65,7 +65,7 @@ export const SingleSlider: React.FC<SingleSliderProps> = ({
             step={step}
             value={selectedValue}
             onChange={(e) => onValueChange(Number(e.target.value))}
-            className="w-full h-2 bg-custom-grey-5 rounded-lg appearance-none cursor-pointer
+            className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer
                        [&::-webkit-slider-thumb]:appearance-none
                        [&::-webkit-slider-thumb]:w-6
                        [&::-webkit-slider-thumb]:h-6
@@ -79,7 +79,7 @@ export const SingleSlider: React.FC<SingleSliderProps> = ({
                        [&::-moz-range-thumb]:border-0
                        [&::-moz-range-thumb]:cursor-pointer"
             style={{
-              background: `linear-gradient(to right, #E63946 0%, #E63946 ${((selectedValue - minValue) / (maxValue - minValue)) * 100}%, #E5E5E5 ${((selectedValue - minValue) / (maxValue - minValue)) * 100}%, #E5E5E5 100%)`,
+              background: `linear-gradient(to right, #E8505E 0%, #E8505E ${((selectedValue - minValue) / (maxValue - minValue)) * 100}%, #E5E5E5 ${((selectedValue - minValue) / (maxValue - minValue)) * 100}%, #E5E5E5 100%)`,
             }}
           />
         </div>

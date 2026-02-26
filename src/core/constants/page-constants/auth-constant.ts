@@ -178,9 +178,12 @@ export const signUpFormConstant = {
     termsAccepted: 'You must accept the terms and conditions',
     privacyAccepted: 'You must accept the privacy policy',
     gender: 'Gender is required',
+    phone: {
+      invalid: 'Phone number must be exactly 10 digits',
+    },
     submitError: 'Registration failed. Please try again.',
   },
-  emailRegex: '\\S+@\\S+\\.\\S+',
+  emailRegex: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$',
   formResetDelay: 3000,
   apiSimulationDelay: 2000,
   ui: {
@@ -429,7 +432,7 @@ export const editProfileFormConstant = {
     gender: 'Gender is required',
     submitError: 'Update failed. Please try again.',
   },
-  emailRegex: '\\S+@\\S+\\.\\S+',
+  emailRegex: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$',
   ui: {
     pageTitle: 'Edit Profile',
     fieldLabels: {

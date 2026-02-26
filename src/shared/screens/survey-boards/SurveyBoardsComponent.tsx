@@ -175,7 +175,7 @@ const SurveyBoardsSection: React.FC = () => {
         {/* Survey Grid */}
         {isLoading ? (
           <div className="flex w-full h-64 justify-center items-center">
-            <div className="text-lg text-custom-grey-3">
+            <div className="text-lg text-text-dark">
               {translations.common.loading}
             </div>
           </div>
@@ -318,7 +318,7 @@ const SurveyBoardsSection: React.FC = () => {
           </div>
         ) : (
           <div className="flex w-full h-64 justify-center items-center">
-            <div className="text-lg text-custom-grey-3">
+            <div className="text-lg text-text-dark">
               {selectedIndustry === 'all'
                 ? translations.surveyBoard.noSurveys
                 : translations.surveyBoard.noSurveysForIndustry}
