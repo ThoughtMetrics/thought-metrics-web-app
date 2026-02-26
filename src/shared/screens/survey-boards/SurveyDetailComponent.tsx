@@ -79,7 +79,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   const [dynamicOptions, setDynamicOptions] = useState<Record<string, Array<{ label: string; value: string }>>>({});
   const [loadingOptions, setLoadingOptions] = useState<Record<string, boolean>>({});
   const [listErrors, setListErrors] = useState<Record<number, string>>({});
-  const [formLayout, setFormLayout] = useState<SurveyFormLayout>('paginated');
+  // null = no user override; derives from server data after load
+  const [layoutOverride, setLayoutOverride] = useState<SurveyFormLayout | null>(null);
   const prevParentValues = React.useRef<Record<string, string>>({});
 
   const { data: surveyData, isLoading } = useSurveyDetailsQuery(surveyId);
@@ -256,18 +257,6 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
       }
     });
   }, [answers, surveyData, questionIdToIndex]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Initialise layout from survey/template defaults (only on first load)
-  React.useEffect(() => {
-    if (surveyData?.data) {
-      const { survey, template } = surveyData.data;
-      const serverLayout =
-        (survey as any).formLayout ||
-        template.settings?.defaultFormLayout ||
-        'paginated';
-      setFormLayout(serverLayout as SurveyFormLayout);
-    }
-  }, [surveyData]);
 
   // Set navigation lock if user arrived via tracking link
   React.useEffect(() => {
@@ -449,6 +438,16 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   }
   const questions = template.questions;
   const totalQuestions = questions.length;
+
+  // Derive layout: user toggle override → template default → survey instance → fallback
+  // template.settings.defaultFormLayout is checked first because survey.formLayout
+  // always carries the DB default ("paginated") even when the template sets "list".
+  const serverLayout: SurveyFormLayout =
+    template.settings?.defaultFormLayout ||
+    (survey as any).formLayout ||
+    'paginated';
+  const formLayout: SurveyFormLayout = layoutOverride ?? serverLayout;
+  const setFormLayout = setLayoutOverride;
 
   // Visible question ordinal and total (for progress bar and numbering)
   const visibleQuestionNumber = (visibleIndices.indexOf(currentQuestion) + 1) || 1;
