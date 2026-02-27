@@ -61,6 +61,10 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
   const [customFromDate, setCustomFromDate] = useState('');
   const [customToDate, setCustomToDate] = useState('');
   const [isDownloading, setIsDownloading] = useState(false);
+  const [showAllContributors, setShowAllContributors] = useState(false);
+  const [selectedContributor, setSelectedContributor] = useState<UserStat | null>(null);
+  const [contributorModalData, setContributorModalData] = useState<{ response: any; questions: any[] } | null>(null);
+  const [isLoadingContributorModal, setIsLoadingContributorModal] = useState(false);
 
   // Filter surveys client-side for instant feedback
   const filteredSurveys = useMemo(() => {
@@ -91,6 +95,12 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
     const start = (page - 1) * limit;
     return filteredSurveys.slice(start, start + limit);
   }, [filteredSurveys, page, limit]);
+
+  const selectedSurveyObj = useMemo(
+    () => surveys.find((s) => s.surveyId === selectedSurvey) ?? null,
+    [surveys, selectedSurvey]
+  );
+  const isRespondentSurvey = !selectedSurveyObj || selectedSurveyObj.type !== 'agent';
 
   // Load all surveys regardless of type — admin should see every published survey
   const loadSurveys = async () => {
@@ -190,6 +200,13 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
     loadSurveys();
   }, [isAuthReady, user]);
 
+  // Reset contributor modal state when selected survey changes
+  useEffect(() => {
+    setShowAllContributors(false);
+    setSelectedContributor(null);
+    setContributorModalData(null);
+  }, [selectedSurvey]);
+
   // Close three-dot menu on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -235,11 +252,21 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
     }
   };
 
-  const formatAnswerForCSV = (answer: any, questionType: string): string => {
+  const formatAnswerForCSV = (answer: any, questionType: string, options?: Array<{value: string; label: string}>): string => {
     if (answer === null || answer === undefined || answer === '') return '';
+    // Helper: resolve a single raw value to its human-readable label (avoids Excel date misinterpretation)
+    const resolveLabel = (raw: string): string => {
+      if (options?.length) {
+        const match = options.find((o) => o.value === raw);
+        if (match) return match.label;
+      }
+      return raw;
+    };
     switch (questionType) {
+      case 'mcq-single':
+        return resolveLabel(typeof answer === 'object' ? JSON.stringify(answer) : String(answer));
       case 'mcq-multiple':
-        return Array.isArray(answer) ? answer.join('; ') : String(answer);
+        return Array.isArray(answer) ? answer.map((v) => resolveLabel(String(v))).join('; ') : String(answer);
       case 'double-slider':
         return answer && typeof answer === 'object' ? `${answer.min} - ${answer.max}` : String(answer);
       case 'ranking':
@@ -419,7 +446,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
           ...questions.flatMap((q: any) => {
             const entry = answerMap.get(q.id);
             return [
-              entry ? formatAnswerForCSV(entry.answer, entry.questionType || q.questionType) : '',
+              entry ? formatAnswerForCSV(entry.answer, entry.questionType || q.questionType, q.config?.options) : '',
               ...(q.allowComment ? [entry?.comment || ''] : []),
             ];
           }),
@@ -456,6 +483,29 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
 
   const formatZone = (zone: string) => {
     return zone.charAt(0).toUpperCase() + zone.slice(1).toLowerCase();
+  };
+
+  const openContributorModal = async (contributor: UserStat) => {
+    setSelectedContributor(contributor);
+    setIsLoadingContributorModal(true);
+    setContributorModalData(null);
+    try {
+      const [detailsRes, responsesRes] = await Promise.all([
+        surveyService.getSurveyDetails(selectedSurvey!),
+        surveyService.getSurveyResponses(selectedSurvey!, { limit: 1000 }),
+      ]);
+      const questions = (detailsRes.data?.template?.questions ?? [])
+        .slice()
+        .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
+      const responses: any[] = Array.isArray(responsesRes.data) ? responsesRes.data : [];
+      const match = responses.find((r) => r.respondent?.userId === contributor.userId) ?? null;
+      setContributorModalData({ response: match, questions });
+    } catch (err) {
+      console.error('[ContributorModal] Error:', err);
+      setContributorModalData({ response: null, questions: [] });
+    } finally {
+      setIsLoadingContributorModal(false);
+    }
   };
 
   const getZoneColor = (zone: string, index: number) => {
@@ -714,167 +764,210 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                   <div className="bg-white rounded-lg shadow p-6 flex items-center justify-center h-64">
                     <Loader2 className="w-6 h-6 animate-spin text-primary" />
                   </div>
-                ) : (
-                  <div className="space-y-6">
-                    {/* Zonal Breakdown */}
+                ) : isRespondentSurvey ? (
+                    /* Contributors panel for respondent surveys */
                     <div className="bg-white rounded-lg shadow p-6">
                       <div className="flex items-center gap-2 mb-4">
-                        <MapPin className="w-5 h-5 text-primary" />
-                        <h3 className="text-lg font-semibold text-gray-900">By Zone</h3>
+                        <Users className="w-5 h-5 text-primary" />
+                        <h3 className="text-lg font-semibold text-gray-900">Contributors</h3>
                       </div>
-                      {zonalStats.length === 0 ? (
+                      {topUsers.length === 0 ? (
                         <div className="text-center py-8">
-                          <p className="text-sm text-gray-500">No zonal data available</p>
-                          <p className="text-xs text-gray-400 mt-1">Data will appear after submissions are made</p>
+                          <p className="text-sm text-gray-500">No contributors yet</p>
+                          <p className="text-xs text-gray-400 mt-1">Contributors will appear after submissions are made</p>
                         </div>
                       ) : (
-                        <div className="space-y-3">
-                          {zonalStats.map((stat, index) => {
-                            const maxCount = Math.max(...zonalStats.map((s) => s?.count || 0), 1);
-                            const percentage = ((stat?.count || 0) / maxCount) * 100;
-                            return (
-                              <div key={stat.zone || index}>
-                                <div className="flex justify-between text-sm mb-1">
-                                  <span className="font-medium text-gray-700">
-                                    {formatZone(stat?.zone || 'Unknown')}
-                                  </span>
-                                  <span className="text-gray-900 font-semibold">
-                                    {formatNumber(stat?.count || 0)}
-                                  </span>
+                        <div className="space-y-1">
+                          {(showAllContributors ? topUsers : topUsers.slice(0, 3)).map((user, index) => (
+                            <div
+                              key={user?.userId || index}
+                              className="flex items-center justify-between px-2 py-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                              onClick={() => user && openContributorModal(user)}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm flex-shrink-0">
+                                  #{index + 1}
                                 </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                  <div
-                                    className={`h-2 rounded-full ${getZoneColor(stat?.zone || '', index)}`}
-                                    style={{ width: `${Math.max(percentage, 0)}%` }}
-                                  />
+                                <div className="text-sm font-medium text-gray-900 truncate max-w-[140px]">
+                                  {user?.displayName || (user?.userId ? `${user.userId.slice(0, 8)}...` : 'Unknown')}
                                 </div>
                               </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* District Breakdown */}
-                    <div className="bg-white rounded-lg shadow p-6">
-                      <div className="flex items-center gap-2 mb-4">
-                        <MapPin className="w-5 h-5 text-green-600" />
-                        <h3 className="text-lg font-semibold text-gray-900">By District</h3>
-                      </div>
-                      {districtStats.length === 0 ? (
-                        <div className="text-center py-8">
-                          <p className="text-sm text-gray-500">No district data available</p>
-                          <p className="text-xs text-gray-400 mt-1">Data will appear after submissions are made</p>
-                        </div>
-                      ) : (
-                        <div className="space-y-3">
-                          {districtStats.slice(0, 10).map((stat, index) => {
-                            const maxCount = Math.max(...districtStats.map((s) => s?.count || 0), 1);
-                            const percentage = ((stat?.count || 0) / maxCount) * 100;
-                            return (
-                              <div key={stat.district || index}>
-                                <div className="flex justify-between text-sm mb-1">
-                                  <span className="font-medium text-gray-700">
-                                    {stat?.district || 'Unknown'}
-                                  </span>
-                                  <span className="text-gray-900 font-semibold">
-                                    {formatNumber(stat?.count || 0)}
-                                  </span>
-                                </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                  <div
-                                    className={`h-2 rounded-full ${getDistrictColor(index)}`}
-                                    style={{ width: `${Math.max(percentage, 0)}%` }}
-                                  />
-                                </div>
-                              </div>
-                            );
-                          })}
-                          {districtStats.length > 10 && (
-                            <p className="text-xs text-gray-400 text-center">
-                              +{districtStats.length - 10} more districts
-                            </p>
+                              <span className="text-xs text-primary font-semibold flex-shrink-0">View →</span>
+                            </div>
+                          ))}
+                          {topUsers.length > 3 && (
+                            <button
+                              onClick={() => setShowAllContributors((v) => !v)}
+                              className="mt-2 text-sm text-primary hover:underline w-full text-center py-1"
+                            >
+                              {showAllContributors ? 'Show less' : `Show all (${topUsers.length})`}
+                            </button>
                           )}
                         </div>
                       )}
                     </div>
-
-                    {/* Daily Trend */}
-                    <div className="bg-white rounded-lg shadow p-6">
-                      <div className="flex items-center gap-2 mb-4">
-                        <Calendar className="w-5 h-5 text-primary" />
-                        <h3 className="text-lg font-semibold text-gray-900">Last 14 Days</h3>
-                      </div>
-                      {dailyStats.length === 0 ? (
-                        <div className="text-center py-8">
-                          <p className="text-sm text-gray-500">No daily data available</p>
-                          <p className="text-xs text-gray-400 mt-1">Submission history will appear here</p>
+                  ) : (
+                    /* Full analytics for agent surveys */
+                    <div className="space-y-6">
+                      {/* Zonal Breakdown */}
+                      <div className="bg-white rounded-lg shadow p-6">
+                        <div className="flex items-center gap-2 mb-4">
+                          <MapPin className="w-5 h-5 text-primary" />
+                          <h3 className="text-lg font-semibold text-gray-900">By Zone</h3>
                         </div>
-                      ) : (
-                        <div className="space-y-2">
-                          {dailyStats.slice(0, 7).map((stat, idx) => (
-                            <div
-                              key={stat?.date || idx}
-                              className="flex justify-between items-center text-sm"
-                            >
-                              <span className="text-gray-600">
-                                {stat?.date ? formatDate(stat.date) : 'Unknown'}
-                              </span>
-                              <span className="font-semibold text-gray-900">
-                                {formatNumber(stat?.count ?? 0)}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Top Contributors */}
-                    <div className="bg-white rounded-lg shadow p-6">
-                      <div className="flex items-center gap-2 mb-4">
-                        <Users className="w-5 h-5 text-primary" />
-                        <h3 className="text-lg font-semibold text-gray-900">Top Contributors</h3>
-                      </div>
-                      {topUsers.length === 0 ? (
-                        <div className="text-center py-8">
-                          <p className="text-sm text-gray-500">No contributor data available</p>
-                          <p className="text-xs text-gray-400 mt-1">Top contributors will appear here</p>
-                        </div>
-                      ) : (
-                        <div className="space-y-3">
-                          {topUsers.map((user, index) => (
-                            <div
-                              key={user?.userId || index}
-                              className="flex items-center justify-between"
-                            >
-                              <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
-                                  #{index + 1}
-                                </div>
-                                <div>
-                                  <div className="text-sm font-medium text-gray-900">
-                                    {user?.displayName || (user?.userId ? `${user.userId.slice(0, 8)}...` : 'Unknown')}
+                        {zonalStats.length === 0 ? (
+                          <div className="text-center py-8">
+                            <p className="text-sm text-gray-500">No zonal data available</p>
+                            <p className="text-xs text-gray-400 mt-1">Data will appear after submissions are made</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            {zonalStats.map((stat, index) => {
+                              const maxCount = Math.max(...zonalStats.map((s) => s?.count || 0), 1);
+                              const percentage = ((stat?.count || 0) / maxCount) * 100;
+                              return (
+                                <div key={stat.zone || index}>
+                                  <div className="flex justify-between text-sm mb-1">
+                                    <span className="font-medium text-gray-700">
+                                      {formatZone(stat?.zone || 'Unknown')}
+                                    </span>
+                                    <span className="text-gray-900 font-semibold">
+                                      {formatNumber(stat?.count || 0)}
+                                    </span>
                                   </div>
-                                  <div className="text-xs text-gray-500">
-                                    {formatZone(user?.zone || 'Unknown')}
+                                  <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div
+                                      className={`h-2 rounded-full ${getZoneColor(stat?.zone || '', index)}`}
+                                      style={{ width: `${Math.max(percentage, 0)}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* District Breakdown */}
+                      <div className="bg-white rounded-lg shadow p-6">
+                        <div className="flex items-center gap-2 mb-4">
+                          <MapPin className="w-5 h-5 text-green-600" />
+                          <h3 className="text-lg font-semibold text-gray-900">By District</h3>
+                        </div>
+                        {districtStats.length === 0 ? (
+                          <div className="text-center py-8">
+                            <p className="text-sm text-gray-500">No district data available</p>
+                            <p className="text-xs text-gray-400 mt-1">Data will appear after submissions are made</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            {districtStats.slice(0, 10).map((stat, index) => {
+                              const maxCount = Math.max(...districtStats.map((s) => s?.count || 0), 1);
+                              const percentage = ((stat?.count || 0) / maxCount) * 100;
+                              return (
+                                <div key={stat.district || index}>
+                                  <div className="flex justify-between text-sm mb-1">
+                                    <span className="font-medium text-gray-700">
+                                      {stat?.district || 'Unknown'}
+                                    </span>
+                                    <span className="text-gray-900 font-semibold">
+                                      {formatNumber(stat?.count || 0)}
+                                    </span>
+                                  </div>
+                                  <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div
+                                      className={`h-2 rounded-full ${getDistrictColor(index)}`}
+                                      style={{ width: `${Math.max(percentage, 0)}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                            {districtStats.length > 10 && (
+                              <p className="text-xs text-gray-400 text-center">
+                                +{districtStats.length - 10} more districts
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Daily Trend */}
+                      <div className="bg-white rounded-lg shadow p-6">
+                        <div className="flex items-center gap-2 mb-4">
+                          <Calendar className="w-5 h-5 text-primary" />
+                          <h3 className="text-lg font-semibold text-gray-900">Last 14 Days</h3>
+                        </div>
+                        {dailyStats.length === 0 ? (
+                          <div className="text-center py-8">
+                            <p className="text-sm text-gray-500">No daily data available</p>
+                            <p className="text-xs text-gray-400 mt-1">Submission history will appear here</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            {dailyStats.slice(0, 7).map((stat, idx) => (
+                              <div
+                                key={stat?.date || idx}
+                                className="flex justify-between items-center text-sm"
+                              >
+                                <span className="text-gray-600">
+                                  {stat?.date ? formatDate(stat.date) : 'Unknown'}
+                                </span>
+                                <span className="font-semibold text-gray-900">
+                                  {formatNumber(stat?.count ?? 0)}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Top Contributors */}
+                      <div className="bg-white rounded-lg shadow p-6">
+                        <div className="flex items-center gap-2 mb-4">
+                          <Users className="w-5 h-5 text-primary" />
+                          <h3 className="text-lg font-semibold text-gray-900">Top Contributors</h3>
+                        </div>
+                        {topUsers.length === 0 ? (
+                          <div className="text-center py-8">
+                            <p className="text-sm text-gray-500">No contributor data available</p>
+                            <p className="text-xs text-gray-400 mt-1">Top contributors will appear here</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            {topUsers.map((user, index) => (
+                              <div
+                                key={user?.userId || index}
+                                className="flex items-center justify-between"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
+                                    #{index + 1}
+                                  </div>
+                                  <div>
+                                    <div className="text-sm font-medium text-gray-900">
+                                      {user?.displayName || (user?.userId ? `${user.userId.slice(0, 8)}...` : 'Unknown')}
+                                    </div>
+                                    <div className="text-xs text-gray-500">
+                                      {formatZone(user?.zone || 'Unknown')}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="text-right">
+                                  <div className="text-sm font-semibold text-gray-900">
+                                    {formatNumber(user?.total ?? 0)}
+                                  </div>
+                                  <div className="text-xs text-orange-600">
+                                    +{user?.todayCount ?? 0} today
                                   </div>
                                 </div>
                               </div>
-                              <div className="text-right">
-                                <div className="text-sm font-semibold text-gray-900">
-                                  {formatNumber(user?.total ?? 0)}
-                                </div>
-                                <div className="text-xs text-orange-600">
-                                  +{user?.todayCount ?? 0} today
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )
+                  )
               ) : (
                 <div className="bg-white rounded-lg shadow p-12 text-center">
                   <TrendingUp className="w-12 h-12 text-gray-400 mx-auto mb-4" />
@@ -887,6 +980,69 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
           </div>
         </main>
       </div>
+
+      {/* Contributor Answers Modal */}
+      {selectedContributor !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 flex flex-col max-h-[85vh]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900 truncate pr-4">
+                {selectedContributor.displayName || (selectedContributor.userId ? `${selectedContributor.userId.slice(0, 8)}...` : 'Contributor')}
+              </h2>
+              <button
+                onClick={() => { setSelectedContributor(null); setContributorModalData(null); }}
+                className="text-gray-400 hover:text-gray-600 text-xl leading-none flex-shrink-0"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="overflow-y-auto flex-1 p-6">
+              {isLoadingContributorModal ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                </div>
+              ) : contributorModalData?.response == null ? (
+                <p className="text-gray-500 text-sm text-center py-8">No response found for this contributor.</p>
+              ) : (
+                <>
+                  {/* Respondent info card */}
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-5 text-sm space-y-1">
+                    {contributorModalData.response.respondent?.name && (
+                      <div className="flex gap-3"><span className="text-gray-500 w-20 flex-shrink-0">Name</span><span className="text-gray-900">{contributorModalData.response.respondent.name}</span></div>
+                    )}
+                    {contributorModalData.response.respondent?.phone && (
+                      <div className="flex gap-3"><span className="text-gray-500 w-20 flex-shrink-0">Phone</span><span className="text-gray-900">{contributorModalData.response.respondent.phone}</span></div>
+                    )}
+                    {contributorModalData.response.respondent?.email && (
+                      <div className="flex gap-3"><span className="text-gray-500 w-20 flex-shrink-0">Email</span><span className="text-gray-900">{contributorModalData.response.respondent.email}</span></div>
+                    )}
+                    {contributorModalData.response.submittedAt && (
+                      <div className="flex gap-3"><span className="text-gray-500 w-20 flex-shrink-0">Submitted</span><span className="text-gray-900">{new Date(contributorModalData.response.submittedAt).toLocaleString()}</span></div>
+                    )}
+                  </div>
+                  {/* Q&A list */}
+                  <div className="space-y-4">
+                    {contributorModalData.questions.map((q: any) => {
+                      const answerMap = new Map<string, any>();
+                      (contributorModalData.response.answers || []).forEach((a: any) => answerMap.set(a.questionId, a));
+                      const entry = answerMap.get(q.id);
+                      const answerText = entry
+                        ? formatAnswerForCSV(entry.answer, entry.questionType || q.questionType, q.config?.options)
+                        : '—';
+                      return (
+                        <div key={q.id}>
+                          <p className="text-xs font-semibold text-gray-500 mb-1">{q.text}</p>
+                          <p className="text-sm text-gray-900">{answerText || '—'}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Download Modal */}
       {showDownloadModal && downloadSurvey && (
