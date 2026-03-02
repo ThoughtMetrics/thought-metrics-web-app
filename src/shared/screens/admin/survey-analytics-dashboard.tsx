@@ -61,7 +61,8 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
   const [customFromDate, setCustomFromDate] = useState('');
   const [customToDate, setCustomToDate] = useState('');
   const [isDownloading, setIsDownloading] = useState(false);
-  const [showAllContributors, setShowAllContributors] = useState(false);
+  const [responsesPage, setResponsesPage] = useState(0);
+  const [responsesSearch, setResponsesSearch] = useState('');
   const [selectedContributor, setSelectedContributor] = useState<UserStat | null>(null);
   const [contributorModalData, setContributorModalData] = useState<{ response: any; questions: any[] } | null>(null);
   const [isLoadingContributorModal, setIsLoadingContributorModal] = useState(false);
@@ -146,7 +147,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
         surveyService.getZonalBreakdown(surveyId),
         surveyService.getDistrictBreakdown(surveyId),
         surveyService.getDailyBreakdown(surveyId, 14), // Last 14 days
-        surveyService.getTopUsers(surveyId, 10),
+        surveyService.getTopUsers(surveyId, 1000),
       ]);
 
       // Validate and set zonal stats
@@ -200,9 +201,10 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
     loadSurveys();
   }, [isAuthReady, user]);
 
-  // Reset contributor modal state when selected survey changes
+  // Reset contributor/responses state when selected survey changes
   useEffect(() => {
-    setShowAllContributors(false);
+    setResponsesPage(0);
+    setResponsesSearch('');
     setSelectedContributor(null);
     setContributorModalData(null);
   }, [selectedSurvey]);
@@ -765,47 +767,116 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                     <Loader2 className="w-6 h-6 animate-spin text-primary" />
                   </div>
                 ) : isRespondentSurvey ? (
-                    /* Contributors panel for respondent surveys */
-                    <div className="bg-white rounded-lg shadow p-6">
-                      <div className="flex items-center gap-2 mb-4">
-                        <Users className="w-5 h-5 text-primary" />
-                        <h3 className="text-lg font-semibold text-gray-900">Contributors</h3>
-                      </div>
-                      {topUsers.length === 0 ? (
-                        <div className="text-center py-8">
-                          <p className="text-sm text-gray-500">No contributors yet</p>
-                          <p className="text-xs text-gray-400 mt-1">Contributors will appear after submissions are made</p>
-                        </div>
-                      ) : (
-                        <div className="space-y-1">
-                          {(showAllContributors ? topUsers : topUsers.slice(0, 3)).map((user, index) => (
-                            <div
-                              key={user?.userId || index}
-                              className="flex items-center justify-between px-2 py-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-                              onClick={() => user && openContributorModal(user)}
-                            >
-                              <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm flex-shrink-0">
-                                  #{index + 1}
-                                </div>
-                                <div className="text-sm font-medium text-gray-900 truncate max-w-[140px]">
-                                  {user?.displayName || (user?.userId ? `${user.userId.slice(0, 8)}...` : 'Unknown')}
-                                </div>
-                              </div>
-                              <span className="text-xs text-primary font-semibold flex-shrink-0">View →</span>
+                    /* Responses panel for respondent surveys (paginated + searchable) */
+                    (() => {
+                      const RESPONSES_PAGE_SIZE = 10;
+                      const q = responsesSearch.trim().toLowerCase();
+                      const filteredUsers = q
+                        ? topUsers.filter((u) =>
+                            (u?.displayName || '').toLowerCase().includes(q) ||
+                            (u?.userId || '').toLowerCase().includes(q)
+                          )
+                        : topUsers;
+                      const totalResponsePages = Math.max(1, Math.ceil(filteredUsers.length / RESPONSES_PAGE_SIZE));
+                      const clampedPage = Math.min(responsesPage, totalResponsePages - 1);
+                      const pageStart = clampedPage * RESPONSES_PAGE_SIZE;
+                      const pageEnd = Math.min(pageStart + RESPONSES_PAGE_SIZE, filteredUsers.length);
+                      const pageItems = filteredUsers.slice(pageStart, pageEnd);
+                      return (
+                        <div className="bg-white rounded-lg shadow p-6">
+                          <div className="flex items-center gap-2 mb-4">
+                            <Users className="w-5 h-5 text-primary" />
+                            <h3 className="text-lg font-semibold text-gray-900">Responses</h3>
+                          </div>
+                          {topUsers.length === 0 ? (
+                            <div className="text-center py-8">
+                              <p className="text-sm text-gray-500">No responses yet</p>
+                              <p className="text-xs text-gray-400 mt-1">Responses will appear after submissions are made</p>
                             </div>
-                          ))}
-                          {topUsers.length > 3 && (
-                            <button
-                              onClick={() => setShowAllContributors((v) => !v)}
-                              className="mt-2 text-sm text-primary hover:underline w-full text-center py-1"
-                            >
-                              {showAllContributors ? 'Show less' : `Show all (${topUsers.length})`}
-                            </button>
+                          ) : (
+                            <>
+                              {/* Search input */}
+                              <div className="relative mb-3">
+                                <input
+                                  type="text"
+                                  value={responsesSearch}
+                                  onChange={(e) => {
+                                    setResponsesSearch(e.target.value);
+                                    setResponsesPage(0);
+                                  }}
+                                  placeholder="Search responses…"
+                                  className="w-full pl-8 pr-8 py-1.5 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder-gray-400"
+                                />
+                                <svg className="absolute left-2.5 top-2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+                                </svg>
+                                {responsesSearch && (
+                                  <button
+                                    onClick={() => { setResponsesSearch(''); setResponsesPage(0); }}
+                                    className="absolute right-2 top-1.5 text-gray-400 hover:text-gray-600"
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                  </button>
+                                )}
+                              </div>
+                              {filteredUsers.length === 0 ? (
+                                <div className="text-center py-6">
+                                  <p className="text-sm text-gray-500">No matching responses</p>
+                                </div>
+                              ) : (
+                                <>
+                                  <div className="space-y-1">
+                                    {pageItems.map((user, localIndex) => {
+                                      const globalIndex = pageStart + localIndex;
+                                      return (
+                                        <div
+                                          key={user?.userId || globalIndex}
+                                          className="flex items-center justify-between px-2 py-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                                          onClick={() => user && openContributorModal(user)}
+                                        >
+                                          <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm flex-shrink-0">
+                                              #{globalIndex + 1}
+                                            </div>
+                                            <div className="text-sm font-medium text-gray-900 truncate max-w-[140px]">
+                                              {user?.displayName || (user?.userId ? `${user.userId.slice(0, 8)}...` : 'Unknown')}
+                                            </div>
+                                          </div>
+                                          <span className="text-xs text-primary font-semibold flex-shrink-0">View →</span>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                  {totalResponsePages > 1 && (
+                                    <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+                                      <button
+                                        onClick={() => setResponsesPage((p) => Math.max(0, p - 1))}
+                                        disabled={clampedPage === 0}
+                                        className="flex items-center gap-1 text-xs text-primary disabled:text-gray-300 hover:underline disabled:no-underline"
+                                      >
+                                        ‹ Prev
+                                      </button>
+                                      <span className="text-xs text-gray-500">
+                                        Page {clampedPage + 1} of {totalResponsePages} · {filteredUsers.length} total
+                                      </span>
+                                      <button
+                                        onClick={() => setResponsesPage((p) => Math.min(totalResponsePages - 1, p + 1))}
+                                        disabled={clampedPage >= totalResponsePages - 1}
+                                        className="flex items-center gap-1 text-xs text-primary disabled:text-gray-300 hover:underline disabled:no-underline"
+                                      >
+                                        Next ›
+                                      </button>
+                                    </div>
+                                  )}
+                                </>
+                              )}
+                            </>
                           )}
                         </div>
-                      )}
-                    </div>
+                      );
+                    })()
                   ) : (
                     /* Full analytics for agent surveys */
                     <div className="space-y-6">
