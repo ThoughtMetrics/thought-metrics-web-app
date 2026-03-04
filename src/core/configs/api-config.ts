@@ -66,6 +66,7 @@ export const getAPIConfig = (): {
   baseURL: string;
   baseAPIVersion: string;
   strapiURL: string;
+  queueURL: string;
   firebaseConfig: {
     apiKey: string;
     authDomain: string;
@@ -93,6 +94,7 @@ export const getAPIConfig = (): {
     // PUBLIC: These are available on both server and client
     baseURL: getPublicEnv('PUBLIC_BASE_URL') || '',
     baseAPIVersion: getPublicEnv('PUBLIC_BASE_API_VERSION') || '',
+    queueURL: getPublicEnv('PUBLIC_QUEUE_URL') || '',
     firebaseConfig: {
       apiKey: getPublicEnv('PUBLIC_FIREBASE_API_KEY') || '',
       authDomain: getPublicEnv('PUBLIC_FIREBASE_AUTH_DOMAIN')|| '',

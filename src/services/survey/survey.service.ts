@@ -9,6 +9,7 @@ import type {
   ISurveyTemplate,
 } from '@/core/types/survey.type';
 import authService from '@services/api/auth.service';
+import { getAPIConfig } from '@/core/configs/api-config';
 
 class SurveyService {
   private readonly basePath = '/surveys';
@@ -68,7 +69,17 @@ class SurveyService {
   }
 
   /**
-   * Submit survey response (Public endpoint)
+   * Submit survey response.
+   *
+   * Tries the queue microservice first (`PUBLIC_QUEUE_URL`) for higher
+   * throughput under load. On any failure (network, 4xx, 5xx, timeout)
+   * falls back to the direct main API endpoint transparently.
+   *
+   * Queue → 202 { success, data: { messageId, queuedAt } }
+   * Direct → 201 { success, data: ISurveyResponse }
+   *
+   * Both resolve to the same ApiResponse<ISurveyResponse> shape so callers
+   * do not need to change.
    */
   async submitResponse(
     surveyId: string,
@@ -77,6 +88,56 @@ class SurveyService {
     const user = authService.getCurrentUser();
     if (!user) throw new Error('No authenticated user');
     const token = await user.getIdToken();
+
+    const queueURL = getAPIConfig().queueURL;
+
+    // ── Try queue service first ──────────────────────────────────────────────
+    if (queueURL) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+        const queueRes = await fetch(
+          `${queueURL}/queue/surveys/${surveyId}/submit`,
+          {
+            method: 'POST',
+            signal: controller.signal,
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer firebase:${token}`,
+            },
+            body: JSON.stringify(submission),
+          }
+        );
+        clearTimeout(timeoutId);
+
+        if (queueRes.ok) {
+          const body = await queueRes.json() as {
+            success: boolean;
+            data: { messageId: string; queuedAt: string };
+            message: string;
+          };
+
+          // Normalise 202 queue response into the ISurveyResponse shape
+          // so downstream components don't need to be aware of the difference.
+          return {
+            success: true,
+            data: {
+              id: body.data.messageId,
+              surveyId,
+              status: 'submitted',
+              submittedAt: body.data.queuedAt,
+            } as unknown as ISurveyResponse,
+            message: body.message,
+          };
+        }
+        // Non-2xx from queue — fall through to direct API
+      } catch {
+        // Network error / timeout — fall through to direct API
+      }
+    }
+
+    // ── Fallback: direct main API ────────────────────────────────────────────
     apiService.setAuthToken(token);
     return apiService.post<ISurveyResponse>(
       `${this.basePath}/${surveyId}/submit`,
