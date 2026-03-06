@@ -8,7 +8,14 @@ import type {
   ISurveyResponse,
   ISurveyTemplate,
 } from '@/core/types/survey.type';
+import type {
+  ISurveyTemplateCreateRequest,
+  ISurveyTemplateUpdateRequest,
+  ISurveyPublishRequest,
+  ISurveyUpdateRequest,
+} from '@/core/types/survey-builder.type';
 import authService from '@services/api/auth.service';
+import { getAPIConfig } from '@/core/configs/api-config';
 
 class SurveyService {
   private readonly basePath = '/surveys';
@@ -68,7 +75,17 @@ class SurveyService {
   }
 
   /**
-   * Submit survey response (Public endpoint)
+   * Submit survey response.
+   *
+   * Tries the queue microservice first (`PUBLIC_QUEUE_URL`) for higher
+   * throughput under load. On any failure (network, 4xx, 5xx, timeout)
+   * falls back to the direct main API endpoint transparently.
+   *
+   * Queue → 202 { success, data: { messageId, queuedAt } }
+   * Direct → 201 { success, data: ISurveyResponse }
+   *
+   * Both resolve to the same ApiResponse<ISurveyResponse> shape so callers
+   * do not need to change.
    */
   async submitResponse(
     surveyId: string,
@@ -77,6 +94,56 @@ class SurveyService {
     const user = authService.getCurrentUser();
     if (!user) throw new Error('No authenticated user');
     const token = await user.getIdToken();
+
+    const queueURL = getAPIConfig().queueURL;
+
+    // ── Try queue service first ──────────────────────────────────────────────
+    if (queueURL) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+        const queueRes = await fetch(
+          `${queueURL}/queue/surveys/${surveyId}/submit`,
+          {
+            method: 'POST',
+            signal: controller.signal,
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer firebase:${token}`,
+            },
+            body: JSON.stringify(submission),
+          }
+        );
+        clearTimeout(timeoutId);
+
+        if (queueRes.ok) {
+          const body = await queueRes.json() as {
+            success: boolean;
+            data: { messageId: string; queuedAt: string };
+            message: string;
+          };
+
+          // Normalise 202 queue response into the ISurveyResponse shape
+          // so downstream components don't need to be aware of the difference.
+          return {
+            success: true,
+            data: {
+              id: body.data.messageId,
+              surveyId,
+              status: 'submitted',
+              submittedAt: body.data.queuedAt,
+            } as unknown as ISurveyResponse,
+            message: body.message,
+          };
+        }
+        // Non-2xx from queue — fall through to direct API
+      } catch {
+        // Network error / timeout — fall through to direct API
+      }
+    }
+
+    // ── Fallback: direct main API ────────────────────────────────────────────
     apiService.setAuthToken(token);
     return apiService.post<ISurveyResponse>(
       `${this.basePath}/${surveyId}/submit`,
@@ -166,6 +233,111 @@ class SurveyService {
       `${this.basePath}/templates`,
       filters
     );
+  }
+
+  /**
+   * Get a single survey template by ID (Admin endpoint)
+   */
+  async getTemplate(id: string): Promise<ApiResponse<ISurveyTemplate>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.get<ISurveyTemplate>(`${this.basePath}/templates/${id}`);
+  }
+
+  /**
+   * Create a new survey template (Admin endpoint)
+   */
+  async createTemplate(data: ISurveyTemplateCreateRequest): Promise<ApiResponse<ISurveyTemplate>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.post<ISurveyTemplate>(`${this.basePath}/templates`, data);
+  }
+
+  /**
+   * Update an existing survey template (Admin endpoint)
+   */
+  async updateTemplate(id: string, data: ISurveyTemplateUpdateRequest): Promise<ApiResponse<ISurveyTemplate>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.patch<ISurveyTemplate>(`${this.basePath}/templates/${id}`, data);
+  }
+
+  /**
+   * Publish a survey instance from a template (Admin endpoint)
+   */
+  async publishSurvey(data: ISurveyPublishRequest): Promise<ApiResponse<ISurvey>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.post<ISurvey>(`${this.basePath}/publish`, data);
+  }
+
+  /**
+   * Save a survey instance as draft without publishing (Admin endpoint)
+   */
+  async saveSurveyAsDraft(data: ISurveyPublishRequest): Promise<ApiResponse<ISurvey>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.post<ISurvey>(`${this.basePath}/draft`, data);
+  }
+
+  /**
+   * Publish a draft survey instance (Admin endpoint)
+   * @param surveyId - The survey ID in TM-xxx format
+   */
+  async publishSurveyDraft(surveyId: string): Promise<ApiResponse<ISurvey>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.post<ISurvey>(`${this.basePath}/${surveyId}/publish`, {});
+  }
+
+  /**
+   * List all surveys for admin (all statuses) (Admin endpoint)
+   */
+  async listSurveysAdmin(params?: {
+    status?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<ApiResponse<ISurvey[]>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.get<ISurvey[]>(`${this.basePath}/list`, params);
+  }
+
+  /**
+   * Update a survey instance (Admin endpoint)
+   * @param id - Internal numeric MySQL PK (not surveyId)
+   */
+  async updateSurveyInstance(id: string, data: ISurveyUpdateRequest): Promise<ApiResponse<ISurvey>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.put<ISurvey>(`${this.basePath}/${id}`, data);
+  }
+
+  /**
+   * Delete a survey template (Admin endpoint)
+   */
+  async deleteTemplate(id: string): Promise<ApiResponse<{ message: string }>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.delete<{ message: string }>(`${this.basePath}/templates/${id}`);
   }
 
   /**

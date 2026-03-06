@@ -64,6 +64,7 @@ interface Window {
     PUBLIC_COOKIEBOT_ID?: string;
 
     PUBLIC_RAZORPAY_KEY_ID?: string;
+    PUBLIC_QUEUE_URL?: string;
   };
 }
 
@@ -83,4 +84,5 @@ interface ImportMetaEnv {
   PUBLIC_GOOGLE_SITE_VERIFICATION: string;
   PUBLIC_COOKIEBOT_ID: string;
   PUBLIC_RAZORPAY_KEY_ID: string;
+  PUBLIC_QUEUE_URL: string;
 }

@@ -1,0 +1,8 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import { SurveyManagement } from '@/shared/screens/admin/surveys/SurveyManagement';
+---
+
+<IntractionLayout title="Survey Management | Admin" description="Manage published surveys">
+  <SurveyManagement client:only="react" />
+</IntractionLayout>

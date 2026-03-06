@@ -179,51 +179,5 @@ const config = getAPIConfig();
     <!-- Cookie Consent Banner -->
     <CookieConsentBanner client:load />
 
-    <!-- Survey navigation lock guard -->
-    <script is:inline>
-      function checkSurveyLock() {
-        try {
-          var lockRaw = localStorage.getItem('tm_survey_lock');
-          if (!lockRaw) return;
-          var lock = JSON.parse(lockRaw);
-          if (!lock || !lock.surveyId) return;
-
-          var surveyPath = '/survey-boards/' + lock.surveyId;
-          var currentPath = window.location.pathname;
-          var allowed = [surveyPath, '/login', '/sign-up'];
-          var isAllowed = allowed.some(function(p) { return currentPath.startsWith(p); });
-
-          if (!isAllowed) {
-            window.location.replace(surveyPath);
-          }
-        } catch (e) {}
-      }
-
-      // Run immediately on every page load (covers direct URL, back/forward)
-      checkSurveyLock();
-
-      // After each Astro view transition
-      document.addEventListener('astro:page-load', checkSurveyLock);
-
-      // Before each link-click navigation — cancel if destination is not allowed
-      document.addEventListener('astro:before-preparation', function(event) {
-        try {
-          var lockRaw = localStorage.getItem('tm_survey_lock');
-          if (!lockRaw) return;
-          var lock = JSON.parse(lockRaw);
-          if (!lock || !lock.surveyId) return;
-
-          var surveyPath = '/survey-boards/' + lock.surveyId;
-          var targetPath = (event.to && event.to.pathname) ? event.to.pathname : '';
-          var allowed = [surveyPath, '/login', '/sign-up'];
-          var isAllowed = allowed.some(function(p) { return targetPath.startsWith(p); });
-
-          if (!isAllowed) {
-            event.cancel();
-            window.location.replace(surveyPath);
-          }
-        } catch (e) {}
-      });
-    </script>
   </body>
 </html>

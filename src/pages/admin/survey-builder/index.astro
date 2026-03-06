@@ -1,0 +1,8 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import SurveyBuilderList from '@/shared/screens/admin/survey-builder/SurveyBuilderList';
+---
+
+<IntractionLayout title="Survey Builder | Admin" description="Manage survey templates">
+  <SurveyBuilderList client:only="react" />
+</IntractionLayout>
