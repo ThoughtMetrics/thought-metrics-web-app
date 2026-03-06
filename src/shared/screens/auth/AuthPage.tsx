@@ -161,7 +161,7 @@ const LoginPage: React.FC = () => {
     const allocatedSurveyId = localStorage.getItem('tm_allocated_survey');
     if (allocatedSurveyId) {
       localStorage.removeItem('tm_allocated_survey');
-      return `/survey-boards/${allocatedSurveyId}`;
+      return `/survey-campaign/${allocatedSurveyId}`;
     }
 
     const redirectAfter = localStorage.getItem('tm_redirect_after_signup');

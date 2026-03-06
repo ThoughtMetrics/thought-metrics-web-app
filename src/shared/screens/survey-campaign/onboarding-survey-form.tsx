@@ -26,7 +26,7 @@ interface SurveyQuestion {
 
 interface SurveyTemplate {
   _id: string;
-  surveyId: string;
+  surveyId?: string;
   name: string;
   label: string;
   description?: string;
@@ -53,6 +53,7 @@ interface OnboardingSurveyFormProps {
   userName?: string;
   onSubmitSuccess?: () => void;
   onSubmitError?: (error: string) => void;
+  onSubmit?: (answers: Array<{ questionId: string; questionType: any; answer: any }>) => Promise<void>;
 }
 
 const OnboardingSurveyForm: React.FC<OnboardingSurveyFormProps> = ({
@@ -63,6 +64,7 @@ const OnboardingSurveyForm: React.FC<OnboardingSurveyFormProps> = ({
   userName,
   onSubmitSuccess,
   onSubmitError,
+  onSubmit,
 }) => {
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -112,7 +114,6 @@ const OnboardingSurveyForm: React.FC<OnboardingSurveyFormProps> = ({
   };
 
   const handleSubmit = async () => {
-    // Validate last question
     if (question.required && !answers[question.id]) {
       setError('This question is required');
       return;
@@ -122,37 +123,16 @@ const OnboardingSurveyForm: React.FC<OnboardingSurveyFormProps> = ({
     setError(null);
 
     try {
-      // Format answers for API
       const formattedAnswers = questions.map((q) => ({
         questionId: q.id,
         questionType: q.questionType,
-        answer: answers[q.id] || null,
+        answer: answers[q.id] ?? null,
       }));
 
-      // Submit to API
-      const response = await fetch('/api/v1/surveys/responses', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          surveyId,
-          respondent: {
-            userId,
-            email: userEmail,
-            name: userName,
-          },
-          answers: formattedAnswers,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to submit survey');
+      if (onSubmit) {
+        await onSubmit(formattedAnswers);
       }
 
-      // Success!
       onSubmitSuccess?.();
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to submit survey';

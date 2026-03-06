@@ -4,15 +4,18 @@ import { queryClient } from '@/core/lib/query-client';
 import { AuthProvider, useAuth } from '@/shared/providers/auth-provider';
 import { CheckCircle, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 import OnboardingSurveyForm from './onboarding-survey-form';
+import surveyService from '@/services/survey/survey.service';
+import type { ISurveyTemplate, ISurvey } from '@/core/types/survey.type';
+import type { ISurveySubmission } from '@/core/types/survey.type';
 
 interface SurveyFormWrapperProps {
   surveyId: string;
 }
 
 const SurveyFormPage: React.FC<SurveyFormWrapperProps> = ({ surveyId }) => {
-  const { user } = useAuth();
-  const [surveyData, setSurveyData] = useState<any>(null);
-  const [surveyTemplate, setSurveyTemplate] = useState<any>(null);
+  const { user, isAuthReady } = useAuth();
+  const [surveyData, setSurveyData] = useState<ISurvey | null>(null);
+  const [surveyTemplate, setSurveyTemplate] = useState<ISurveyTemplate | null>(null);
   const [isLoadingSurvey, setIsLoadingSurvey] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -27,18 +30,15 @@ const SurveyFormPage: React.FC<SurveyFormWrapperProps> = ({ surveyId }) => {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Try ThoughtMetrics external script first (reads current URL params)
     let resolvedLinkId: string | null = null;
     if (window.ThoughtMetrics) {
       resolvedLinkId = window.ThoughtMetrics.getUTMParams().tm_link_id;
     }
-    // Fallback: localStorage (present after post-login redirect when URL params are gone)
     if (!resolvedLinkId) {
       resolvedLinkId = localStorage.getItem('tm_link_id');
     }
 
     if (!resolvedLinkId) {
-      console.debug('[SurveyForm] Access denied - no tracking link in URL or localStorage');
       window.location.href = '/';
       return;
     }
@@ -51,68 +51,64 @@ const SurveyFormPage: React.FC<SurveyFormWrapperProps> = ({ surveyId }) => {
     setIsCheckingAccess(false);
   }, [surveyId]);
 
-  // Fetch survey
+  // Fetch survey details (waits for auth to be ready and user to be logged in)
   useEffect(() => {
+    if (isCheckingAccess || !isAuthReady || !user) return;
+
     const fetchSurvey = async () => {
       try {
         setIsLoadingSurvey(true);
         setError(null);
 
-        // Fetch survey by ID
-        const surveyResponse = await fetch(`/api/v1/surveys/${surveyId}`, {
-          credentials: 'include',
-        });
-
-        if (!surveyResponse.ok) {
-          throw new Error('Failed to load survey');
-        }
-
-        const surveyResult = await surveyResponse.json();
-        const survey = surveyResult.data;
+        // Single call returns both survey + template with proper auth
+        const result = await surveyService.getSurveyDetails(surveyId, 'en');
+        const { survey, template } = result.data!;
 
         setSurveyData(survey);
-
-        // Fetch template
-        const templateResponse = await fetch(
-          `/api/v1/survey-templates/${survey.templateMongoId}`,
-          {
-            credentials: 'include',
-          }
-        );
-
-        if (!templateResponse.ok) {
-          throw new Error('Failed to load survey template');
-        }
-
-        const templateResult = await templateResponse.json();
-        setSurveyTemplate(templateResult.data);
-      } catch (err) {
+        setSurveyTemplate(template);
+      } catch (err: any) {
         console.error('Error loading survey:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load survey');
+        setError(err?.message || 'Failed to load survey');
       } finally {
         setIsLoadingSurvey(false);
       }
     };
 
     fetchSurvey();
-  }, [surveyId]);
+  }, [surveyId, isCheckingAccess, isAuthReady, user]);
 
   const handleSubmitSuccess = () => {
     setIsCompleted(true);
-    // Track completion
     if (typeof window !== 'undefined' && window.ThoughtMetrics) {
-      window.ThoughtMetrics.track('onboarding_survey_completed', {
+      window.ThoughtMetrics.track('campaign_survey_completed', {
         surveyId,
         linkId: trackingInfo.linkId,
       });
     }
+    // Auto-redirect to survey boards after a short delay
+    setTimeout(() => {
+      window.location.href = '/survey-boards';
+    }, 3000);
   };
 
   const handleSubmitError = (errorMsg: string) => {
     setError(errorMsg);
   };
 
-  // Access check loading state
+  const handleSubmit = async (answers: Array<{ questionId: string; questionType: any; answer: any }>) => {
+    if (!surveyData) return;
+    const submission: ISurveySubmission = {
+      respondent: {
+        name: user?.displayName || undefined,
+        email: user?.email || undefined,
+      },
+      answers,
+    };
+    await surveyService.submitResponse(surveyId, submission);
+    handleSubmitSuccess();
+  };
+
+  // Access check loading
   if (isCheckingAccess) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -124,7 +120,19 @@ const SurveyFormPage: React.FC<SurveyFormWrapperProps> = ({ surveyId }) => {
     );
   }
 
-  // Loading state
+  // Auth loading
+  if (!isAuthReady || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Survey loading
   if (isLoadingSurvey) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -168,17 +176,19 @@ const SurveyFormPage: React.FC<SurveyFormWrapperProps> = ({ surveyId }) => {
               <CheckCircle className="w-10 h-10 text-green-600" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
-              Thank You for Completing Your Profile!
+              Thank You!
             </h1>
-            <p className="text-lg text-gray-600 mb-8">
-              Your preferences have been saved. We'll now match you with surveys
-              that fit your interests.
+            <p className="text-lg text-gray-600 mb-4">
+              Your survey has been submitted successfully.
+            </p>
+            <p className="text-sm text-gray-500 mb-8">
+              Redirecting you to Survey Boards...
             </p>
             <a
               href="/survey-boards"
               className="inline-flex items-center px-8 py-4 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 transition-colors shadow-lg"
             >
-              Start Taking Surveys
+              Go to Survey Boards
               <ArrowRight className="w-5 h-5 ml-2" />
             </a>
           </div>
@@ -187,26 +197,20 @@ const SurveyFormPage: React.FC<SurveyFormWrapperProps> = ({ surveyId }) => {
     );
   }
 
-  // Check if survey template loaded
-  if (!surveyTemplate) {
-    return null;
-  }
+  if (!surveyTemplate || !surveyData) return null;
 
   return (
     <div className="min-h-screen bg-linear-to-br from-primary/5 via-white to-secondary/5">
       <div className="max-w-5xl mx-auto px-4 py-8">
-        {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
             {surveyTemplate.translations?.en?.label || surveyTemplate.label}
           </h1>
           <p className="text-lg text-gray-600">
-            {surveyTemplate.translations?.en?.description ||
-              surveyTemplate.description}
+            {surveyTemplate.translations?.en?.description || surveyTemplate.description}
           </p>
           <p className="text-sm text-gray-500 mt-4">
-            {surveyTemplate.translations?.en?.instructions ||
-              'This helps us match you with the best survey opportunities'}
+            {surveyTemplate.translations?.en?.instructions}
           </p>
           {trackingInfo.campaign && (
             <div className="mt-4 inline-flex items-center px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium">
@@ -215,15 +219,15 @@ const SurveyFormPage: React.FC<SurveyFormWrapperProps> = ({ surveyId }) => {
           )}
         </div>
 
-        {/* Survey Form */}
         <OnboardingSurveyForm
           template={surveyTemplate}
-          surveyId={surveyData.id}
+          surveyId={surveyId}
           userId={user?.uid}
           userEmail={user?.email || undefined}
           userName={user?.displayName || undefined}
           onSubmitSuccess={handleSubmitSuccess}
           onSubmitError={handleSubmitError}
+          onSubmit={handleSubmit}
         />
       </div>
     </div>
