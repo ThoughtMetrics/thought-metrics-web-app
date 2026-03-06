@@ -1144,6 +1144,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
                   : translations.common.submit}
               </button>
             </div>
+            {/* Safe area spacer for iOS home indicator / Android gesture nav */}
+            <div style={{ height: 'env(safe-area-inset-bottom, 0px)' }} aria-hidden="true" />
           </div>
         </div>
       </div>

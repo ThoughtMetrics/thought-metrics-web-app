@@ -43,6 +43,7 @@ const {
     </div>
 
     <!-- Gradient border footer — primary to secondary, no links -->
-    <div class="w-full h-1 md:h-1.5 bg-linear-to-r from-secondary to-primary shrink-0"></div>
+    <!-- pb-safe ensures gradient clears iOS home indicator / Android gesture nav -->
+    <div class="w-full bg-linear-to-r from-secondary to-primary shrink-0" style="height: calc(0.25rem + env(safe-area-inset-bottom, 0px));"></div>
   </div>
 </Layout>
