@@ -1,5 +1,5 @@
 ---
-import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import CampaignLayout from '@/layouts/CampaignLayout.astro';
 import SurveyFormWrapper from '@/shared/screens/survey-campaign/survey-form-wrapper';
 
 const { id } = Astro.params;
@@ -10,6 +10,6 @@ const seoContent = {
 };
 ---
 
-<IntractionLayout title={seoContent.title} description={seoContent.description}>
+<CampaignLayout title={seoContent.title} description={seoContent.description}>
   <SurveyFormWrapper client:only="react" surveyId={id || ''} />
-</IntractionLayout>
+</CampaignLayout>
