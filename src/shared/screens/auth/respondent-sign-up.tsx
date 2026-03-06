@@ -441,7 +441,7 @@ const RespondentSignUpPage: React.FC = () => {
         // Otherwise, check for allocated survey or use default
         const allocatedSurveyId = localStorage.getItem('tm_allocated_survey');
         const redirectTo = allocatedSurveyId
-          ? `/survey-boards/${allocatedSurveyId}`
+          ? `/survey-campaign/${allocatedSurveyId}`
           : localStorage.getItem('tm_redirect_after_signup') || ROUTES.SURVEY_BOARDS;
 
         // Clean up after use
