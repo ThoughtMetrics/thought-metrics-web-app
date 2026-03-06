@@ -36,13 +36,22 @@ const SurveyCampaignPageContent: React.FC = () => {
       localStorage.setItem('tm_allocated_survey', allocatedSurvey);
     }
 
+    const resolvedLinkId = linkId || localStorage.getItem('tm_link_id');
+    const resolvedSurveyId = allocatedSurvey || localStorage.getItem('tm_allocated_survey');
+
     setTrackingInfo({
-      linkId: linkId || localStorage.getItem('tm_link_id'),
+      linkId: resolvedLinkId,
       source: source || localStorage.getItem('utm_source'),
       campaign: campaign || localStorage.getItem('utm_campaign'),
-      allocatedSurveyId:
-        allocatedSurvey || localStorage.getItem('tm_allocated_survey'),
+      allocatedSurveyId: resolvedSurveyId,
     });
+
+    // If this is a tracking link with an allocated survey, skip the landing page
+    // and go directly to the survey form
+    if (resolvedLinkId && resolvedSurveyId) {
+      window.location.replace(`/survey-campaign/${resolvedSurveyId}`);
+      return;
+    }
 
     // Fire a page_view tracking event when arriving via a tracking link
     if (linkId) {
