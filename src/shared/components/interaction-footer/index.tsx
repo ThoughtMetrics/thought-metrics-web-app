@@ -12,7 +12,7 @@ const InteractionFooter: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative h-fit shrink-0">
+    <div className="relative h-fit shrink-0" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
       <footer className="common-component bg-white flex flex-col">
         <div className="w-full h-1 md:h-1.5 bg-linear-to-r from-secondary to-primary"></div>
         {!isTrackingLinkMode && (
