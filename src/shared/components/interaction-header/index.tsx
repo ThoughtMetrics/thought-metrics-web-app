@@ -8,11 +8,18 @@ import authService from '@/services/api/auth.service';
 
 const InteractionHeaderContent: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isTrackingLinkMode, setIsTrackingLinkMode] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { user, isAdmin } = useAuth();
 
   // Derive isAuthenticated from user object
   const isAuthenticated = !!user;
+
+  useEffect(() => {
+    try {
+      setIsTrackingLinkMode(!!localStorage.getItem('tm_survey_lock'));
+    } catch {}
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -39,6 +46,22 @@ const InteractionHeaderContent: React.FC = () => {
       console.error('Logout failed:', error);
     }
   };
+
+  if (isTrackingLinkMode) {
+    return (
+      <div className="relative h-fit shrink-0">
+        <header className="common-component bg-white">
+          <div className="common-container justify-center max-w-(--breakpoint-2xl)!">
+            <nav className="px-6 py-3 xxl:px-0 flex items-center w-full">
+              <div className="w-45 pt-1">
+                <Logo className="w-full h-full" />
+              </div>
+            </nav>
+          </div>
+        </header>
+      </div>
+    );
+  }
 
   return (
     <div className="relative h-fit shrink-0">

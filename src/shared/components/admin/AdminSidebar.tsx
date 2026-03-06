@@ -10,6 +10,8 @@ const sidebarLinks: SidebarLink[] = [
   { href: '/admin/analytics', label: 'Analytics' },
   { href: '/admin/survey-analytics', label: 'Survey Analytics' },
   { href: '/admin/users', label: 'Users' },
+  { href: '/admin/survey-builder', label: 'Survey Builder' },
+  { href: '/admin/surveys', label: 'Surveys' },
 ];
 
 const AdminSidebar: React.FC = () => {

@@ -59,6 +59,9 @@ export const ROUTES = {
   ADMIN : '/admin',
   ADMIN_ANALYTICS: '/admin/analytics',
   ADMIN_CREATE_LINK: '/admin/create-tracking-link',
+  ADMIN_SURVEY_BUILDER: '/admin/survey-builder',
+  ADMIN_SURVEY_BUILDER_NEW: '/admin/survey-builder/new',
+  ADMIN_SURVEYS: '/admin/surveys',
   NOT_FOUND: '*',
 } as const;
 
@@ -129,6 +132,8 @@ export const generateBreadcrumbsFromPath = (
       admin: 'Admin',
       analytics: 'Analytics Dashboard',
       'create-tracking-link': 'Create Tracking Link',
+      'survey-builder': 'Survey Builder',
+      new: 'New Template',
     };
 
     if (segmentLabels[segment]) {

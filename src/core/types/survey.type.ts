@@ -168,6 +168,7 @@ export interface ISurveyTemplate {
     maxResponses?: number;
     allowAnonymous: boolean;
     defaultFormLayout?: SurveyFormLayout;
+    defaultType?: 'respondent' | 'agent';
     /**
      * Optional list of extra data points to capture for this survey
      * (beyond the standard questions). Defined once in the template so

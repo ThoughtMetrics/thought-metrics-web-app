@@ -73,6 +73,18 @@ export const QueryKeys = {
     infiniteBlog: (options?: any) =>
       [...QueryKeys.contentKeys.all, 'infiniteBlog', options] as const,
   },
+  surveyTemplates: {
+    all: ['survey-templates'] as const,
+    lists: () => [...QueryKeys.surveyTemplates.all, 'list'] as const,
+    list: (f?: Record<string, any>) => [...QueryKeys.surveyTemplates.lists(), f ?? {}] as const,
+    details: () => [...QueryKeys.surveyTemplates.all, 'detail'] as const,
+    detail: (id: string) => [...QueryKeys.surveyTemplates.details(), id] as const,
+  },
+  surveysAdmin: {
+    all: ['surveys-admin'] as const,
+    lists: () => [...QueryKeys.surveysAdmin.all, 'list'] as const,
+    list: (f?: Record<string, any>) => [...QueryKeys.surveysAdmin.lists(), f ?? {}] as const,
+  },
 } as const;
 
 export type QueryKey = typeof QueryKeys;
