@@ -1171,6 +1171,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   );
 };
 
+export { SurveyDetailSection };
+
 interface SurveyDetailWrapperProps {
   surveyId: string;
 }
