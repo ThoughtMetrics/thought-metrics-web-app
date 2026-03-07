@@ -56,6 +56,14 @@ export default defineConfig({
   ],
 
   vite: {
+    server: {
+      // Allow access via local network IPs (phones, tablets on same WiFi)
+      allowedHosts: true,
+      watch: {
+        // Prevent server restart when .env is edited — restart manually if needed
+        ignored: ['**/.env', '**/.env.*', '!**/.env.example'],
+      },
+    },
     resolve: {
       alias: {
         'images/': new URL('./src/assets/images/', import.meta.url).pathname,
