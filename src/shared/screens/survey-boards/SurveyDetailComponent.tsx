@@ -1116,7 +1116,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
 
         {/* Scrollable question list */}
         <div className="flex-1 overflow-y-auto">
-          <div className="px-4 py-6 md:px-12 md:py-8 max-w-4xl mx-auto space-y-4">
+          <div className="px-4 pt-6 pb-36 md:px-12 md:pt-8 md:pb-8 max-w-4xl mx-auto space-y-4">
             {visibleIndices.map((qIdx) => (
               <div
                 key={qIdx}
@@ -1144,8 +1144,6 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
                   : translations.common.submit}
               </button>
             </div>
-            {/* Safe area spacer for iOS home indicator / Android gesture nav */}
-            <div style={{ height: 'env(safe-area-inset-bottom, 0px)' }} aria-hidden="true" />
           </div>
         </div>
       </div>

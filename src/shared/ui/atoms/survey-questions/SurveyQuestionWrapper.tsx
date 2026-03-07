@@ -223,9 +223,9 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
       </div>
 
       {/* Fixed Bottom Section */}
-      <div className="border-t border-primary bg-white" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+      <div className="border-t border-primary bg-white">
         {/* Progress Indicator */}
-        <div className="px-4 py-2 md:px-12 md:py-2 border-b border-custom-grey-2">
+        <div className="px-4 pt-2 pb-28 md:pb-2 md:px-12 md:pt-2 border-b border-custom-grey-2">
           <div className="flex justify-center gap-1 mb-1">
             {Array.from({ length: totalQuestions }, (_, i) => {
               const stepProgress = (i + 1) / totalQuestions;
