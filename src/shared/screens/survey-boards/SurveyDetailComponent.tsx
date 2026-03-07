@@ -645,7 +645,22 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
       });
     });
 
-    const submission = { answers: answersArray };
+    // Build respondent map from the current user's profile so CSV export has name/email/phone
+    const respondent: Record<string, string> = {};
+    if (userProfile) {
+      const name =
+        userProfile.profile?.displayName ||
+        [userProfile.profile?.firstName, userProfile.profile?.lastName].filter(Boolean).join(' ');
+      if (userProfile.firebaseUid) respondent.userId = userProfile.firebaseUid;
+      if (name) respondent.name = name;
+      if (userProfile.email) respondent.email = userProfile.email;
+      if (userProfile.profile?.phone) respondent.phone = userProfile.profile.phone;
+    }
+
+    const submission = {
+      answers: answersArray,
+      ...(Object.keys(respondent).length > 0 ? { respondent } : {}),
+    };
 
     submitMutation.mutate(
       { surveyId, submission },
