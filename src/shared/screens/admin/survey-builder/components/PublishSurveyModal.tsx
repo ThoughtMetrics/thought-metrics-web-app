@@ -1,7 +1,7 @@
 // components/PublishSurveyModal.tsx
 
 import React, { useEffect, useRef, useState } from 'react';
-import { usePublishSurvey } from '@/core/hooks/mutations/survey-template.mutations';
+import { usePublishSurvey, useSaveSurveyDraft } from '@/core/hooks/mutations/survey-template.mutations';
 import type { ISurveyPublishRequest } from '@/core/types/survey-builder.type';
 import type { SurveyFormLayout } from '@/core/types/survey.type';
 
@@ -15,6 +15,7 @@ interface Props {
 
 const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, defaultFormLayout, defaultType = 'respondent', onClose }) => {
   const publish = usePublishSurvey();
+  const saveDraft = useSaveSurveyDraft();
 
   const [label, setLabel] = useState(defaultLabel);
   const [surveyId, setSurveyId] = useState('');
@@ -39,10 +40,7 @@ const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, default
     if (e.target === backdropRef.current) onClose();
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!label.trim()) return;
-
+  const buildPayload = (): ISurveyPublishRequest => {
     const payload: ISurveyPublishRequest = {
       templateId,
       label: label.trim(),
@@ -55,8 +53,18 @@ const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, default
       formLayout,
     };
     if (surveyId.trim()) payload.surveyId = surveyId.trim();
+    return payload;
+  };
 
-    await publish.mutateAsync(payload);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!label.trim()) return;
+    await publish.mutateAsync(buildPayload());
+  };
+
+  const handleSaveAsDraft = async () => {
+    if (!label.trim()) return;
+    await saveDraft.mutateAsync(buildPayload());
   };
 
   return (
@@ -104,7 +112,7 @@ const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, default
 
           {/* Type */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Survey Type</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Mode</label>
             <div className="flex gap-4">
               {(['respondent', 'agent'] as const).map((t) => (
                 <label key={t} className="flex items-center gap-2 cursor-pointer">
@@ -115,7 +123,7 @@ const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, default
                     onChange={() => setType(t)}
                     className="accent-primary"
                   />
-                  <span className="text-sm capitalize">{t}</span>
+                  <span className="text-sm">{t === 'respondent' ? 'Public' : 'Agent'}</span>
                 </label>
               ))}
             </div>
@@ -217,13 +225,21 @@ const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, default
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Cancel
             </button>
             <button
+              type="button"
+              onClick={handleSaveAsDraft}
+              disabled={saveDraft.isPending || publish.isPending || !label.trim()}
+              className="flex-1 px-4 py-2 border border-primary text-primary rounded-lg text-sm font-medium hover:bg-primary/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {saveDraft.isPending ? 'Saving…' : 'Save as Draft'}
+            </button>
+            <button
               type="submit"
-              disabled={publish.isPending || !label.trim()}
+              disabled={publish.isPending || saveDraft.isPending || !label.trim()}
               className="flex-1 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {publish.isPending ? 'Publishing…' : 'Publish Survey'}

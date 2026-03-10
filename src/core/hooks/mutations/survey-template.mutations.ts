@@ -74,6 +74,20 @@ export const usePublishSurvey = () => {
   });
 };
 
+export const useSaveSurveyDraft = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: ISurveyPublishRequest) => surveyService.saveSurveyAsDraft(data),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: QueryKeys.surveysAdmin.lists() });
+      toast.success('Saved as draft');
+      window.location.href = '/admin/surveys';
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+};
+
 export const useUpdateSurveyInstance = () => {
   const queryClient = useQueryClient();
 

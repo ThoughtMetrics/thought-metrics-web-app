@@ -20,7 +20,7 @@ interface Props {
 const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
   const { data, isLoading, isError } = useTemplateQuery(templateId);
 
-  const { name, isDirty, questions, settings, translations, setName, loadTemplate, resetEditor, toCreateRequest, toUpdateRequest, selectQuestion } =
+  const { name, isDirty, questions, settings, translations, setName, setTranslation, loadTemplate, resetEditor, toCreateRequest, toUpdateRequest, selectQuestion } =
     useSurveyBuilderStore();
 
   const createTemplate = useCreateTemplate();
@@ -50,9 +50,20 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isDirty]);
 
+  const slugify = (v: string) =>
+    v.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+
+  const handleLabelChange = (value: string) => {
+    setTranslation('en', 'label', value);
+    if (!templateId) {
+      setName(slugify(value));
+    }
+  };
+
   const handleSave = useCallback(async () => {
-    if (!name.trim()) {
-      toast.error('Template name is required');
+    const enLabel = translations?.en?.label?.trim() ?? '';
+    if (!enLabel) {
+      toast.error('Survey title is required');
       return;
     }
     const firstInvalid = questions.findIndex((q) => !q.translations.en.text.trim());
@@ -61,12 +72,16 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
       selectQuestion(firstInvalid);
       return;
     }
+    // Auto-set internal name from label if still empty
+    if (!name.trim()) {
+      setName(slugify(enLabel));
+    }
     if (templateId) {
       await updateTemplate.mutateAsync({ id: templateId, data: toUpdateRequest() });
     } else {
       await createTemplate.mutateAsync(toCreateRequest());
     }
-  }, [templateId, name, questions, selectQuestion, toCreateRequest, toUpdateRequest, createTemplate, updateTemplate]);
+  }, [templateId, name, translations, questions, selectQuestion, toCreateRequest, toUpdateRequest, createTemplate, updateTemplate, setName]);
 
   if (isLoading && templateId) {
     return (
@@ -108,9 +123,9 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
 
           <input
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Template name (e.g. TM-POL-2026)"
+            value={translations?.en?.label ?? ''}
+            onChange={(e) => handleLabelChange(e.target.value)}
+            placeholder="Survey display title (e.g. Political Survey 2026)"
             className="flex-1 min-w-0 border border-gray-200 rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary bg-gray-50"
           />
 
@@ -131,7 +146,7 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
 
             <button
               onClick={handleSave}
-              disabled={isSaving || !name.trim()}
+              disabled={isSaving || !(translations?.en?.label?.trim())}
               className="px-4 py-1.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSaving ? 'Saving…' : 'Save'}

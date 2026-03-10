@@ -38,38 +38,38 @@ const TemplateSettingsPanel: React.FC = () => {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-2">Default Form Layout</label>
+            <label className="block text-xs font-medium text-gray-700 mb-2">Layout</label>
             <div className="flex gap-3">
               {(['paginated', 'list'] as const).map((layout) => (
                 <button
                   key={layout}
                   onClick={() => setSettings({ defaultFormLayout: layout })}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors capitalize ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
                     settings.defaultFormLayout === layout
                       ? 'bg-primary text-white border-primary'
                       : 'bg-white text-gray-700 border-gray-300 hover:border-primary'
                   }`}
                 >
-                  {layout}
+                  {layout === 'paginated' ? 'Paged' : 'List'}
                 </button>
               ))}
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-2">Default Survey Type</label>
+            <label className="block text-xs font-medium text-gray-700 mb-2">Mode</label>
             <div className="flex gap-3">
               {(['respondent', 'agent'] as const).map((t) => (
                 <button
                   key={t}
                   onClick={() => setSettings({ defaultType: t })}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors capitalize ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
                     settings.defaultType === t
                       ? 'bg-primary text-white border-primary'
                       : 'bg-white text-gray-700 border-gray-300 hover:border-primary'
                   }`}
                 >
-                  {t}
+                  {t === 'respondent' ? 'Public' : 'Agent'}
                 </button>
               ))}
             </div>

@@ -83,24 +83,35 @@ const SurveyBuilderListContent: React.FC = () => {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-200 bg-gray-50">
-                    <th className="text-left px-6 py-3 font-semibold text-gray-700">Name</th>
-                    <th className="text-left px-6 py-3 font-semibold text-gray-700">EN Label</th>
+                    <th className="text-left px-6 py-3 font-semibold text-gray-700">Template</th>
                     <th className="text-left px-6 py-3 font-semibold text-gray-700">Questions</th>
                     <th className="text-left px-6 py-3 font-semibold text-gray-700">Default Layout</th>
+                    <th className="text-left px-6 py-3 font-semibold text-gray-700">Default Type</th>
                     <th className="text-right px-6 py-3 font-semibold text-gray-700">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {templates.map((t) => (
                     <tr key={t._id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 font-medium text-gray-900">{t.name}</td>
-                      <td className="px-6 py-4 text-gray-600">
-                        {t.translations?.en?.label ?? t.label ?? '—'}
+                      <td className="px-6 py-4">
+                        <div className="font-medium text-gray-900">
+                          {t.translations?.en?.label ?? t.label ?? '—'}
+                        </div>
+                        <div className="text-xs text-gray-400 mt-0.5">{t.name}</div>
                       </td>
                       <td className="px-6 py-4 text-gray-600">{t.questions?.length ?? 0}</td>
                       <td className="px-6 py-4">
                         <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 capitalize">
                           {t.settings?.defaultFormLayout ?? 'paginated'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${
+                          (t.settings?.defaultType ?? 'respondent') === 'agent'
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'bg-gray-100 text-gray-700'
+                        }`}>
+                          {t.settings?.defaultType ?? 'respondent'}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right space-x-3">

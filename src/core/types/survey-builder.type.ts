@@ -33,6 +33,7 @@ export interface IBuilderQuestionConfig {
   maxFileSizeMb?: number;
   showIf?: IBuilderShowIfCondition;
   showIfAll?: IBuilderShowIfCondition[];
+  othersPlaceholder?: string;
 }
 
 export interface IBuilderTranslation {
