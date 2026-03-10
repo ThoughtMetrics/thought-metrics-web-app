@@ -1133,7 +1133,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         <div className="flex-1 overflow-y-auto">
           <div
               className="px-4 pt-6 md:px-12 md:pt-8 md:pb-8 max-w-4xl mx-auto space-y-4"
-              style={{ paddingBottom: 'calc(9rem + env(safe-area-inset-bottom, 0px))' }}
+              style={{ paddingBottom: 'calc(max(env(safe-area-inset-bottom, 0px), 100lvh - 100dvh))' }}
             >
             {visibleIndices.map((qIdx) => (
               <div
