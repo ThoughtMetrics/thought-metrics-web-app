@@ -265,7 +265,7 @@ class SurveyService {
     if (!user) throw new Error('No authenticated user');
     const token = await user.getIdToken();
     apiService.setAuthToken(token);
-    return apiService.patch<ISurveyTemplate>(`${this.basePath}/templates/${id}`, data);
+    return apiService.put<ISurveyTemplate>(`${this.basePath}/templates/${id}`, data);
   }
 
   /**

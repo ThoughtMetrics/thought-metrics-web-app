@@ -10,9 +10,52 @@ interface Props {
   lang: SupportedBuilderLanguage;
 }
 
+const slugifyKey = (v: string) =>
+  v.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '').slice(0, 30);
+
 const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
   const { addOption, removeOption, updateOption } = useSurveyBuilderStore();
   const options = question.config.options ?? [];
+
+  const hasOthers = options.some((o) => o.value === 'others');
+  const regularOptions = options.filter((o) => o.value !== 'others');
+
+  // Duplicate label detection (case-insensitive, among non-others options)
+  const labelCounts = regularOptions.reduce<Record<string, number>>((acc, o) => {
+    const key = o.label.trim().toLowerCase();
+    if (key) acc[key] = (acc[key] ?? 0) + 1;
+    return acc;
+  }, {});
+  const isDuplicateLabel = (label: string) => {
+    const key = label.trim().toLowerCase();
+    return key !== '' && (labelCounts[key] ?? 0) > 1;
+  };
+
+  const handleLabelChange = (optIdx: number, value: string) => {
+    if (lang === 'en') {
+      updateOption(qIdx, optIdx, 'label', value);
+      updateOption(qIdx, optIdx, 'value', slugifyKey(value) || `opt${optIdx + 1}`);
+    } else {
+      const tOpts = [...(question.translations.ta.options ?? options.map((o) => ({ ...o, label: '' })))];
+      tOpts[optIdx] = { ...tOpts[optIdx], label: value };
+      useSurveyBuilderStore.getState().setQuestionTranslation(qIdx, 'ta', { options: tOpts });
+    }
+  };
+
+  const toggleOthers = (checked: boolean) => {
+    if (checked) {
+      useSurveyBuilderStore.getState().setQuestionConfig(qIdx, {
+        options: [...options, { value: 'others', label: 'Others' }],
+      });
+    } else {
+      useSurveyBuilderStore.getState().setQuestionConfig(qIdx, {
+        options: options.filter((o) => o.value !== 'others'),
+        othersPlaceholder: undefined,
+      });
+    }
+  };
+
+  const othersPlaceholder = (question.config as any).othersPlaceholder ?? '';
 
   return (
     <div className="space-y-3">
@@ -27,52 +70,81 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
       </div>
 
       <div className="space-y-2">
-        {options.map((opt, optIdx) => (
-          <div key={optIdx} className="flex gap-2 items-center">
-            <div className="flex-1 grid grid-cols-2 gap-2">
-              <div>
-                {optIdx === 0 && <div className="text-xs text-gray-400 mb-1">Value (key)</div>}
+        {regularOptions.map((opt, displayIdx) => {
+          const optIdx = options.indexOf(opt);
+          const duplicate = isDuplicateLabel(opt.label);
+          const label = lang === 'en' ? opt.label : (question.translations.ta.options?.[optIdx]?.label ?? '');
+          return (
+            <div key={optIdx} className="space-y-0.5">
+              <div className="flex gap-2 items-center">
                 <input
                   type="text"
-                  value={opt.value}
-                  onChange={(e) => updateOption(qIdx, optIdx, 'value', e.target.value)}
-                  placeholder="opt1"
-                  className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                  value={label}
+                  onChange={(e) => handleLabelChange(optIdx, e.target.value)}
+                  placeholder={lang === 'en' ? `Option ${displayIdx + 1}` : 'Tamil label'}
+                  className={`flex-1 border rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary ${
+                    duplicate ? 'border-red-400 bg-red-50' : 'border-gray-300'
+                  }`}
                 />
+                <button
+                  onClick={() => removeOption(qIdx, optIdx)}
+                  disabled={regularOptions.length <= 1}
+                  className="text-red-400 hover:text-red-600 disabled:opacity-30 flex-shrink-0"
+                  title="Remove option"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
-              <div>
-                {optIdx === 0 && <div className="text-xs text-gray-400 mb-1">Label ({lang})</div>}
-                <input
-                  type="text"
-                  value={lang === 'en' ? opt.label : (question.translations.ta.options?.[optIdx]?.label ?? '')}
-                  onChange={(e) => {
-                    if (lang === 'en') {
-                      updateOption(qIdx, optIdx, 'label', e.target.value);
-                    } else {
-                      // Update TA translation options
-                      const tOpts = [...(question.translations.ta.options ?? options.map(o => ({ ...o, label: '' })))];
-                      tOpts[optIdx] = { ...tOpts[optIdx], label: e.target.value };
-                      useSurveyBuilderStore.getState().setQuestionTranslation(qIdx, 'ta', { options: tOpts });
-                    }
-                  }}
-                  placeholder={lang === 'en' ? 'Option label' : 'Tamil label'}
-                  className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
-                />
-              </div>
+              {duplicate && (
+                <p className="text-xs text-red-500 pl-0.5">Duplicate option label</p>
+              )}
             </div>
-            <button
-              onClick={() => removeOption(qIdx, optIdx)}
-              disabled={options.length <= 1}
-              className="text-red-400 hover:text-red-600 disabled:opacity-30 flex-shrink-0"
-              title="Remove option"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+          );
+        })}
+
+        {hasOthers && (
+          <div className="flex gap-2 items-center opacity-60">
+            <input
+              type="text"
+              value="Others"
+              readOnly
+              className="flex-1 border border-gray-200 rounded px-2 py-1.5 text-xs bg-gray-100 cursor-not-allowed"
+            />
+            <span className="w-4 flex-shrink-0" />
           </div>
-        ))}
+        )}
       </div>
+
+      {/* Others toggle */}
+      <label className="flex items-center gap-2 cursor-pointer pt-1">
+        <input
+          type="checkbox"
+          checked={hasOthers}
+          onChange={(e) => toggleOthers(e.target.checked)}
+          className="w-3.5 h-3.5 accent-primary"
+        />
+        <span className="text-xs text-gray-600">Include &quot;Others&quot; option</span>
+      </label>
+
+      {/* Others text-input sub-config */}
+      {hasOthers && (
+        <div className="border border-dashed border-gray-300 rounded-lg p-3 bg-gray-50 space-y-2">
+          <p className="text-xs font-medium text-gray-600">Others — text input shown to respondent</p>
+          <input
+            type="text"
+            value={othersPlaceholder}
+            onChange={(e) =>
+              useSurveyBuilderStore.getState().setQuestionConfig(qIdx, {
+                othersPlaceholder: e.target.value,
+              })
+            }
+            placeholder='Placeholder text (e.g. "Please specify…")'
+            className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+          />
+        </div>
+      )}
     </div>
   );
 };

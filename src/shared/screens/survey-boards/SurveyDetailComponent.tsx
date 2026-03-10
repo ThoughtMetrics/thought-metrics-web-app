@@ -1131,7 +1131,10 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
 
         {/* Scrollable question list */}
         <div className="flex-1 overflow-y-auto">
-          <div className="px-4 pt-6 pb-36 md:px-12 md:pt-8 md:pb-8 max-w-4xl mx-auto space-y-4">
+          <div
+              className="px-4 pt-6 md:px-12 md:pt-8 md:pb-8 max-w-4xl mx-auto space-y-4"
+              style={{ paddingBottom: 'calc(9rem + env(safe-area-inset-bottom, 0px))' }}
+            >
             {visibleIndices.map((qIdx) => (
               <div
                 key={qIdx}
