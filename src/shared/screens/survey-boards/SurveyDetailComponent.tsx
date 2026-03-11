@@ -271,7 +271,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
 
   // Clear lock if survey is already completed (don't trap user)
   React.useEffect(() => {
-    if (surveyData?.data?.survey?.userResponse?.isCompleted) {
+    if (surveyData?.data?.userResponse?.isCompleted) {
       localStorage.removeItem('tm_survey_lock');
       localStorage.removeItem('tm_link_id');
     }
@@ -407,10 +407,10 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     );
   }
 
-  const { survey, template } = surveyData.data;
+  const { survey, template, userResponse } = surveyData.data;
 
   // Check if user has already completed this survey
-  if (survey.userResponse?.isCompleted && !survey.userResponse?.canUpdate) {
+  if (userResponse?.isCompleted && !userResponse?.canUpdate) {
     return (
       <div className="min-h-full bg-white flex items-center justify-center">
         <div className="text-center px-6 max-w-md">
@@ -419,11 +419,11 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             {translations.surveyDetail.alreadyCompleted}
           </h2>
           <p className="text-lg text-custom-grey-3 mb-6">
-            {survey.userResponse?.status === 'submitted' &&
+            {userResponse?.status === 'submitted' &&
               translations.surveyDetail.submittedMessage}
-            {survey.userResponse?.status === 'approved' &&
+            {userResponse?.status === 'approved' &&
               translations.surveyDetail.approvedMessage}
-            {survey.userResponse?.status === 'declined' &&
+            {userResponse?.status === 'declined' &&
               translations.surveyDetail.declinedMessage}
           </p>
           <button
