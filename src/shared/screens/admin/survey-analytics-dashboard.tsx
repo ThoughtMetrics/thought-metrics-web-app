@@ -314,10 +314,16 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
 
   const escapeCSVField = (value: string): string => {
     const str = String(value ?? '');
-    if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
-      return `"${str.replace(/"/g, '""')}"`;
-    }
-    return str;
+    // Always wrap in double quotes (RFC 4180) so Excel treats the value as-is.
+    // Inside the quotes, escape existing double-quotes by doubling them.
+    return `"${str.replace(/"/g, '""')}"`;
+  };
+
+  // Format phone numbers so Excel never interprets them as numbers (scientific notation).
+  // Prefixing with a tab character inside the quoted cell forces Excel to treat it as text.
+  const formatPhone = (phone: string | undefined): string => {
+    if (!phone) return '';
+    return `\t${phone}`;
   };
 
   const handleDownloadCSV = async () => {
@@ -440,7 +446,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
           response.status || '',
           response.respondent?.name || '',
           response.respondent?.email || '',
-          response.respondent?.phone || '',
+          formatPhone(response.respondent?.phone),
           response.respondent?.userId || '',
           // Capture fields — resolved via storePath from template config (or fallback discovery)
           ...captureFields.map((f: any) => resolveCaptureValue(response, f)),
