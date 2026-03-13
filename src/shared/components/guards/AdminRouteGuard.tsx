@@ -16,7 +16,7 @@ const AdminRouteGuardInternal: React.FC<AdminRouteGuardProps> = ({
   children,
   requireSuperAdmin = false,
 }) => {
-  const { user, isAuthReady, isAdmin, isSuperAdmin } = useAuth();
+  const { user, isAuthReady, isAdmin, isSuperAdmin, isFieldIncharge } = useAuth();
   const [isChecking, setIsChecking] = useState(true);
 
   // Check if running on localhost (development mode)
@@ -49,7 +49,7 @@ const AdminRouteGuardInternal: React.FC<AdminRouteGuardProps> = ({
     }
 
     // Check if user has required permissions
-    const hasAccess = requireSuperAdmin ? isSuperAdmin : isAdmin;
+    const hasAccess = requireSuperAdmin ? isSuperAdmin : (isAdmin || isFieldIncharge);
 
     if (!hasAccess) {
       console.debug(
@@ -61,7 +61,7 @@ const AdminRouteGuardInternal: React.FC<AdminRouteGuardProps> = ({
 
     console.debug('[AdminRouteGuard] Access granted, rendering content');
     setIsChecking(false);
-  }, [user, isAuthReady, isAdmin, isSuperAdmin, requireSuperAdmin, isLocalhost]);
+  }, [user, isAuthReady, isAdmin, isSuperAdmin, isFieldIncharge, requireSuperAdmin, isLocalhost]);
 
   // Show loading state while checking auth
   if (!isAuthReady || isChecking) {

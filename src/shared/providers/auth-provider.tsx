@@ -10,6 +10,8 @@ interface AuthContextType {
   userRole: UserRole | null;
   isAdmin: boolean;
   isSuperAdmin: boolean;
+  isFieldIncharge: boolean;
+  userZone: string | null;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -18,6 +20,8 @@ const AuthContext = createContext<AuthContextType>({
   userRole: null,
   isAdmin: false,
   isSuperAdmin: false,
+  isFieldIncharge: false,
+  userZone: null,
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -32,6 +36,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [isFieldIncharge, setIsFieldIncharge] = useState(false);
+  const [userZone, setUserZone] = useState<string | null>(null);
 
   useEffect(() => {
     // Only set up auth listener on client-side
@@ -64,25 +70,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               const idTokenResult = await firebaseUser.getIdTokenResult();
 
               const role = idTokenResult.claims.role as UserRole | undefined;
+              const zone = idTokenResult.claims.zone as string | undefined;
               const computedIsAdmin = role === 'admin' || role === 'super-admin';
               const computedIsSuperAdmin = role === 'super-admin';
-
+              const computedIsFieldIncharge = role === 'field-incharge';
 
               setUserRole(role || 'respondent');
               setIsAdmin(computedIsAdmin);
               setIsSuperAdmin(computedIsSuperAdmin);
+              setIsFieldIncharge(computedIsFieldIncharge);
+              setUserZone(zone || null);
             } catch (error) {
               console.error('Failed to get auth token:', error);
               ApiService.removeAuthToken();
               setUserRole(null);
               setIsAdmin(false);
               setIsSuperAdmin(false);
+              setIsFieldIncharge(false);
+              setUserZone(null);
             }
           } else {
             ApiService.removeAuthToken();
             setUserRole(null);
             setIsAdmin(false);
             setIsSuperAdmin(false);
+            setIsFieldIncharge(false);
+            setUserZone(null);
           }
 
           // Mark auth as ready after first state change
@@ -111,7 +124,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isAuthReady, userRole, isAdmin, isSuperAdmin }}>
+    <AuthContext.Provider value={{ user, isAuthReady, userRole, isAdmin, isSuperAdmin, isFieldIncharge, userZone }}>
       {children}
     </AuthContext.Provider>
   );

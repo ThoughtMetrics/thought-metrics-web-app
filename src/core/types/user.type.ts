@@ -10,7 +10,8 @@ export type UserRole =
   | 'client'
   | 'respondent'
   | 'partner'
-  | 'field-agent';
+  | 'field-agent'
+  | 'field-incharge';
 
 /** @deprecated Legacy city-based zonal values. Use ZonalInfo instead. */
 export type UserZonal =
@@ -100,6 +101,12 @@ export interface UserProfile {
   respondentInfo?: RespondentInfo;
   paymentInfo: Payment;
   settings?: UserSettings;
+  metadata?: {
+    forcePasswordReset?: boolean;
+    isActive?: boolean;
+    isEmailVerified?: boolean;
+    [key: string]: any;
+  };
   providerId: string;
   role?:
     | 'super-admin'
@@ -108,7 +115,8 @@ export interface UserProfile {
     | 'client'
     | 'respondent'
     | 'partner'
-    | 'field-agent';
+    | 'field-agent'
+    | 'field-incharge';
   zonal?: string;
   zonalInfo?: ZonalInfo[];
   createdAt: string;

@@ -36,7 +36,7 @@ interface UserStat {
 }
 
 const SurveyAnalyticsDashboardContent: React.FC = () => {
-  const { user, isAuthReady } = useAuth();
+  const { user, isAuthReady, isFieldIncharge } = useAuth();
   const [surveys, setSurveys] = useState<SurveyWithAnalytics[]>([]);
   const [selectedSurvey, setSelectedSurvey] = useState<string | null>(null);
   const [zonalStats, setZonalStats] = useState<ZonalStat[]>([]);
@@ -925,49 +925,51 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                         )}
                       </div>
 
-                      {/* District Breakdown */}
-                      <div className="bg-white rounded-lg shadow p-6">
-                        <div className="flex items-center gap-2 mb-4">
-                          <MapPin className="w-5 h-5 text-green-600" />
-                          <h3 className="text-lg font-semibold text-gray-900">By District</h3>
+                      {/* District Breakdown — hidden for field-incharge */}
+                      {!isFieldIncharge && (
+                        <div className="bg-white rounded-lg shadow p-6">
+                          <div className="flex items-center gap-2 mb-4">
+                            <MapPin className="w-5 h-5 text-green-600" />
+                            <h3 className="text-lg font-semibold text-gray-900">By District</h3>
+                          </div>
+                          {districtStats.length === 0 ? (
+                            <div className="text-center py-8">
+                              <p className="text-sm text-gray-500">No district data available</p>
+                              <p className="text-xs text-gray-400 mt-1">Data will appear after submissions are made</p>
+                            </div>
+                          ) : (
+                            <div className="space-y-3">
+                              {districtStats.slice(0, 10).map((stat, index) => {
+                                const maxCount = Math.max(...districtStats.map((s) => s?.count || 0), 1);
+                                const percentage = ((stat?.count || 0) / maxCount) * 100;
+                                return (
+                                  <div key={stat.district || index}>
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span className="font-medium text-gray-700">
+                                        {stat?.district || 'Unknown'}
+                                      </span>
+                                      <span className="text-gray-900 font-semibold">
+                                        {formatNumber(stat?.count || 0)}
+                                      </span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 rounded-full h-2">
+                                      <div
+                                        className={`h-2 rounded-full ${getDistrictColor(index)}`}
+                                        style={{ width: `${Math.max(percentage, 0)}%` }}
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                              {districtStats.length > 10 && (
+                                <p className="text-xs text-gray-400 text-center">
+                                  +{districtStats.length - 10} more districts
+                                </p>
+                              )}
+                            </div>
+                          )}
                         </div>
-                        {districtStats.length === 0 ? (
-                          <div className="text-center py-8">
-                            <p className="text-sm text-gray-500">No district data available</p>
-                            <p className="text-xs text-gray-400 mt-1">Data will appear after submissions are made</p>
-                          </div>
-                        ) : (
-                          <div className="space-y-3">
-                            {districtStats.slice(0, 10).map((stat, index) => {
-                              const maxCount = Math.max(...districtStats.map((s) => s?.count || 0), 1);
-                              const percentage = ((stat?.count || 0) / maxCount) * 100;
-                              return (
-                                <div key={stat.district || index}>
-                                  <div className="flex justify-between text-sm mb-1">
-                                    <span className="font-medium text-gray-700">
-                                      {stat?.district || 'Unknown'}
-                                    </span>
-                                    <span className="text-gray-900 font-semibold">
-                                      {formatNumber(stat?.count || 0)}
-                                    </span>
-                                  </div>
-                                  <div className="w-full bg-gray-200 rounded-full h-2">
-                                    <div
-                                      className={`h-2 rounded-full ${getDistrictColor(index)}`}
-                                      style={{ width: `${Math.max(percentage, 0)}%` }}
-                                    />
-                                  </div>
-                                </div>
-                              );
-                            })}
-                            {districtStats.length > 10 && (
-                              <p className="text-xs text-gray-400 text-center">
-                                +{districtStats.length - 10} more districts
-                              </p>
-                            )}
-                          </div>
-                        )}
-                      </div>
+                      )}
 
                       {/* Daily Trend */}
                       <div className="bg-white rounded-lg shadow p-6">
