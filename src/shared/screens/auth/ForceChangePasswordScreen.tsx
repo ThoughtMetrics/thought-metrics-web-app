@@ -148,7 +148,7 @@ const ForceChangePasswordPage: React.FC = () => {
                 value={currentPwd}
                 onChange={(e) => setCurrentPwd(e.target.value)}
                 placeholder="Enter current password"
-                className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary text-black"
                 required
               />
               <button
@@ -181,7 +181,7 @@ const ForceChangePasswordPage: React.FC = () => {
                 value={newPwd}
                 onChange={(e) => setNewPwd(e.target.value)}
                 placeholder="Minimum 8 characters"
-                className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary text-black"
                 required
               />
               <button
@@ -214,7 +214,7 @@ const ForceChangePasswordPage: React.FC = () => {
                 value={confirmPwd}
                 onChange={(e) => setConfirmPwd(e.target.value)}
                 placeholder="Re-enter new password"
-                className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary text-black"
                 required
               />
               <button
