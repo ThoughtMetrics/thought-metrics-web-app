@@ -329,6 +329,17 @@ class AuthService {
   }
 
   /**
+   * Clear forcePasswordReset flag after in-app password change
+   */
+  async clearForcePasswordReset(): Promise<void> {
+    const user = this.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken(true); // force-refresh to get updated claims
+    ApiService.setAuthToken(token);
+    await ApiService.post('/users/profile/clear-force-password-reset', {});
+  }
+
+  /**
    * Unsubscribe user account
    * Sends unsubscribe request with optional reasons
    */

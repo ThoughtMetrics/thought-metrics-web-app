@@ -33,6 +33,38 @@ export interface UpdateUserZonalRequest {
   acNos: number[];
 }
 
+export interface UpdateUserRoleZonalRequest {
+  userId: string;
+  role: UserRole;
+  acNos?: number[];
+  zone?: string;
+}
+
+export interface AdminCreateUserRequest {
+  email: string;
+  firstName: string;
+  lastName?: string;
+  role: UserRole;
+  acNos?: number[];
+  zone?: string;
+  sendWelcomeEmail: boolean;
+}
+
+export interface BulkJobStatus {
+  jobId: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  summary: {
+    total: number;
+    processed: number;
+    created: number;
+    failed: number;
+    skipped: number;
+  };
+  failedRows: Array<{ rowNumber: number; email: string; error: string }>;
+  completedAt?: string;
+  createdAt: string;
+}
+
 class UserManagementService {
   private async ensureAuth() {
     const user = authService.getCurrentUser();
@@ -74,6 +106,18 @@ class UserManagementService {
   }
 
   /**
+   * Update user role and zonal in a single atomic request (admin only)
+   * acNos is optional — omit to update role only
+   */
+  async updateUserRoleAndZonal(userId: string, role: UserRole, acNos?: number[], zone?: string): Promise<ApiResponse<UserProfile>> {
+    await this.ensureAuth();
+    const body: UpdateUserRoleZonalRequest = { userId, role };
+    if (acNos && acNos.length > 0) body.acNos = acNos;
+    if (zone) body.zone = zone;
+    return await ApiService.post<UserProfile>('/users/change-role-zonal', body);
+  }
+
+  /**
    * Update user profile (admin can update any user)
    */
   async updateUser(userId: string, data: Partial<UserProfile>): Promise<ApiResponse<UserProfile>> {
@@ -95,6 +139,33 @@ class UserManagementService {
   async getUserStats(): Promise<ApiResponse<any>> {
     await this.ensureAuth();
     return await ApiService.get<any>('/users/stats');
+  }
+
+  /**
+   * Admin: create a single user with default password
+   */
+  async adminCreateUser(data: AdminCreateUserRequest): Promise<ApiResponse<{ user: UserProfile }>> {
+    await this.ensureAuth();
+    // For non-field-incharge roles, strip zone (backend validates this via Joi .when/.forbidden)
+    const payload: AdminCreateUserRequest = { ...data };
+    if (payload.role !== 'field-incharge') delete payload.zone;
+    return await ApiService.post<{ user: UserProfile }>('/users/admin/create', payload);
+  }
+
+  /**
+   * Admin: bulk import users from Excel file
+   */
+  async bulkImportUsers(file: File): Promise<ApiResponse<{ jobId: string; totalRows: number; totalBatches: number }>> {
+    await this.ensureAuth();
+    return await ApiService.uploadFile<{ jobId: string; totalRows: number; totalBatches: number }>('/users/admin/bulk-import', file);
+  }
+
+  /**
+   * Admin: get bulk import job status
+   */
+  async getBulkJobStatus(jobId: string): Promise<ApiResponse<BulkJobStatus>> {
+    await this.ensureAuth();
+    return await ApiService.get<BulkJobStatus>(`/users/admin/bulk-jobs/${jobId}`);
   }
 }
 

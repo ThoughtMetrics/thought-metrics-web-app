@@ -16,6 +16,7 @@ import { queryClient } from '@/core/lib/query-client';
 import { AuthProvider, useAuth } from '@/shared/providers/auth-provider';
 import { useLanguage } from '@/core/hooks/use-language';
 import { LanguageToggle } from '@/shared/ui/molecules/language-toggle';
+import authService from '@/services/api/auth.service';
 
 const { initialFormData, storeName, validationMessages, formResetDelay, ui } =
   loginFormConstant;
@@ -173,10 +174,25 @@ const LoginPage: React.FC = () => {
     return ROUTES.SURVEY_BOARDS;
   };
 
-  // Redirect authenticated users
+  // Redirect authenticated users — check forcePasswordReset + signInProvider before normal redirect
   useEffect(() => {
     if (user) {
-      window.location.href = getRedirectUrl();
+      void (async () => {
+        try {
+          const [profile, tokenResult] = await Promise.all([
+            authService.getUserProfile(),
+            user.getIdTokenResult(),
+          ]);
+          // Only intercept for email/password logins — Google users skip the reset screen
+          if (profile?.metadata?.forcePasswordReset && tokenResult.signInProvider === 'password') {
+            window.location.href = ROUTES.FORCE_CHANGE_PASSWORD;
+            return;
+          }
+        } catch {
+          // If checks fail, proceed with normal redirect
+        }
+        window.location.href = getRedirectUrl();
+      })();
     }
   }, [user]);
 

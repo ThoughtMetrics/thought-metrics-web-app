@@ -16,13 +16,14 @@ class ZoneService {
     ApiService.setAuthToken(token);
   }
 
-  async getHierarchy(): Promise<ZoneHierarchy> {
-    if (cachedHierarchy && Date.now() - cacheTimestamp < CACHE_TTL) {
+  async getHierarchy(zoneFilter?: string): Promise<ZoneHierarchy> {
+    if (!zoneFilter && cachedHierarchy && Date.now() - cacheTimestamp < CACHE_TTL) {
       return cachedHierarchy;
     }
 
     await this.ensureAuth();
-    const response = await ApiService.get<any>('/zones');
+    const url = zoneFilter ? `/zones?zone=${encodeURIComponent(zoneFilter)}` : '/zones';
+    const response = await ApiService.get<any>(url);
     if (response.success && response.data) {
       // Backend returns { zones: [...] } with field name "name" for zone
       // Map to frontend ZoneHierarchy format
@@ -41,8 +42,10 @@ class ZoneService {
           })),
         })),
       }));
-      cachedHierarchy = hierarchy;
-      cacheTimestamp = Date.now();
+      if (!zoneFilter) {
+        cachedHierarchy = hierarchy;
+        cacheTimestamp = Date.now();
+      }
       return hierarchy;
     }
     return [];
