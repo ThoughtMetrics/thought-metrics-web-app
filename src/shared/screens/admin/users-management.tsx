@@ -10,6 +10,19 @@ import type { ZoneHierarchy } from '@/core/types/zone.type';
 import { toast } from 'sonner';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 
+function downloadBulkImportTemplate() {
+  const headers = ['Email', 'First Name', 'Last Name', 'Role', 'AC Name', 'Zone', 'Send Password Reset'];
+  const sample = ['agent@example.com', 'John', 'Doe', 'Field Agent', 'Cheyyar', '', 'yes'];
+  const csv = [headers, sample].map(row => row.map(cell => `"${cell}"`).join(',')).join('\r\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'bulk-import-template.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 const UserManagementContent: React.FC = () => {
   const { user, isAuthReady, isSuperAdmin, isFieldIncharge, userZone } = useAuth();
   const [users, setUsers] = useState<UserProfile[]>([]);
@@ -987,14 +1000,24 @@ const UserManagementContent: React.FC = () => {
                 <div className="bg-blue-50 border border-blue-200 rounded-md p-3 text-sm text-blue-800">
                   <p className="font-medium mb-1">Required Excel columns:</p>
                   <ul className="list-disc list-inside space-y-0.5">
-                    <li><code>email</code> * (required)</li>
-                    <li><code>firstName</code> * (required)</li>
-                    <li><code>lastName</code> (optional)</li>
-                    <li><code>role</code> * (required: employee, field-agent, client, etc.)</li>
-                    <li><code>acNos</code> (optional: comma-separated, e.g. "1,5,23")</li>
-                    <li><code>sendPasswordReset</code> (optional: "yes"/"no", default "yes")</li>
+                    <li><code>Email</code> * (required)</li>
+                    <li><code>First Name</code> * (required)</li>
+                    <li><code>Last Name</code> (optional)</li>
+                    <li><code>Role</code> * (required: Field Agent, Field Incharge, Employee, Client, etc.)</li>
+                    <li><code>AC Name</code> (required for Field Agent — e.g. "Cheyyar")</li>
+                    <li><code>Zone</code> (required for Field Incharge — e.g. "North")</li>
+                    <li><code>Send Password Reset</code> (optional: "yes"/"no", default "yes")</li>
                   </ul>
-                  <p className="mt-1 text-xs">Maximum 500 rows per file.</p>
+                  <div className="mt-2 flex items-center justify-between">
+                    <p className="text-xs">Maximum 2000 rows per file.</p>
+                    <button
+                      type="button"
+                      onClick={downloadBulkImportTemplate}
+                      className="text-xs font-medium text-blue-700 underline hover:text-blue-900"
+                    >
+                      Download template
+                    </button>
+                  </div>
                 </div>
 
                 <div>
