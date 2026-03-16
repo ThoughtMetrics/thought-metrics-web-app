@@ -29,7 +29,7 @@ const UserManagementContent: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [limit] = useState(10);
+  const [limit, setLimit] = useState(10);
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -105,7 +105,7 @@ const UserManagementContent: React.FC = () => {
   useEffect(() => {
     if (!isAuthReady || !user) return;
     fetchUsers();
-  }, [isAuthReady, user, page, filterRole, filterZone, filterDistrict]);
+  }, [isAuthReady, user, page, limit, filterRole, filterZone, filterDistrict]);
 
   // Debounced search
   useEffect(() => {
@@ -681,10 +681,27 @@ const UserManagementContent: React.FC = () => {
                 </div>
 
                 {/* Pagination */}
-                {totalPages > 1 && (
+                {total > 0 && (
                   <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                    <div className="text-sm text-gray-700">
-                      Showing page {page} of {totalPages}
+                    <div className="flex items-center gap-3 text-sm text-gray-700">
+                      <span>
+                        {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total}
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-gray-500">Rows:</span>
+                        <select
+                          value={limit}
+                          onChange={(e) => {
+                            setLimit(Number(e.target.value));
+                            setPage(1);
+                          }}
+                          className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        >
+                          {[10, 25, 50, 100].map((n) => (
+                            <option key={n} value={n}>{n}</option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
                     <div className="flex gap-2">
                       <button
@@ -695,10 +712,8 @@ const UserManagementContent: React.FC = () => {
                         Previous
                       </button>
                       <button
-                        onClick={() =>
-                          setPage((p) => Math.min(totalPages, p + 1))
-                        }
-                        disabled={page === totalPages}
+                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                        disabled={page === totalPages || totalPages === 0}
                         className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Next

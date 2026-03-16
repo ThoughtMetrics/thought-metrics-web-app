@@ -155,3 +155,131 @@ export const SurveyBuilderList: React.FC = () => (
 );
 
 export default SurveyBuilderList;
+
+// ─── Panel export for embedding in the Surveys hub ───────────────────────────
+
+const SurveyBuilderListPanelContent: React.FC = () => {
+  const { data, isLoading, isError } = useTemplatesQuery();
+  const deleteTemplate = useDeleteTemplate();
+  const duplicateTemplate = useDuplicateTemplate();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
+
+  const templates = data?.data ?? [];
+
+  const handleDelete = async (id: string, name: string) => {
+    if (!window.confirm(`Delete template "${name}"? This cannot be undone.`)) return;
+    setDeletingId(id);
+    try {
+      await deleteTemplate.mutateAsync(id);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleDuplicate = async (id: string) => {
+    setDuplicatingId(id);
+    try {
+      await duplicateTemplate.mutateAsync(id);
+    } finally {
+      setDuplicatingId(null);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-20">
+        <LoaderUI message="Loading templates..." />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4">
+        Failed to load templates. Please refresh.
+      </div>
+    );
+  }
+
+  if (templates.length === 0) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+        <p className="text-gray-500 mb-4">No templates yet.</p>
+        <a
+          href="/admin/survey-builder/new"
+          className="px-5 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
+        >
+          Create your first template
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-gray-200 bg-gray-50">
+            <th className="text-left px-6 py-3 font-semibold text-gray-700">Template</th>
+            <th className="text-left px-6 py-3 font-semibold text-gray-700">Questions</th>
+            <th className="text-left px-6 py-3 font-semibold text-gray-700">Default Layout</th>
+            <th className="text-left px-6 py-3 font-semibold text-gray-700">Default Type</th>
+            <th className="text-right px-6 py-3 font-semibold text-gray-700">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {templates.map((t) => (
+            <tr key={t._id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+              <td className="px-6 py-4">
+                <div className="font-medium text-gray-900">
+                  {t.translations?.en?.label ?? t.label ?? '—'}
+                </div>
+                <div className="text-xs text-gray-400 mt-0.5">{t.name}</div>
+              </td>
+              <td className="px-6 py-4 text-gray-600">{t.questions?.length ?? 0}</td>
+              <td className="px-6 py-4">
+                <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 capitalize">
+                  {t.settings?.defaultFormLayout ?? 'paginated'}
+                </span>
+              </td>
+              <td className="px-6 py-4">
+                <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${
+                  (t.settings?.defaultType ?? 'respondent') === 'agent'
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'bg-gray-100 text-gray-700'
+                }`}>
+                  {t.settings?.defaultType ?? 'respondent'}
+                </span>
+              </td>
+              <td className="px-6 py-4 text-right space-x-3">
+                <a
+                  href={`/admin/survey-builder/${t._id}`}
+                  className="text-primary hover:underline font-medium"
+                >
+                  Edit
+                </a>
+                <button
+                  onClick={() => handleDuplicate(t._id)}
+                  disabled={duplicatingId === t._id}
+                  className="text-gray-600 hover:underline font-medium disabled:opacity-50"
+                >
+                  {duplicatingId === t._id ? 'Copying…' : 'Duplicate'}
+                </button>
+                <button
+                  onClick={() => handleDelete(t._id, t.name)}
+                  disabled={deletingId === t._id}
+                  className="text-red-600 hover:underline font-medium disabled:opacity-50"
+                >
+                  {deletingId === t._id ? 'Deleting…' : 'Delete'}
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export const SurveyBuilderListPanel: React.FC = () => <SurveyBuilderListPanelContent />;

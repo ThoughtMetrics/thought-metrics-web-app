@@ -470,7 +470,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     if (next < totalQuestions) {
       setCurrentQuestion(next);
     } else {
-      handleSubmit();
+      void handleSubmit();
     }
   };
 
@@ -559,7 +559,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     }
 
     setListErrors({});
-    handleSubmit();
+    void handleSubmit();
   };
 
   const handleSaveDraft = (answersToSave?: Record<number, any>) => {
@@ -574,7 +574,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     localStorage.setItem(draftKey, JSON.stringify(draftData));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Build submission data - only include answered questions
     const answersArray: Array<{
       questionId: string;
@@ -657,9 +657,24 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
       if (userProfile.profile?.phone) respondent.phone = userProfile.profile.phone;
     }
 
+    let locationData: { latitude: number; longitude: number } | undefined;
+    try {
+      locationData = await new Promise((resolve, reject) => {
+        if (!navigator.geolocation) { reject(new Error('Not supported')); return; }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve({ latitude: pos.coords.latitude, longitude: pos.coords.longitude }),
+          (err) => reject(err),
+          { timeout: 10000, maximumAge: 60000, enableHighAccuracy: true }
+        );
+      });
+    } catch {
+      // Location not available — proceed without it
+    }
+
     const submission = {
       answers: answersArray,
       ...(Object.keys(respondent).length > 0 ? { respondent } : {}),
+      ...(locationData ? { location: locationData } : {}),
     };
 
     submitMutation.mutate(

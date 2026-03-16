@@ -96,6 +96,35 @@ class AnalyticsService {
       // Tracking failures are non-fatal — silently ignore
     }
   }
+  /**
+   * Track a user_registered event. Call after successful signup when tm_link_id
+   * is stored in localStorage (user arrived via a tracking link campaign).
+   */
+  async trackRegistration(params: { userId: string; email?: string }): Promise<void> {
+    try {
+      const tmLinkId = localStorage.getItem('tm_link_id');
+      if (!tmLinkId) return; // Only track if user came via a campaign link
+      const visitorId = getOrCreateId('tm_visitor_id', localStorage);
+      const sessionId = getOrCreateId('tm_session_id', sessionStorage);
+
+      await apiService.post(`${this.baseEndpoint}/track`, {
+        events: [
+          {
+            id: randomUUID(),
+            visitorId,
+            sessionId,
+            eventType: 'user_registered',
+            userId: params.userId,
+            email: params.email,
+            utm: { tm_link_id: tmLinkId },
+            timestamp: new Date().toISOString(),
+          },
+        ],
+      });
+    } catch {
+      // Non-fatal — silently ignore
+    }
+  }
 }
 
 export default new AnalyticsService();

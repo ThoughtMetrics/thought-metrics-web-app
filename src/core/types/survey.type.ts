@@ -207,6 +207,7 @@ export interface ISurveySubmission {
     answer: any;
     comment?: string;
   }>;
+  location?: { latitude: number; longitude: number };
 }
 
 export interface ISurveyResponse {
