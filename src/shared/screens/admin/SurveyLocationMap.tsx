@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { MapContainer, TileLayer, CircleMarker, Tooltip, useMap } from 'react-leaflet';
 
@@ -26,6 +25,17 @@ const FitBounds: React.FC<{ points: LocationPoint[] }> = ({ points }) => {
 
 const SurveyLocationMap: React.FC<{ points: LocationPoint[] }> = ({ points }) => {
   const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    const id = 'leaflet-css';
+    if (!document.getElementById(id)) {
+      const link = document.createElement('link');
+      link.id = id;
+      link.rel = 'stylesheet';
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      document.head.appendChild(link);
+    }
+  }, []);
 
   if (points.length === 0) {
     return (
