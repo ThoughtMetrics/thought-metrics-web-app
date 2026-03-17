@@ -8,7 +8,7 @@ import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import { useAuth } from '@/shared/providers/auth-provider';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 import { useAdminSurveysQuery } from '@/core/hooks/queries/survey-templates/index.queries';
-import { useUpdateSurveyInstance } from '@/core/hooks/mutations/survey-template.mutations';
+import { useUpdateSurveyInstance, useDuplicateTemplate } from '@/core/hooks/mutations/survey-template.mutations';
 import type { ISurvey } from '@/core/types/survey.type';
 import EditSurveyModal from './components/EditSurveyModal';
 import {
@@ -155,8 +155,9 @@ const CampaignDetailPanel: React.FC<{ link: TrackingLink }> = ({ link }) => {
 };
 
 const SurveyManagementContent: React.FC = () => {
-  const { isFieldIncharge } = useAuth();
+  const { isFieldIncharge, isAdmin } = useAuth();
   const updateSurvey = useUpdateSurveyInstance();
+  const duplicateTemplate = useDuplicateTemplate();
   const { data: linksResponse, isLoading: linksLoading } = useTrackingLinks();
   const links: TrackingLink[] = linksResponse?.data ?? [];
 
@@ -165,7 +166,7 @@ const SurveyManagementContent: React.FC = () => {
   const linkDetail: TrackingLink | null = linkDetailResponse?.data ?? null;
 
   // Hub
-  const [activeHubTab, setActiveHubTab] = useState<HubTab>('campaigns');
+  const [activeHubTab, setActiveHubTab] = useState<HubTab>(isFieldIncharge ? 'templates' : 'campaigns');
 
   // Templates tab pagination + filters
   const [statusTab, setStatusTab] = useState<StatusTab>('all');
@@ -236,11 +237,11 @@ const SurveyManagementContent: React.FC = () => {
   };
 
   const handleDuplicate = (survey: ISurvey) => {
-    if (survey.templateMongoId) {
-      window.location.href = `/admin/survey-builder/${survey.templateMongoId}`;
-    } else {
-      window.location.href = '/admin/survey-builder';
+    if (!survey.templateMongoId) {
+      toast.error('No template found to duplicate.');
+      return;
     }
+    void duplicateTemplate.mutateAsync(survey.templateMongoId);
   };
 
   const copyLink = (url: string) => {
@@ -274,7 +275,7 @@ const SurveyManagementContent: React.FC = () => {
               <h1 className="text-3xl font-bold text-gray-900 mb-1">Surveys</h1>
               <p className="text-gray-600">Manage campaigns and templates</p>
             </div>
-            {activeHubTab === 'campaigns' && (
+            {!isFieldIncharge && activeHubTab === 'campaigns' && (
               <a
                 href="/admin/create-tracking-link"
                 className="px-5 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
@@ -293,21 +294,23 @@ const SurveyManagementContent: React.FC = () => {
           </div>
 
           {/* Hub tabs */}
-          <div className="flex gap-1 mb-6 bg-white rounded-lg p-1 border border-gray-200 w-fit">
-            {hubTabs.map((tab) => (
-              <button
-                key={tab.value}
-                onClick={() => setActiveHubTab(tab.value)}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  activeHubTab === tab.value
-                    ? 'bg-primary text-white'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+          {!isFieldIncharge && (
+            <div className="flex gap-1 mb-6 bg-white rounded-lg p-1 border border-gray-200 w-fit">
+              {hubTabs.map((tab) => (
+                <button
+                  key={tab.value}
+                  onClick={() => setActiveHubTab(tab.value)}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    activeHubTab === tab.value
+                      ? 'bg-primary text-white'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* ── Campaigns tab — Tracking Links ─────────────────────────────── */}
           {activeHubTab === 'campaigns' && (
@@ -623,24 +626,28 @@ const SurveyManagementContent: React.FC = () => {
                                       >
                                         Downloads
                                       </button>
-                                      <button
-                                        onClick={() => {
-                                          setEditingSurvey(s);
-                                          setOpenMenuId(null);
-                                        }}
-                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                                      >
-                                        Edit
-                                      </button>
-                                      <button
-                                        onClick={() => {
-                                          handleDuplicate(s);
-                                          setOpenMenuId(null);
-                                        }}
-                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                                      >
-                                        Duplicate
-                                      </button>
+                                      {isAdmin && (
+                                        <>
+                                          <button
+                                            onClick={() => {
+                                              setEditingSurvey(s);
+                                              setOpenMenuId(null);
+                                            }}
+                                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                          >
+                                            Edit
+                                          </button>
+                                          <button
+                                            onClick={() => {
+                                              handleDuplicate(s);
+                                              setOpenMenuId(null);
+                                            }}
+                                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                          >
+                                            Duplicate
+                                          </button>
+                                        </>
+                                      )}
                                       <div className="border-t border-gray-100 my-1" />
                                       <button
                                         onClick={() => {
@@ -651,26 +658,30 @@ const SurveyManagementContent: React.FC = () => {
                                       >
                                         Copy Link
                                       </button>
-                                      <button
-                                        onClick={() => {
-                                          void handleArchive(s);
-                                          setOpenMenuId(null);
-                                        }}
-                                        disabled={(s.status as string) === 'archived'}
-                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-                                      >
-                                        Archive
-                                      </button>
-                                      <div className="border-t border-gray-100 my-1" />
-                                      <button
-                                        onClick={() => {
-                                          handleDelete(s);
-                                          setOpenMenuId(null);
-                                        }}
-                                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                                      >
-                                        Delete
-                                      </button>
+                                      {isAdmin && (
+                                        <>
+                                          <button
+                                            onClick={() => {
+                                              void handleArchive(s);
+                                              setOpenMenuId(null);
+                                            }}
+                                            disabled={(s.status as string) === 'archived'}
+                                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                                          >
+                                            Archive
+                                          </button>
+                                          <div className="border-t border-gray-100 my-1" />
+                                          <button
+                                            onClick={() => {
+                                              handleDelete(s);
+                                              setOpenMenuId(null);
+                                            }}
+                                            className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                          >
+                                            Delete
+                                          </button>
+                                        </>
+                                      )}
                                     </div>
                                   )}
                                 </div>

@@ -521,6 +521,29 @@ class SurveyService {
     apiService.setAuthToken(token);
     return apiService.get(`${this.basePath}/${surveyId}/analytics/ac`);
   }
+
+  /**
+   * Get GPS location breakdown for a survey (Admin endpoint)
+   * Returns grouped coordinates with submission counts (~100m precision)
+   */
+  async getLocationBreakdown(
+    surveyId: string
+  ): Promise<ApiResponse<Array<{ latitude: number; longitude: number; count: number }>>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.get(`${this.basePath}/${surveyId}/analytics/locations`);
+  }
+
+  async getQuestionAnalytics(surveyId: string, lang?: string): Promise<ApiResponse<any[]>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    const params = lang ? { lang } : undefined;
+    return apiService.get(`${this.basePath}/${surveyId}/analytics/questions`, params);
+  }
 }
 
 export default new SurveyService();
