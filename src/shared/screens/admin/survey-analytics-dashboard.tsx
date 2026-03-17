@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useEffect, useState, useMemo, useRef, lazy, Suspense } from 'react';
 import { Loader2, RefreshCw, TrendingUp, Users, MapPin, Calendar, Search, MoreVertical } from 'lucide-react';
 import { useAuth } from '@/shared/providers/auth-provider';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
@@ -6,6 +6,10 @@ import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 import surveyService from '@services/survey/survey.service';
 import type { ISurvey } from '@/core/types/survey.type';
 import { INDUSTRY_FILTERS } from '@/core/constants/survey.constants';
+
+const SurveyLocationMap = lazy(() => import('./SurveyLocationMap'));
+const SurveyQuestionCharts = lazy(() => import('./SurveyQuestionCharts'));
+import type { QuestionChartData } from './survey-analytics.type';
 
 interface SurveyWithAnalytics extends ISurvey {
   totalSubmissions: number;
@@ -43,6 +47,8 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
   const [districtStats, setDistrictStats] = useState<DistrictStat[]>([]);
   const [dailyStats, setDailyStats] = useState<DailyStat[]>([]);
   const [topUsers, setTopUsers] = useState<UserStat[]>([]);
+  const [locationPoints, setLocationPoints] = useState<Array<{ latitude: number; longitude: number; count: number }>>([]);
+  const [questionCharts, setQuestionCharts] = useState<QuestionChartData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -134,6 +140,8 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
       setDistrictStats([]);
       setDailyStats([]);
       setTopUsers([]);
+      setLocationPoints([]);
+      setQuestionCharts([]);
 
       // Validate surveyId
       if (!surveyId) {
@@ -143,11 +151,13 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
       }
 
       // Load analytics data in parallel
-      const [zonalRes, districtRes, dailyRes, usersRes] = await Promise.all([
+      const [zonalRes, districtRes, dailyRes, usersRes, locRes, chartsRes] = await Promise.all([
         surveyService.getZonalBreakdown(surveyId),
         surveyService.getDistrictBreakdown(surveyId),
         surveyService.getDailyBreakdown(surveyId, 14), // Last 14 days
         surveyService.getTopUsers(surveyId, 1000),
+        surveyService.getLocationBreakdown(surveyId),
+        surveyService.getQuestionAnalytics(surveyId),
       ]);
 
       // Validate and set zonal stats
@@ -182,6 +192,20 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
         setTopUsers([]);
       }
 
+      // Validate and set location points
+      if (locRes.success && Array.isArray(locRes.data)) {
+        setLocationPoints(locRes.data);
+      } else {
+        setLocationPoints([]);
+      }
+
+      // Validate and set question charts
+      if (chartsRes.success && Array.isArray(chartsRes.data)) {
+        setQuestionCharts(chartsRes.data);
+      } else {
+        setQuestionCharts([]);
+      }
+
       setIsLoadingDetails(false);
     } catch (err) {
       console.error('[Survey Analytics] Details load error:', err);
@@ -191,6 +215,8 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
       setDistrictStats([]);
       setDailyStats([]);
       setTopUsers([]);
+      setLocationPoints([]);
+      setQuestionCharts([]);
       setIsLoadingDetails(false);
     }
   };
@@ -892,6 +918,29 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                   ) : (
                     /* Full analytics for agent surveys */
                     <div className="space-y-6">
+                      {/* Question Response Charts */}
+                      <div className="bg-white rounded-lg shadow p-6">
+                        <div className="flex items-center gap-2 mb-4">
+                          <TrendingUp className="w-5 h-5 text-primary" />
+                          <h3 className="text-lg font-semibold text-gray-900">Response Analysis</h3>
+                        </div>
+                        <Suspense fallback={<div className="h-48 animate-pulse bg-gray-50 rounded-lg" />}>
+                          <SurveyQuestionCharts questions={questionCharts} isLoading={false} />
+                        </Suspense>
+                      </div>
+
+                      {/* Location Map */}
+                      <div className="bg-white rounded-lg shadow p-6">
+                        <div className="flex items-center gap-2 mb-4">
+                          <MapPin className="w-5 h-5 text-primary" />
+                          <h3 className="text-lg font-semibold text-gray-900">Response Locations</h3>
+                          <span className="text-xs text-gray-400 ml-1">({locationPoints.reduce((s, p) => s + p.count, 0)} with GPS)</span>
+                        </div>
+                        <Suspense fallback={<div className="h-48 bg-gray-50 rounded-lg border border-gray-200 animate-pulse" />}>
+                          <SurveyLocationMap points={locationPoints} />
+                        </Suspense>
+                      </div>
+
                       {/* Zonal Breakdown */}
                       <div className="bg-white rounded-lg shadow p-6">
                         <div className="flex items-center gap-2 mb-4">
@@ -1224,6 +1273,23 @@ export default SurveyAnalyticsDashboard;
 
 // ─── Extracted panel + modal for embedding in the Surveys hub ────────────────
 
+/* ─── Shared mini pager used inside detail panel sections ─────────────────── */
+const MiniPager: React.FC<{
+  page: number; total: number; count: number;
+  onPrev: () => void; onNext: () => void;
+}> = ({ page, total, count, onPrev, onNext }) => {
+  if (total <= 1) return null;
+  return (
+    <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
+      <button onClick={onPrev} disabled={page === 0}
+        className="text-[10px] text-primary disabled:text-gray-300 hover:underline disabled:no-underline">‹ Prev</button>
+      <span className="text-[10px] text-gray-400">{page + 1}/{total} · {count} total</span>
+      <button onClick={onNext} disabled={page >= total - 1}
+        className="text-[10px] text-primary disabled:text-gray-300 hover:underline disabled:no-underline">Next ›</button>
+    </div>
+  );
+};
+
 export interface SurveyAnalyticsDetailPanelProps {
   survey: ISurvey;
   onDownload: () => void;
@@ -1235,12 +1301,17 @@ export const SurveyAnalyticsDetailPanel: React.FC<SurveyAnalyticsDetailPanelProp
   const [districtStats, setDistrictStats] = useState<DistrictStat[]>([]);
   const [dailyStats, setDailyStats] = useState<DailyStat[]>([]);
   const [topUsers, setTopUsers] = useState<UserStat[]>([]);
+  const [locationPoints, setLocationPoints] = useState<Array<{ latitude: number; longitude: number; count: number }>>([]);
+  const [questionCharts, setQuestionCharts] = useState<QuestionChartData[]>([]);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [responsesPage, setResponsesPage] = useState(0);
   const [responsesSearch, setResponsesSearch] = useState('');
   const [selectedContributor, setSelectedContributor] = useState<UserStat | null>(null);
   const [contributorModalData, setContributorModalData] = useState<{ response: any; questions: any[] } | null>(null);
   const [isLoadingContributorModal, setIsLoadingContributorModal] = useState(false);
+  const [districtPage, setDistrictPage] = useState(0);
+  const [dailyPage, setDailyPage] = useState(0);
+  const [contributorsPage, setContributorsPage] = useState(0);
 
   const isRespondentSurvey = survey.type !== 'agent';
 
@@ -1315,10 +1386,15 @@ export const SurveyAnalyticsDetailPanel: React.FC<SurveyAnalyticsDetailPanelProp
     setResponsesSearch('');
     setSelectedContributor(null);
     setContributorModalData(null);
+    setDistrictPage(0);
+    setDailyPage(0);
+    setContributorsPage(0);
     setZonalStats([]);
     setDistrictStats([]);
     setDailyStats([]);
     setTopUsers([]);
+    setLocationPoints([]);
+    setQuestionCharts([]);
 
     if (!survey.surveyId) return;
     setIsLoadingDetails(true);
@@ -1328,13 +1404,18 @@ export const SurveyAnalyticsDetailPanel: React.FC<SurveyAnalyticsDetailPanelProp
       surveyService.getDistrictBreakdown(survey.surveyId),
       surveyService.getDailyBreakdown(survey.surveyId, 14),
       surveyService.getTopUsers(survey.surveyId, 1000),
-    ]).then(([zonalRes, districtRes, dailyRes, usersRes]) => {
+      surveyService.getLocationBreakdown(survey.surveyId),
+      surveyService.getQuestionAnalytics(survey.surveyId),
+    ]).then(([zonalRes, districtRes, dailyRes, usersRes, locRes, chartsRes]) => {
       if (zonalRes.success && Array.isArray(zonalRes.data)) setZonalStats(zonalRes.data.filter((s: ZonalStat) => s && s.zone && typeof s.count === 'number'));
       if (districtRes.success && Array.isArray(districtRes.data)) setDistrictStats(districtRes.data.filter((s: DistrictStat) => s && s.district && typeof s.count === 'number'));
       if (dailyRes.success && Array.isArray(dailyRes.data)) setDailyStats(dailyRes.data.filter((s: DailyStat) => s && s.date && typeof s.count === 'number'));
       if (usersRes.success && Array.isArray(usersRes.data)) setTopUsers(usersRes.data.filter((u: UserStat) => u && u.userId && typeof u.total === 'number'));
+      if (locRes.success && Array.isArray(locRes.data)) setLocationPoints(locRes.data);
+      if (chartsRes.success && Array.isArray(chartsRes.data)) setQuestionCharts(chartsRes.data);
       setIsLoadingDetails(false);
     }).catch(() => {
+      setQuestionCharts([]);
       setIsLoadingDetails(false);
     });
   }, [survey.surveyId]);
@@ -1350,9 +1431,9 @@ export const SurveyAnalyticsDetailPanel: React.FC<SurveyAnalyticsDetailPanelProp
   return (
     <>
       {isRespondentSurvey ? (
-        /* Responses panel for respondent surveys */
+        /* Respondent survey — charts + map + response list */
         (() => {
-          const RESPONSES_PAGE_SIZE = 10;
+          const RESPONSES_PAGE_SIZE = 5;
           const q = responsesSearch.trim().toLowerCase();
           const filteredUsers = q
             ? topUsers.filter((u) => (u?.displayName || '').toLowerCase().includes(q) || (u?.userId || '').toLowerCase().includes(q))
@@ -1364,193 +1445,279 @@ export const SurveyAnalyticsDetailPanel: React.FC<SurveyAnalyticsDetailPanelProp
 
           return (
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Users className="w-5 h-5 text-primary" />
-                <h3 className="text-lg font-semibold text-gray-900">Responses ({topUsers.length})</h3>
-                <button onClick={onDownload} className="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary/5 transition-colors">
+              <div className="flex justify-end mb-4">
+                <button onClick={onDownload} className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary/5 transition-colors">
                   Download CSV
                 </button>
               </div>
-              {topUsers.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-sm text-gray-500">No responses yet</p>
+
+              <div className="flex gap-5 items-start">
+                {/* LEFT — Question charts */}
+                <div className="flex-[3] min-w-0">
+                  <Suspense fallback={<div className="space-y-4">{[1, 2, 3].map(i => <div key={i} className="h-48 animate-pulse bg-gray-50 rounded-xl border border-gray-200" />)}</div>}>
+                    <SurveyQuestionCharts questions={questionCharts} isLoading={false} />
+                  </Suspense>
                 </div>
-              ) : (
-                <>
-                  <div className="relative mb-3">
-                    <input type="text" value={responsesSearch} onChange={(e) => { setResponsesSearch(e.target.value); setResponsesPage(0); }}
-                      placeholder="Search responses…"
-                      className="w-full pl-8 pr-8 py-1.5 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder-gray-400" />
-                    <svg className="absolute left-2.5 top-2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
-                    </svg>
-                    {responsesSearch && (
-                      <button onClick={() => { setResponsesSearch(''); setResponsesPage(0); }} className="absolute right-2 top-1.5 text-gray-400 hover:text-gray-600">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
+
+                {/* RIGHT — Map + responses */}
+                <div className="flex-[2] min-w-0 space-y-5">
+
+                  {/* Response Locations */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <MapPin className="w-4 h-4 text-primary" />
+                      <h3 className="text-sm font-semibold text-gray-900">Response Locations</h3>
+                      <span className="text-xs text-gray-400">({locationPoints.reduce((s, p) => s + p.count, 0)} with GPS)</span>
+                    </div>
+                    <Suspense fallback={<div className="h-40 bg-gray-50 rounded-lg border border-gray-200 animate-pulse" />}>
+                      <SurveyLocationMap points={locationPoints} />
+                    </Suspense>
+                  </div>
+
+                  {/* Responses list */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Users className="w-4 h-4 text-primary" />
+                      <h3 className="text-sm font-semibold text-gray-900">Responses ({topUsers.length})</h3>
+                    </div>
+                    {topUsers.length === 0 ? (
+                      <p className="text-xs text-gray-500 text-center py-4">No responses yet</p>
+                    ) : (
+                      <>
+                        <div className="relative mb-2">
+                          <input type="text" value={responsesSearch} onChange={(e) => { setResponsesSearch(e.target.value); setResponsesPage(0); }}
+                            placeholder="Search…"
+                            className="w-full pl-7 pr-7 py-1.5 text-xs border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder-gray-400" />
+                          <svg className="absolute left-2 top-2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+                          </svg>
+                          {responsesSearch && (
+                            <button onClick={() => { setResponsesSearch(''); setResponsesPage(0); }} className="absolute right-2 top-1.5 text-gray-400 hover:text-gray-600">
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                        {filteredUsers.length === 0 ? (
+                          <p className="text-xs text-gray-500 text-center py-3">No matching responses</p>
+                        ) : (
+                          <>
+                            <div className="space-y-0.5">
+                              {pageItems.map((user, localIndex) => {
+                                const globalIndex = pageStart + localIndex;
+                                return (
+                                  <div key={user?.userId || globalIndex}
+                                    className="flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                                    onClick={() => user && openContributor(user)}>
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-[10px] flex-shrink-0">
+                                        #{globalIndex + 1}
+                                      </div>
+                                      <span className="text-xs font-medium text-gray-900 truncate max-w-[130px]">
+                                        {user?.displayName || (user?.userId ? `${user.userId.slice(0, 8)}...` : 'Unknown')}
+                                      </span>
+                                    </div>
+                                    <span className="text-[10px] text-primary font-semibold flex-shrink-0">View →</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            <MiniPager page={clampedPage} total={totalResponsePages} count={filteredUsers.length}
+                              onPrev={() => setResponsesPage(p => Math.max(0, p - 1))}
+                              onNext={() => setResponsesPage(p => Math.min(totalResponsePages - 1, p + 1))} />
+                          </>
+                        )}
+                      </>
                     )}
                   </div>
-                  {filteredUsers.length === 0 ? (
-                    <div className="text-center py-6"><p className="text-sm text-gray-500">No matching responses</p></div>
-                  ) : (
-                    <>
-                      <div className="space-y-1">
-                        {pageItems.map((user, localIndex) => {
-                          const globalIndex = pageStart + localIndex;
-                          return (
-                            <div key={user?.userId || globalIndex}
-                              className="flex items-center justify-between px-2 py-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-                              onClick={() => user && openContributor(user)}>
-                              <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm flex-shrink-0">
-                                  #{globalIndex + 1}
-                                </div>
-                                <div className="text-sm font-medium text-gray-900 truncate max-w-[200px]">
-                                  {user?.displayName || (user?.userId ? `${user.userId.slice(0, 8)}...` : 'Unknown')}
-                                </div>
-                              </div>
-                              <span className="text-xs text-primary font-semibold flex-shrink-0">View →</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                      {totalResponsePages > 1 && (
-                        <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
-                          <button onClick={() => setResponsesPage((p) => Math.max(0, p - 1))} disabled={clampedPage === 0}
-                            className="text-xs text-primary disabled:text-gray-300 hover:underline disabled:no-underline">‹ Prev</button>
-                          <span className="text-xs text-gray-500">Page {clampedPage + 1} of {totalResponsePages} · {filteredUsers.length} total</span>
-                          <button onClick={() => setResponsesPage((p) => Math.min(totalResponsePages - 1, p + 1))} disabled={clampedPage >= totalResponsePages - 1}
-                            className="text-xs text-primary disabled:text-gray-300 hover:underline disabled:no-underline">Next ›</button>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </>
-              )}
+
+                </div>
+              </div>
             </div>
           );
         })()
       ) : (
-        /* Agent survey analytics breakdown */
-        <div className="space-y-6">
-          <div className="flex justify-end">
+        /* Agent survey analytics breakdown - two-column layout */
+        <div>
+          {/* Download CSV button */}
+          <div className="flex justify-end mb-4">
             <button onClick={onDownload} className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary/5 transition-colors">
               Download CSV
             </button>
           </div>
 
-          {/* Zonal Breakdown */}
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <MapPin className="w-5 h-5 text-primary" />
-              <h3 className="text-base font-semibold text-gray-900">By Zone</h3>
+          <div className="flex gap-5 items-start">
+            {/* LEFT — Question charts (60%) */}
+            <div className="flex-[3] min-w-0">
+              <Suspense fallback={<div className="space-y-4">{[1, 2, 3].map(i => <div key={i} className="h-48 animate-pulse bg-gray-50 rounded-xl border border-gray-200" />)}</div>}>
+                <SurveyQuestionCharts questions={questionCharts} isLoading={false} />
+              </Suspense>
             </div>
-            {zonalStats.length === 0 ? (
-              <p className="text-sm text-gray-500 text-center py-4">No zonal data available</p>
-            ) : (
-              <div className="space-y-3">
-                {zonalStats.map((stat, index) => {
-                  const maxCount = Math.max(...zonalStats.map((s) => s?.count || 0), 1);
-                  const percentage = ((stat?.count || 0) / maxCount) * 100;
-                  return (
-                    <div key={stat.zone || index}>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="font-medium text-gray-700">{panelFormatZone(stat?.zone || 'Unknown')}</span>
-                        <span className="text-gray-900 font-semibold">{panelFormatNumber(stat?.count || 0)}</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className={`h-2 rounded-full ${panelGetZoneColor(stat?.zone || '', index)}`} style={{ width: `${Math.max(percentage, 0)}%` }} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
 
-          {/* District Breakdown */}
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <MapPin className="w-5 h-5 text-green-600" />
-              <h3 className="text-base font-semibold text-gray-900">By District</h3>
-            </div>
-            {districtStats.length === 0 ? (
-              <p className="text-sm text-gray-500 text-center py-4">No district data available</p>
-            ) : (
-              <div className="space-y-3">
-                {districtStats.slice(0, 10).map((stat, index) => {
-                  const maxCount = Math.max(...districtStats.map((s) => s?.count || 0), 1);
-                  const percentage = ((stat?.count || 0) / maxCount) * 100;
-                  return (
-                    <div key={stat.district || index}>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="font-medium text-gray-700">{stat?.district || 'Unknown'}</span>
-                        <span className="text-gray-900 font-semibold">{panelFormatNumber(stat?.count || 0)}</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className={`h-2 rounded-full ${panelGetDistrictColor(index)}`} style={{ width: `${Math.max(percentage, 0)}%` }} />
-                      </div>
-                    </div>
-                  );
-                })}
-                {districtStats.length > 10 && <p className="text-xs text-gray-400 text-center">+{districtStats.length - 10} more districts</p>}
-              </div>
-            )}
-          </div>
+            {/* RIGHT — Analytics sidebar (40%) */}
+            <div className="flex-[2] min-w-0 space-y-6">
 
-          {/* Daily Trend */}
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <Calendar className="w-5 h-5 text-primary" />
-              <h3 className="text-base font-semibold text-gray-900">Last 14 Days</h3>
-            </div>
-            {dailyStats.length === 0 ? (
-              <p className="text-sm text-gray-500 text-center py-4">No daily data available</p>
-            ) : (
-              <div className="space-y-2">
-                {dailyStats.slice(0, 7).map((stat, idx) => (
-                  <div key={stat?.date || idx} className="flex justify-between items-center text-sm">
-                    <span className="text-gray-600">{stat?.date ? panelFormatDate(stat.date) : 'Unknown'}</span>
-                    <span className="font-semibold text-gray-900">{panelFormatNumber(stat?.count ?? 0)}</span>
-                  </div>
-                ))}
+              {/* Response Locations */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <MapPin className="w-4 h-4 text-primary" />
+                  <h3 className="text-sm font-semibold text-gray-900">Response Locations</h3>
+                  <span className="text-xs text-gray-400">({locationPoints.reduce((s, p) => s + p.count, 0)} with GPS)</span>
+                </div>
+                <Suspense fallback={<div className="h-40 bg-gray-50 rounded-lg border border-gray-200 animate-pulse" />}>
+                  <SurveyLocationMap points={locationPoints} />
+                </Suspense>
               </div>
-            )}
-          </div>
 
-          {/* Top Contributors */}
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <Users className="w-5 h-5 text-primary" />
-              <h3 className="text-base font-semibold text-gray-900">Top Contributors</h3>
-            </div>
-            {topUsers.length === 0 ? (
-              <p className="text-sm text-gray-500 text-center py-4">No contributor data available</p>
-            ) : (
-              <div className="space-y-3">
-                {topUsers.slice(0, 10).map((user, index) => (
-                  <div key={user?.userId || index} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
-                        #{index + 1}
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {user?.displayName || (user?.userId ? `${user.userId.slice(0, 8)}...` : 'Unknown')}
+              {/* By Zone */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <MapPin className="w-4 h-4 text-primary" />
+                  <h3 className="text-sm font-semibold text-gray-900">By Zone</h3>
+                </div>
+                {zonalStats.length === 0 ? (
+                  <p className="text-xs text-gray-500 text-center py-3">No zonal data available</p>
+                ) : (
+                  <div className="space-y-2">
+                    {zonalStats.map((stat, index) => {
+                      const maxCount = Math.max(...zonalStats.map((s) => s?.count || 0), 1);
+                      const percentage = ((stat?.count || 0) / maxCount) * 100;
+                      return (
+                        <div key={stat.zone || index}>
+                          <div className="flex justify-between text-xs mb-1">
+                            <span className="font-medium text-gray-700">{panelFormatZone(stat?.zone || 'Unknown')}</span>
+                            <span className="text-gray-900 font-semibold">{panelFormatNumber(stat?.count || 0)}</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-1.5">
+                            <div className={`h-1.5 rounded-full ${panelGetZoneColor(stat?.zone || '', index)}`} style={{ width: `${Math.max(percentage, 0)}%` }} />
+                          </div>
                         </div>
-                        <div className="text-xs text-gray-500">{panelFormatZone(user?.zone || 'Unknown')}</div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-semibold text-gray-900">{panelFormatNumber(user?.total ?? 0)}</div>
-                      <div className="text-xs text-orange-600">+{user?.todayCount ?? 0} today</div>
-                    </div>
+                      );
+                    })}
                   </div>
-                ))}
+                )}
               </div>
-            )}
+
+              {/* By District — paginated 5 */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <MapPin className="w-4 h-4 text-green-600" />
+                  <h3 className="text-sm font-semibold text-gray-900">By District</h3>
+                </div>
+                {districtStats.length === 0 ? (
+                  <p className="text-xs text-gray-500 text-center py-3">No district data available</p>
+                ) : (() => {
+                  const PAGE_SIZE = 5;
+                  const totalPages = Math.ceil(districtStats.length / PAGE_SIZE);
+                  const cp = Math.min(districtPage, totalPages - 1);
+                  const slice = districtStats.slice(cp * PAGE_SIZE, (cp + 1) * PAGE_SIZE);
+                  const maxCount = Math.max(...districtStats.map(s => s?.count || 0), 1);
+                  return (
+                    <>
+                      <div className="space-y-2">
+                        {slice.map((stat, index) => {
+                          const pct = ((stat?.count || 0) / maxCount) * 100;
+                          return (
+                            <div key={stat.district || index}>
+                              <div className="flex justify-between text-xs mb-1">
+                                <span className="font-medium text-gray-700">{stat?.district || 'Unknown'}</span>
+                                <span className="text-gray-900 font-semibold">{panelFormatNumber(stat?.count || 0)}</span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                <div className={`h-1.5 rounded-full ${panelGetDistrictColor(cp * PAGE_SIZE + index)}`} style={{ width: `${Math.max(pct, 0)}%` }} />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <MiniPager page={cp} total={totalPages} count={districtStats.length}
+                        onPrev={() => setDistrictPage(p => Math.max(0, p - 1))}
+                        onNext={() => setDistrictPage(p => Math.min(totalPages - 1, p + 1))} />
+                    </>
+                  );
+                })()}
+              </div>
+
+              {/* Last 14 Days — paginated 5 */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Calendar className="w-4 h-4 text-primary" />
+                  <h3 className="text-sm font-semibold text-gray-900">Last 14 Days</h3>
+                </div>
+                {dailyStats.length === 0 ? (
+                  <p className="text-xs text-gray-500 text-center py-3">No daily data available</p>
+                ) : (() => {
+                  const PAGE_SIZE = 5;
+                  const totalPages = Math.ceil(dailyStats.length / PAGE_SIZE);
+                  const cp = Math.min(dailyPage, totalPages - 1);
+                  const slice = dailyStats.slice(cp * PAGE_SIZE, (cp + 1) * PAGE_SIZE);
+                  return (
+                    <>
+                      <div className="space-y-1.5">
+                        {slice.map((stat, idx) => (
+                          <div key={stat?.date || idx} className="flex justify-between items-center text-xs">
+                            <span className="text-gray-600">{stat?.date ? panelFormatDate(stat.date) : 'Unknown'}</span>
+                            <span className="font-semibold text-gray-900">{panelFormatNumber(stat?.count ?? 0)}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <MiniPager page={cp} total={totalPages} count={dailyStats.length}
+                        onPrev={() => setDailyPage(p => Math.max(0, p - 1))}
+                        onNext={() => setDailyPage(p => Math.min(totalPages - 1, p + 1))} />
+                    </>
+                  );
+                })()}
+              </div>
+
+              {/* Top Contributors — paginated 5 */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Users className="w-4 h-4 text-primary" />
+                  <h3 className="text-sm font-semibold text-gray-900">Top Contributors</h3>
+                </div>
+                {topUsers.length === 0 ? (
+                  <p className="text-xs text-gray-500 text-center py-3">No contributor data available</p>
+                ) : (() => {
+                  const PAGE_SIZE = 5;
+                  const totalPages = Math.ceil(topUsers.length / PAGE_SIZE);
+                  const cp = Math.min(contributorsPage, totalPages - 1);
+                  const slice = topUsers.slice(cp * PAGE_SIZE, (cp + 1) * PAGE_SIZE);
+                  return (
+                    <>
+                      <div className="space-y-2">
+                        {slice.map((user, index) => {
+                          const globalIndex = cp * PAGE_SIZE + index;
+                          return (
+                            <div key={user?.userId || index} className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs flex-shrink-0">
+                                  #{globalIndex + 1}
+                                </div>
+                                <div>
+                                  <div className="text-xs font-medium text-gray-900 truncate max-w-[110px]">
+                                    {user?.displayName || (user?.userId ? `${user.userId.slice(0, 8)}...` : 'Unknown')}
+                                  </div>
+                                  <div className="text-[10px] text-gray-500">{panelFormatZone(user?.zone || 'Unknown')}</div>
+                                </div>
+                              </div>
+                              <div className="text-right flex-shrink-0">
+                                <div className="text-xs font-semibold text-gray-900">{panelFormatNumber(user?.total ?? 0)}</div>
+                                <div className="text-[10px] text-orange-600">+{user?.todayCount ?? 0} today</div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <MiniPager page={cp} total={totalPages} count={topUsers.length}
+                        onPrev={() => setContributorsPage(p => Math.max(0, p - 1))}
+                        onNext={() => setContributorsPage(p => Math.min(totalPages - 1, p + 1))} />
+                    </>
+                  );
+                })()}
+              </div>
+
+            </div>
           </div>
         </div>
       )}

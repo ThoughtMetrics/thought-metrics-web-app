@@ -4,6 +4,8 @@ import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 import UserManagementService from '@/services/api/user-management.service';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
+import { useTrackingLinks } from '@/core/hooks/queries/analytics/index.queries';
+import { useAdminSurveysQuery } from '@/core/hooks/queries/survey-templates/index.queries';
 
 const AdminDashboardContent: React.FC = () => {
   const { user, userRole, isAdmin, isSuperAdmin, isAuthReady } = useAuth();
@@ -27,6 +29,12 @@ const AdminDashboardContent: React.FC = () => {
 
     fetchStats();
   }, []);
+
+  const { data: linksResponse } = useTrackingLinks();
+  const { data: surveysResponse } = useAdminSurveysQuery({ status: 'published', limit: 1 });
+
+  const activeCampaigns = (linksResponse?.data ?? []).filter((l) => l.isActive).length;
+  const publishedSurveys = surveysResponse?.total ?? 0;
 
   return (
     <div className="h-full flex bg-gray-50 text-text-dark">
@@ -79,18 +87,12 @@ const AdminDashboardContent: React.FC = () => {
               )}
             </div>
             <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-sm font-medium text-gray-600 mb-2">
-                Active Campaigns
-              </h3>
-              <p className="text-3xl font-bold text-gray-900">-</p>
-              <p className="text-sm text-gray-500 mt-2">Coming soon</p>
+              <h3 className="text-sm font-medium text-gray-600 mb-2">Active Campaigns</h3>
+              <p className="text-3xl font-bold text-gray-900">{activeCampaigns}</p>
             </div>
             <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-sm font-medium text-gray-600 mb-2">
-                Total Responses
-              </h3>
-              <p className="text-3xl font-bold text-gray-900">-</p>
-              <p className="text-sm text-gray-500 mt-2">Coming soon</p>
+              <h3 className="text-sm font-medium text-gray-600 mb-2">Published Surveys</h3>
+              <p className="text-3xl font-bold text-gray-900">{publishedSurveys}</p>
             </div>
           </div>
 
@@ -99,15 +101,11 @@ const AdminDashboardContent: React.FC = () => {
             <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <a
-                href="/admin/analytics"
+                href="/admin/surveys"
                 className="block p-4 border border-gray-200 rounded-lg hover:border-primary hover:bg-gray-50 transition-colors"
               >
-                <h3 className="font-medium text-gray-900 mb-1">
-                  View Analytics
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Check campaign performance and tracking data
-                </p>
+                <h3 className="font-medium text-gray-900 mb-1">Manage Surveys</h3>
+                <p className="text-sm text-gray-600">View surveys and campaign tracking links</p>
               </a>
               <a
                 href="/admin/users"
@@ -118,12 +116,13 @@ const AdminDashboardContent: React.FC = () => {
                   View and manage all users
                 </p>
               </a>
-              <div className="block p-4 border border-gray-200 rounded-lg opacity-50 cursor-not-allowed">
-                <h3 className="font-medium text-gray-900 mb-1">
-                  Create Campaign
-                </h3>
-                <p className="text-sm text-gray-600">Coming soon</p>
-              </div>
+              <a
+                href="/admin/create-tracking-link"
+                className="block p-4 border border-gray-200 rounded-lg hover:border-primary hover:bg-gray-50 transition-colors"
+              >
+                <h3 className="font-medium text-gray-900 mb-1">Create Campaign</h3>
+                <p className="text-sm text-gray-600">Create a new tracking link campaign</p>
+              </a>
               <div className="block p-4 border border-gray-200 rounded-lg opacity-50 cursor-not-allowed">
                 <h3 className="font-medium text-gray-900 mb-1">Settings</h3>
                 <p className="text-sm text-gray-600">Coming soon</p>
