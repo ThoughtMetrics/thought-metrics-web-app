@@ -35,6 +35,8 @@ export interface TrackingLink {
     pageViews: number;
     uniqueVisitors?: number;
     registrations?: number;
+    totalSessions?: number;
+    totalClicks?: number;
   };
   createdAt: string;
   updatedAt?: string;

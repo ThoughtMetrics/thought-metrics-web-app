@@ -27,7 +27,7 @@ export const useTemplateQuery = (
   });
 
 export const useAdminSurveysQuery = (
-  params?: { status?: string; page?: number; limit?: number },
+  params?: { status?: string; page?: number; limit?: number; type?: string },
   queryOptions?: Partial<UseQueryOptions<ApiResponse<ISurvey[]>>>
 ) =>
   useQuery({

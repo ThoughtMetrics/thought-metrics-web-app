@@ -430,6 +430,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
       const headers = [
         'Submitted At', 'Status',
         'Respondent Name', 'Respondent Email', 'Respondent Phone', 'User ID',
+        'Zone', 'District', 'AC Name', 'Latitude', 'Longitude',
         ...captureFields.map((f: any) => f.label),
         ...questions.flatMap((q: any) => [
           `${q.id}: ${q.text}`,
@@ -448,6 +449,11 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
           response.respondent?.email || '',
           formatPhone(response.respondent?.phone),
           response.respondent?.userId || '',
+          response.submitterZone ?? '',
+          response.submitterDistrict ?? '',
+          response.submitterAc ?? '',
+          response.location?.latitude ?? '',
+          response.location?.longitude ?? '',
           // Capture fields — resolved via storePath from template config (or fallback discovery)
           ...captureFields.map((f: any) => resolveCaptureValue(response, f)),
           // Question answers (file type extracts URL; other types formatted as before)
@@ -925,28 +931,27 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                         )}
                       </div>
 
-                      {/* District Breakdown — hidden for field-incharge */}
-                      {!isFieldIncharge && (
-                        <div className="bg-white rounded-lg shadow p-6">
-                          <div className="flex items-center gap-2 mb-4">
-                            <MapPin className="w-5 h-5 text-green-600" />
-                            <h3 className="text-lg font-semibold text-gray-900">By District</h3>
+                      {/* District Breakdown */}
+                      <div className="bg-white rounded-lg shadow p-6">
+                        <div className="flex items-center gap-2 mb-4">
+                          <MapPin className="w-5 h-5 text-green-600" />
+                          <h3 className="text-lg font-semibold text-gray-900">By District</h3>
+                        </div>
+                        {districtStats.length === 0 ? (
+                          <div className="text-center py-8">
+                            <p className="text-sm text-gray-500">No district data available</p>
+                            <p className="text-xs text-gray-400 mt-1">Data will appear after submissions are made</p>
                           </div>
-                          {districtStats.length === 0 ? (
-                            <div className="text-center py-8">
-                              <p className="text-sm text-gray-500">No district data available</p>
-                              <p className="text-xs text-gray-400 mt-1">Data will appear after submissions are made</p>
-                            </div>
-                          ) : (
-                            <div className="space-y-3">
-                              {districtStats.slice(0, 10).map((stat, index) => {
-                                const maxCount = Math.max(...districtStats.map((s) => s?.count || 0), 1);
-                                const percentage = ((stat?.count || 0) / maxCount) * 100;
-                                return (
-                                  <div key={stat.district || index}>
-                                    <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium text-gray-700">
-                                        {stat?.district || 'Unknown'}
+                        ) : (
+                          <div className="space-y-3">
+                            {districtStats.slice(0, 10).map((stat, index) => {
+                              const maxCount = Math.max(...districtStats.map((s) => s?.count || 0), 1);
+                              const percentage = ((stat?.count || 0) / maxCount) * 100;
+                              return (
+                                <div key={stat.district || index}>
+                                  <div className="flex justify-between text-sm mb-1">
+                                    <span className="font-medium text-gray-700">
+                                      {stat?.district || 'Unknown'}
                                       </span>
                                       <span className="text-gray-900 font-semibold">
                                         {formatNumber(stat?.count || 0)}
@@ -967,9 +972,8 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                 </p>
                               )}
                             </div>
-                          )}
-                        </div>
-                      )}
+                        )}
+                      </div>
 
                       {/* Daily Trend */}
                       <div className="bg-white rounded-lg shadow p-6">
@@ -1217,3 +1221,593 @@ export const SurveyAnalyticsDashboard: React.FC = () => {
 };
 
 export default SurveyAnalyticsDashboard;
+
+// ─── Extracted panel + modal for embedding in the Surveys hub ────────────────
+
+export interface SurveyAnalyticsDetailPanelProps {
+  survey: ISurvey;
+  onDownload: () => void;
+}
+
+export const SurveyAnalyticsDetailPanel: React.FC<SurveyAnalyticsDetailPanelProps> = ({ survey, onDownload }) => {
+  const { isFieldIncharge } = useAuth();
+  const [zonalStats, setZonalStats] = useState<ZonalStat[]>([]);
+  const [districtStats, setDistrictStats] = useState<DistrictStat[]>([]);
+  const [dailyStats, setDailyStats] = useState<DailyStat[]>([]);
+  const [topUsers, setTopUsers] = useState<UserStat[]>([]);
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+  const [responsesPage, setResponsesPage] = useState(0);
+  const [responsesSearch, setResponsesSearch] = useState('');
+  const [selectedContributor, setSelectedContributor] = useState<UserStat | null>(null);
+  const [contributorModalData, setContributorModalData] = useState<{ response: any; questions: any[] } | null>(null);
+  const [isLoadingContributorModal, setIsLoadingContributorModal] = useState(false);
+
+  const isRespondentSurvey = survey.type !== 'agent';
+
+  const formatAnswerForDisplay = (answer: any, questionType: string, options?: Array<{ value: string; label: string }>): string => {
+    if (answer === null || answer === undefined || answer === '') return '—';
+    const resolveLabel = (raw: string): string => {
+      if (options?.length) {
+        const match = options.find((o) => o.value === raw);
+        if (match) return match.label;
+      }
+      return raw;
+    };
+    switch (questionType) {
+      case 'mcq-single': return resolveLabel(typeof answer === 'object' ? JSON.stringify(answer) : String(answer));
+      case 'mcq-multiple': return Array.isArray(answer) ? answer.map((v) => resolveLabel(String(v))).join('; ') : String(answer);
+      case 'double-slider': return answer && typeof answer === 'object' ? `${answer.min} - ${answer.max}` : String(answer);
+      case 'ranking': return Array.isArray(answer) ? answer.join(' > ') : String(answer);
+      case 'max-diff':
+        if (answer && typeof answer === 'object') {
+          const best = Object.entries(answer).filter(([, v]) => v === 'best').map(([k]) => k).join('; ');
+          const worst = Object.entries(answer).filter(([, v]) => v === 'worst').map(([k]) => k).join('; ');
+          return `Best: ${best} | Worst: ${worst}`;
+        }
+        return String(answer);
+      case 'multi-slider': case 'matrix': case 'constant-sum':
+        return answer && typeof answer === 'object' ? Object.entries(answer).map(([k, v]) => `${k}: ${v}`).join('; ') : String(answer);
+      case 'file': return (answer && typeof answer === 'object') ? (answer.url || '') : (typeof answer === 'string' ? answer : '');
+      case 'currency': return answer !== null && answer !== undefined ? `₹${answer}` : '';
+      default: return typeof answer === 'object' ? JSON.stringify(answer) : String(answer);
+    }
+  };
+
+  const panelFormatNumber = (num: number) => new Intl.NumberFormat('en-US').format(num);
+  const panelFormatDate = (dateStr: string) => new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(new Date(dateStr));
+  const panelFormatZone = (zone: string) => zone.charAt(0).toUpperCase() + zone.slice(1).toLowerCase();
+
+  const panelGetZoneColor = (zone: string, index: number) => {
+    const zoneColors: Record<string, string> = { 'North': 'bg-blue-500', 'South': 'bg-green-500', 'East': 'bg-purple-500', 'West': 'bg-orange-500', 'Central': 'bg-teal-500' };
+    if (zoneColors[zone]) return zoneColors[zone];
+    const colors = ['bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-orange-500', 'bg-teal-500', 'bg-pink-500', 'bg-indigo-500', 'bg-red-500'];
+    return colors[index % colors.length];
+  };
+
+  const panelGetDistrictColor = (index: number) => {
+    const colors = ['bg-sky-500', 'bg-emerald-500', 'bg-violet-500', 'bg-amber-500', 'bg-rose-500', 'bg-cyan-500', 'bg-lime-500', 'bg-fuchsia-500'];
+    return colors[index % colors.length];
+  };
+
+  const openContributor = async (contributor: UserStat) => {
+    if (!survey.surveyId) return;
+    setSelectedContributor(contributor);
+    setIsLoadingContributorModal(true);
+    setContributorModalData(null);
+    try {
+      const [detailsRes, responsesRes] = await Promise.all([
+        surveyService.getSurveyDetails(survey.surveyId),
+        surveyService.getSurveyResponses(survey.surveyId, { limit: 1000 }),
+      ]);
+      const questions = (detailsRes.data?.template?.questions ?? []).slice().sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
+      const responses: any[] = Array.isArray(responsesRes.data) ? responsesRes.data : [];
+      const match = responses.find((r) => r.respondent?.userId === contributor.userId) ?? null;
+      setContributorModalData({ response: match, questions });
+    } catch {
+      setContributorModalData({ response: null, questions: [] });
+    } finally {
+      setIsLoadingContributorModal(false);
+    }
+  };
+
+  useEffect(() => {
+    setResponsesPage(0);
+    setResponsesSearch('');
+    setSelectedContributor(null);
+    setContributorModalData(null);
+    setZonalStats([]);
+    setDistrictStats([]);
+    setDailyStats([]);
+    setTopUsers([]);
+
+    if (!survey.surveyId) return;
+    setIsLoadingDetails(true);
+
+    Promise.all([
+      surveyService.getZonalBreakdown(survey.surveyId),
+      surveyService.getDistrictBreakdown(survey.surveyId),
+      surveyService.getDailyBreakdown(survey.surveyId, 14),
+      surveyService.getTopUsers(survey.surveyId, 1000),
+    ]).then(([zonalRes, districtRes, dailyRes, usersRes]) => {
+      if (zonalRes.success && Array.isArray(zonalRes.data)) setZonalStats(zonalRes.data.filter((s: ZonalStat) => s && s.zone && typeof s.count === 'number'));
+      if (districtRes.success && Array.isArray(districtRes.data)) setDistrictStats(districtRes.data.filter((s: DistrictStat) => s && s.district && typeof s.count === 'number'));
+      if (dailyRes.success && Array.isArray(dailyRes.data)) setDailyStats(dailyRes.data.filter((s: DailyStat) => s && s.date && typeof s.count === 'number'));
+      if (usersRes.success && Array.isArray(usersRes.data)) setTopUsers(usersRes.data.filter((u: UserStat) => u && u.userId && typeof u.total === 'number'));
+      setIsLoadingDetails(false);
+    }).catch(() => {
+      setIsLoadingDetails(false);
+    });
+  }, [survey.surveyId]);
+
+  if (isLoadingDetails) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {isRespondentSurvey ? (
+        /* Responses panel for respondent surveys */
+        (() => {
+          const RESPONSES_PAGE_SIZE = 10;
+          const q = responsesSearch.trim().toLowerCase();
+          const filteredUsers = q
+            ? topUsers.filter((u) => (u?.displayName || '').toLowerCase().includes(q) || (u?.userId || '').toLowerCase().includes(q))
+            : topUsers;
+          const totalResponsePages = Math.max(1, Math.ceil(filteredUsers.length / RESPONSES_PAGE_SIZE));
+          const clampedPage = Math.min(responsesPage, totalResponsePages - 1);
+          const pageStart = clampedPage * RESPONSES_PAGE_SIZE;
+          const pageItems = filteredUsers.slice(pageStart, pageStart + RESPONSES_PAGE_SIZE);
+
+          return (
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <Users className="w-5 h-5 text-primary" />
+                <h3 className="text-lg font-semibold text-gray-900">Responses ({topUsers.length})</h3>
+                <button onClick={onDownload} className="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary/5 transition-colors">
+                  Download CSV
+                </button>
+              </div>
+              {topUsers.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-sm text-gray-500">No responses yet</p>
+                </div>
+              ) : (
+                <>
+                  <div className="relative mb-3">
+                    <input type="text" value={responsesSearch} onChange={(e) => { setResponsesSearch(e.target.value); setResponsesPage(0); }}
+                      placeholder="Search responses…"
+                      className="w-full pl-8 pr-8 py-1.5 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder-gray-400" />
+                    <svg className="absolute left-2.5 top-2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+                    </svg>
+                    {responsesSearch && (
+                      <button onClick={() => { setResponsesSearch(''); setResponsesPage(0); }} className="absolute right-2 top-1.5 text-gray-400 hover:text-gray-600">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                  {filteredUsers.length === 0 ? (
+                    <div className="text-center py-6"><p className="text-sm text-gray-500">No matching responses</p></div>
+                  ) : (
+                    <>
+                      <div className="space-y-1">
+                        {pageItems.map((user, localIndex) => {
+                          const globalIndex = pageStart + localIndex;
+                          return (
+                            <div key={user?.userId || globalIndex}
+                              className="flex items-center justify-between px-2 py-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                              onClick={() => user && openContributor(user)}>
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm flex-shrink-0">
+                                  #{globalIndex + 1}
+                                </div>
+                                <div className="text-sm font-medium text-gray-900 truncate max-w-[200px]">
+                                  {user?.displayName || (user?.userId ? `${user.userId.slice(0, 8)}...` : 'Unknown')}
+                                </div>
+                              </div>
+                              <span className="text-xs text-primary font-semibold flex-shrink-0">View →</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {totalResponsePages > 1 && (
+                        <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+                          <button onClick={() => setResponsesPage((p) => Math.max(0, p - 1))} disabled={clampedPage === 0}
+                            className="text-xs text-primary disabled:text-gray-300 hover:underline disabled:no-underline">‹ Prev</button>
+                          <span className="text-xs text-gray-500">Page {clampedPage + 1} of {totalResponsePages} · {filteredUsers.length} total</span>
+                          <button onClick={() => setResponsesPage((p) => Math.min(totalResponsePages - 1, p + 1))} disabled={clampedPage >= totalResponsePages - 1}
+                            className="text-xs text-primary disabled:text-gray-300 hover:underline disabled:no-underline">Next ›</button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+          );
+        })()
+      ) : (
+        /* Agent survey analytics breakdown */
+        <div className="space-y-6">
+          <div className="flex justify-end">
+            <button onClick={onDownload} className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary/5 transition-colors">
+              Download CSV
+            </button>
+          </div>
+
+          {/* Zonal Breakdown */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <MapPin className="w-5 h-5 text-primary" />
+              <h3 className="text-base font-semibold text-gray-900">By Zone</h3>
+            </div>
+            {zonalStats.length === 0 ? (
+              <p className="text-sm text-gray-500 text-center py-4">No zonal data available</p>
+            ) : (
+              <div className="space-y-3">
+                {zonalStats.map((stat, index) => {
+                  const maxCount = Math.max(...zonalStats.map((s) => s?.count || 0), 1);
+                  const percentage = ((stat?.count || 0) / maxCount) * 100;
+                  return (
+                    <div key={stat.zone || index}>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="font-medium text-gray-700">{panelFormatZone(stat?.zone || 'Unknown')}</span>
+                        <span className="text-gray-900 font-semibold">{panelFormatNumber(stat?.count || 0)}</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className={`h-2 rounded-full ${panelGetZoneColor(stat?.zone || '', index)}`} style={{ width: `${Math.max(percentage, 0)}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* District Breakdown */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <MapPin className="w-5 h-5 text-green-600" />
+              <h3 className="text-base font-semibold text-gray-900">By District</h3>
+            </div>
+            {districtStats.length === 0 ? (
+              <p className="text-sm text-gray-500 text-center py-4">No district data available</p>
+            ) : (
+              <div className="space-y-3">
+                {districtStats.slice(0, 10).map((stat, index) => {
+                  const maxCount = Math.max(...districtStats.map((s) => s?.count || 0), 1);
+                  const percentage = ((stat?.count || 0) / maxCount) * 100;
+                  return (
+                    <div key={stat.district || index}>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="font-medium text-gray-700">{stat?.district || 'Unknown'}</span>
+                        <span className="text-gray-900 font-semibold">{panelFormatNumber(stat?.count || 0)}</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className={`h-2 rounded-full ${panelGetDistrictColor(index)}`} style={{ width: `${Math.max(percentage, 0)}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+                {districtStats.length > 10 && <p className="text-xs text-gray-400 text-center">+{districtStats.length - 10} more districts</p>}
+              </div>
+            )}
+          </div>
+
+          {/* Daily Trend */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <Calendar className="w-5 h-5 text-primary" />
+              <h3 className="text-base font-semibold text-gray-900">Last 14 Days</h3>
+            </div>
+            {dailyStats.length === 0 ? (
+              <p className="text-sm text-gray-500 text-center py-4">No daily data available</p>
+            ) : (
+              <div className="space-y-2">
+                {dailyStats.slice(0, 7).map((stat, idx) => (
+                  <div key={stat?.date || idx} className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600">{stat?.date ? panelFormatDate(stat.date) : 'Unknown'}</span>
+                    <span className="font-semibold text-gray-900">{panelFormatNumber(stat?.count ?? 0)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Top Contributors */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <Users className="w-5 h-5 text-primary" />
+              <h3 className="text-base font-semibold text-gray-900">Top Contributors</h3>
+            </div>
+            {topUsers.length === 0 ? (
+              <p className="text-sm text-gray-500 text-center py-4">No contributor data available</p>
+            ) : (
+              <div className="space-y-3">
+                {topUsers.slice(0, 10).map((user, index) => (
+                  <div key={user?.userId || index} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
+                        #{index + 1}
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {user?.displayName || (user?.userId ? `${user.userId.slice(0, 8)}...` : 'Unknown')}
+                        </div>
+                        <div className="text-xs text-gray-500">{panelFormatZone(user?.zone || 'Unknown')}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-semibold text-gray-900">{panelFormatNumber(user?.total ?? 0)}</div>
+                      <div className="text-xs text-orange-600">+{user?.todayCount ?? 0} today</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Contributor Answers Modal */}
+      {selectedContributor !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 flex flex-col max-h-[85vh]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900 truncate pr-4">
+                {selectedContributor.displayName || (selectedContributor.userId ? `${selectedContributor.userId.slice(0, 8)}...` : 'Contributor')}
+              </h2>
+              <button onClick={() => { setSelectedContributor(null); setContributorModalData(null); }} className="text-gray-400 hover:text-gray-600 text-xl leading-none flex-shrink-0">✕</button>
+            </div>
+            <div className="overflow-y-auto flex-1 p-6">
+              {isLoadingContributorModal ? (
+                <div className="flex items-center justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
+              ) : contributorModalData?.response == null ? (
+                <p className="text-gray-500 text-sm text-center py-8">No response found for this contributor.</p>
+              ) : (
+                <>
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-5 text-sm space-y-1">
+                    {contributorModalData.response.respondent?.name && (
+                      <div className="flex gap-3"><span className="text-gray-500 w-20 flex-shrink-0">Name</span><span className="text-gray-900">{contributorModalData.response.respondent.name}</span></div>
+                    )}
+                    {contributorModalData.response.respondent?.phone && (
+                      <div className="flex gap-3"><span className="text-gray-500 w-20 flex-shrink-0">Phone</span><span className="text-gray-900">{contributorModalData.response.respondent.phone}</span></div>
+                    )}
+                    {contributorModalData.response.respondent?.email && (
+                      <div className="flex gap-3"><span className="text-gray-500 w-20 flex-shrink-0">Email</span><span className="text-gray-900">{contributorModalData.response.respondent.email}</span></div>
+                    )}
+                    {contributorModalData.response.submittedAt && (
+                      <div className="flex gap-3"><span className="text-gray-500 w-20 flex-shrink-0">Submitted</span><span className="text-gray-900">{new Date(contributorModalData.response.submittedAt).toLocaleString()}</span></div>
+                    )}
+                  </div>
+                  <div className="space-y-4">
+                    {contributorModalData.questions.map((q: any) => {
+                      const answerMap = new Map<string, any>();
+                      (contributorModalData.response.answers || []).forEach((a: any) => answerMap.set(a.questionId, a));
+                      const entry = answerMap.get(q.id);
+                      const answerText = entry ? formatAnswerForDisplay(entry.answer, entry.questionType || q.questionType, q.config?.options) : '—';
+                      return (
+                        <div key={q.id}>
+                          <p className="text-xs font-semibold text-gray-500 mb-1">{q.text}</p>
+                          <p className="text-sm text-gray-900">{answerText}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export interface SurveyDownloadModalProps {
+  survey: ISurvey;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const SurveyDownloadModal: React.FC<SurveyDownloadModalProps> = ({ survey, isOpen, onClose }) => {
+  const [timePeriod, setTimePeriod] = useState<'1day' | '3days' | '1week' | '1month' | 'custom'>('1week');
+  const [customFromDate, setCustomFromDate] = useState('');
+  const [customToDate, setCustomToDate] = useState('');
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  if (!isOpen) return null;
+
+  const getDateRange = () => {
+    const now = new Date();
+    const end = new Date(now);
+    end.setHours(23, 59, 59, 999);
+    switch (timePeriod) {
+      case '1day': { const s = new Date(now); s.setDate(s.getDate() - 1); s.setHours(0, 0, 0, 0); return { startDate: s.toISOString(), endDate: end.toISOString() }; }
+      case '3days': { const s = new Date(now); s.setDate(s.getDate() - 3); s.setHours(0, 0, 0, 0); return { startDate: s.toISOString(), endDate: end.toISOString() }; }
+      case '1week': { const s = new Date(now); s.setDate(s.getDate() - 7); s.setHours(0, 0, 0, 0); return { startDate: s.toISOString(), endDate: end.toISOString() }; }
+      case '1month': { const s = new Date(now); s.setMonth(s.getMonth() - 1); s.setHours(0, 0, 0, 0); return { startDate: s.toISOString(), endDate: end.toISOString() }; }
+      case 'custom': {
+        const s = new Date(customFromDate); s.setHours(0, 0, 0, 0);
+        const e = new Date(customToDate); e.setHours(23, 59, 59, 999);
+        return { startDate: s.toISOString(), endDate: e.toISOString() };
+      }
+      default: return { startDate: undefined, endDate: undefined };
+    }
+  };
+
+  const escapeField = (value: string): string => `"${String(value ?? '').replace(/"/g, '""')}"`;
+  const formatPhone = (phone: string | undefined): string => phone ? `\t${phone}` : '';
+  const fieldKeyToLabel = (key: string): string => key.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase()).trim();
+  const formatRawField = (value: any): string => {
+    if (value === null || value === undefined) return '';
+    if (typeof value === 'object' && !Array.isArray(value) && value.url) return value.url;
+    if (Array.isArray(value)) return value.join('; ');
+    return String(value);
+  };
+  const formatAnswer = (answer: any, questionType: string, options?: Array<{ value: string; label: string }>): string => {
+    if (answer === null || answer === undefined || answer === '') return '';
+    const resolveLabel = (raw: string): string => { const m = options?.find((o) => o.value === raw); return m ? m.label : raw; };
+    switch (questionType) {
+      case 'mcq-single': return resolveLabel(typeof answer === 'object' ? JSON.stringify(answer) : String(answer));
+      case 'mcq-multiple': return Array.isArray(answer) ? answer.map((v) => resolveLabel(String(v))).join('; ') : String(answer);
+      case 'double-slider': return answer && typeof answer === 'object' ? `${answer.min} - ${answer.max}` : String(answer);
+      case 'ranking': return Array.isArray(answer) ? answer.join(' > ') : String(answer);
+      case 'max-diff':
+        if (answer && typeof answer === 'object') {
+          const best = Object.entries(answer).filter(([, v]) => v === 'best').map(([k]) => k).join('; ');
+          const worst = Object.entries(answer).filter(([, v]) => v === 'worst').map(([k]) => k).join('; ');
+          return `Best: ${best} | Worst: ${worst}`;
+        }
+        return String(answer);
+      case 'multi-slider': case 'matrix': case 'constant-sum':
+        return answer && typeof answer === 'object' ? Object.entries(answer).map(([k, v]) => `${k}: ${v}`).join('; ') : String(answer);
+      case 'file': return (answer && typeof answer === 'object') ? (answer.url || '') : (typeof answer === 'string' ? answer : '');
+      case 'currency': return answer !== null && answer !== undefined ? `₹${answer}` : '';
+      default: return typeof answer === 'object' ? JSON.stringify(answer) : String(answer);
+    }
+  };
+
+  const handleDownload = async () => {
+    if (!survey.surveyId) return;
+    try {
+      setIsDownloading(true);
+      const { startDate, endDate } = getDateRange();
+      const [detailsResult, responsesResult] = await Promise.allSettled([
+        surveyService.getSurveyDetails(survey.surveyId),
+        surveyService.getSurveyResponses(survey.surveyId, { startDate, endDate, limit: 10000 }),
+      ]);
+      if (responsesResult.status === 'rejected') { alert('Failed to fetch responses. Please try again.'); return; }
+      const responses: any[] = Array.isArray(responsesResult.value.data) ? responsesResult.value.data : [];
+      if (responses.length === 0) { alert('No responses found for the selected time period.'); return; }
+
+      let questions: any[] = detailsResult.status === 'fulfilled' ? detailsResult.value.data?.template?.questions || [] : [];
+      if (questions.length === 0) {
+        const idSet = new Set<string>();
+        responses.forEach((r: any) => (r.answers || []).forEach((a: any) => { if (a.questionId) idSet.add(a.questionId); }));
+        questions = Array.from(idSet).map((id) => ({ id, text: id }));
+      }
+      questions = [...questions].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+      const templateCaptureFields: any[] = detailsResult.status === 'fulfilled' ? detailsResult.value.data?.template?.settings?.captureFields || [] : [];
+      let fallbackCaptureFields: Array<{ key: string; label: string; storePath: 'respondent' | 'root' }> = [];
+      if (templateCaptureFields.length === 0) {
+        const STANDARD_RESPONDENT_KEYS = new Set(['name', 'email', 'phone', 'userId']);
+        const STANDARD_RESPONSE_KEYS = new Set(['_id', 'surveyId', 'surveyTemplateId', 'respondent', 'answers', 'status', 'submittedAt', 'captureData']);
+        const seenKeys = new Set<string>();
+        responses.forEach((response: any) => {
+          if (response.respondent && typeof response.respondent === 'object') {
+            Object.keys(response.respondent).forEach((key) => {
+              const uid = `respondent::${key}`;
+              if (!STANDARD_RESPONDENT_KEYS.has(key) && !seenKeys.has(uid)) { seenKeys.add(uid); fallbackCaptureFields.push({ key, label: fieldKeyToLabel(key), storePath: 'respondent' }); }
+            });
+          }
+          Object.keys(response).forEach((key) => {
+            const uid = `root::${key}`;
+            if (!STANDARD_RESPONSE_KEYS.has(key) && !seenKeys.has(uid)) { seenKeys.add(uid); fallbackCaptureFields.push({ key, label: fieldKeyToLabel(key), storePath: 'root' }); }
+          });
+        });
+      }
+      const captureFields = templateCaptureFields.length > 0 ? templateCaptureFields : fallbackCaptureFields;
+      const resolveCaptureValue = (response: any, field: any): string => {
+        const path = field.storePath || 'root';
+        let raw: any;
+        if (path === 'respondent') raw = response.respondent?.[field.key];
+        else if (path === 'captureData') raw = response.captureData?.[field.key];
+        else raw = response[field.key];
+        return formatRawField(raw);
+      };
+
+      const headers = [
+        'Submitted At', 'Status', 'Respondent Name', 'Respondent Email', 'Respondent Phone', 'User ID',
+        'Zone', 'District', 'AC Name', 'Latitude', 'Longitude',
+        ...captureFields.map((f: any) => f.label),
+        ...questions.flatMap((q: any) => [`${q.id}: ${q.text}`, ...(q.allowComment ? [`${q.id}: ${q.text} (Comment)`] : [])]),
+      ];
+      const rows = responses.map((response: any) => {
+        const answerMap = new Map<string, any>();
+        (response.answers || []).forEach((a: any) => answerMap.set(a.questionId, a));
+        return [
+          new Date(response.submittedAt).toLocaleString(), response.status || '',
+          response.respondent?.name || '', response.respondent?.email || '',
+          formatPhone(response.respondent?.phone), response.respondent?.userId || '',
+          response.submitterZone ?? '', response.submitterDistrict ?? '', response.submitterAc ?? '',
+          response.location?.latitude ?? '', response.location?.longitude ?? '',
+          ...captureFields.map((f: any) => resolveCaptureValue(response, f)),
+          ...questions.flatMap((q: any) => {
+            const entry = answerMap.get(q.id);
+            return [entry ? formatAnswer(entry.answer, entry.questionType || q.questionType, q.config?.options) : '', ...(q.allowComment ? [entry?.comment || ''] : [])];
+          }),
+        ].map(escapeField).join(',');
+      });
+
+      const csv = [headers.map(escapeField).join(','), ...rows].join('\n');
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${survey.surveyId}_${timePeriod}_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+      onClose();
+    } catch (err) {
+      console.error('[Download CSV] Error:', err);
+      alert('Failed to download responses. Please try again.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-900">Download Responses</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none">✕</button>
+        </div>
+        <p className="text-sm text-gray-600 mb-5">
+          <span className="font-medium">{survey.label}</span>
+          {survey.surveyId && <span className="ml-2 text-black">({survey.surveyId})</span>}
+        </p>
+        <div className="mb-4 text-black">
+          <label className="block text-sm font-medium text-gray-700 mb-2">Time Period</label>
+          <select value={timePeriod} onChange={(e) => setTimePeriod(e.target.value as typeof timePeriod)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white">
+            <option value="1day">Last 1 Day</option>
+            <option value="3days">Last 3 Days</option>
+            <option value="1week">Last 1 Week</option>
+            <option value="1month">Last 1 Month</option>
+            <option value="custom">Custom Range</option>
+          </select>
+        </div>
+        {timePeriod === 'custom' && (
+          <div className="grid grid-cols-2 gap-4 mb-4 text-black">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+              <input type="date" value={customFromDate} onChange={(e) => setCustomFromDate(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">To Date</label>
+              <input type="date" value={customToDate} onChange={(e) => setCustomToDate(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary" />
+            </div>
+          </div>
+        )}
+        <div className="flex justify-end gap-3 mt-6">
+          <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
+          <button onClick={handleDownload} disabled={isDownloading || (timePeriod === 'custom' && (!customFromDate || !customToDate))}
+            className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+            {isDownloading ? (<><Loader2 className="w-4 h-4 animate-spin" />Downloading...</>) : 'Download as CSV'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};

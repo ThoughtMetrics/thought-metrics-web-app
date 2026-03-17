@@ -1,6 +1,7 @@
 import type { SignUpData, UserProfile } from '@/core/types/user.type';
 import { getAuthErrorDetails } from '@/core/utils/firebase-error-handler';
 import authService from '@/services/api/auth.service';
+import analyticsService from '@/services/api/analytics.service';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -60,6 +61,11 @@ export const useSignUpMutation = () => {
       if (data) {
         toast.success('Account created successfully!', {
           description: `Welcome, ${data.profile?.displayName ?? data.profile?.firstName}!`,
+        });
+        // Fire tracking event if user arrived via a campaign link
+        void analyticsService.trackRegistration({
+          userId: data.firebaseUid ?? data._id ?? '',
+          email: data.email ?? undefined,
         });
       }
     },

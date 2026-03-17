@@ -309,6 +309,7 @@ class SurveyService {
     status?: string;
     page?: number;
     limit?: number;
+    type?: string;
   }): Promise<ApiResponse<ISurvey[]>> {
     const user = authService.getCurrentUser();
     if (!user) throw new Error('No authenticated user');

@@ -171,6 +171,13 @@ const LoginPage: React.FC = () => {
       return redirectAfter;
     }
 
+    // Honour ?redirect= param set by UserRouteGuard / AdminRouteGuard
+    const params = new URLSearchParams(window.location.search);
+    const redirectParam = params.get('redirect');
+    if (redirectParam) {
+      return redirectParam;
+    }
+
     return ROUTES.SURVEY_BOARDS;
   };
 
@@ -184,7 +191,10 @@ const LoginPage: React.FC = () => {
             user.getIdTokenResult(),
           ]);
           // Only intercept for email/password logins — Google users skip the reset screen
-          if (profile?.metadata?.forcePasswordReset && tokenResult.signInProvider === 'password') {
+          if (
+            profile?.metadata?.forcePasswordReset &&
+            tokenResult.signInProvider === 'password'
+          ) {
             window.location.href = ROUTES.FORCE_CHANGE_PASSWORD;
             return;
           }
@@ -317,7 +327,8 @@ const LoginPage: React.FC = () => {
               {translations.auth.login.redirecting || 'Signing you in...'}
             </h2>
             <p className="text-gray-600">
-              {translations.auth.login.pleaseWait || 'Please wait while we redirect you'}
+              {translations.auth.login.pleaseWait ||
+                'Please wait while we redirect you'}
             </p>
           </div>
         </div>
