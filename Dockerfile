@@ -6,6 +6,9 @@ WORKDIR /app
 RUN apk add --no-cache git ca-certificates && \
     git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
 
+# Disable Astro telemetry during build
+ENV ASTRO_TELEMETRY_DISABLED=1
+
 # Copy package files first (leverage Docker layer caching)
 COPY package.json yarn.lock ./
 

@@ -23,8 +23,18 @@ const FitBounds: React.FC<{ points: LocationPoint[] }> = ({ points }) => {
   return null;
 };
 
-const SurveyLocationMap: React.FC<{ points: LocationPoint[] }> = ({ points }) => {
-  const [expanded, setExpanded] = useState(false);
+
+interface SurveyLocationMapProps {
+  points: LocationPoint[];
+  expanded?: boolean;
+  onToggleExpand?: () => void;
+}
+
+const SurveyLocationMap: React.FC<SurveyLocationMapProps> = ({ points, expanded: controlledExpanded, onToggleExpand }) => {
+  const [internalExpanded, setInternalExpanded] = useState(false);
+  const isControlled = controlledExpanded !== undefined && onToggleExpand !== undefined;
+  const expanded = isControlled ? controlledExpanded : internalExpanded;
+  const toggleExpand = isControlled ? onToggleExpand : () => setInternalExpanded((e) => !e);
 
   useEffect(() => {
     const id = 'leaflet-css';
@@ -47,18 +57,18 @@ const SurveyLocationMap: React.FC<{ points: LocationPoint[] }> = ({ points }) =>
 
   const maxCount = Math.max(...points.map((p) => p.count), 1);
   const defaultCenter: [number, number] = [10.7905, 78.6557];
-  const mapHeight = expanded ? 500 : 220;
+  const mapHeight = expanded ? 450 : 220;
 
   return (
     <div
-      className="relative rounded-lg overflow-hidden border border-gray-200 transition-all duration-300"
+      className="relative rounded-lg overflow-hidden border border-gray-200 transition-all duration-300 ease-in-out"
       style={{ height: mapHeight }}
     >
       <MapContainer
         center={defaultCenter}
         zoom={7}
         style={{ height: '100%', width: '100%' }}
-        scrollWheelZoom={false}
+        scrollWheelZoom={true}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -84,7 +94,7 @@ const SurveyLocationMap: React.FC<{ points: LocationPoint[] }> = ({ points }) =>
 
       {/* Expand / collapse button */}
       <button
-        onClick={() => setExpanded((e) => !e)}
+        onClick={toggleExpand}
         title={expanded ? 'Collapse map' : 'Expand map'}
         className="absolute bottom-2 right-2 z-[1000] w-7 h-7 flex items-center justify-center rounded-md bg-white border border-gray-300 shadow-sm text-gray-600 hover:bg-gray-50 transition-colors"
       >

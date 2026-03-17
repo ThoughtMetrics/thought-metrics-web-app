@@ -8,7 +8,7 @@ import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import { useAuth } from '@/shared/providers/auth-provider';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 import { useAdminSurveysQuery } from '@/core/hooks/queries/survey-templates/index.queries';
-import { useUpdateSurveyInstance, useDuplicateTemplate } from '@/core/hooks/mutations/survey-template.mutations';
+import { useUpdateSurveyInstance } from '@/core/hooks/mutations/survey-template.mutations';
 import type { ISurvey } from '@/core/types/survey.type';
 import EditSurveyModal from './components/EditSurveyModal';
 import {
@@ -157,7 +157,6 @@ const CampaignDetailPanel: React.FC<{ link: TrackingLink }> = ({ link }) => {
 const SurveyManagementContent: React.FC = () => {
   const { isFieldIncharge, isAdmin } = useAuth();
   const updateSurvey = useUpdateSurveyInstance();
-  const duplicateTemplate = useDuplicateTemplate();
   const { data: linksResponse, isLoading: linksLoading } = useTrackingLinks();
   const links: TrackingLink[] = linksResponse?.data ?? [];
 
@@ -241,7 +240,7 @@ const SurveyManagementContent: React.FC = () => {
       toast.error('No template found to duplicate.');
       return;
     }
-    void duplicateTemplate.mutateAsync(survey.templateMongoId);
+    window.location.href = `/admin/survey-builder/${survey.templateMongoId}`;
   };
 
   const copyLink = (url: string) => {
@@ -260,7 +259,7 @@ const SurveyManagementContent: React.FC = () => {
 
   const hubTabs: { label: string; value: HubTab }[] = [
     { label: 'Campaigns', value: 'campaigns' },
-    { label: 'Templates', value: 'templates' },
+    { label: 'Surveys', value: 'templates' },
   ];
 
   return (
@@ -285,10 +284,10 @@ const SurveyManagementContent: React.FC = () => {
             )}
             {activeHubTab === 'templates' && (
               <a
-                href="/admin/survey-builder"
+                href="/admin/survey-builder/new"
                 className="px-5 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
               >
-                + New from Template
+                + New Survey
               </a>
             )}
           </div>
