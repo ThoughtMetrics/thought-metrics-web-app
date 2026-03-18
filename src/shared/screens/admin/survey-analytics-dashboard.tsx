@@ -16,6 +16,9 @@ import {
   Search,
   MoreVertical,
 } from 'lucide-react';
+import { FaFilePdf, FaFileExcel } from 'react-icons/fa';
+import * as XLSX from 'xlsx';
+import { generateSurveyReportPdf } from './survey-report-pdf';
 import { useAuth } from '@/shared/providers/auth-provider';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
@@ -52,7 +55,10 @@ interface UserStat {
   displayName?: string;
   total: number;
   zone: string;
+  district?: string;
+  ac?: string;
   todayCount: number;
+  dailyByDate?: { date: string; count: number }[];
 }
 
 const SurveyAnalyticsDashboardContent: React.FC = () => {
@@ -447,7 +453,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
     return `\t${phone}`;
   };
 
-  const handleDownloadCSV = async () => {
+  const handleDownloadXLSX = async () => {
     if (!downloadSurvey?.surveyId) return;
     try {
       setIsDownloading(true);
@@ -501,14 +507,6 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
       );
 
       // ── Capture fields from template settings ─────────────────────────────────
-      // captureFields is configured per-survey in MongoDB (template.settings.captureFields).
-      // Each entry declares a field key, a readable label, the data type, and where the
-      // value lives on the response document (root / respondent / captureData).
-      // This replaces hardcoded field names in the mobile app — the app reads this config
-      // and shows the matching capture UI; the CSV export uses the same config for columns.
-      //
-      // Fallback: if the template has no captureFields, scan response objects at runtime
-      // to stay backward-compatible with surveys whose templates predate this config.
       const templateCaptureFields: any[] =
         detailsResult.status === 'fulfilled'
           ? detailsResult.value.data?.template?.settings?.captureFields || []
@@ -585,7 +583,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
           : fallbackCaptureFields;
       // ─────────────────────────────────────────────────────────────────────────
 
-      // Build headers: fixed respondent info → capture fields → question columns (+ comments)
+      // Build header row
       const headers = [
         'Submitted At',
         'Status',
@@ -605,7 +603,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
         ]),
       ];
 
-      const rows = responses.map((response: any) => {
+      const dataRows = responses.map((response: any) => {
         const answerMap = new Map<string, any>();
         (response.answers || []).forEach((a: any) =>
           answerMap.set(a.questionId, a)
@@ -616,16 +614,14 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
           response.status || '',
           response.respondent?.name || '',
           response.respondent?.email || '',
-          formatPhone(response.respondent?.phone),
+          response.respondent?.phone || '',
           response.respondent?.userId || '',
           response.submitterZone ?? '',
           response.submitterDistrict ?? '',
           response.submitterAc ?? '',
           response.location?.latitude ?? '',
           response.location?.longitude ?? '',
-          // Capture fields — resolved via storePath from template config (or fallback discovery)
           ...captureFields.map((f: any) => resolveCaptureValue(response, f)),
-          // Question answers (file type extracts URL; other types formatted as before)
           ...questions.flatMap((q: any) => {
             const entry = answerMap.get(q.id);
             return [
@@ -639,24 +635,19 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
               ...(q.allowComment ? [entry?.comment || ''] : []),
             ];
           }),
-        ]
-          .map(escapeCSVField)
-          .join(',');
+        ];
       });
 
-      const csv = [headers.map(escapeCSVField).join(','), ...rows].join('\n');
-      const blob = new Blob(['\uFEFF' + csv], {
-        type: 'text/csv;charset=utf-8;',
-      });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${downloadSurvey.surveyId}_${timePeriod}_${new Date().toISOString().split('T')[0]}.csv`;
-      link.click();
-      URL.revokeObjectURL(url);
+      const worksheet = XLSX.utils.aoa_to_sheet([headers, ...dataRows]);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Responses');
+      XLSX.writeFile(
+        workbook,
+        `${downloadSurvey.surveyId}_${timePeriod}_${new Date().toISOString().split('T')[0]}.xlsx`
+      );
       setShowDownloadModal(false);
     } catch (err) {
-      console.error('[Download CSV] Error:', err);
+      console.error('[Download XLSX] Error:', err);
       alert('Failed to download responses. Please try again.');
     } finally {
       setIsDownloading(false);
@@ -1575,7 +1566,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">
-                Download Responses
+                Download Responses (XLSX)
               </h2>
               <button
                 onClick={() => setShowDownloadModal(false)}
@@ -1644,7 +1635,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                 Cancel
               </button>
               <button
-                onClick={handleDownloadCSV}
+                onClick={handleDownloadXLSX}
                 disabled={
                   isDownloading ||
                   (timePeriod === 'custom' &&
@@ -1658,7 +1649,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                     Downloading...
                   </>
                 ) : (
-                  'Download as CSV'
+                  'Download XLSX'
                 )}
               </button>
             </div>
@@ -1714,14 +1705,113 @@ const MiniPager: React.FC<{
   );
 };
 
+interface MultiSelectDropdownProps {
+  label: string;
+  options: string[];
+  selected: string[];
+  onChange: (v: string[]) => void;
+  placeholder?: string;
+  renderLabel?: (id: string) => string;
+}
+
+function MultiSelectDropdown({ label, options, selected, onChange, placeholder = 'All', renderLabel }: MultiSelectDropdownProps) {
+  const [open, setOpen] = React.useState(false);
+  const [search, setSearch] = React.useState('');
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+        setSearch('');
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  const getLabel = (opt: string) => renderLabel ? renderLabel(opt) : opt;
+  const filteredOptions = search.trim()
+    ? options.filter(opt => getLabel(opt).toLowerCase().includes(search.toLowerCase()))
+    : options;
+
+  const toggleOption = (opt: string) => {
+    onChange(selected.includes(opt) ? selected.filter(s => s !== opt) : [...selected, opt]);
+  };
+
+  const buttonText = selected.length === 0 ? `${label}: ${placeholder}` : `${label}: ${selected.length} selected`;
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => options.length > 0 && setOpen(o => !o)}
+        disabled={options.length === 0}
+        className={`px-3 py-2 text-sm border border-gray-300 rounded-md bg-white flex items-center gap-1 ${options.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 cursor-pointer'}`}
+      >
+        {buttonText}
+        <svg className="w-3 h-3 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+      </button>
+      {open && (
+        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-[200px]">
+          <div className="px-3 pt-2 pb-1 border-b border-gray-100">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                onClick={e => e.stopPropagation()}
+                autoFocus
+                className="w-full text-xs border border-gray-200 rounded px-2 py-1.5 pr-6 focus:outline-none focus:border-primary"
+              />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => setSearch('')}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="px-3 py-1.5 border-b border-gray-100 flex gap-3 text-xs">
+            <button type="button" className="text-primary hover:underline" onClick={() => onChange([...new Set([...selected, ...filteredOptions])])}>Select all</button>
+            <button type="button" className="text-gray-500 hover:underline" onClick={() => onChange(selected.filter(s => !filteredOptions.includes(s)))}>Clear</button>
+          </div>
+          <div className="max-h-48 overflow-y-auto">
+            {filteredOptions.length === 0 ? (
+              <p className="text-xs text-gray-400 text-center py-3">No matches</p>
+            ) : (
+              filteredOptions.map(opt => (
+                <label key={opt} className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer text-sm">
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(opt)}
+                    onChange={() => toggleOption(opt)}
+                    className="h-4 w-4 text-primary border-gray-300 rounded"
+                  />
+                  <span className="truncate">{getLabel(opt)}</span>
+                </label>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export interface SurveyAnalyticsDetailPanelProps {
   survey: ISurvey;
   onDownload: () => void;
+  pdfDownloadTrigger?: number;
 }
 
 export const SurveyAnalyticsDetailPanel: React.FC<
   SurveyAnalyticsDetailPanelProps
-> = ({ survey, onDownload }) => {
+> = ({ survey, onDownload, pdfDownloadTrigger }) => {
   const { isFieldIncharge } = useAuth();
   const [zonalStats, setZonalStats] = useState<ZonalStat[]>([]);
   const [districtStats, setDistrictStats] = useState<DistrictStat[]>([]);
@@ -1747,6 +1837,11 @@ export const SurveyAnalyticsDetailPanel: React.FC<
   const [contributorsPage, setContributorsPage] = useState(0);
 
   const [mapExpanded, setMapExpanded] = useState(false);
+  const [acStats, setAcStats] = useState<{ ac: string; count: number }[]>([]);
+  const [filterZones, setFilterZones] = useState<string[]>([]);
+  const [filterDistricts, setFilterDistricts] = useState<string[]>([]);
+  const [filterAcs, setFilterAcs] = useState<string[]>([]);
+  const [filterContributors, setFilterContributors] = useState<string[]>([]);
   const isRespondentSurvey = survey.type !== 'agent';
 
   const formatAnswerForDisplay = (
@@ -1899,6 +1994,11 @@ export const SurveyAnalyticsDetailPanel: React.FC<
     setTopUsers([]);
     setLocationPoints([]);
     setQuestionCharts([]);
+    setAcStats([]);
+    setFilterZones([]);
+    setFilterDistricts([]);
+    setFilterAcs([]);
+    setFilterContributors([]);
 
     if (!survey.surveyId) return;
     setIsLoadingDetails(true);
@@ -1910,9 +2010,10 @@ export const SurveyAnalyticsDetailPanel: React.FC<
       surveyService.getTopUsers(survey.surveyId, 1000),
       surveyService.getLocationBreakdown(survey.surveyId),
       surveyService.getQuestionAnalytics(survey.surveyId),
+      surveyService.getAcBreakdown(survey.surveyId),
     ])
       .then(
-        ([zonalRes, districtRes, dailyRes, usersRes, locRes, chartsRes]) => {
+        ([zonalRes, districtRes, dailyRes, usersRes, locRes, chartsRes, acRes]) => {
           if (zonalRes.success && Array.isArray(zonalRes.data))
             setZonalStats(
               zonalRes.data.filter(
@@ -1942,6 +2043,12 @@ export const SurveyAnalyticsDetailPanel: React.FC<
             setLocationPoints(locRes.data);
           if (chartsRes.success && Array.isArray(chartsRes.data))
             setQuestionCharts(chartsRes.data);
+          if (acRes.success && Array.isArray(acRes.data))
+            setAcStats(
+              acRes.data.filter(
+                (s: { ac: string; count: number }) => s && s.ac && typeof s.count === 'number'
+              )
+            );
           setIsLoadingDetails(false);
         }
       )
@@ -1950,6 +2057,67 @@ export const SurveyAnalyticsDetailPanel: React.FC<
         setIsLoadingDetails(false);
       });
   }, [survey.surveyId]);
+
+  // Re-fetch location + question charts when filters change (debounced 300 ms).
+  // Always translates zone/district/AC filters into userIds so we filter by
+  // respondent.userId — reliably stored in every response — rather than
+  // submitterZone/submitterDistrict/submitterAc which may be absent in older docs.
+  useEffect(() => {
+    if (!survey.surveyId) return;
+    const hasFilter = filterZones.length > 0 || filterDistricts.length > 0
+                    || filterAcs.length > 0 || filterContributors.length > 0;
+
+    let filters: { userIds: string[] } | undefined;
+    if (hasFilter) {
+      const matchingUsers = topUsers
+        .filter(u => !filterZones.length       || filterZones.includes(u.zone))
+        .filter(u => !filterDistricts.length   || (!!u.district && filterDistricts.includes(u.district)))
+        .filter(u => !filterAcs.length         || (!!u.ac && filterAcs.includes(u.ac)))
+        .filter(u => !filterContributors.length || filterContributors.includes(u.userId));
+      filters = { userIds: matchingUsers.map(u => u.userId) };
+    }
+
+    const sid = survey.surveyId as string;
+    const timer = setTimeout(() => {
+      Promise.all([
+        surveyService.getLocationBreakdown(sid, filters),
+        surveyService.getQuestionAnalytics(sid, undefined, filters),
+      ]).then(([locRes, chartsRes]) => {
+        if (locRes.success && Array.isArray(locRes.data))       setLocationPoints(locRes.data);
+        if (chartsRes.success && Array.isArray(chartsRes.data)) setQuestionCharts(chartsRes.data);
+      });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [filterZones, filterDistricts, filterAcs, filterContributors, survey.surveyId, topUsers]);
+
+  const generatePdf = () => {
+    generateSurveyReportPdf({
+      surveyLabel: survey.label || survey.surveyId || 'Survey',
+      totalResponses: topUsers.reduce((s, u) => s + (u.total ?? 0), 0),
+      questionCharts,
+      zonalStats,
+      districtStats,
+      dailyStats,
+      topUsers: topUsers.map((u) => ({
+        displayName: u.displayName,
+        zone: u.zone,
+        total: u.total,
+        todayCount: u.todayCount,
+      })),
+    });
+  };
+
+  const isFirstRenderRef = useRef(true);
+  useEffect(() => {
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false;
+      return;
+    }
+    if (pdfDownloadTrigger && pdfDownloadTrigger > 0) {
+      generatePdf();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pdfDownloadTrigger]);
 
   if (isLoadingDetails) {
     return (
@@ -2183,15 +2351,88 @@ export const SurveyAnalyticsDetailPanel: React.FC<
         })()
       ) : (
         /* Agent survey analytics breakdown - two-column layout */
+        (() => {
+          const isFiltered = filterZones.length > 0 || filterDistricts.length > 0
+                           || filterAcs.length > 0 || filterContributors.length > 0;
+
+          // Step 1 — compute visContributors (all four filter dimensions)
+          const visContributors = topUsers
+            .filter(u => !filterZones.length       || filterZones.includes(u.zone))
+            .filter(u => !filterDistricts.length   || (!!u.district && filterDistricts.includes(u.district)))
+            .filter(u => !filterAcs.length         || (!!u.ac && filterAcs.includes(u.ac)))
+            .filter(u => !filterContributors.length || filterContributors.includes(u.userId));
+
+          // Step 2 — derive breakdown sections from visContributors when filtered
+          const visZonal: ZonalStat[] = isFiltered
+            ? (() => {
+                const m = new Map<string, number>();
+                visContributors.forEach(u => m.set(u.zone, (m.get(u.zone) || 0) + u.total));
+                return Array.from(m, ([zone, count]) => ({ zone, count })).sort((a, b) => b.count - a.count);
+              })()
+            : zonalStats;
+
+          const visDistrict: DistrictStat[] = isFiltered
+            ? (() => {
+                const m = new Map<string, number>();
+                visContributors.forEach(u => { if (u.district) m.set(u.district, (m.get(u.district) || 0) + u.total); });
+                return Array.from(m, ([district, count]) => ({ district, count })).sort((a, b) => b.count - a.count);
+              })()
+            : districtStats;
+
+          const visAc: { ac: string; count: number }[] = isFiltered
+            ? (() => {
+                const m = new Map<string, number>();
+                visContributors.forEach(u => { if (u.ac) m.set(u.ac, (m.get(u.ac) || 0) + u.total); });
+                return Array.from(m, ([ac, count]) => ({ ac, count })).sort((a, b) => b.count - a.count);
+              })()
+            : acStats;
+
+          const visDailyStats: DailyStat[] = isFiltered
+            ? (() => {
+                const m = new Map<string, number>();
+                visContributors.forEach(u =>
+                  (u.dailyByDate || []).forEach(({ date, count }) => m.set(date, (m.get(date) || 0) + count))
+                );
+                return Array.from(m, ([date, count]) => ({ date, count }))
+                  .sort((a, b) => b.date.localeCompare(a.date))
+                  .slice(0, 14);
+              })()
+            : dailyStats;
+
+          // Cascading dropdown options
+          const zoneOptions = zonalStats.map(s => s.zone);
+          const districtOptions = filterZones.length
+            ? [...new Set(topUsers.filter(u => filterZones.includes(u.zone)).map(u => u.district).filter(Boolean) as string[])]
+            : districtStats.map(s => s.district);
+          const acOptions = (filterZones.length || filterDistricts.length)
+            ? [...new Set(topUsers
+                .filter(u => !filterZones.length    || filterZones.includes(u.zone))
+                .filter(u => !filterDistricts.length || (!!u.district && filterDistricts.includes(u.district)))
+                .map(u => u.ac).filter(Boolean) as string[])]
+            : acStats.map(s => s.ac);
+          // Contributor options: narrowed by zone/district/AC but NOT by the contributor
+          // filter itself — so you can always add more contributors to the selection.
+          const contributorOptions = topUsers
+            .filter(u => !filterZones.length     || filterZones.includes(u.zone))
+            .filter(u => !filterDistricts.length || (!!u.district && filterDistricts.includes(u.district)))
+            .filter(u => !filterAcs.length       || (!!u.ac && filterAcs.includes(u.ac)))
+            .map(u => u.userId);
+
+          const filteredTotal = visContributors.reduce((s, u) => s + (u.total ?? 0), 0);
+          return (
         <div>
-          {/* Download CSV button */}
-          <div className="flex justify-end mb-4">
-            <button
-              onClick={onDownload}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary/5 transition-colors"
-            >
-              Download CSV
-            </button>
+          {/* Filter bar */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            <MultiSelectDropdown label="Zone" options={zoneOptions} selected={filterZones} onChange={setFilterZones} />
+            <MultiSelectDropdown label="District" options={districtOptions} selected={filterDistricts} onChange={setFilterDistricts} />
+            <MultiSelectDropdown label="AC" options={acOptions} selected={filterAcs} onChange={setFilterAcs} />
+            <MultiSelectDropdown
+              label="Contributor"
+              options={contributorOptions}
+              selected={filterContributors}
+              onChange={setFilterContributors}
+              renderLabel={(id) => topUsers.find(u => u.userId === id)?.displayName || id.slice(0, 8) + '\u2026'}
+            />
           </div>
 
           {mapExpanded && (
@@ -2220,7 +2461,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
           )}
 
           <div className="flex gap-5 items-start">
-            {/* LEFT — Question charts */}
+            {/* LEFT — Question charts (Response Analysis) */}
             <div className="flex-3 min-w-0">
               <Suspense
                 fallback={
@@ -2277,15 +2518,15 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                     By Zone
                   </h3>
                 </div>
-                {zonalStats.length === 0 ? (
+                {visZonal.length === 0 ? (
                   <p className="text-xs text-gray-500 text-center py-3">
                     No zonal data available
                   </p>
                 ) : (
                   <div className="space-y-2">
-                    {zonalStats.map((stat, index) => {
+                    {visZonal.map((stat, index) => {
                       const maxCount = Math.max(
-                        ...zonalStats.map((s) => s?.count || 0),
+                        ...visZonal.map((s) => s?.count || 0),
                         1
                       );
                       const percentage = ((stat?.count || 0) / maxCount) * 100;
@@ -2320,7 +2561,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                     By District
                   </h3>
                 </div>
-                {districtStats.length === 0 ? (
+                {visDistrict.length === 0 ? (
                   <p className="text-xs text-gray-500 text-center py-3">
                     No district data available
                   </p>
@@ -2328,15 +2569,15 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                   (() => {
                     const PAGE_SIZE = 5;
                     const totalPages = Math.ceil(
-                      districtStats.length / PAGE_SIZE
+                      visDistrict.length / PAGE_SIZE
                     );
                     const cp = Math.min(districtPage, totalPages - 1);
-                    const slice = districtStats.slice(
+                    const slice = visDistrict.slice(
                       cp * PAGE_SIZE,
                       (cp + 1) * PAGE_SIZE
                     );
                     const maxCount = Math.max(
-                      ...districtStats.map((s) => s?.count || 0),
+                      ...visDistrict.map((s) => s?.count || 0),
                       1
                     );
                     return (
@@ -2367,7 +2608,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                         <MiniPager
                           page={cp}
                           total={totalPages}
-                          count={districtStats.length}
+                          count={visDistrict.length}
                           onPrev={() =>
                             setDistrictPage((p) => Math.max(0, p - 1))
                           }
@@ -2383,6 +2624,33 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                 )}
               </div>
 
+              {/* By AC */}
+              {visAc.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <MapPin className="w-4 h-4 text-orange-500" />
+                    <h3 className="text-sm font-semibold text-gray-900">By AC</h3>
+                  </div>
+                  <div className="space-y-2">
+                    {visAc.map((stat, index) => {
+                      const maxC = Math.max(...visAc.map(s => s.count), 1);
+                      const pct = (stat.count / maxC) * 100;
+                      return (
+                        <div key={stat.ac || index}>
+                          <div className="flex justify-between text-xs mb-1">
+                            <span className="font-medium text-gray-700">{stat.ac}</span>
+                            <span className="font-semibold text-gray-900">{panelFormatNumber(stat.count)}</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-1.5">
+                            <div className="h-1.5 rounded-full bg-orange-400" style={{ width: `${pct}%` }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Last 14 Days — paginated 5 */}
               <div>
                 <div className="flex items-center gap-2 mb-3">
@@ -2390,17 +2658,22 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                   <h3 className="text-sm font-semibold text-gray-900">
                     Last 14 Days
                   </h3>
+                  {isFiltered && (
+                    <span className="ml-auto text-[10px] text-primary font-semibold bg-primary/10 px-1.5 py-0.5 rounded">
+                      {panelFormatNumber(filteredTotal)} filtered
+                    </span>
+                  )}
                 </div>
-                {dailyStats.length === 0 ? (
+                {visDailyStats.length === 0 ? (
                   <p className="text-xs text-gray-500 text-center py-3">
                     No daily data available
                   </p>
                 ) : (
                   (() => {
                     const PAGE_SIZE = 5;
-                    const totalPages = Math.ceil(dailyStats.length / PAGE_SIZE);
+                    const totalPages = Math.ceil(visDailyStats.length / PAGE_SIZE);
                     const cp = Math.min(dailyPage, totalPages - 1);
-                    const slice = dailyStats.slice(
+                    const slice = visDailyStats.slice(
                       cp * PAGE_SIZE,
                       (cp + 1) * PAGE_SIZE
                     );
@@ -2426,7 +2699,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                         <MiniPager
                           page={cp}
                           total={totalPages}
-                          count={dailyStats.length}
+                          count={visDailyStats.length}
                           onPrev={() => setDailyPage((p) => Math.max(0, p - 1))}
                           onNext={() =>
                             setDailyPage((p) => Math.min(totalPages - 1, p + 1))
@@ -2445,17 +2718,22 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                   <h3 className="text-sm font-semibold text-gray-900">
                     Top Contributors
                   </h3>
+                  {isFiltered && (
+                    <span className="ml-auto text-[10px] text-primary font-semibold bg-primary/10 px-1.5 py-0.5 rounded">
+                      {visContributors.length} shown
+                    </span>
+                  )}
                 </div>
-                {topUsers.length === 0 ? (
+                {visContributors.length === 0 ? (
                   <p className="text-xs text-gray-500 text-center py-3">
                     No contributor data available
                   </p>
                 ) : (
                   (() => {
                     const PAGE_SIZE = 5;
-                    const totalPages = Math.ceil(topUsers.length / PAGE_SIZE);
+                    const totalPages = Math.ceil(visContributors.length / PAGE_SIZE);
                     const cp = Math.min(contributorsPage, totalPages - 1);
-                    const slice = topUsers.slice(
+                    const slice = visContributors.slice(
                       cp * PAGE_SIZE,
                       (cp + 1) * PAGE_SIZE
                     );
@@ -2500,7 +2778,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                         <MiniPager
                           page={cp}
                           total={totalPages}
-                          count={topUsers.length}
+                          count={visContributors.length}
                           onPrev={() =>
                             setContributorsPage((p) => Math.max(0, p - 1))
                           }
@@ -2518,6 +2796,8 @@ export const SurveyAnalyticsDetailPanel: React.FC<
             </div>
           </div>
         </div>
+          );
+        })()
       )}
 
       {/* Contributor Answers Modal */}
@@ -2906,7 +3186,7 @@ export const SurveyDownloadModal: React.FC<SurveyDownloadModalProps> = ({
           response.status || '',
           response.respondent?.name || '',
           response.respondent?.email || '',
-          formatPhone(response.respondent?.phone),
+          response.respondent?.phone || '',
           response.respondent?.userId || '',
           response.submitterZone ?? '',
           response.submitterDistrict ?? '',
@@ -2927,24 +3207,19 @@ export const SurveyDownloadModal: React.FC<SurveyDownloadModalProps> = ({
               ...(q.allowComment ? [entry?.comment || ''] : []),
             ];
           }),
-        ]
-          .map(escapeField)
-          .join(',');
+        ];
       });
 
-      const csv = [headers.map(escapeField).join(','), ...rows].join('\n');
-      const blob = new Blob(['\uFEFF' + csv], {
-        type: 'text/csv;charset=utf-8;',
-      });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${survey.surveyId}_${timePeriod}_${new Date().toISOString().split('T')[0]}.csv`;
-      link.click();
-      URL.revokeObjectURL(url);
+      const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Responses');
+      XLSX.writeFile(
+        workbook,
+        `${survey.surveyId}_${timePeriod}_${new Date().toISOString().split('T')[0]}.xlsx`
+      );
       onClose();
     } catch (err) {
-      console.error('[Download CSV] Error:', err);
+      console.error('[Download XLSX] Error:', err);
       alert('Failed to download responses. Please try again.');
     } finally {
       setIsDownloading(false);
@@ -2956,7 +3231,7 @@ export const SurveyDownloadModal: React.FC<SurveyDownloadModalProps> = ({
       <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">
-            Download Responses
+            Download Responses (XLSX)
           </h2>
           <button
             onClick={onClose}
@@ -3034,7 +3309,7 @@ export const SurveyDownloadModal: React.FC<SurveyDownloadModalProps> = ({
                 Downloading...
               </>
             ) : (
-              'Download as CSV'
+              'Download XLSX'
             )}
           </button>
         </div>

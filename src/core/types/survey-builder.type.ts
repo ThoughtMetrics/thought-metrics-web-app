@@ -77,7 +77,7 @@ export interface IBuilderTemplate {
 export interface ISurveyTemplateCreateRequest {
   name: string;
   translations: Record<SupportedBuilderLanguage, IBuilderTemplateTranslation>;
-  questions: Omit<IBuilderQuestion, 'id'>[];
+  questions: IBuilderQuestion[];
   settings: IBuilderSettings;
 }
 

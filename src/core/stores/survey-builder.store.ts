@@ -366,7 +366,7 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
         return {
           name: s.name,
           translations: s.translations,
-          questions: s.questions.map(({ id: _id, ...rest }) => rest),
+          questions: s.questions,
           settings: s.settings,
         };
       },
@@ -376,7 +376,7 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
         return {
           name: s.name,
           translations: s.translations,
-          questions: s.questions.map(({ id: _id, ...rest }) => rest),
+          questions: s.questions,
           settings: s.settings,
         };
       },

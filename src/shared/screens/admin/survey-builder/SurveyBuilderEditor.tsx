@@ -1,7 +1,6 @@
 // src/shared/screens/admin/survey-builder/SurveyBuilderEditor.tsx
 
 import React, { useEffect, useCallback, useState } from 'react';
-import { toast } from 'sonner';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
@@ -20,7 +19,7 @@ interface Props {
 const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
   const { data, isLoading, isError } = useTemplateQuery(templateId);
 
-  const { name, isDirty, questions, settings, translations, setName, setTranslation, loadTemplate, resetEditor, toCreateRequest, toUpdateRequest, selectQuestion } =
+  const { name, isDirty, questions, settings, translations, setName, setTranslation, loadTemplate, resetEditor, toCreateRequest, toUpdateRequest } =
     useSurveyBuilderStore();
 
   const createTemplate = useCreateTemplate();
@@ -61,19 +60,9 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
   };
 
   const handleSave = useCallback(async () => {
-    const enLabel = translations?.en?.label?.trim() ?? '';
-    if (!enLabel) {
-      toast.error('Survey title is required');
-      return;
-    }
-    const firstInvalid = questions.findIndex((q) => !q.translations.en.text.trim());
-    if (firstInvalid !== -1) {
-      toast.error(`Question ${questions[firstInvalid].order} has no English text`);
-      selectQuestion(firstInvalid);
-      return;
-    }
     // Auto-set internal name from label if still empty
-    if (!name.trim()) {
+    const enLabel = translations?.en?.label?.trim();
+    if (!name.trim() && enLabel) {
       setName(slugify(enLabel));
     }
     if (templateId) {
@@ -81,7 +70,7 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
     } else {
       await createTemplate.mutateAsync(toCreateRequest());
     }
-  }, [templateId, name, translations, questions, selectQuestion, toCreateRequest, toUpdateRequest, createTemplate, updateTemplate, setName]);
+  }, [templateId, name, translations, toCreateRequest, toUpdateRequest, createTemplate, updateTemplate, setName]);
 
   if (isLoading && templateId) {
     return (
@@ -96,8 +85,8 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
       <div className="h-full flex items-center justify-center bg-gray-50">
         <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-6 max-w-md text-center">
           <p className="font-medium mb-2">Failed to load template</p>
-          <a href="/admin/survey-builder" className="text-primary underline text-sm">
-            Back to Survey Builder
+          <a href="/admin/surveys" className="text-primary underline text-sm">
+            Back to Surveys
           </a>
         </div>
       </div>
@@ -112,9 +101,9 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
         {/* Header bar */}
         <div className="flex items-center gap-4 px-6 py-3 bg-white border-b border-gray-200 flex-shrink-0">
           <a
-            href="/admin/survey-builder"
+            href="/admin/surveys"
             className="text-gray-400 hover:text-gray-700 transition-colors flex-shrink-0"
-            title="Back to Survey Builder"
+            title="Back to Surveys"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -134,7 +123,7 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
               <span className="text-xs text-orange-500 font-medium">Unsaved changes</span>
             )}
 
-            {templateId && (
+            {templateId && !!translations?.en?.label?.trim() && questions.every((q) => !!q.translations.en.text.trim()) && (
               <button
                 onClick={() => setShowPublishModal(true)}
                 disabled={isSaving}
@@ -146,10 +135,10 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
 
             <button
               onClick={handleSave}
-              disabled={isSaving || !(translations?.en?.label?.trim())}
+              disabled={isSaving}
               className="px-4 py-1.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSaving ? 'Saving…' : 'Save'}
+              {isSaving ? 'Saving…' : 'Save Draft'}
             </button>
           </div>
         </div>
