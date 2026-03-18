@@ -52,6 +52,7 @@ export interface RespondentRegistrationFormStore {
   ) => void;
   updateCountryCode: (code: string) => void;
   nextStep: () => void;
+  skipStep: () => void;
   previousStep: () => void;
   resetForm: () => void;
   submitForm: (

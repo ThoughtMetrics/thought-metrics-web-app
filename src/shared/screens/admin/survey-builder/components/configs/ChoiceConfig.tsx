@@ -20,6 +20,33 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
   const hasOthers = options.some((o) => o.value === 'others');
   const regularOptions = options.filter((o) => o.value !== 'others');
 
+  const pasteFromClipboard = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      const lines = text
+        .split(/\r?\n/)
+        .map((line) =>
+          line
+            .replace(/^[\s\u2022\u2023\u25E6\u2043\u2219•\-\*]+/, '')
+            .replace(/^\d+[\.\)]\s*/, '')
+            .trim()
+        )
+        .filter(Boolean);
+      if (lines.length === 0) return;
+      const othersOpt = options.filter((o) => o.value === 'others');
+      const base = regularOptions.length;
+      const newOpts = lines.map((line, i) => ({
+        value: slugifyKey(line) || `opt${base + i + 1}`,
+        label: line,
+      }));
+      useSurveyBuilderStore.getState().setQuestionConfig(qIdx, {
+        options: [...regularOptions, ...newOpts, ...othersOpt],
+      });
+    } catch {
+      // clipboard access denied
+    }
+  };
+
   // Duplicate label detection (case-insensitive, among non-others options)
   const labelCounts = regularOptions.reduce<Record<string, number>>((acc, o) => {
     const key = o.label.trim().toLowerCase();
@@ -61,12 +88,26 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <label className="text-xs font-medium text-gray-700">Options</label>
-        <button
-          onClick={() => addOption(qIdx)}
-          className="text-xs text-primary hover:underline font-medium"
-        >
-          + Add Option
-        </button>
+        <div className="flex items-center gap-3">
+          {lang === 'en' && (
+            <button
+              onClick={pasteFromClipboard}
+              title="Paste options from clipboard — one per line"
+              className="text-xs text-gray-500 hover:text-primary font-medium flex items-center gap-1"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              Paste
+            </button>
+          )}
+          <button
+            onClick={() => addOption(qIdx)}
+            className="text-xs text-primary hover:underline font-medium"
+          >
+            + Add Option
+          </button>
+        </div>
       </div>
 
       <div className="space-y-2">

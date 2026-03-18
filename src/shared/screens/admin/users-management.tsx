@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '@/core/configs/firebase-config';
 import { useAuth } from '@/shared/providers/auth-provider';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
@@ -193,6 +195,25 @@ const UserManagementContent: React.FC = () => {
     setAcSearchText('');
     setShowRoleZonalModal(true);
     setOpenMenuId(null);
+  };
+
+  const handleResetPassword = async (userItem: UserProfile) => {
+    setOpenMenuId(null);
+    const email = userItem.email;
+    if (!email) {
+      toast.error('No email address found for this user');
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      toast.success(`Password reset email sent to ${email}`);
+    } catch (err: any) {
+      if (err.code === 'auth/user-not-found') {
+        toast.error('No account found with this email');
+      } else {
+        toast.error('Failed to send password reset email');
+      }
+    }
   };
 
   const handleEditSubmit = async (e: React.FormEvent) => {
@@ -660,6 +681,12 @@ const UserManagementContent: React.FC = () => {
                                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                     >
                                       {isFieldIncharge ? 'Change AC' : 'Change Role \u0026 Zonal'}
+                                    </button>
+                                    <button
+                                      onClick={() => void handleResetPassword(userItem)}
+                                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    >
+                                      Reset Password
                                     </button>
                                     <button
                                       onClick={() =>

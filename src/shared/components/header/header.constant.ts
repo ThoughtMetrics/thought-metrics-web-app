@@ -120,7 +120,7 @@ export const headerDropdownData = {
           items: [
             { label: 'Our Panel', path: ROUTES.OUR_PANEL },
             { label: 'Articles', path: ROUTES.RESOURCES },
-            { label: '' },
+            { label: 'Why join our survey panel?', path: ROUTES.RESPONDENT_LANDING },
             { label: '' },
           ],
         },

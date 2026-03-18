@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { editProfileFormConstant } from '@constants/page-constants/auth-constant';
+import {
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
+} from 'firebase/auth';
+import { auth } from '@/core/configs/firebase-config';
+import { editProfileFormConstant, COUNTRY_STATES_MAP } from '@constants/page-constants/auth-constant';
+import { FEATURE_FLAGS } from '@/core/configs/feature-flag-config';
+import { useAuth } from '@/shared/providers/auth-provider';
 import {
   CheckboxOutlineGroupAtom,
   PhoneInputAtom,
@@ -23,7 +31,6 @@ const {
   participationOptions,
   genders,
   months,
-  states,
   countries,
   countryCodes,
   defaultCountryCode,
@@ -94,6 +101,22 @@ const EditProfilePage: React.FC = () => {
 
   const [countryCode, setCountryCode] = useState(defaultCountryCode);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Password change state (separate from profile formData)
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPwd, setShowCurrentPwd] = useState(false);
+  const [showNewPwd, setShowNewPwd] = useState(false);
+  const [showConfirmPwd, setShowConfirmPwd] = useState(false);
+
+  const { user } = useAuth();
+  const isEmailProvider = user?.providerData.some(
+    (p) => p.providerId === 'password'
+  ) ?? false;
+
+  const filteredStates =
+    COUNTRY_STATES_MAP[formData.location?.countryOrRegion ?? ''] ?? [];
 
   // Populate form with existing profile data
   useEffect(() => {
@@ -219,32 +242,16 @@ const EditProfilePage: React.FC = () => {
     } else if (!emailRegexPattern.test(formData.email)) {
       newErrors.email = validationMessages.email.invalid;
     }
-    if (!formData.location.doorNumberOrStreetName?.trim())
-      newErrors['location.doorNumberOrStreetName'] =
-        validationMessages.doorNumberOrStreetName;
-    if (!formData.location.city?.trim())
-      newErrors['location.city'] = validationMessages.city;
-    if (!formData.location.state?.trim())
-      newErrors['location.state'] = validationMessages.state;
-    if (!formData.location.countryOrRegion?.trim())
-      newErrors['location.countryOrRegion'] =
-        validationMessages.countryOrRegion;
-    if (!formData.location.zipCode?.trim())
-      newErrors['location.zipCode'] = validationMessages.zipCode;
-    if (!formData.gender?.trim()) newErrors.gender = validationMessages.gender;
-    // if (
-    //   !formData.dateOfBirth.month ||
-    //   !formData.dateOfBirth.day ||
-    //   !formData.dateOfBirth.year
-    // ) {
-    //   newErrors.dateOfBirth = validationMessages.dateOfBirth;
-    // }
-
-    // Password validation only if password is provided
-    if (formData.password || formData.confirmPassword) {
-      if (formData.password !== formData.confirmPassword) {
+    // Password change validation (only if user started filling password fields)
+    if (newPassword || currentPassword || confirmPassword) {
+      if (!currentPassword.trim())
+        newErrors.currentPassword = 'Current password is required';
+      if (!newPassword.trim())
+        newErrors.newPassword = 'New password is required';
+      else if (newPassword.length < 8)
+        newErrors.newPassword = 'Password must be at least 8 characters';
+      if (newPassword !== confirmPassword)
         newErrors.confirmPassword = 'Passwords do not match';
-      }
     }
 
     setErrors(newErrors);
@@ -328,6 +335,37 @@ const EditProfilePage: React.FC = () => {
       };
 
       await updateProfileMutation.mutateAsync(updateData);
+
+      // Handle password change via Firebase if new password was provided
+      if (newPassword && isEmailProvider) {
+        const currentUser = auth.currentUser;
+        if (currentUser && currentUser.email) {
+          const credential = EmailAuthProvider.credential(
+            currentUser.email,
+            currentPassword
+          );
+          try {
+            await reauthenticateWithCredential(currentUser, credential);
+          } catch (err: any) {
+            if (
+              err.code === 'auth/wrong-password' ||
+              err.code === 'auth/invalid-credential'
+            ) {
+              toast.error('Current password is incorrect');
+            } else {
+              toast.error('Re-authentication failed. Profile saved, but password was not changed.');
+            }
+            return;
+          }
+          await updatePassword(currentUser, newPassword);
+          setCurrentPassword('');
+          setNewPassword('');
+          setConfirmPassword('');
+          toast.success('Profile and password updated successfully!');
+          setTimeout(() => { window.location.href = ROUTES.SURVEY_BOARDS; }, 1000);
+          return;
+        }
+      }
 
       // Redirect to survey page after successful update
       /* NOTE: Issues need to fix */
@@ -419,91 +457,190 @@ const EditProfilePage: React.FC = () => {
                 placeholder={translations.profile.selectGender}
               />
               {/* Location Fields */}
-              <TextInputAtom
-                id="doorNumberOrStreetName"
-                name="location.doorNumberOrStreetName"
-                label={translations.profile.doorNumberOrStreetName}
-                value={formData.location.doorNumberOrStreetName}
-                onChange={(e) =>
-                  updateField('location.doorNumberOrStreetName', e.target.value)
-                }
-                error={errors['location.doorNumberOrStreetName']}
-                required
-              />
-              <TextInputAtom
-                id="city"
-                name="location.city"
-                label={translations.profile.city}
-                value={formData.location.city}
-                onChange={(e) => updateField('location.city', e.target.value)}
-                error={errors['location.city']}
-                required
-              />
-              <TextInputAtom
-                id="district"
-                name="location.district"
-                label={`${translations.profile.district} (${translations.profile.optional})`}
-                value={formData.location.district}
-                onChange={(e) =>
-                  updateField('location.district', e.target.value)
-                }
-                error={errors['location.district']}
-              />
-              <SelectAtom
-                id="state"
-                name="location.state"
-                label={translations.profile.state}
-                value={formData.location.state}
-                onChange={(e) => updateField('location.state', e.target.value)}
-                options={states}
-                error={errors['location.state']}
-                required
-                placeholder={translations.profile.selectState}
-              />
-              <SelectAtom
-                id="countryOrRegion"
-                name="location.countryOrRegion"
-                label={translations.profile.country}
-                value={formData.location.countryOrRegion}
-                onChange={(e) =>
-                  updateField('location.countryOrRegion', e.target.value)
-                }
-                options={countries}
-                error={errors['location.countryOrRegion']}
-                required
-                placeholder={translations.profile.selectCountry}
-              />
-              <TextInputAtom
-                id="zipCode"
-                name="location.zipCode"
-                label={translations.profile.zipCode}
-                value={formData.location.zipCode}
-                onChange={(e) =>
-                  updateField('location.zipCode', e.target.value)
-                }
-                error={errors['location.zipCode']}
-                required
-                placeholder={translations.profile.zipCode}
-              />
-              {/* Password Fields (Optional) */}
-              {/* <TextInputAtom
-                id="password"
-                name="password"
-                label="Password (Optional)"
-                type="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                error={errors.password}
-              />
-              <TextInputAtom
-                id="confirmPassword"
-                name="confirmPassword"
-                label="Confirm Password"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                error={errors.confirmPassword}
-              /> */}
+              {FEATURE_FLAGS.showAddressFields && (
+                <>
+                  <TextInputAtom
+                    id="doorNumberOrStreetName"
+                    name="location.doorNumberOrStreetName"
+                    label={translations.profile.doorNumberOrStreetName}
+                    value={formData.location.doorNumberOrStreetName}
+                    onChange={(e) =>
+                      updateField('location.doorNumberOrStreetName', e.target.value)
+                    }
+                    error={errors['location.doorNumberOrStreetName']}
+                  />
+                  <TextInputAtom
+                    id="zipCode"
+                    name="location.zipCode"
+                    label={translations.profile.zipCode}
+                    value={formData.location.zipCode}
+                    onChange={(e) =>
+                      updateField('location.zipCode', e.target.value)
+                    }
+                    error={errors['location.zipCode']}
+                    placeholder={translations.profile.zipCode}
+                  />
+                  <SelectAtom
+                    id="countryOrRegion"
+                    name="location.countryOrRegion"
+                    label={translations.profile.country}
+                    value={formData.location.countryOrRegion}
+                    onChange={(e) =>
+                      updateField('location.countryOrRegion', e.target.value)
+                    }
+                    options={countries}
+                    error={errors['location.countryOrRegion']}
+                    placeholder={translations.profile.selectCountry}
+                  />
+                  <SelectAtom
+                    id="state"
+                    name="location.state"
+                    label={translations.profile.state}
+                    value={formData.location.state}
+                    onChange={(e) => updateField('location.state', e.target.value)}
+                    options={filteredStates}
+                    error={errors['location.state']}
+                    placeholder={translations.profile.selectState}
+                  />
+                  <TextInputAtom
+                    id="district"
+                    name="location.district"
+                    label={`${translations.profile.district} (${translations.profile.optional})`}
+                    value={formData.location.district}
+                    onChange={(e) =>
+                      updateField('location.district', e.target.value)
+                    }
+                    error={errors['location.district']}
+                  />
+                  <TextInputAtom
+                    id="city"
+                    name="location.city"
+                    label={translations.profile.city}
+                    value={formData.location.city}
+                    onChange={(e) => updateField('location.city', e.target.value)}
+                    error={errors['location.city']}
+                  />
+                </>
+              )}
+              {/* Password Change */}
+              <div className="space-y-3 pt-2 border-t border-gray-200">
+                  <p className="text-sm font-medium text-gray-700">
+                    Change Password{' '}
+                    <span className="font-normal text-gray-400">(optional)</span>
+                  </p>
+                  {!isEmailProvider && (
+                    <p className="text-xs text-gray-400 bg-gray-50 border border-gray-200 rounded px-3 py-2">
+                      Password change is not available for Google sign-in accounts.
+                    </p>
+                  )}
+                  {isEmailProvider && (
+                    <>
+                    {/* Current Password */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      Current Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showCurrentPwd ? 'text' : 'password'}
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        placeholder="Enter current password"
+                        className="w-full px-3 py-2 pr-10 border border-gray-300 focus:outline-none focus:border-primary text-black text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowCurrentPwd(!showCurrentPwd)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        {showCurrentPwd ? (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                          </svg>
+                        ) : (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
+                    {errors.currentPassword && (
+                      <p className="text-xs text-red-500 mt-1">{errors.currentPassword}</p>
+                    )}
+                  </div>
+                  {/* New Password */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      New Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showNewPwd ? 'text' : 'password'}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="Minimum 8 characters"
+                        className="w-full px-3 py-2 pr-10 border border-gray-300 focus:outline-none focus:border-primary text-black text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPwd(!showNewPwd)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        {showNewPwd ? (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                          </svg>
+                        ) : (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
+                    {errors.newPassword && (
+                      <p className="text-xs text-red-500 mt-1">{errors.newPassword}</p>
+                    )}
+                  </div>
+                  {/* Confirm New Password */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      Confirm New Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showConfirmPwd ? 'text' : 'password'}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Re-enter new password"
+                        className="w-full px-3 py-2 pr-10 border border-gray-300 focus:outline-none focus:border-primary text-black text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPwd(!showConfirmPwd)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        {showConfirmPwd ? (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                          </svg>
+                        ) : (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
+                    {errors.confirmPassword && (
+                      <p className="text-xs text-red-500 mt-1">{errors.confirmPassword}</p>
+                    )}
+                  </div>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Date of Birth */}

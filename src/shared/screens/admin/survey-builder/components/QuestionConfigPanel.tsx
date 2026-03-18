@@ -46,6 +46,7 @@ const QuestionConfigPanel: React.FC = () => {
     setActiveLanguage,
     setQuestionField,
     setQuestionTranslation,
+    changeQuestionType,
   } = useSurveyBuilderStore();
 
   if (selectedQuestionIndex === null) {
@@ -89,6 +90,44 @@ const QuestionConfigPanel: React.FC = () => {
 
   return (
     <div className="h-full bg-white flex flex-col">
+      {/* Question type selector */}
+      <div className="px-4 pt-3 pb-2 border-b border-gray-100">
+        <label className="block text-xs text-gray-500 mb-1.5 font-medium">Question Type</label>
+        <select
+          value={question.questionType}
+          onChange={(e) => changeQuestionType(selectedQuestionIndex!, e.target.value as QuestionType)}
+          className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+        >
+          <optgroup label="Text">
+            <option value={QuestionType.TEXT}>Short Text</option>
+            <option value={QuestionType.TEXTAREA}>Long Text</option>
+            <option value={QuestionType.NUMBER}>Number</option>
+            <option value={QuestionType.EMAIL}>Email</option>
+            <option value={QuestionType.PHONE}>Phone</option>
+            <option value={QuestionType.DATE}>Date</option>
+            <option value={QuestionType.CURRENCY}>Currency</option>
+          </optgroup>
+          <optgroup label="Choice">
+            <option value={QuestionType.MCQ_SINGLE}>Single Choice (MCQ)</option>
+            <option value={QuestionType.MCQ_MULTIPLE}>Multiple Choice</option>
+            <option value={QuestionType.RANKING}>Ranking</option>
+          </optgroup>
+          <optgroup label="Scale">
+            <option value={QuestionType.RATING}>Star Rating</option>
+            <option value={QuestionType.LIKERT_SCALE}>Likert Scale</option>
+            <option value={QuestionType.SCALE}>Slider Scale</option>
+            <option value={QuestionType.DOUBLE_SLIDER}>Double Slider</option>
+            <option value={QuestionType.MULTI_SLIDER}>Multi Slider</option>
+          </optgroup>
+          <optgroup label="Grid">
+            <option value={QuestionType.MATRIX}>Matrix</option>
+            <option value={QuestionType.MAX_DIFF}>Max Diff</option>
+            <option value={QuestionType.CONSTANT_SUM}>Constant Sum</option>
+            <option value={QuestionType.FILE}>File Upload</option>
+          </optgroup>
+        </select>
+      </div>
+
       {/* Lang tabs */}
       <div className="flex gap-1 p-3 border-b border-gray-200">
         {(['en', 'ta'] as SupportedBuilderLanguage[]).map((l) => (
