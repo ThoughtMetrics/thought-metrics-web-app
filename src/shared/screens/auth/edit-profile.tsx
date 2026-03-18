@@ -639,7 +639,6 @@ const EditProfilePage: React.FC = () => {
                   </div>
                     </>
                   )}
-                </div>
               </div>
             </div>
 
