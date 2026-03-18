@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { signUpFormConstant } from '@constants/page-constants/auth-constant';
+import { signUpFormConstant, COUNTRY_STATES_MAP } from '@constants/page-constants/auth-constant';
+import { FEATURE_FLAGS } from '@/core/configs/feature-flag-config';
 import type {
   RespondentRegistrationFormData,
   RespondentRegistrationFormStore,
@@ -30,7 +31,6 @@ const {
   participationOptions,
   genders,
   months,
-  states,
   countries,
   countryCodes,
   defaultCountryCode,
@@ -105,6 +105,15 @@ const storeImplementation = (set: any, get: any) => ({
     }
   },
 
+  skipStep: () =>
+    set(
+      (state: RespondentRegistrationFormStore) => ({
+        currentStep: state.currentStep + 1,
+      }),
+      false,
+      'skipStep'
+    ),
+
   previousStep: () =>
     set(
       (state: RespondentRegistrationFormStore) => ({
@@ -158,18 +167,6 @@ const storeImplementation = (set: any, get: any) => ({
         errors.confirmPassword = validationMessages.confirmPassword.required;
       else if (formData.password !== formData.confirmPassword)
         errors.confirmPassword = validationMessages.confirmPassword.mismatch;
-      if (!formData.location?.doorNumberOrStreetName?.trim())
-        errors['location.doorNumberOrStreetName'] =
-          validationMessages.doorNumberOrStreetName;
-      if (!formData.location?.city?.trim())
-        errors['location.city'] = validationMessages.city;
-      if (!formData.location?.state?.trim())
-        errors['location.state'] = validationMessages.state;
-      if (!formData.location?.countryOrRegion?.trim())
-        errors['location.countryOrRegion'] = validationMessages.countryOrRegion;
-      if (!formData.location?.zipCode?.trim())
-        errors['location.zipCode'] = validationMessages.zipCode;
-      if (!formData.gender?.trim()) errors.gender = validationMessages.gender;
       // if (
       //   formData.dateOfBirth &&
       //   (!formData.dateOfBirth.month ||
@@ -185,10 +182,7 @@ const storeImplementation = (set: any, get: any) => ({
     }
 
     if (step === 3) {
-      if (!formData.paymentMethod) {
-        errors.paymentMethod = 'Please select a payment method';
-      }
-
+      // paymentMethod is optional — empty/undefined treated as "skip"
       if (formData.paymentMethod === 'upi') {
         const hasUpiId = formData.payment?.upiId?.trim();
         const hasUpiMobile = formData.payment?.upiMobileNumber?.trim();
@@ -342,8 +336,12 @@ const RespondentSignUpPage: React.FC = () => {
     updateField,
     updateCountryCode,
     nextStep,
+    skipStep,
     submitForm,
   } = useRespondentRegistrationFormStore();
+
+  const filteredStates =
+    COUNTRY_STATES_MAP[formData.location?.countryOrRegion ?? ''] ?? [];
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -504,6 +502,14 @@ const RespondentSignUpPage: React.FC = () => {
     }
   };
 
+  const handleSkip = () => {
+    if (currentStep === 3) {
+      void submitForm(handleFirebaseSignUp);
+    } else {
+      skipStep();
+    }
+  };
+
   if (isSubmitted) {
     return (
       <div className="common-component bg-white text-black h-full overflow-y-scroll">
@@ -653,7 +659,8 @@ const RespondentSignUpPage: React.FC = () => {
                     {translations.auth.signup.step2}
                   </span>
                   <span className="text-sm">
-                    {translations.auth.signup.preferences}
+                    {translations.auth.signup.preferences}{' '}
+                    <span className="text-xs text-gray-400">(Optional)</span>
                   </span>
                 </div>
 
@@ -692,7 +699,8 @@ const RespondentSignUpPage: React.FC = () => {
                     {translations.auth.signup.step3}
                   </span>
                   <span className="text-sm">
-                    {translations.auth.signup.paymentInfo}
+                    {translations.auth.signup.paymentInfo}{' '}
+                    <span className="text-xs text-gray-400">(Optional)</span>
                   </span>
                 </div>
                 {currentStep > 3 && (
@@ -818,77 +826,76 @@ const RespondentSignUpPage: React.FC = () => {
                     placeholder="Select gender"
                   />
                   {/* Location Fields */}
-                  <TextInputAtom
-                    id="doorNumberOrStreetName"
-                    name="location.doorNumberOrStreetName"
-                    label={translations.auth.signup.doorNumber}
-                    value={formData.location?.doorNumberOrStreetName ?? ''}
-                    onChange={(e) =>
-                      updateField(
-                        'location.doorNumberOrStreetName',
-                        e.target.value
-                      )
-                    }
-                    error={errors['location.doorNumberOrStreetName']}
-                    required
-                  />
-                  <TextInputAtom
-                    id="city"
-                    name="location.city"
-                    label={translations.auth.signup.city}
-                    value={formData.location?.city ?? ''}
-                    onChange={(e) =>
-                      updateField('location.city', e.target.value)
-                    }
-                    error={errors['location.city']}
-                    required
-                  />
-                  <TextInputAtom
-                    id="district"
-                    name="location.district"
-                    label={translations.auth.signup.district}
-                    value={formData.location?.district ?? ''}
-                    onChange={(e) =>
-                      updateField('location.district', e.target.value)
-                    }
-                    error={errors['location.district']}
-                  />
-                  <SelectAtom
-                    id="state"
-                    name="location.state"
-                    label={translations.auth.signup.state}
-                    value={formData.location?.state ?? ''}
-                    onChange={(e) =>
-                      updateField('location.state', e.target.value)
-                    }
-                    options={states}
-                    error={errors['location.state']}
-                    required
-                    placeholder="Select state"
-                  />
-                  <SelectAtom
-                    id="countryOrRegion"
-                    name="location.countryOrRegion"
-                    label={translations.auth.signup.country}
-                    value={formData.location?.countryOrRegion ?? ''}
-                    onChange={(e) =>
-                      updateField('location.countryOrRegion', e.target.value)
-                    }
-                    options={countries}
-                    error={errors['location.countryOrRegion']}
-                    required
-                    placeholder="Select country/region"
-                  />
-                  <TextInputAtom
-                    id="zipCode"
-                    name="location.zipCode"
-                    label={translations.auth.signup.zipCode}
-                    value={formData.location?.zipCode ?? ''}
-                    onChange={handleZipCodeInputChange}
-                    error={errors['location.zipCode']}
-                    required
-                    placeholder="Enter ZIP/PIN code"
-                  />
+                  {FEATURE_FLAGS.showAddressFields && (
+                    <>
+                      <TextInputAtom
+                        id="doorNumberOrStreetName"
+                        name="location.doorNumberOrStreetName"
+                        label={translations.auth.signup.doorNumber}
+                        value={formData.location?.doorNumberOrStreetName ?? ''}
+                        onChange={(e) =>
+                          updateField(
+                            'location.doorNumberOrStreetName',
+                            e.target.value
+                          )
+                        }
+                        error={errors['location.doorNumberOrStreetName']}
+                      />
+                      <TextInputAtom
+                        id="zipCode"
+                        name="location.zipCode"
+                        label={translations.auth.signup.zipCode}
+                        value={formData.location?.zipCode ?? ''}
+                        onChange={handleZipCodeInputChange}
+                        error={errors['location.zipCode']}
+                        placeholder="Enter ZIP/PIN code"
+                      />
+                      <SelectAtom
+                        id="countryOrRegion"
+                        name="location.countryOrRegion"
+                        label={translations.auth.signup.country}
+                        value={formData.location?.countryOrRegion ?? ''}
+                        onChange={(e) =>
+                          updateField('location.countryOrRegion', e.target.value)
+                        }
+                        options={countries}
+                        error={errors['location.countryOrRegion']}
+                        placeholder="Select country/region"
+                      />
+                      <SelectAtom
+                        id="state"
+                        name="location.state"
+                        label={translations.auth.signup.state}
+                        value={formData.location?.state ?? ''}
+                        onChange={(e) =>
+                          updateField('location.state', e.target.value)
+                        }
+                        options={filteredStates}
+                        error={errors['location.state']}
+                        placeholder="Select state"
+                      />
+                      <TextInputAtom
+                        id="district"
+                        name="location.district"
+                        label={translations.auth.signup.district}
+                        value={formData.location?.district ?? ''}
+                        onChange={(e) =>
+                          updateField('location.district', e.target.value)
+                        }
+                        error={errors['location.district']}
+                      />
+                      <TextInputAtom
+                        id="city"
+                        name="location.city"
+                        label={translations.auth.signup.city}
+                        value={formData.location?.city ?? ''}
+                        onChange={(e) =>
+                          updateField('location.city', e.target.value)
+                        }
+                        error={errors['location.city']}
+                      />
+                    </>
+                  )}
                 </div>
 
                 {/* Date of Birth */}
@@ -1142,20 +1149,34 @@ const RespondentSignUpPage: React.FC = () => {
               </div>
             )}
 
-            {/* Submit Button */}
-            <button
-              className="bg-primary w-auto hover:bg-secondary transition-all duration-300 ease-in-out rounded px-6 py-2 flex items-center gap-4"
-              disabled={isSubmitting}
-            >
-              <label className="text-white text-nowrap font-medium">
-                {isSubmitting
-                  ? translations.auth.signup.processing
-                  : currentStep === 3
-                    ? translations.auth.signup.registerButton
-                    : translations.auth.signup.nextButton}
-              </label>
-              <ArrowRed className="fill-current text-white" />
-            </button>
+            {/* Navigation Buttons */}
+            <div className="flex items-center gap-4 flex-wrap">
+              <button
+                className="bg-primary w-auto hover:bg-secondary transition-all duration-300 ease-in-out rounded px-6 py-2 flex items-center gap-4"
+                disabled={isSubmitting}
+              >
+                <label className="text-white text-nowrap font-medium cursor-pointer">
+                  {isSubmitting
+                    ? translations.auth.signup.processing
+                    : currentStep === 3
+                      ? translations.auth.signup.registerButton
+                      : translations.auth.signup.nextButton}
+                </label>
+                <ArrowRed className="fill-current text-white" />
+              </button>
+              {(currentStep === 2 || currentStep === 3) && (
+                <button
+                  type="button"
+                  onClick={handleSkip}
+                  disabled={isSubmitting}
+                  className="text-sm text-gray-500 hover:text-primary underline underline-offset-2 transition-colors disabled:opacity-50"
+                >
+                  {currentStep === 3
+                    ? 'Skip & Register'
+                    : 'Skip this step'}
+                </button>
+              )}
+            </div>
           </form>
           <div className="py-12">
             <FaqOrganism data={translatedFaqData} />

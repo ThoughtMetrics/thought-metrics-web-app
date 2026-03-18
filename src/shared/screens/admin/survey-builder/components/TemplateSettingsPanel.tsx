@@ -5,7 +5,16 @@ import type { ISurveyCaptureField } from '@/core/types/survey.type';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 
 const CAPTURE_TYPES: ISurveyCaptureField['type'][] = ['image', 'audio', 'video', 'file', 'text'];
-const STORE_PATHS: ISurveyCaptureField['storePath'][] = ['root', 'respondent', 'captureData'];
+
+function labelToKey(label: string): string {
+  return label
+    .trim()
+    .replace(/[^a-zA-Z0-9 ]/g, '')
+    .split(' ')
+    .filter(Boolean)
+    .map((word, i) => i === 0 ? word.toLowerCase() : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join('');
+}
 
 const TemplateSettingsPanel: React.FC = () => {
   const { settings, setSettings } = useSurveyBuilderStore();
@@ -16,14 +25,18 @@ const TemplateSettingsPanel: React.FC = () => {
     setSettings({
       captureFields: [
         ...captureFields,
-        { key: '', label: '', type: 'text', required: false, storePath: 'root' },
+        { key: '', label: '', type: 'text', required: false, storePath: 'captureData' },
       ],
     });
   };
 
   const updateField = (i: number, partial: Partial<ISurveyCaptureField>) => {
     const next = [...captureFields];
-    next[i] = { ...next[i], ...partial };
+    const updated = { ...next[i], ...partial };
+    if ('label' in partial) {
+      updated.key = labelToKey(partial.label ?? '');
+    }
+    next[i] = updated;
     setSettings({ captureFields: next });
   };
 
@@ -121,17 +134,7 @@ const TemplateSettingsPanel: React.FC = () => {
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Key</label>
-                  <input
-                    type="text"
-                    value={field.key}
-                    onChange={(e) => updateField(i, { key: e.target.value })}
-                    placeholder="respondentPic"
-                    className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
-                  />
-                </div>
+              <div className="space-y-2">
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Label</label>
                   <input
@@ -141,6 +144,9 @@ const TemplateSettingsPanel: React.FC = () => {
                     placeholder="Respondent Photo"
                     className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
                   />
+                  {field.key && (
+                    <p className="text-xs text-gray-400 mt-1">Key: <span className="font-mono">{field.key}</span></p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Type</label>
@@ -151,18 +157,6 @@ const TemplateSettingsPanel: React.FC = () => {
                   >
                     {CAPTURE_TYPES.map((t) => (
                       <option key={t} value={t}>{t}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Store Path</label>
-                  <select
-                    value={field.storePath ?? 'root'}
-                    onChange={(e) => updateField(i, { storePath: e.target.value as ISurveyCaptureField['storePath'] })}
-                    className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
-                  >
-                    {STORE_PATHS.map((p) => (
-                      <option key={p} value={p}>{p}</option>
                     ))}
                   </select>
                 </div>

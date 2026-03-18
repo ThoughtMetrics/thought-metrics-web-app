@@ -634,7 +634,7 @@ const en: Translations = {
       step4: 'Step 4',
       yourInformation: 'Your Information',
       preferences: 'Preferences',
-      paymentInfo: 'Payment Info',
+      paymentInfo: 'How should we pay you?',
       surveys: 'Surveys',
       firstName: 'First name',
       lastName: 'Last name',
@@ -718,7 +718,7 @@ const en: Translations = {
           'If you would like to unsubscribe from our database and no longer receive calls or emails about upcoming focus groups, please click unsubscribe from your account settings.',
       },
       payment: {
-        title: 'Payment Information',
+        title: 'How should we pay you?',
         description:
           'Choose how you want to receive payments. You can update this later anytime.',
         methodLabel: 'Payment Method',
@@ -1014,7 +1014,7 @@ const ta: Translations = {
       step4: 'படி 4',
       yourInformation: 'உங்கள் தகவல்',
       preferences: 'விருப்பத்தேர்வுகள்',
-      paymentInfo: 'கட்டண தகவல்',
+      paymentInfo: 'நாங்கள் உங்களுக்கு எப்படி பணம் செலுத்துவோம்?',
       surveys: 'கணக்கெடுப்புகள்',
       firstName: 'முதல் பெயர்',
       lastName: 'கடைசி பெயர்',
@@ -1098,7 +1098,7 @@ const ta: Translations = {
           'எங்கள் தரவுத்தளத்திலிருந்து குழுவிலகம் செய்து, வரவிருக்கும் ஃபோகஸ் குழுக்கள் பற்றிய அழைப்புகள் அல்லது மின்னஞ்சல்களைப் பெறாமல் இருக்க விரும்பினால், உங்கள் கணக்கு அமைப்புகளில் இருந்து குழுவிலகம் என்பதைக் கிளிக் செய்யவும்.',
       },
       payment: {
-        title: 'பணம் செலுத்தும் தகவல்',
+        title: 'நாங்கள் உங்களுக்கு எப்படி பணம் செலுத்துவோம்?',
         description:
           'நீங்கள் பணம் பெற விரும்பும் முறையை தேர்வு செய்யவும். நீங்கள் இதை எப்போதும் பின்னர் புதுப்பிக்கலாம்.',
         methodLabel: 'பணம் செலுத்தும் முறை',

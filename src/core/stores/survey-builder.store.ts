@@ -55,6 +55,16 @@ function generateId(): string {
   return `q${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 }
 
+// ─── Undo / Redo snapshot ────────────────────────────────────────────────────
+
+type BuilderSnapshot = {
+  name: string;
+  translations: Record<SupportedBuilderLanguage, IBuilderTemplateTranslation>;
+  questions: IBuilderQuestion[];
+  settings: IBuilderSettings;
+  selectedQuestionIndex: number | null;
+};
+
 // ─── Store state / actions interface ────────────────────────────────────────
 
 interface SurveyBuilderState {
@@ -66,6 +76,13 @@ interface SurveyBuilderState {
   settings: IBuilderSettings;
   selectedQuestionIndex: number | null;
   activeLanguage: SupportedBuilderLanguage;
+
+  // Undo / Redo
+  _past: BuilderSnapshot[];
+  _future: BuilderSnapshot[];
+  _pushHistory: () => void;
+  undo: () => void;
+  redo: () => void;
 
   // Load / reset
   loadTemplate: (t: ISurveyTemplate) => void;
@@ -86,6 +103,7 @@ interface SurveyBuilderState {
   setQuestionField: (idx: number, field: keyof IBuilderQuestion, value: any) => void;
   setQuestionConfig: (idx: number, partial: Partial<IBuilderQuestionConfig>) => void;
   setQuestionTranslation: (idx: number, lang: SupportedBuilderLanguage, partial: Partial<IBuilderTranslation>) => void;
+  changeQuestionType: (idx: number, newType: QuestionType) => void;
 
   // Options (for MCQ, RANKING, etc.)
   addOption: (qIdx: number) => void;
@@ -108,8 +126,8 @@ const defaultTranslations = (): Record<SupportedBuilderLanguage, IBuilderTemplat
 });
 
 const defaultSettings = (): IBuilderSettings => ({
-  defaultFormLayout: 'paginated',
-  defaultType: 'respondent',
+  defaultFormLayout: 'list',
+  defaultType: 'agent',
   allowAnonymous: false,
   captureFields: [],
 });
@@ -127,6 +145,58 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
       settings: defaultSettings(),
       selectedQuestionIndex: null,
       activeLanguage: 'en',
+      _past: [],
+      _future: [],
+
+      // ── Undo / Redo ─────────────────────────────────────────────────────
+      _pushHistory: () => {
+        const s = get();
+        const snapshot: BuilderSnapshot = {
+          name: s.name,
+          translations: structuredClone(s.translations),
+          questions: structuredClone(s.questions),
+          settings: structuredClone(s.settings),
+          selectedQuestionIndex: s.selectedQuestionIndex,
+        };
+        set((state) => ({
+          _past: [...state._past.slice(-49), snapshot],
+          _future: [],
+        }));
+      },
+
+      undo: () => {
+        const { _past, _future, name, translations, questions, settings, selectedQuestionIndex } = get();
+        if (_past.length === 0) return;
+        const prev = _past[_past.length - 1];
+        const current: BuilderSnapshot = { name, translations, questions, settings, selectedQuestionIndex };
+        set({
+          _past: _past.slice(0, -1),
+          _future: [current, ..._future.slice(0, 49)],
+          name: prev.name,
+          translations: prev.translations,
+          questions: prev.questions,
+          settings: prev.settings,
+          selectedQuestionIndex: prev.selectedQuestionIndex,
+          isDirty: true,
+        });
+      },
+
+      redo: () => {
+        const { _past, _future, name, translations, questions, settings, selectedQuestionIndex } = get();
+        if (_future.length === 0) return;
+        const next = _future[0];
+        const current: BuilderSnapshot = { name, translations, questions, settings, selectedQuestionIndex };
+        set({
+          _past: [..._past.slice(-49), current],
+          _future: _future.slice(1),
+          name: next.name,
+          translations: next.translations,
+          questions: next.questions,
+          settings: next.settings,
+          selectedQuestionIndex: next.selectedQuestionIndex,
+          isDirty: true,
+        });
+      },
 
       // ── Load existing template ──────────────────────────────────────────
       loadTemplate: (t: ISurveyTemplate) => {
@@ -177,6 +247,8 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
           },
           selectedQuestionIndex: null,
           activeLanguage: 'en',
+          _past: [],
+          _future: [],
         });
       },
 
@@ -191,28 +263,38 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
           settings: defaultSettings(),
           selectedQuestionIndex: null,
           activeLanguage: 'en',
+          _past: [],
+          _future: [],
         }),
 
       // ── Template metadata ───────────────────────────────────────────────
-      setName: (v) => set({ name: v, isDirty: true }),
+      setName: (v) => {
+        get()._pushHistory();
+        set({ name: v, isDirty: true });
+      },
 
-      setTranslation: (lang, field, v) =>
+      setTranslation: (lang, field, v) => {
+        get()._pushHistory();
         set((s) => ({
           isDirty: true,
           translations: {
             ...s.translations,
             [lang]: { ...s.translations[lang], [field]: v },
           },
-        })),
+        }));
+      },
 
-      setSettings: (partial) =>
+      setSettings: (partial) => {
+        get()._pushHistory();
         set((s) => ({
           isDirty: true,
           settings: { ...s.settings, ...partial },
-        })),
+        }));
+      },
 
       // ── Questions ───────────────────────────────────────────────────────
       addQuestion: (type: QuestionType) => {
+        get()._pushHistory();
         const { questions } = get();
         const order = questions.length + 1;
         const newQ: IBuilderQuestion = {
@@ -235,7 +317,8 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
         }));
       },
 
-      removeQuestion: (idx) =>
+      removeQuestion: (idx) => {
+        get()._pushHistory();
         set((s) => {
           const qs = s.questions.filter((_, i) => i !== idx).map((q, i) => ({ ...q, order: i + 1 }));
           const sel = s.selectedQuestionIndex;
@@ -248,9 +331,11 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
               : sel > idx ? sel - 1
               : sel,
           };
-        }),
+        });
+      },
 
-      duplicateQuestion: (idx) =>
+      duplicateQuestion: (idx) => {
+        get()._pushHistory();
         set((s) => {
           const src = s.questions[idx];
           if (!src) return {};
@@ -266,9 +351,11 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
             ...s.questions.slice(idx + 1),
           ].map((q, i) => ({ ...q, order: i + 1 }));
           return { isDirty: true, questions: qs, selectedQuestionIndex: idx + 1 };
-        }),
+        });
+      },
 
-      moveQuestionUp: (idx) =>
+      moveQuestionUp: (idx) => {
+        get()._pushHistory();
         set((s) => {
           if (idx <= 0) return {};
           const qs = [...s.questions];
@@ -278,9 +365,11 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
             questions: qs.map((q, i) => ({ ...q, order: i + 1 })),
             selectedQuestionIndex: idx - 1,
           };
-        }),
+        });
+      },
 
-      moveQuestionDown: (idx) =>
+      moveQuestionDown: (idx) => {
+        get()._pushHistory();
         set((s) => {
           if (idx >= s.questions.length - 1) return {};
           const qs = [...s.questions];
@@ -290,25 +379,31 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
             questions: qs.map((q, i) => ({ ...q, order: i + 1 })),
             selectedQuestionIndex: idx + 1,
           };
-        }),
+        });
+      },
 
       selectQuestion: (idx) => set({ selectedQuestionIndex: idx }),
 
-      setQuestionField: (idx, field, value) =>
+      setQuestionField: (idx, field, value) => {
+        get()._pushHistory();
         set((s) => {
           const qs = [...s.questions];
           qs[idx] = { ...qs[idx], [field]: value };
           return { isDirty: true, questions: qs };
-        }),
+        });
+      },
 
-      setQuestionConfig: (idx, partial) =>
+      setQuestionConfig: (idx, partial) => {
+        get()._pushHistory();
         set((s) => {
           const qs = [...s.questions];
           qs[idx] = { ...qs[idx], config: { ...qs[idx].config, ...partial } };
           return { isDirty: true, questions: qs };
-        }),
+        });
+      },
 
-      setQuestionTranslation: (idx, lang, partial) =>
+      setQuestionTranslation: (idx, lang, partial) => {
+        get()._pushHistory();
         set((s) => {
           const qs = [...s.questions];
           qs[idx] = {
@@ -319,10 +414,50 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
             },
           };
           return { isDirty: true, questions: qs };
-        }),
+        });
+      },
+
+      changeQuestionType: (idx, newType) => {
+        get()._pushHistory();
+        set((state) => {
+          const q = state.questions[idx];
+          const oldType = q.questionType;
+          const newConfig = defaultConfigFor(newType);
+
+          const OPTION_TYPES = new Set([QuestionType.MCQ_SINGLE, QuestionType.MCQ_MULTIPLE, QuestionType.RANKING]);
+          const SCALE_TYPES = new Set([QuestionType.SCALE, QuestionType.LIKERT_SCALE, QuestionType.DOUBLE_SLIDER, QuestionType.MULTI_SLIDER]);
+          const MATRIX_TYPES = new Set([QuestionType.MATRIX, QuestionType.MAX_DIFF, QuestionType.CONSTANT_SUM]);
+
+          if (OPTION_TYPES.has(oldType) && OPTION_TYPES.has(newType)) {
+            newConfig.options = q.config.options ?? [];
+          }
+          if (SCALE_TYPES.has(oldType) && SCALE_TYPES.has(newType)) {
+            if (q.config.min !== undefined) newConfig.min = q.config.min;
+            if (q.config.max !== undefined) newConfig.max = q.config.max;
+            if (q.config.step !== undefined) newConfig.step = q.config.step;
+            if (q.config.minLabel) newConfig.minLabel = q.config.minLabel;
+            if (q.config.maxLabel) newConfig.maxLabel = q.config.maxLabel;
+          }
+          if (MATRIX_TYPES.has(oldType) && MATRIX_TYPES.has(newType)) {
+            newConfig.rows = q.config.rows ?? [];
+            newConfig.columns = q.config.columns ?? [];
+          }
+
+          // Always preserve conditional logic and option filter
+          if (q.config.showIf) newConfig.showIf = q.config.showIf;
+          if (q.config.showIfAll) newConfig.showIfAll = q.config.showIfAll;
+          if (q.config.showIfAny) newConfig.showIfAny = q.config.showIfAny;
+          if (q.config.optionFilter) newConfig.optionFilter = q.config.optionFilter;
+
+          const updated = [...state.questions];
+          updated[idx] = { ...q, questionType: newType, config: newConfig };
+          return { questions: updated, isDirty: true };
+        });
+      },
 
       // ── Options ─────────────────────────────────────────────────────────
-      addOption: (qIdx) =>
+      addOption: (qIdx) => {
+        get()._pushHistory();
         set((s) => {
           const qs = [...s.questions];
           const q = qs[qIdx];
@@ -336,18 +471,22 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
             },
           };
           return { isDirty: true, questions: qs };
-        }),
+        });
+      },
 
-      removeOption: (qIdx, optIdx) =>
+      removeOption: (qIdx, optIdx) => {
+        get()._pushHistory();
         set((s) => {
           const qs = [...s.questions];
           const q = qs[qIdx];
           const opts = (q.config.options ?? []).filter((_, i) => i !== optIdx);
           qs[qIdx] = { ...q, config: { ...q.config, options: opts } };
           return { isDirty: true, questions: qs };
-        }),
+        });
+      },
 
-      updateOption: (qIdx, optIdx, field, value) =>
+      updateOption: (qIdx, optIdx, field, value) => {
+        get()._pushHistory();
         set((s) => {
           const qs = [...s.questions];
           const q = qs[qIdx];
@@ -355,7 +494,8 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
           opts[optIdx] = { ...opts[optIdx], [field]: value };
           qs[qIdx] = { ...q, config: { ...q.config, options: opts } };
           return { isDirty: true, questions: qs };
-        }),
+        });
+      },
 
       // ── Language ─────────────────────────────────────────────────────────
       setActiveLanguage: (lang) => set({ activeLanguage: lang }),

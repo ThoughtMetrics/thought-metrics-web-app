@@ -165,7 +165,7 @@ const HeaderContent: React.FC = () => {
               href={
                 isAuthenticated
                   ? ROUTES.SURVEY_BOARDS
-                  : ROUTES.RESPONDENT_LANDING
+                  : ROUTES.LOGIN_IN
               }
               className="py-0.5 xl:py-[3px] xxl:py-1 px-4 text-[11px] xl:text-sm xxl:text-base font-medium cursor-pointer transition-all duration-300 ease-in-out whitespace-nowrap bg-primary text-white hover:bg-custom-blue hover:border-custom-blue"
             >
@@ -396,7 +396,7 @@ const HeaderContent: React.FC = () => {
                 href={
                   isAuthenticated
                     ? ROUTES.SURVEY_BOARDS
-                    : ROUTES.RESPONDENT_LANDING
+                    : ROUTES.LOGIN_IN
                 }
                 className="w-full py-3 px-4 bg-white text-primary font-medium rounded hover:bg-white/90 transition-colors text-center"
               >

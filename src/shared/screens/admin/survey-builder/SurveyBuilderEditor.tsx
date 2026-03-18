@@ -1,6 +1,7 @@
 // src/shared/screens/admin/survey-builder/SurveyBuilderEditor.tsx
 
 import React, { useEffect, useCallback, useState } from 'react';
+import { RotateCcw, RotateCw } from 'lucide-react';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
@@ -19,7 +20,7 @@ interface Props {
 const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
   const { data, isLoading, isError } = useTemplateQuery(templateId);
 
-  const { name, isDirty, questions, settings, translations, setName, setTranslation, loadTemplate, resetEditor, toCreateRequest, toUpdateRequest } =
+  const { name, isDirty, questions, settings, translations, setName, setTranslation, loadTemplate, resetEditor, toCreateRequest, toUpdateRequest, undo, redo, _past, _future } =
     useSurveyBuilderStore();
 
   const createTemplate = useCreateTemplate();
@@ -48,6 +49,24 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isDirty]);
+
+  // Undo / Redo keyboard shortcuts
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'z') {
+        e.preventDefault();
+        undo();
+      }
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key === 'z'))) {
+        e.preventDefault();
+        redo();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [undo, redo]);
 
   const slugify = (v: string) =>
     v.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
@@ -122,6 +141,23 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
             {isDirty && (
               <span className="text-xs text-orange-500 font-medium">Unsaved changes</span>
             )}
+
+            <button
+              onClick={undo}
+              disabled={_past.length === 0}
+              title="Undo (Ctrl+Z)"
+              className="p-1.5 rounded-md text-gray-500 hover:text-black hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              <RotateCcw size={16} />
+            </button>
+            <button
+              onClick={redo}
+              disabled={_future.length === 0}
+              title="Redo (Ctrl+Y)"
+              className="p-1.5 rounded-md text-gray-500 hover:text-black hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              <RotateCw size={16} />
+            </button>
 
             {templateId && !!translations?.en?.label?.trim() && questions.every((q) => !!q.translations.en.text.trim()) && (
               <button

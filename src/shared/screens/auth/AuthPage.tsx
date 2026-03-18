@@ -461,6 +461,9 @@ const LoginPage: React.FC = () => {
                   <label>{translations.auth.login.createAccount}</label>
                   <ArrowRight className="w-8 r-8 fill-current text-primary" />
                 </a>
+                <p className="text-xs text-custom-grey-3 mt-2 max-w-[380px]">
+                  This takes a moment longer than Google sign-in — we&apos;re collecting optional details to tailor surveys to your profile. You can delete this info anytime.
+                </p>
               </div>
               <div className="flex items-center max-w-[380px] shrink-0 w-full mt-5">
                 <a

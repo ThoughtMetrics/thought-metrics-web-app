@@ -842,8 +842,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         const rawOptions = hasDynamicSource ? rawDynOpts : (config.options || []);
         const mappedOptions = rawOptions.map((opt: any) => ({
           ...opt,
-          id: opt.id ?? opt.value,
-          value: opt.value ?? opt.id,
+          id: (opt.id ?? opt.value ?? '') as string,
+          value: (opt.value ?? opt.id ?? '') as string,
         }));
         const mcqSingleOptions = getFilteredOptions(qIdx, mappedOptions);
 
@@ -885,8 +885,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
       case QuestionType.MCQ_MULTIPLE: {
         const rawMultiOptions = (config.options || []).map((opt: any) => ({
           ...opt,
-          id: opt.id ?? opt.value,
-          value: opt.value ?? opt.id,
+          id: (opt.id ?? opt.value ?? '') as string,
+          value: (opt.value ?? opt.id ?? '') as string,
         }));
         const mcqMultipleOptions = getFilteredOptions(qIdx, rawMultiOptions);
         return (
