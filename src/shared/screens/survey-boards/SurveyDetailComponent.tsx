@@ -2,7 +2,7 @@
 import { queryClient } from '@/core/lib/query-client';
 import { useSurveyDetailsQuery } from '@/core/hooks/queries/survey/use-survey-details.query';
 import { useSubmitSurveyMutation } from '@/core/hooks/mutations/survey/use-submit-survey.mutation';
-import { QuestionType, type SurveyFormLayout } from '@/core/types/survey.type';
+import { QuestionType, type SurveyFormLayout, type RadioButtonOption, type CheckboxOption } from '@/core/types/survey.type';
 import { SurveyLayoutContext } from './survey-layout-context';
 import { AuthProvider } from '@/shared/providers/auth-provider';
 import { UserRouteGuard } from '@/shared/components/guards/UserRouteGuard';
@@ -861,7 +861,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         return (
           <RadioButtons
             {...commonProps}
-            options={mcqSingleOptions}
+            options={mcqSingleOptions as RadioButtonOption[]}
             selectedValue={currentAnswer?.value}
             onValueChange={(value) => {
               if (isReadOnly) return;
@@ -892,7 +892,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         return (
           <Checkboxes
             {...commonProps}
-            options={mcqMultipleOptions}
+            options={mcqMultipleOptions as CheckboxOption[]}
             selectedValues={currentAnswer?.values || []}
             onValueChange={(values) => onChange({ ...currentAnswer, values })}
           />
