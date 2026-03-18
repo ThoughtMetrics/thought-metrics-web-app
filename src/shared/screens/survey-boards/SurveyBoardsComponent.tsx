@@ -23,8 +23,8 @@ const SurveyBoardsSection: React.FC = () => {
   );
   const { data: userProfile } = useProfileQuery();
 
-  // Check if user is field-agent
-  const isFieldAgent = userProfile?.role === 'field-agent';
+  // Check if user is field-agent or field-incharge (both get agent survey access)
+  const isFieldAgent = userProfile?.role === 'field-agent' || userProfile?.role === 'field-incharge';
 
   // Fetch surveys with type filter (only for field-agent, others always get respondent)
   // All surveys use visibility: 'public' — agent surveys are also public by default

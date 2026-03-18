@@ -1,7 +1,8 @@
 // src/shared/screens/admin/surveys/SurveyManagement.tsx
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, MoreVertical, Copy, Pencil } from 'lucide-react';
+import { Search, MoreVertical, Copy, Pencil, X } from 'lucide-react';
+import { FaFilePdf, FaFileExcel } from 'react-icons/fa';
 import { toast } from 'sonner';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
@@ -174,6 +175,7 @@ const SurveyManagementContent: React.FC = () => {
   const [surveyPage, setSurveyPage] = useState(1);
   const [surveyLimit, setSurveyLimit] = useState(10);
   const [selectedSurvey, setSelectedSurvey] = useState<ISurvey | null>(null);
+  const [pdfTrigger, setPdfTrigger] = useState(0);
   const [downloadSurvey, setDownloadSurvey] = useState<ISurvey | null>(null);
   const [editingSurvey, setEditingSurvey] = useState<ISurvey | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -438,9 +440,9 @@ const SurveyManagementContent: React.FC = () => {
                                           </button>
                                           <button
                                             onClick={() => setSelectedLinkId(null)}
-                                            className="px-3 py-1.5 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                            className="p-1.5 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                                           >
-                                            ✕ Close
+                                            <X className="w-4 h-4" />
                                           </button>
                                         </div>
                                       </div>
@@ -629,8 +631,12 @@ const SurveyManagementContent: React.FC = () => {
                                         <>
                                           <button
                                             onClick={() => {
-                                              setEditingSurvey(s);
                                               setOpenMenuId(null);
+                                              if (s.templateMongoId) {
+                                                window.location.href = `/admin/survey-builder/${s.templateMongoId}`;
+                                              } else {
+                                                setEditingSurvey(s);
+                                              }
                                             }}
                                             className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                                           >
@@ -698,22 +704,31 @@ const SurveyManagementContent: React.FC = () => {
                                       </h2>
                                       <div className="flex gap-2">
                                         <button
-                                          onClick={() => setDownloadSurvey(s)}
-                                          className="px-3 py-1.5 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary/5 transition-colors"
+                                          onClick={() => setPdfTrigger((t) => t + 1)}
+                                          title="Download PDF Report"
+                                          className="p-1.5 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                                         >
-                                          Download CSV
+                                          <FaFilePdf className="w-5 h-5 text-red-600" />
+                                        </button>
+                                        <button
+                                          onClick={() => setDownloadSurvey(s)}
+                                          title="Download XLSX"
+                                          className="p-1.5 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                        >
+                                          <FaFileExcel className="w-5 h-5 text-green-600" />
                                         </button>
                                         <button
                                           onClick={() => setSelectedSurvey(null)}
-                                          className="px-3 py-1.5 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                          className="p-1.5 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                                         >
-                                          ✕ Close
+                                          <X className="w-4 h-4" />
                                         </button>
                                       </div>
                                     </div>
                                     <SurveyAnalyticsDetailPanel
                                       survey={s}
                                       onDownload={() => setDownloadSurvey(s)}
+                                      pdfDownloadTrigger={pdfTrigger}
                                     />
                                   </div>
                                 </td>

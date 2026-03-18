@@ -527,22 +527,37 @@ class SurveyService {
    * Returns grouped coordinates with submission counts (~100m precision)
    */
   async getLocationBreakdown(
-    surveyId: string
+    surveyId: string,
+    filters?: { zones?: string[]; districts?: string[]; acs?: string[]; userIds?: string[] }
   ): Promise<ApiResponse<Array<{ latitude: number; longitude: number; count: number }>>> {
     const user = authService.getCurrentUser();
     if (!user) throw new Error('No authenticated user');
     const token = await user.getIdToken();
     apiService.setAuthToken(token);
-    return apiService.get(`${this.basePath}/${surveyId}/analytics/locations`);
+    const params: Record<string, string> = {};
+    if (filters?.zones?.length)     params.zones     = filters.zones.join(',');
+    if (filters?.districts?.length) params.districts = filters.districts.join(',');
+    if (filters?.acs?.length)       params.acs       = filters.acs.join(',');
+    if (filters?.userIds?.length)   params.userIds   = filters.userIds.join(',');
+    return apiService.get(`${this.basePath}/${surveyId}/analytics/locations`, Object.keys(params).length ? params : undefined);
   }
 
-  async getQuestionAnalytics(surveyId: string, lang?: string): Promise<ApiResponse<any[]>> {
+  async getQuestionAnalytics(
+    surveyId: string,
+    lang?: string,
+    filters?: { zones?: string[]; districts?: string[]; acs?: string[]; userIds?: string[] }
+  ): Promise<ApiResponse<any[]>> {
     const user = authService.getCurrentUser();
     if (!user) throw new Error('No authenticated user');
     const token = await user.getIdToken();
     apiService.setAuthToken(token);
-    const params = lang ? { lang } : undefined;
-    return apiService.get(`${this.basePath}/${surveyId}/analytics/questions`, params);
+    const params: Record<string, string> = {};
+    if (lang) params.lang = lang;
+    if (filters?.zones?.length)     params.zones     = filters.zones.join(',');
+    if (filters?.districts?.length) params.districts = filters.districts.join(',');
+    if (filters?.acs?.length)       params.acs       = filters.acs.join(',');
+    if (filters?.userIds?.length)   params.userIds   = filters.userIds.join(',');
+    return apiService.get(`${this.basePath}/${surveyId}/analytics/questions`, Object.keys(params).length ? params : undefined);
   }
 }
 
