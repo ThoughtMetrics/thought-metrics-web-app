@@ -46,7 +46,8 @@
       "Bash(powershell -Command:*)",
       "Bash(npx tsx:*)",
       "Bash(flutter analyze:*)",
-      "Bash(ts-node:*)"
+      "Bash(ts-node:*)",
+      "Bash(taskkill /F /IM node.exe)"
     ],
     "deny": [],
     "ask": []

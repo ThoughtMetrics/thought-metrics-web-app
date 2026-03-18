@@ -40,6 +40,8 @@ export interface BuilderQuestionPreviewProps {
   totalQuestions: number;
   /** Controls which layout SurveyQuestionWrapper renders ('paginated' | 'list'). */
   previewLayout: SurveyFormLayout;
+  /** Optional callback when user interacts with MCQ/Rating answers in interactive preview mode. */
+  onAnswerChange?: (value: string) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -72,6 +74,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
   questionNumber,
   totalQuestions,
   previewLayout,
+  onAnswerChange,
 }) => {
   const { config } = question;
   const questionText =
@@ -119,7 +122,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
           <StarRating
             {...commonProps}
             maxStars={config.ratingMax ?? 5}
-            onRatingChange={NOOP}
+            onRatingChange={(r: number) => onAnswerChange?.(String(r))}
           />
         );
 
@@ -176,7 +179,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
           <RadioButtons
             {...commonProps}
             options={resolveOptions(question, lang)}
-            onValueChange={NOOP}
+            onValueChange={onAnswerChange ?? NOOP}
           />
         );
 
@@ -186,7 +189,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
             {...commonProps}
             options={resolveOptions(question, lang)}
             selectedValues={[]}
-            onValueChange={NOOP}
+            onValueChange={(vals: string[]) => onAnswerChange?.(vals.join(','))}
           />
         );
 

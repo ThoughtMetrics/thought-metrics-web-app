@@ -15,6 +15,11 @@ export interface IBuilderShowIfCondition {
   value: string;
 }
 
+export interface IBuilderOptionFilter {
+  questionId: string;
+  map: Record<string, string[]>;
+}
+
 export interface IBuilderQuestionConfig {
   options?: IBuilderQuestionOption[];
   min?: number;
@@ -33,6 +38,8 @@ export interface IBuilderQuestionConfig {
   maxFileSizeMb?: number;
   showIf?: IBuilderShowIfCondition;
   showIfAll?: IBuilderShowIfCondition[];
+  showIfAny?: IBuilderShowIfCondition[];
+  optionFilter?: IBuilderOptionFilter;
   othersPlaceholder?: string;
 }
 

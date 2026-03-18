@@ -152,6 +152,24 @@ class SurveyService {
   }
 
   /**
+   * Edit user's own submitted response (Authenticated endpoint)
+   * PATCH /surveys/:surveyId/my-response
+   */
+  async editMyResponse(
+    surveyId: string,
+    submission: ISurveySubmission
+  ): Promise<ApiResponse<ISurveyResponse>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.patch<ISurveyResponse>(
+      `${this.basePath}/${surveyId}/my-response`,
+      submission
+    );
+  }
+
+  /**
    * Save survey response as draft (Authenticated endpoint)
    */
   async saveDraft(
