@@ -12,6 +12,7 @@ import SliderConfig from './configs/SliderConfig';
 import MatrixConfig from './configs/MatrixConfig';
 import FileConfig from './configs/FileConfig';
 import ConditionalLogicConfig from './ConditionalLogicConfig';
+import OptionFilterConfig from './configs/OptionFilterConfig';
 
 const TEXT_TYPES = new Set([
   QuestionType.TEXT, QuestionType.TEXTAREA, QuestionType.NUMBER,
@@ -154,6 +155,12 @@ const QuestionConfigPanel: React.FC = () => {
           </h4>
           {renderTypeConfig()}
         </div>
+
+        {/* Option filter — only for MCQ question types */}
+        {(question.questionType === QuestionType.MCQ_SINGLE ||
+          question.questionType === QuestionType.MCQ_MULTIPLE) && (
+          <OptionFilterConfig question={question} qIdx={selectedQuestionIndex} />
+        )}
 
         {/* Conditional logic */}
         <ConditionalLogicConfig question={question} qIdx={selectedQuestionIndex} />

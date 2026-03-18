@@ -105,6 +105,8 @@ export interface Translations {
     message: string;
     subMessage: string;
     backButton: string;
+    viewButton: string;
+    editButton: string;
   };
 
   toast: {
@@ -461,6 +463,8 @@ const en: Translations = {
       'Our team will review your answers. If you meet the criteria for this study, a Thought Metrics representative will contact you for next steps.',
     subMessage: "Stay tuned — your opinions help shape tomorrow's decisions!",
     backButton: 'Back to Surveys',
+    viewButton: 'View Response',
+    editButton: 'Edit Response',
   },
 
   toast: {
@@ -836,6 +840,8 @@ const ta: Translations = {
     subMessage:
       'கவனமாக இருங்கள் — உங்கள் கருத்துகள் நாளைய முடிவுகளை வடிவமைக்க உதவுகின்றன!',
     backButton: 'கணக்கெடுப்புகளுக்குத் திரும்பு',
+    viewButton: 'பதிலைப் பார்க்கவும்',
+    editButton: 'பதிலை திருத்து',
   },
 
   toast: {

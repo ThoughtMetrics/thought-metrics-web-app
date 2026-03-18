@@ -121,9 +121,19 @@ const QuestionListPanel: React.FC = () => {
               }`}
             >
               <div className="flex items-start gap-2">
-                <span className="text-xs font-bold text-gray-400 mt-0.5 flex-shrink-0">
-                  {q.order}
-                </span>
+                <div className="flex flex-col items-center flex-shrink-0 mt-0.5 gap-0.5">
+                  <span className="text-xs font-bold text-gray-400">
+                    {q.order}
+                  </span>
+                  {(q.config.showIf || q.config.showIfAll?.length || q.config.showIfAny?.length) && (
+                    <span
+                      className="text-[10px] font-semibold px-1 py-0.5 rounded bg-amber-100 text-amber-700 flex-shrink-0 leading-tight"
+                      title="Has conditional logic"
+                    >
+                      IF
+                    </span>
+                  )}
+                </div>
                 <div className="flex-1 min-w-0">
                   <span className={`inline-block text-xs px-1.5 py-0.5 rounded font-medium mb-1 ${badgeColor}`}>
                     {q.questionType}

@@ -3,10 +3,14 @@ import type React from 'react';
 import { useLanguage } from '@/core/hooks/use-language';
 
 interface SurveySuccessMessageProps {
-  onClose?: () => void;
+  onView?: () => void;
+  onEdit?: () => void;
+  onClose?: () => void; // "Back to Survey Boards" — hidden if undefined
 }
 
 export const SurveySuccessMessage: React.FC<SurveySuccessMessageProps> = ({
+  onView,
+  onEdit,
   onClose,
 }) => {
   const { translations } = useLanguage();
@@ -39,12 +43,33 @@ export const SurveySuccessMessage: React.FC<SurveySuccessMessageProps> = ({
           <p className="text-sm text-text-dark mb-6">
             {translations.surveySuccess.subMessage}
           </p>
-          <button
-            onClick={onClose || (() => (window.location.href = '/survey-boards'))}
-            className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary-dark transition w-full"
-          >
-            {translations.surveySuccess.backButton}
-          </button>
+
+          <div className="flex flex-col gap-3">
+            {onView && (
+              <button
+                onClick={onView}
+                className="bg-white border-2 border-primary text-primary px-6 py-3 rounded-lg hover:bg-red-50 transition w-full font-medium"
+              >
+                {translations.surveySuccess.viewButton}
+              </button>
+            )}
+            {onEdit && (
+              <button
+                onClick={onEdit}
+                className="bg-white border-2 border-primary text-primary px-6 py-3 rounded-lg hover:bg-red-50 transition w-full font-medium"
+              >
+                {translations.surveySuccess.editButton}
+              </button>
+            )}
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary-dark transition w-full"
+              >
+                {translations.surveySuccess.backButton}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

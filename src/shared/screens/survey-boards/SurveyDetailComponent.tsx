@@ -7,6 +7,8 @@ import { SurveyLayoutContext } from './survey-layout-context';
 import { AuthProvider } from '@/shared/providers/auth-provider';
 import { UserRouteGuard } from '@/shared/components/guards/UserRouteGuard';
 import { SurveySuccessMessage } from '@/shared/components/survey/SurveySuccessMessage';
+import { SurveyResponseView } from '@/shared/components/survey/SurveyResponseView';
+import { useEditSurveyResponseMutation } from '@/core/hooks/mutations/survey/use-edit-survey-response.mutation';
 import { toast } from 'sonner';
 import {
   Checkboxes,
@@ -75,6 +77,9 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<number, any>>({});
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [showResponseView, setShowResponseView] = useState(false);
+  const [isFromTrackingLink] = useState(() => typeof window !== 'undefined' && !!localStorage.getItem('tm_link_id'));
   const [isDraftLoaded, setIsDraftLoaded] = useState(false);
   const [dynamicOptions, setDynamicOptions] = useState<Record<string, Array<{ label: string; value: string }>>>({});
   const [loadingOptions, setLoadingOptions] = useState<Record<string, boolean>>({});
@@ -86,6 +91,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   const { data: surveyData, isLoading } = useSurveyDetailsQuery(surveyId);
   const { data: userProfile } = useProfileQuery();
   const submitMutation = useSubmitSurveyMutation();
+  const editMutation = useEditSurveyResponseMutation();
   const { translations, language } = useLanguage();
 
   // Map questionId → array index for cascade resolution
@@ -98,7 +104,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   }, [surveyData]);
 
   // Indices of questions that are currently visible, evaluated against current answers.
-  // Supports showIf (single condition) and showIfAll (AND logic).
+  // Supports showIf (single condition), showIfAll (AND logic), and showIfAny (OR logic).
   const visibleIndices = React.useMemo(() => {
     const allQs = surveyData?.data?.template?.questions || [];
     const evalCond = (cond: any): boolean => {
@@ -119,11 +125,38 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         const cfg = allQs[i]?.config || {};
         if (cfg.showIf && !evalCond(cfg.showIf)) return false;
         if (cfg.showIfAll?.some((c: any) => !evalCond(c))) return false;
+        if (cfg.showIfAny?.length && !cfg.showIfAny.some((c: any) => evalCond(c))) return false;
         return true;
       });
   }, [surveyData, questionIdToIndex, answers]);
 
   const isQuestionVisible = (index: number) => visibleIndices.includes(index);
+
+  // Returns filtered options for MCQ questions that have an optionFilter config.
+  // If the parent answer has no mapping defined, all options are returned unchanged.
+  const getFilteredOptions = React.useCallback(
+    (qIdx: number, rawOptions: Array<{ id?: string; value?: string; label: string }>) => {
+      const allQs = surveyData?.data?.template?.questions || [];
+      const cfg = allQs[qIdx]?.config || {};
+      const optionFilter = cfg.optionFilter as { questionId: string; map: Record<string, string[]> } | undefined;
+      if (!optionFilter) return rawOptions;
+
+      const parentIdx = questionIdToIndex[optionFilter.questionId];
+      if (parentIdx === undefined) return rawOptions;
+
+      const parentValue = answers[parentIdx]?.value?.toString();
+      if (!parentValue) return rawOptions;
+
+      const allowedValues = optionFilter.map[parentValue];
+      if (!allowedValues || allowedValues.length === 0) return rawOptions;
+
+      return rawOptions.filter((opt) => {
+        const val = opt.value ?? opt.id ?? '';
+        return val === 'others' || allowedValues.includes(val);
+      });
+    },
+    [surveyData, questionIdToIndex, answers],
+  );
 
   // Get translated survey label based on current language
   const getSurveyLabel = () => {
@@ -409,8 +442,31 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
 
   const { survey, template, userResponse } = surveyData.data;
 
-  // Check if user has already completed this survey
-  if (userResponse?.isCompleted && !userResponse?.canUpdate) {
+  // Show response view overlay (after submit, before isCompleted guard)
+  if (showResponseView) {
+    return (
+      <SurveyResponseView
+        questions={template.questions}
+        answers={answers}
+        language={language}
+        onClose={() => setShowResponseView(false)}
+      />
+    );
+  }
+
+  // Show success screen (after submit)
+  if (showSuccess) {
+    return (
+      <SurveySuccessMessage
+        onView={() => setShowResponseView(true)}
+        onEdit={() => { setShowSuccess(false); setIsEditMode(true); }}
+        onClose={isFromTrackingLink ? undefined : () => (window.location.href = '/survey-boards')}
+      />
+    );
+  }
+
+  // Check if user has already completed this survey (bypass when in edit mode)
+  if (userResponse?.isCompleted && !userResponse?.canUpdate && !isEditMode) {
     return (
       <div className="min-h-full bg-white flex items-center justify-center">
         <div className="text-center px-6 max-w-md">
@@ -677,25 +733,27 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
       ...(locationData ? { location: locationData } : {}),
     };
 
-    submitMutation.mutate(
-      { surveyId, submission },
-      {
-        onSuccess: () => {
-          // Clear navigation lock — survey complete
-          localStorage.removeItem('tm_survey_lock');
-          localStorage.removeItem('tm_link_id');
-          const draftKey = `survey_draft_${surveyId}`;
-          localStorage.removeItem(draftKey);
-          toast.success(translations.toast.surveySubmittedSuccess);
-          setShowSuccess(true);
-        },
-        onError: (error: any) => {
-          toast.error(
-            error?.details?.error?.message || translations.toast.surveySubmittedError
-          );
-        },
-      }
-    );
+    const onSuccess = () => {
+      localStorage.removeItem('tm_survey_lock');
+      localStorage.removeItem('tm_link_id');
+      const draftKey = `survey_draft_${surveyId}`;
+      localStorage.removeItem(draftKey);
+      toast.success(translations.toast.surveySubmittedSuccess);
+      setIsEditMode(false);
+      setShowSuccess(true);
+    };
+
+    const onError = (error: any) => {
+      toast.error(
+        error?.details?.error?.message || translations.toast.surveySubmittedError
+      );
+    };
+
+    if (isEditMode) {
+      editMutation.mutate({ surveyId, submission }, { onSuccess, onError });
+    } else {
+      submitMutation.mutate({ surveyId, submission }, { onSuccess, onError });
+    }
   };
 
   const getProgress = () => {
@@ -782,11 +840,12 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         const rawDynOpts = dynamicOptions[qData.id] || [];
         const isReadOnly = !!config.readOnly && rawDynOpts.length <= 1;
         const rawOptions = hasDynamicSource ? rawDynOpts : (config.options || []);
-        const mcqSingleOptions = rawOptions.map((opt: any) => ({
+        const mappedOptions = rawOptions.map((opt: any) => ({
           ...opt,
           id: opt.id ?? opt.value,
           value: opt.value ?? opt.id,
         }));
+        const mcqSingleOptions = getFilteredOptions(qIdx, mappedOptions);
 
         if (isLoadingDynamic) {
           return (
@@ -806,18 +865,30 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             selectedValue={currentAnswer?.value}
             onValueChange={(value) => {
               if (isReadOnly) return;
-              onChange({ ...currentAnswer, value });
+              // Clear child answers whose optionFilter depends on this question
+              const newAnswers = { ...answers, [qIdx]: { ...currentAnswer, value } };
+              questions.forEach((q: any, i: number) => {
+                if (q.config?.optionFilter?.questionId === qData.id) {
+                  newAnswers[i] = undefined;
+                }
+              });
+              if (isListMode) {
+                handleAnswerChangeForIndex(qIdx, { ...currentAnswer, value });
+              } else {
+                onChange({ ...currentAnswer, value });
+              }
             }}
           />
         );
       }
 
       case QuestionType.MCQ_MULTIPLE: {
-        const mcqMultipleOptions = (config.options || []).map((opt: any) => ({
+        const rawMultiOptions = (config.options || []).map((opt: any) => ({
           ...opt,
           id: opt.id ?? opt.value,
           value: opt.value ?? opt.id,
         }));
+        const mcqMultipleOptions = getFilteredOptions(qIdx, rawMultiOptions);
         return (
           <Checkboxes
             {...commonProps}
@@ -1169,10 +1240,10 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
               <button
                 type="button"
                 onClick={handleListSubmit}
-                disabled={submitMutation.isPending}
+                disabled={submitMutation.isPending || editMutation.isPending}
                 className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-sm md:text-base"
               >
-                {submitMutation.isPending
+                {(submitMutation.isPending || editMutation.isPending)
                   ? translations.common.loading
                   : translations.common.submit}
               </button>
@@ -1182,14 +1253,6 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
       </div>
     );
   };
-
-  if (showSuccess) {
-    return (
-      <SurveySuccessMessage
-        onClose={() => (window.location.href = '/survey-boards')}
-      />
-    );
-  }
 
   return (
     <SurveyLayoutContext.Provider value={{ layout: formLayout, setLayout: setFormLayout }}>
