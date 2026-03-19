@@ -1,6 +1,6 @@
 // components/QuestionListPanel.tsx
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { QuestionType } from '@/core/types/survey.type';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 
@@ -76,11 +76,49 @@ const QuestionListPanel: React.FC = () => {
     addQuestion,
     removeQuestion,
     duplicateQuestion,
-    moveQuestionUp,
-    moveQuestionDown,
+    reorderQuestions,
   } = useSurveyBuilderStore();
 
   const [addMenuOpen, setAddMenuOpen] = useState(false);
+
+  // Drag state
+  const dragIndexRef = useRef<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const handleDragStart = (e: React.DragEvent, idx: number) => {
+    dragIndexRef.current = idx;
+    e.dataTransfer.effectAllowed = 'move';
+    // Transparent 1×1 drag image so the card itself acts as the ghost
+    const ghost = document.createElement('div');
+    ghost.style.position = 'absolute';
+    ghost.style.top = '-9999px';
+    document.body.appendChild(ghost);
+    e.dataTransfer.setDragImage(ghost, 0, 0);
+    setTimeout(() => document.body.removeChild(ghost), 0);
+  };
+
+  const handleDragOver = (e: React.DragEvent, idx: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dragIndexRef.current !== null && idx !== dragOverIndex) {
+      setDragOverIndex(idx);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent, toIdx: number) => {
+    e.preventDefault();
+    const fromIdx = dragIndexRef.current;
+    if (fromIdx !== null && fromIdx !== toIdx) {
+      reorderQuestions(fromIdx, toIdx);
+    }
+    dragIndexRef.current = null;
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    dragIndexRef.current = null;
+    setDragOverIndex(null);
+  };
 
   return (
     <div className="h-full flex flex-col bg-white border-r border-gray-200">
@@ -107,24 +145,39 @@ const QuestionListPanel: React.FC = () => {
         )}
         {questions.map((q, idx) => {
           const isSelected = selectedQuestionIndex === idx;
+          const isDragOver = dragOverIndex === idx && dragIndexRef.current !== idx;
           const displayText = q.translations.en.text || q.text || `Question ${idx + 1}`;
           const badgeColor = TYPE_BADGE_COLORS[q.questionType] ?? 'bg-gray-100 text-gray-600';
 
           return (
             <div
               key={q.id}
+              draggable
+              onDragStart={(e) => handleDragStart(e, idx)}
+              onDragOver={(e) => handleDragOver(e, idx)}
+              onDrop={(e) => handleDrop(e, idx)}
+              onDragEnd={handleDragEnd}
               onClick={() => selectQuestion(idx)}
               className={`group relative p-3 rounded-lg cursor-pointer transition-colors ${
                 isSelected
                   ? 'border-l-4 border-primary bg-primary/5'
                   : 'border-l-4 border-transparent hover:bg-gray-50'
-              }`}
+              } ${isDragOver ? 'ring-2 ring-primary/40 bg-primary/5' : ''}`}
             >
               <div className="flex items-start gap-2">
+                {/* Drag handle + order number */}
                 <div className="flex flex-col items-center flex-shrink-0 mt-0.5 gap-0.5">
-                  <span className="text-xs font-bold text-gray-400">
-                    {q.order}
-                  </span>
+                  {/* Grip handle — click-stop so dragging doesn't select */}
+                  <div
+                    className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 transition-colors"
+                    onMouseDown={(e) => e.stopPropagation()}
+                    title="Drag to reorder"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M7 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm6 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 10a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm6 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 16a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm6 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                    </svg>
+                  </div>
+                  <span className="text-xs font-bold text-gray-400">{q.order}</span>
                   {(q.config.showIf || q.config.showIfAll?.length || q.config.showIfAny?.length) && (
                     <span
                       className="text-[10px] font-semibold px-1 py-0.5 rounded bg-amber-100 text-amber-700 flex-shrink-0 leading-tight"
@@ -134,6 +187,7 @@ const QuestionListPanel: React.FC = () => {
                     </span>
                   )}
                 </div>
+
                 <div className="flex-1 min-w-0">
                   <span className={`inline-block text-xs px-1.5 py-0.5 rounded font-medium mb-1 ${badgeColor}`}>
                     {q.questionType}
@@ -144,26 +198,6 @@ const QuestionListPanel: React.FC = () => {
 
               {/* Action buttons — visible on hover or when selected */}
               <div className={`absolute right-2 top-1/2 -translate-y-1/2 flex gap-1 ${isSelected ? 'flex' : 'hidden group-hover:flex'}`}>
-                <button
-                  onClick={(e) => { e.stopPropagation(); moveQuestionUp(idx); }}
-                  disabled={idx === 0}
-                  title="Move up"
-                  className="p-1 text-gray-400 hover:text-gray-700 disabled:opacity-20"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                  </svg>
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); moveQuestionDown(idx); }}
-                  disabled={idx === questions.length - 1}
-                  title="Move down"
-                  className="p-1 text-gray-400 hover:text-gray-700 disabled:opacity-20"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); duplicateQuestion(idx); }}
                   title="Duplicate"
