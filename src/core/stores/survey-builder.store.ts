@@ -99,6 +99,7 @@ interface SurveyBuilderState {
   duplicateQuestion: (idx: number) => void;
   moveQuestionUp: (idx: number) => void;
   moveQuestionDown: (idx: number) => void;
+  reorderQuestions: (fromIdx: number, toIdx: number) => void;
   selectQuestion: (idx: number | null) => void;
   setQuestionField: (idx: number, field: keyof IBuilderQuestion, value: any) => void;
   setQuestionConfig: (idx: number, partial: Partial<IBuilderQuestionConfig>) => void;
@@ -378,6 +379,21 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
             isDirty: true,
             questions: qs.map((q, i) => ({ ...q, order: i + 1 })),
             selectedQuestionIndex: idx + 1,
+          };
+        });
+      },
+
+      reorderQuestions: (fromIdx, toIdx) => {
+        if (fromIdx === toIdx) return;
+        get()._pushHistory();
+        set((s) => {
+          const qs = [...s.questions];
+          const [moved] = qs.splice(fromIdx, 1);
+          qs.splice(toIdx, 0, moved);
+          return {
+            isDirty: true,
+            questions: qs.map((q, i) => ({ ...q, order: i + 1 })),
+            selectedQuestionIndex: toIdx,
           };
         });
       },
