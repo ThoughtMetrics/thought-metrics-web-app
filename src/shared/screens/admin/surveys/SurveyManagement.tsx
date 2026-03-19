@@ -9,7 +9,7 @@ import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import { useAuth } from '@/shared/providers/auth-provider';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 import { useAdminSurveysQuery } from '@/core/hooks/queries/survey-templates/index.queries';
-import { useUpdateSurveyInstance } from '@/core/hooks/mutations/survey-template.mutations';
+import { useUpdateSurveyInstance, useDeleteSurveyInstance } from '@/core/hooks/mutations/survey-template.mutations';
 import type { ISurvey } from '@/core/types/survey.type';
 import EditSurveyModal from './components/EditSurveyModal';
 import {
@@ -158,6 +158,9 @@ const CampaignDetailPanel: React.FC<{ link: TrackingLink }> = ({ link }) => {
 const SurveyManagementContent: React.FC = () => {
   const { isFieldIncharge, isAdmin } = useAuth();
   const updateSurvey = useUpdateSurveyInstance();
+  const deleteSurvey = useDeleteSurveyInstance();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [surveyToDelete, setSurveyToDelete] = useState<ISurvey | null>(null);
   const { data: linksResponse, isLoading: linksLoading } = useTrackingLinks();
   const links: TrackingLink[] = linksResponse?.data ?? [];
 
@@ -233,8 +236,16 @@ const SurveyManagementContent: React.FC = () => {
     void navigator.clipboard.writeText(link).then(() => toast.success('Link copied!'));
   };
 
-  const handleDelete = (_survey: ISurvey) => {
-    toast.error('Delete is not supported for survey instances.');
+  const handleDelete = (survey: ISurvey) => {
+    setSurveyToDelete(survey);
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!surveyToDelete) return;
+    await deleteSurvey.mutateAsync(surveyToDelete.surveyId);
+    setShowDeleteConfirm(false);
+    setSurveyToDelete(null);
   };
 
   const handleDuplicate = (survey: ISurvey) => {
@@ -798,6 +809,23 @@ const SurveyManagementContent: React.FC = () => {
           isOpen={true}
           onClose={() => setDownloadSurvey(null)}
         />
+      )}
+
+      {showDeleteConfirm && surveyToDelete && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-2">Delete Survey</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete <span className="font-medium">{surveyToDelete.label}</span>? This cannot be undone.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button onClick={() => setShowDeleteConfirm(false)} className="px-4 py-2 border rounded-lg text-sm">Cancel</button>
+              <button onClick={() => void handleDeleteConfirm()} disabled={deleteSurvey.isPending} className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm disabled:opacity-50">
+                {deleteSurvey.isPending ? 'Deleting…' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

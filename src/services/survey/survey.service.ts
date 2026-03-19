@@ -349,6 +349,18 @@ class SurveyService {
   }
 
   /**
+   * Delete a survey instance (Admin endpoint)
+   * @param surveyId - The survey ID in TM-xxx format
+   */
+  async deleteSurveyInstance(surveyId: string): Promise<ApiResponse<{ message: string }>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.delete<{ message: string }>(`${this.basePath}/${surveyId}`);
+  }
+
+  /**
    * Delete a survey template (Admin endpoint)
    */
   async deleteTemplate(id: string): Promise<ApiResponse<{ message: string }>> {
