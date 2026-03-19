@@ -1162,8 +1162,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             questionId={qData.id}
             value={currentAnswer?.file}
             onFileChange={(file) => onChange({ ...currentAnswer, file })}
-            maxSizeMB={config.maxSizeMB ?? 5}
-            allowedTypes={config.allowedTypes ?? ['image/jpeg', 'image/png', 'application/pdf']}
+            maxSizeMB={config.maxFileSizeMb ?? config.maxSizeMB ?? 5}
+            allowedTypes={config.allowedTypes ?? config.acceptedFileTypes ?? ['image/jpeg', 'image/png', 'application/pdf']}
             accept={config.accept}
             subLabel={config.subLabel}
           />

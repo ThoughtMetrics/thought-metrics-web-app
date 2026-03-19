@@ -150,6 +150,7 @@ export interface ISurveyTemplate {
   _id: string;
   name: string;
   label: string; // Legacy field for backward compatibility
+  surveyId?: string;
   description?: string;
   userId?: string;
   isDefault: boolean;
