@@ -13,6 +13,7 @@ interface Props {
   defaultLabel: string;
   defaultFormLayout: SurveyFormLayout;
   defaultType?: 'respondent' | 'agent';
+  existingSurveyId?: string;
   onClose: () => void;
 }
 
@@ -42,7 +43,14 @@ type TranslationDraft = {
   questions: QuestionTranslationDraft[];
 };
 
-const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, defaultFormLayout, defaultType = 'respondent', onClose }) => {
+const PublishSurveyModal: React.FC<Props> = ({
+  templateId,
+  defaultLabel,
+  defaultFormLayout,
+  defaultType = 'respondent',
+  existingSurveyId,
+  onClose,
+}) => {
   const publish = usePublishSurvey();
   const saveDraft = useSaveSurveyDraft();
   const updateTemplate = useUpdateTemplate();
@@ -64,6 +72,7 @@ const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, default
   const [step, setStep] = useState<Step>('form');
   const [selectedLang, setSelectedLang] = useState<SupportedBuilderLanguage>('ta');
   const [draft, setDraft] = useState<TranslationDraft | null>(null);
+  const [savedLangs, setSavedLangs] = useState<Set<SupportedBuilderLanguage>>(new Set());
 
   const backdropRef = useRef<HTMLDivElement>(null);
   const isBusy = publish.isPending || saveDraft.isPending || updateTemplate.isPending;
@@ -95,6 +104,9 @@ const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, default
   };
 
   const doPublish = async () => {
+    if (savedLangs.size > 0) {
+      await updateTemplate.mutateAsync({ id: templateId, data: toUpdateRequest() });
+    }
     await publish.mutateAsync(buildPayload());
   };
 
@@ -110,7 +122,7 @@ const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, default
     await saveDraft.mutateAsync(buildPayload());
   };
 
-  // ── Step 2: user picks language and continues to translation editor ───────
+  // ── Translation helpers ──────────────────────────────────────────────────
   const initDraft = (lang: SupportedBuilderLanguage): TranslationDraft => {
     const existing = storeTranslations[lang];
     return {
@@ -132,34 +144,39 @@ const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, default
     };
   };
 
-  const handleContinueToTranslation = () => {
-    setDraft(initDraft(selectedLang));
+  const handleOpenTranslation = (lang: SupportedBuilderLanguage) => {
+    setSelectedLang(lang);
+    setDraft(initDraft(lang));
     setStep('translation');
   };
 
-  // ── Step 3: save translations to store + backend, then publish ────────────
-  const handleSaveAndPublish = async () => {
+  // ── Save translation to store, mark lang done, go back to checklist ──────
+  const handleSaveTranslation = async () => {
     if (!draft) return;
+    const enTemplate = storeTranslations['en'];
 
-    // Write template-level translations
-    setTranslation(selectedLang, 'label', draft.templateLabel);
-    setTranslation(selectedLang, 'description', draft.templateDescription);
-    setTranslation(selectedLang, 'instructions', draft.templateInstructions);
+    setTranslation(selectedLang, 'label', draft.templateLabel || enTemplate?.label || '');
+    setTranslation(selectedLang, 'description', draft.templateDescription || enTemplate?.description || '');
+    setTranslation(selectedLang, 'instructions', draft.templateInstructions || enTemplate?.instructions || '');
 
-    // Write per-question translations
     questions.forEach((q, idx) => {
       const qDraft = draft.questions[idx];
       if (!qDraft) return;
+      const enText = q.translations.en.text || q.text;
       const hasOptions = qDraft.options.length > 0;
       setQuestionTranslation(idx, selectedLang, {
-        text: qDraft.text,
-        ...(hasOptions ? { options: qDraft.options } : {}),
+        text: qDraft.text || enText,
+        ...(hasOptions ? {
+          options: qDraft.options.map((opt, oIdx) => ({
+            value: opt.value,
+            label: opt.label || (q.config.options ?? [])[oIdx]?.label || opt.value,
+          })),
+        } : {}),
       });
     });
 
-    // Persist template (with translations) to backend, then publish
-    await updateTemplate.mutateAsync({ id: templateId, data: toUpdateRequest() });
-    await doPublish();
+    setSavedLangs((prev) => new Set([...prev, selectedLang]));
+    setStep('lang-prompt');
   };
 
   const updateDraftQuestion = (qIdx: number, partial: Partial<QuestionTranslationDraft>) => {
@@ -171,12 +188,12 @@ const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, default
     });
   };
 
-  const updateDraftOption = (qIdx: number, optIdx: number, label: string) => {
+  const updateDraftOption = (qIdx: number, optIdx: number, optLabel: string) => {
     setDraft((prev) => {
       if (!prev) return prev;
       const qs = [...prev.questions];
       const opts = [...qs[qIdx].options];
-      opts[optIdx] = { ...opts[optIdx], label };
+      opts[optIdx] = { ...opts[optIdx], label: optLabel };
       qs[qIdx] = { ...qs[qIdx], options: opts };
       return { ...prev, questions: qs };
     });
@@ -203,6 +220,13 @@ const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, default
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Survey ID</label>
+        {existingSurveyId && (
+          <p className="text-xs text-gray-400 mb-1.5">
+            Previously published as{' '}
+            <span className="font-mono text-gray-500">{existingSurveyId}</span>
+            {' '}— a new ID will be generated for this publish.
+          </p>
+        )}
         <input
           type="text"
           value={surveyId}
@@ -214,24 +238,40 @@ const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, default
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Mode</label>
-        <div className="flex gap-4">
+        <div className="flex gap-2">
           {(['respondent', 'agent'] as const).map((t) => (
-            <label key={t} className="flex items-center gap-2 cursor-pointer">
-              <input type="radio" value={t} checked={type === t} onChange={() => setType(t)} className="accent-primary" />
-              <span className="text-sm">{t === 'respondent' ? 'Public' : 'Agent'}</span>
-            </label>
+            <button
+              key={t}
+              type="button"
+              onClick={() => setType(t)}
+              className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                type === t
+                  ? 'border-primary bg-primary/10 text-primary'
+                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
+              }`}
+            >
+              {t === 'respondent' ? 'Public' : 'Agent'}
+            </button>
           ))}
         </div>
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Visibility</label>
-        <div className="flex gap-4">
+        <div className="flex gap-2">
           {(['public', 'private'] as const).map((v) => (
-            <label key={v} className="flex items-center gap-2 cursor-pointer">
-              <input type="radio" value={v} checked={visibility === v} onChange={() => setVisibility(v)} className="accent-primary" />
-              <span className="text-sm capitalize">{v}</span>
-            </label>
+            <button
+              key={v}
+              type="button"
+              onClick={() => setVisibility(v)}
+              className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium capitalize transition-colors ${
+                visibility === v
+                  ? 'border-primary bg-primary/10 text-primary'
+                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
+              }`}
+            >
+              {v}
+            </button>
           ))}
         </div>
       </div>
@@ -272,12 +312,20 @@ const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, default
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Form Layout</label>
-        <div className="flex gap-4">
+        <div className="flex gap-2">
           {(['paginated', 'list'] as const).map((l) => (
-            <label key={l} className="flex items-center gap-2 cursor-pointer">
-              <input type="radio" value={l} checked={formLayout === l} onChange={() => setFormLayout(l)} className="accent-primary" />
-              <span className="text-sm capitalize">{l}</span>
-            </label>
+            <button
+              key={l}
+              type="button"
+              onClick={() => setFormLayout(l)}
+              className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium capitalize transition-colors ${
+                formLayout === l
+                  ? 'border-primary bg-primary/10 text-primary'
+                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
+              }`}
+            >
+              {l}
+            </button>
           ))}
         </div>
       </div>
@@ -306,56 +354,51 @@ const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, default
   );
 
   const renderLangPrompt = () => (
-    <div className="px-6 py-8 flex flex-col items-center text-center gap-6">
-      <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
-        <svg className="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-        </svg>
+    <div className="px-6 py-5 space-y-4">
+      <p className="text-sm text-gray-500">
+        Optionally add translations before publishing.
+      </p>
+
+      <div className="space-y-2">
+        {LANG_OPTIONS.map((lang) => {
+          const isSaved = savedLangs.has(lang.code);
+          return (
+            <button
+              key={lang.code}
+              type="button"
+              onClick={() => handleOpenTranslation(lang.code)}
+              className="w-full flex items-center justify-between border border-gray-200 rounded-lg px-4 py-3 hover:border-primary/50 hover:bg-gray-50 transition-colors text-left"
+            >
+              <div className="flex items-center gap-2">
+                {isSaved ? (
+                  <svg className="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  <div className="w-4 h-4 rounded border border-gray-300 flex-shrink-0" />
+                )}
+                <span className="text-sm font-medium text-gray-800">{lang.label}</span>
+              </div>
+              <span className="text-sm text-primary font-medium">
+                {isSaved ? `Edit ${lang.label} translation` : `Add ${lang.label} translation`}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
-      <div>
-        <h3 className="text-base font-semibold text-gray-900 mb-1">Add translations?</h3>
-        <p className="text-sm text-gray-500 max-w-xs">
-          Do you want to add translations for your survey questions and options before publishing?
-        </p>
-      </div>
-
-      <div className="w-full max-w-xs space-y-3">
-        {LANG_OPTIONS.map((lang) => (
-          <label
-            key={lang.code}
-            className={`flex items-center gap-3 w-full border rounded-lg px-4 py-3 cursor-pointer transition-colors ${
-              selectedLang === lang.code ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <input
-              type="radio"
-              name="lang"
-              value={lang.code}
-              checked={selectedLang === lang.code}
-              onChange={() => setSelectedLang(lang.code)}
-              className="accent-primary"
-            />
-            <span className="text-sm font-medium text-gray-800">{lang.label}</span>
-          </label>
-        ))}
-      </div>
-
-      <div className="flex flex-col gap-2 w-full max-w-xs">
-        <button
-          onClick={handleContinueToTranslation}
-          className="w-full px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
-        >
-          Yes, add {selectedLangLabel} translations
-        </button>
+      <div className="flex flex-col gap-2 pt-2">
         <button
           onClick={doPublish}
           disabled={isBusy}
-          className="w-full px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {publish.isPending ? 'Publishing…' : 'No, publish now'}
+          {publish.isPending ? 'Publishing…' : 'Publish now'}
         </button>
-        <button onClick={() => setStep('form')} className="text-xs text-gray-400 hover:text-gray-600 transition-colors pt-1">
+        <button
+          onClick={() => setStep('form')}
+          className="text-xs text-gray-400 hover:text-gray-600 transition-colors pt-1 text-center"
+        >
           ← Back
         </button>
       </div>
@@ -368,7 +411,7 @@ const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, default
     const enTemplateTranslations = storeTranslations['en'];
 
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col flex-1 min-h-0">
         {/* Translation editor header */}
         <div className="px-6 py-3 border-b border-gray-100 flex items-center gap-3 flex-shrink-0">
           <button onClick={() => setStep('lang-prompt')} className="text-gray-400 hover:text-gray-700 transition-colors">
@@ -377,7 +420,7 @@ const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, default
             </svg>
           </button>
           <p className="text-sm text-gray-600">
-            Add <span className="font-semibold text-gray-900">{selectedLangLabel}</span> translations — English shown for reference
+            {savedLangs.has(selectedLang) ? 'Editing' : 'Adding'} <span className="font-semibold text-gray-900">{selectedLangLabel}</span> translations — English shown for reference
           </p>
         </div>
 
@@ -531,11 +574,11 @@ const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, default
             Back
           </button>
           <button
-            onClick={handleSaveAndPublish}
+            onClick={handleSaveTranslation}
             disabled={isBusy}
             className="flex-1 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isBusy ? 'Saving…' : `Save ${selectedLangLabel} & Publish`}
+            {isBusy ? 'Saving…' : 'Save'}
           </button>
         </div>
       </div>
@@ -568,6 +611,11 @@ const PublishSurveyModal: React.FC<Props> = ({ templateId, defaultLabel, default
             )}
             {step === 'lang-prompt' && (
               <p className="text-xs text-gray-400 mt-0.5">Step 2 of 2 — Translations</p>
+            )}
+            {step === 'translation' && (
+              <p className="text-xs text-gray-400 mt-0.5">
+                {savedLangs.has(selectedLang) ? 'Editing' : 'Adding'} {selectedLangLabel} translations
+              </p>
             )}
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-700 transition-colors flex-shrink-0">

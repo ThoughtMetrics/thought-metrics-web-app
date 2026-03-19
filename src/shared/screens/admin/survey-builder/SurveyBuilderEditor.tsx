@@ -204,6 +204,7 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
           defaultLabel={translations?.en?.label ?? name}
           defaultFormLayout={settings.defaultFormLayout}
           defaultType={settings.defaultType}
+          existingSurveyId={data?.data?.surveyId}
           onClose={() => setShowPublishModal(false)}
         />
       )}

@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import surveyService from '@/services/survey/survey.service';
 import { QueryKeys } from '@/core/lib/query-keys';
+import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 import type {
   ISurveyTemplateCreateRequest,
   ISurveyTemplateUpdateRequest,
@@ -68,6 +69,7 @@ export const usePublishSurvey = () => {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QueryKeys.surveysAdmin.lists() });
       toast.success('Survey published');
+      useSurveyBuilderStore.setState({ isDirty: false });
       window.location.href = '/admin/surveys';
     },
     onError: (e: Error) => toast.error(e.message),
@@ -82,6 +84,7 @@ export const useSaveSurveyDraft = () => {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QueryKeys.surveysAdmin.lists() });
       toast.success('Saved as draft');
+      useSurveyBuilderStore.setState({ isDirty: false });
       window.location.href = '/admin/surveys';
     },
     onError: (e: Error) => toast.error(e.message),
