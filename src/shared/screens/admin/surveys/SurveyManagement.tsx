@@ -242,7 +242,7 @@ const SurveyManagementContent: React.FC = () => {
   };
 
   const handleDeleteConfirm = async () => {
-    if (!surveyToDelete) return;
+    if (!surveyToDelete || !surveyToDelete.surveyId) return;
     await deleteSurvey.mutateAsync(surveyToDelete.surveyId);
     setShowDeleteConfirm(false);
     setSurveyToDelete(null);
