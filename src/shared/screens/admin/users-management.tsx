@@ -54,6 +54,7 @@ const UserManagementContent: React.FC = () => {
   const [filterRole, setFilterRole] = useState<string>('all');
   const [filterZone, setFilterZone] = useState<string>('all');
   const [filterDistrict, setFilterDistrict] = useState<string>('all');
+  const [showDeleted, setShowDeleted] = useState(false);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const menuRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
@@ -107,7 +108,7 @@ const UserManagementContent: React.FC = () => {
   useEffect(() => {
     if (!isAuthReady || !user) return;
     fetchUsers();
-  }, [isAuthReady, user, page, limit, filterRole, filterZone, filterDistrict]);
+  }, [isAuthReady, user, page, limit, filterRole, filterZone, filterDistrict, showDeleted]);
 
   // Debounced search
   useEffect(() => {
@@ -146,6 +147,7 @@ const UserManagementContent: React.FC = () => {
       if (filterRole !== 'all') params.role = filterRole;
       if (filterZone !== 'all') params.zone = filterZone;
       if (filterDistrict !== 'all') params.district = filterDistrict;
+      if (!isFieldIncharge && showDeleted) params.showDeleted = 'true';
       const response = await UserManagementService.getUsers(params);
       if (response.data) {
         setUsers(response.data.users);
@@ -511,14 +513,23 @@ const UserManagementContent: React.FC = () => {
                     className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white"
                   >
                     <option value="all">All Roles</option>
-                    <option value="super-admin">Super Admin</option>
-                    <option value="admin">Admin</option>
-                    <option value="employee">Employee</option>
-                    <option value="client">Client</option>
-                    <option value="respondent">Respondent</option>
-                    <option value="partner">Partner</option>
-                    <option value="field-agent">Field Agent</option>
-                    <option value="field-incharge">Field Incharge</option>
+                    {isFieldIncharge ? (
+                      <>
+                        <option value="field-agent">Field Agent</option>
+                        <option value="field-incharge">Field Incharge</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="super-admin">Super Admin</option>
+                        <option value="admin">Admin</option>
+                        <option value="employee">Employee</option>
+                        <option value="client">Client</option>
+                        <option value="respondent">Respondent</option>
+                        <option value="partner">Partner</option>
+                        <option value="field-agent">Field Agent</option>
+                        <option value="field-incharge">Field Incharge</option>
+                      </>
+                    )}
                   </select>
                   {/* Zone Filter */}
                   <select
@@ -549,6 +560,18 @@ const UserManagementContent: React.FC = () => {
                       <option key={d} value={d}>{d}</option>
                     ))}
                   </select>
+                  {!isFieldIncharge && (
+                    <button
+                      onClick={() => { setShowDeleted((v) => !v); setPage(1); }}
+                      className={`px-3 py-2 text-sm font-medium rounded-md border transition-colors whitespace-nowrap ${
+                        showDeleted
+                          ? 'bg-red-600 text-white border-red-600'
+                          : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      Deleted
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -601,9 +624,6 @@ const UserManagementContent: React.FC = () => {
                                 <div className="text-sm font-medium text-gray-900">
                                   {userItem.profile?.firstName}{' '}
                                   {userItem.profile?.lastName}
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                  {userItem.firebaseUid.substring(0, 12)}...
                                 </div>
                               </div>
                             </div>
@@ -688,14 +708,16 @@ const UserManagementContent: React.FC = () => {
                                     >
                                       Reset Password
                                     </button>
-                                    <button
-                                      onClick={() =>
-                                        handleDeleteClick(userItem)
-                                      }
-                                      className="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50"
-                                    >
-                                      Delete
-                                    </button>
+                                    {userItem.role === 'field-agent' && (
+                                      <button
+                                        onClick={() =>
+                                          handleDeleteClick(userItem)
+                                        }
+                                        className="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50"
+                                      >
+                                        Delete
+                                      </button>
+                                    )}
                                   </div>
                                 </div>
                               )}

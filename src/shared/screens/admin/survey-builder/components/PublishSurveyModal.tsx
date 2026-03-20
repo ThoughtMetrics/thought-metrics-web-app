@@ -1,9 +1,9 @@
 // components/PublishSurveyModal.tsx
 
 import React, { useEffect, useRef, useState } from 'react';
-import { usePublishSurvey, useSaveSurveyDraft, useUpdateTemplate } from '@/core/hooks/mutations/survey-template.mutations';
+import { usePublishSurvey, useSaveSurveyDraft, useUpdateTemplate, useUpdateSurveyInstance } from '@/core/hooks/mutations/survey-template.mutations';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
-import type { ISurveyPublishRequest } from '@/core/types/survey-builder.type';
+import type { ISurveyPublishRequest, ISurveyUpdateRequest } from '@/core/types/survey-builder.type';
 import type { SupportedBuilderLanguage } from '@/core/types/survey-builder.type';
 import type { SurveyFormLayout } from '@/core/types/survey.type';
 import { QuestionType } from '@/core/types/survey.type';
@@ -54,6 +54,9 @@ const PublishSurveyModal: React.FC<Props> = ({
   const publish = usePublishSurvey();
   const saveDraft = useSaveSurveyDraft();
   const updateTemplate = useUpdateTemplate();
+  const updateSurvey = useUpdateSurveyInstance();
+
+  const isUpdate = !!existingSurveyId;
 
   const { questions, translations: storeTranslations, setQuestionTranslation, setTranslation, toUpdateRequest } = useSurveyBuilderStore();
 
@@ -75,7 +78,7 @@ const PublishSurveyModal: React.FC<Props> = ({
   const [savedLangs, setSavedLangs] = useState<Set<SupportedBuilderLanguage>>(new Set());
 
   const backdropRef = useRef<HTMLDivElement>(null);
-  const isBusy = publish.isPending || saveDraft.isPending || updateTemplate.isPending;
+  const isBusy = publish.isPending || saveDraft.isPending || updateTemplate.isPending || updateSurvey.isPending;
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -108,6 +111,26 @@ const PublishSurveyModal: React.FC<Props> = ({
       await updateTemplate.mutateAsync({ id: templateId, data: toUpdateRequest() });
     }
     await publish.mutateAsync(buildPayload());
+  };
+
+  const buildUpdatePayload = (): ISurveyUpdateRequest => ({
+    label: label.trim(),
+    type,
+    visibility,
+    startDate: startDate || undefined,
+    expireDate: expireDate || undefined,
+    maxResponses: maxResponses ? parseInt(maxResponses, 10) : undefined,
+    zonalBasedSurvey,
+    formLayout,
+  });
+
+  const doUpdate = async () => {
+    if (savedLangs.size > 0) {
+      await updateTemplate.mutateAsync({ id: templateId, data: toUpdateRequest() });
+    }
+    await updateSurvey.mutateAsync({ id: existingSurveyId!, data: buildUpdatePayload() });
+    useSurveyBuilderStore.setState({ isDirty: false });
+    window.location.href = '/admin/surveys';
   };
 
   // ── Step 1 form submit → go to translation prompt ────────────────────────
@@ -218,23 +241,18 @@ const PublishSurveyModal: React.FC<Props> = ({
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Survey ID</label>
-        {existingSurveyId && (
-          <p className="text-xs text-gray-400 mb-1.5">
-            Previously published as{' '}
-            <span className="font-mono text-gray-500">{existingSurveyId}</span>
-            {' '}— a new ID will be generated for this publish.
-          </p>
-        )}
-        <input
-          type="text"
-          value={surveyId}
-          onChange={(e) => setSurveyId(e.target.value)}
-          placeholder="Auto-generated if left blank"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-        />
-      </div>
+      {!isUpdate && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Survey ID</label>
+          <input
+            type="text"
+            value={surveyId}
+            onChange={(e) => setSurveyId(e.target.value)}
+            placeholder="Auto-generated if left blank"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+      )}
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Mode</label>
@@ -334,14 +352,16 @@ const PublishSurveyModal: React.FC<Props> = ({
         <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
           Cancel
         </button>
-        <button
-          type="button"
-          onClick={handleSaveAsDraft}
-          disabled={isBusy || !label.trim()}
-          className="flex-1 px-4 py-2 border border-primary text-primary rounded-lg text-sm font-medium hover:bg-primary/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {saveDraft.isPending ? 'Saving…' : 'Save as Draft'}
-        </button>
+        {!isUpdate && (
+          <button
+            type="button"
+            onClick={handleSaveAsDraft}
+            disabled={isBusy || !label.trim()}
+            className="flex-1 px-4 py-2 border border-primary text-primary rounded-lg text-sm font-medium hover:bg-primary/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {saveDraft.isPending ? 'Saving…' : 'Save as Draft'}
+          </button>
+        )}
         <button
           type="submit"
           disabled={!label.trim()}
@@ -389,11 +409,11 @@ const PublishSurveyModal: React.FC<Props> = ({
 
       <div className="flex flex-col gap-2 pt-2">
         <button
-          onClick={doPublish}
+          onClick={isUpdate ? doUpdate : doPublish}
           disabled={isBusy}
           className="w-full px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {publish.isPending ? 'Publishing…' : 'Publish now'}
+          {(isUpdate ? updateSurvey.isPending : publish.isPending) ? 'Saving…' : (isUpdate ? 'Update now' : 'Publish now')}
         </button>
         <button
           onClick={() => setStep('form')}
@@ -602,15 +622,15 @@ const PublishSurveyModal: React.FC<Props> = ({
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">
-              {step === 'form' && 'Publish as Survey'}
-              {step === 'lang-prompt' && 'Before you publish…'}
+              {step === 'form' && (isUpdate ? 'Update Survey' : 'Publish as Survey')}
+              {step === 'lang-prompt' && (isUpdate ? 'Before you update…' : 'Before you publish…')}
               {step === 'translation' && `${selectedLangLabel} Translations`}
             </h2>
             {step === 'form' && (
-              <p className="text-xs text-gray-400 mt-0.5">Step 1 of 2 — Survey details</p>
+              <p className="text-xs text-gray-400 mt-0.5">{isUpdate ? 'Edit survey details' : 'Step 1 of 2 — Survey details'}</p>
             )}
             {step === 'lang-prompt' && (
-              <p className="text-xs text-gray-400 mt-0.5">Step 2 of 2 — Translations</p>
+              <p className="text-xs text-gray-400 mt-0.5">{isUpdate ? 'Translations (optional)' : 'Step 2 of 2 — Translations'}</p>
             )}
             {step === 'translation' && (
               <p className="text-xs text-gray-400 mt-0.5">

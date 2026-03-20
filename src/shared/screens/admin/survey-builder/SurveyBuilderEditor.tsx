@@ -39,16 +39,18 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
   }, [data, templateId]);
 
   // Warn before unloading with unsaved changes
+  // Read directly from store (not closed-over isDirty) so that synchronous
+  // setState({ isDirty: false }) + window.location.href in doUpdate works correctly.
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isDirty) {
+      if (useSurveyBuilderStore.getState().isDirty) {
         e.preventDefault();
         e.returnValue = '';
       }
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [isDirty]);
+  }, []);
 
   // Undo / Redo keyboard shortcuts
   useEffect(() => {
@@ -165,7 +167,7 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
                 disabled={isSaving}
                 className="px-4 py-1.5 border border-primary text-primary rounded-lg text-sm font-medium hover:bg-primary/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Publish as Survey
+                {data?.data?.surveyId ? 'Update Survey' : 'Publish as Survey'}
               </button>
             )}
 

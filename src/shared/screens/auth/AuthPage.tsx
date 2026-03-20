@@ -198,6 +198,19 @@ const LoginPage: React.FC = () => {
             window.location.href = ROUTES.FORCE_CHANGE_PASSWORD;
             return;
           }
+
+          // Role-based redirect for admin/super-admin/field-incharge
+          const role = tokenResult.claims.role as string | undefined;
+          const urlParams = new URLSearchParams(window.location.search);
+          const hasExplicitRedirect =
+            urlParams.get('redirect') ||
+            localStorage.getItem('tm_allocated_survey') ||
+            localStorage.getItem('tm_redirect_after_signup');
+
+          if (!hasExplicitRedirect && (role === 'admin' || role === 'super-admin' || role === 'field-incharge')) {
+            window.location.href = ROUTES.ADMIN;
+            return;
+          }
         } catch {
           // If checks fail, proceed with normal redirect
         }

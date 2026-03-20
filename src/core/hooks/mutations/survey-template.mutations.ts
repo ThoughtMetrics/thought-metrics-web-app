@@ -47,6 +47,18 @@ export const useUpdateTemplate = () => {
   });
 };
 
+export const useDeleteSurveyInstance = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (surveyId: string) => surveyService.deleteSurveyInstance(surveyId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: QueryKeys.surveysAdmin.lists() });
+      toast.success('Survey deleted');
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+};
+
 export const useDeleteTemplate = () => {
   const queryClient = useQueryClient();
 
@@ -100,6 +112,7 @@ export const useUpdateSurveyInstance = () => {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QueryKeys.surveysAdmin.lists() });
       toast.success('Survey updated');
+      useSurveyBuilderStore.setState({ isDirty: false });
     },
     onError: (e: Error) => toast.error(e.message),
   });
