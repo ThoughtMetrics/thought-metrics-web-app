@@ -22,6 +22,11 @@ const HeaderContent: React.FC = () => {
   // Derive isAuthenticated from user object
   const isAuthenticated = !!user;
 
+  const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+  const isAdminPage = currentPath.startsWith('/admin');
+  const isSurveyBoardsPage = currentPath.startsWith('/survey-boards');
+  const isAdminUser = isAdmin || isSuperAdmin || isFieldIncharge;
+
   // Handle click outside to close dropdowns
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -145,7 +150,7 @@ const HeaderContent: React.FC = () => {
                 ></div>
               </button>
             ))}
-            {!isAdmin && !isSuperAdmin && !isFieldIncharge && (
+            {!isAdminUser && (
               <a
                 href={ROUTES.START_YOUR_RESEARCH}
                 className="py-0.5 xl:py-[3px] xxl:py-1 px-4 text-[11px] xl:text-sm xxl:text-base border xl:border-[1.25px] xxl:border-[1.5px] font-medium cursor-pointer transition-all duration-300 ease-in-out whitespace-nowrap border-primary bg-white text-primary hover:text-custom-blue hover:border-custom-blue"
@@ -153,24 +158,26 @@ const HeaderContent: React.FC = () => {
                 Start Your Research
               </a>
             )}
-            {(isAdmin || isSuperAdmin || isFieldIncharge) && (
+            {isAdminUser && (
               <a
-                href="/admin"
+                href={isAdminPage ? ROUTES.SURVEY_BOARDS : ROUTES.ADMIN}
                 className="py-0.5 xl:py-[3px] xxl:py-1 px-4 text-[11px] xl:text-sm xxl:text-base border xl:border-[1.25px] xxl:border-[1.5px] font-medium cursor-pointer transition-all duration-300 ease-in-out whitespace-nowrap border-primary bg-white text-primary hover:text-custom-blue hover:border-custom-blue"
               >
-                Admin Panel
+                {isAdminPage ? 'Survey Boards' : 'Admin Panel'}
               </a>
             )}
-            <a
-              href={
-                isAuthenticated
-                  ? ROUTES.SURVEY_BOARDS
-                  : ROUTES.LOGIN_IN
-              }
-              className="py-0.5 xl:py-[3px] xxl:py-1 px-4 text-[11px] xl:text-sm xxl:text-base font-medium cursor-pointer transition-all duration-300 ease-in-out whitespace-nowrap bg-primary text-white hover:bg-custom-blue hover:border-custom-blue"
-            >
-              {isAuthenticated ? 'Take a Paid Survey' : 'Join a Paid Survey'}
-            </a>
+            {!(isAdminUser && isSurveyBoardsPage) && (
+              <a
+                href={
+                  isAuthenticated
+                    ? ROUTES.SURVEY_BOARDS
+                    : ROUTES.LOGIN_IN
+                }
+                className="py-0.5 xl:py-[3px] xxl:py-1 px-4 text-[11px] xl:text-sm xxl:text-base font-medium cursor-pointer transition-all duration-300 ease-in-out whitespace-nowrap bg-primary text-white hover:bg-custom-blue hover:border-custom-blue"
+              >
+                {isAuthenticated ? 'Take a Paid Survey' : 'Join a Paid Survey'}
+              </a>
+            )}
           </nav>
 
           {/* Mobile view */}
@@ -375,7 +382,7 @@ const HeaderContent: React.FC = () => {
 
             {/* Action Buttons */}
             <div className="px-6 mt-8 flex flex-col gap-3">
-              {!isAdmin && !isSuperAdmin && !isFieldIncharge && (
+              {!isAdminUser && (
                 <a
                   href={ROUTES.START_YOUR_RESEARCH}
                   className="w-full py-3 px-4 border border-white text-white font-medium rounded hover:bg-white/10 transition-colors text-center"
@@ -383,25 +390,27 @@ const HeaderContent: React.FC = () => {
                   Start Your Research
                 </a>
               )}
-              {(isAdmin || isSuperAdmin || isFieldIncharge) && (
+              {isAdminUser && (
                 <a
-                  href="/admin"
+                  href={isAdminPage ? ROUTES.SURVEY_BOARDS : ROUTES.ADMIN}
                   className="w-full py-3 px-4 border border-white text-white font-medium rounded hover:bg-white/10 transition-colors text-center"
                 >
-                  Admin Panel
+                  {isAdminPage ? 'Survey Boards' : 'Admin Panel'}
                 </a>
               )}
 
-              <a
-                href={
-                  isAuthenticated
-                    ? ROUTES.SURVEY_BOARDS
-                    : ROUTES.LOGIN_IN
-                }
-                className="w-full py-3 px-4 bg-white text-primary font-medium rounded hover:bg-white/90 transition-colors text-center"
-              >
-                {isAuthenticated ? 'Take a Paid Survey' : 'Join a Paid Survey'}
-              </a>
+              {!(isAdminUser && isSurveyBoardsPage) && (
+                <a
+                  href={
+                    isAuthenticated
+                      ? ROUTES.SURVEY_BOARDS
+                      : ROUTES.LOGIN_IN
+                  }
+                  className="w-full py-3 px-4 bg-white text-primary font-medium rounded hover:bg-white/90 transition-colors text-center"
+                >
+                  {isAuthenticated ? 'Take a Paid Survey' : 'Join a Paid Survey'}
+                </a>
+              )}
             </div>
 
             {/* Footer Info */}

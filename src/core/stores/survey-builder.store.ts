@@ -38,8 +38,9 @@ function defaultConfigFor(type: QuestionType): IBuilderQuestionConfig {
       };
     case QuestionType.RANKING:
     case QuestionType.MAX_DIFF:
-    case QuestionType.CONSTANT_SUM:
       return { options: [{ value: 'opt1', label: 'Option 1' }] };
+    case QuestionType.CONSTANT_SUM:
+      return { options: [{ value: 'opt1', label: 'Option 1' }], total: 100, constantSumMode: 'constant-sum' };
     case QuestionType.FILE:
       return { acceptedFileTypes: ['pdf', 'jpg', 'png'], maxFileSizeMb: 10 };
     default:
@@ -117,6 +118,32 @@ interface SurveyBuilderState {
   // Serialise for API
   toCreateRequest: () => ISurveyTemplateCreateRequest;
   toUpdateRequest: () => ISurveyTemplateUpdateRequest;
+}
+
+// ─── Serialisation helpers ───────────────────────────────────────────────────
+
+/**
+ * Before persisting a question, ensure translations.en.options always mirrors
+ * config.options. Every builder operation (addOption, updateOption, paste,
+ * toggleOthers, setQuestionConfig) only mutates config.options; this function
+ * propagates those changes to translations.en.options at save time so the API
+ * never serves stale or empty English options.
+ *
+ * Questions without config.options (sliders, text, etc.) are returned unchanged.
+ */
+function syncEnOptions(q: IBuilderQuestion): IBuilderQuestion {
+  const configOpts = q.config.options;
+  if (!configOpts || configOpts.length === 0) return q;
+  return {
+    ...q,
+    translations: {
+      ...q.translations,
+      en: {
+        ...q.translations.en,
+        options: configOpts.map(({ value, label }) => ({ value, label })),
+      },
+    },
+  };
 }
 
 // ─── Default / blank template ────────────────────────────────────────────────
@@ -308,7 +335,7 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
             ta: emptyTranslation(),
           },
           config: defaultConfigFor(type),
-          required: false,
+          required: true,
           allowComment: false,
         };
         set((s) => ({
@@ -479,12 +506,18 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
           const q = qs[qIdx];
           const opts = q.config.options ?? [];
           const n = opts.length + 1;
+          const newOpt = { value: `opt${n}`, label: `Option ${n}` };
+          const newTranslations = { ...q.translations };
+          if (newTranslations.en?.options) {
+            newTranslations.en = { ...newTranslations.en, options: [...newTranslations.en.options, { ...newOpt }] };
+          }
+          if (newTranslations.ta?.options) {
+            newTranslations.ta = { ...newTranslations.ta, options: [...newTranslations.ta.options, { value: newOpt.value, label: '' }] };
+          }
           qs[qIdx] = {
             ...q,
-            config: {
-              ...q.config,
-              options: [...opts, { value: `opt${n}`, label: `Option ${n}` }],
-            },
+            config: { ...q.config, options: [...opts, newOpt] },
+            translations: newTranslations,
           };
           return { isDirty: true, questions: qs };
         });
@@ -496,7 +529,14 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
           const qs = [...s.questions];
           const q = qs[qIdx];
           const opts = (q.config.options ?? []).filter((_, i) => i !== optIdx);
-          qs[qIdx] = { ...q, config: { ...q.config, options: opts } };
+          const newTranslations = { ...q.translations };
+          if (newTranslations.en?.options) {
+            newTranslations.en = { ...newTranslations.en, options: newTranslations.en.options.filter((_, i) => i !== optIdx) };
+          }
+          if (newTranslations.ta?.options) {
+            newTranslations.ta = { ...newTranslations.ta, options: newTranslations.ta.options.filter((_, i) => i !== optIdx) };
+          }
+          qs[qIdx] = { ...q, config: { ...q.config, options: opts }, translations: newTranslations };
           return { isDirty: true, questions: qs };
         });
       },
@@ -517,12 +557,17 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
       setActiveLanguage: (lang) => set({ activeLanguage: lang }),
 
       // ── Serialise ────────────────────────────────────────────────────────
+
+      // Before saving, ensure translations.en.options always mirrors config.options
+      // for every question that has options. This means any operation that modifies
+      // config.options (addOption, updateOption, pasteFromClipboard, toggleOthers,
+      // setQuestionConfig) is automatically covered — no need to track each call site.
       toCreateRequest: (): ISurveyTemplateCreateRequest => {
         const s = get();
         return {
           name: s.name,
           translations: s.translations,
-          questions: s.questions,
+          questions: s.questions.map(syncEnOptions),
           settings: s.settings,
         };
       },
@@ -532,7 +577,7 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
         return {
           name: s.name,
           translations: s.translations,
-          questions: s.questions,
+          questions: s.questions.map(syncEnOptions),
           settings: s.settings,
         };
       },

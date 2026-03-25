@@ -228,7 +228,12 @@ const SurveyManagementContent: React.FC = () => {
 
   const handleArchive = async (survey: ISurvey) => {
     if (!window.confirm(`Archive survey "${survey.label}"?`)) return;
-    await updateSurvey.mutateAsync({ id: survey.id, data: { status: 'archived' } });
+    await updateSurvey.mutateAsync({ id: survey.surveyId!, data: { status: 'archived' } });
+  };
+
+  const handleUnarchive = async (survey: ISurvey) => {
+    if (!window.confirm(`Unarchive survey "${survey.label}"? It will be restored as a draft.`)) return;
+    await updateSurvey.mutateAsync({ id: survey.surveyId!, data: { status: 'draft' } });
   };
 
   const handleCopyLink = (survey: ISurvey) => {
@@ -685,6 +690,16 @@ const SurveyManagementContent: React.FC = () => {
                                             className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
                                           >
                                             Archive
+                                          </button>
+                                          <button
+                                            onClick={() => {
+                                              void handleUnarchive(s);
+                                              setOpenMenuId(null);
+                                            }}
+                                            disabled={(s.status as string) !== 'archived'}
+                                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                                          >
+                                            Unarchive
                                           </button>
                                           <div className="border-t border-gray-100 my-1" />
                                           <button

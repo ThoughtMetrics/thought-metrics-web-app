@@ -158,9 +158,12 @@ const PublishSurveyModal: React.FC<Props> = ({
         const existingOpts = existingQ?.options ?? [];
         return {
           text: existingQ?.text ?? '',
-          options: enOptions.map((enOpt) => ({
+          options: enOptions.map((enOpt, i) => ({
             value: enOpt.value,
-            label: existingOpts.find((o) => o.value === enOpt.value)?.label ?? '',
+            // Try value-based match first; fall back to same index if values diverged
+            label: existingOpts.find((o) => o.value === enOpt.value)?.label
+              ?? existingOpts[i]?.label
+              ?? '',
           })),
         };
       }),

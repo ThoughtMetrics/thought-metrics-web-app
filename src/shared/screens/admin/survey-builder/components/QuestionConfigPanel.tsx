@@ -174,7 +174,9 @@ const QuestionConfigPanel: React.FC = () => {
               onChange={(e) => setQuestionField(selectedQuestionIndex, 'required', e.target.checked)}
               className="w-4 h-4 accent-primary"
             />
-            <span className="text-xs font-medium text-gray-700">Required</span>
+            <span className="text-xs font-medium text-gray-700">
+              {question.required ? 'Required' : 'Optional'}
+            </span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
