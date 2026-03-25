@@ -7,6 +7,8 @@ export type SupportedBuilderLanguage = 'en' | 'ta';
 export interface IBuilderQuestionOption {
   value: string;
   label: string;
+  attributes?: Array<{ key: string; value: string }>;
+  isIntensePurchase?: boolean;
 }
 
 export interface IBuilderShowIfCondition {
@@ -29,6 +31,10 @@ export interface IBuilderQuestionConfig {
   maxLabel?: string;
   rows?: IBuilderQuestionOption[];
   columns?: IBuilderQuestionOption[];
+  /** 'shared' = all rows use the global columns; 'per-row' = each row has its own columns */
+  rowOptionsMode?: 'shared' | 'per-row';
+  /** Per-row column definitions when rowOptionsMode === 'per-row'. Key = row.value */
+  rowColumns?: Record<string, IBuilderQuestionOption[]>;
   sliders?: IBuilderQuestionOption[];
   itemCount?: number;
   total?: number;
@@ -41,6 +47,15 @@ export interface IBuilderQuestionConfig {
   showIfAny?: IBuilderShowIfCondition[];
   optionFilter?: IBuilderOptionFilter;
   othersPlaceholder?: string;
+  constantSumMode?: 'constant-sum' | 'rating-conjoint' | 'volume-conjoint';
+  /** attribute key whose value is the price multiplier (volume-conjoint) */
+  volumeMultiplierKey?: string;
+  /** max rating per option for rating-conjoint (default 10) */
+  ratingConjointMax?: number;
+  /** question-level feature switch for intense purchase */
+  isIntensePurchase?: boolean;
+  /** shared label shown to respondents for the intense purchase checkbox */
+  intensePurchaseLabel?: string;
 }
 
 export interface IBuilderTranslation {
@@ -112,5 +127,5 @@ export interface ISurveyUpdateRequest {
   visibility?: 'public' | 'private';
   zonalBasedSurvey?: boolean;
   formLayout?: 'paginated' | 'list';
-  status?: 'archived';
+  status?: 'archived' | 'draft';
 }

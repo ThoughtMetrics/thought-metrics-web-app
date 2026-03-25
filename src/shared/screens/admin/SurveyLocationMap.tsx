@@ -96,7 +96,7 @@ const SurveyLocationMap: React.FC<SurveyLocationMapProps> = ({ points, expanded:
       <button
         onClick={toggleExpand}
         title={expanded ? 'Collapse map' : 'Expand map'}
-        className="absolute bottom-2 right-2 z-[1000] w-7 h-7 flex items-center justify-center rounded-md bg-white border border-gray-300 shadow-sm text-gray-600 hover:bg-gray-50 transition-colors"
+        className="absolute bottom-2 right-2 z-1000 w-7 h-7 flex items-center justify-center rounded-md bg-white border border-gray-300 shadow-sm text-gray-600 hover:bg-gray-50 transition-colors"
       >
         {expanded ? (
           /* Minimize icon */

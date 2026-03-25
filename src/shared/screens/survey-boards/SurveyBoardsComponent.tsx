@@ -15,6 +15,7 @@ import { useLanguage } from '@/core/hooks/use-language';
 import { getIndustryLabel } from '@/core/utils/industry-translator';
 import { UserRouteGuard } from '@/shared/components/guards/UserRouteGuard';
 import { cn } from '@/core/utils/cn';
+import { formatZonalDisplay } from '@/core/types/zone.type';
 
 const SurveyBoardsSection: React.FC = () => {
   const [selectedIndustry, setSelectedIndustry] = React.useState('all');
@@ -25,6 +26,13 @@ const SurveyBoardsSection: React.FC = () => {
 
   // Check if user is field-agent or field-incharge (both get agent survey access)
   const isFieldAgent = userProfile?.role === 'field-agent' || userProfile?.role === 'field-incharge';
+
+  // Auto-select Agent tab once profile loads and user is a field-agent
+  React.useEffect(() => {
+    if (isFieldAgent) {
+      setSelectedType(SurveyType.AGENT);
+    }
+  }, [isFieldAgent]);
 
   // Fetch surveys with type filter (only for field-agent, others always get respondent)
   // All surveys use visibility: 'public' — agent surveys are also public by default
@@ -112,6 +120,32 @@ const SurveyBoardsSection: React.FC = () => {
               {translations.surveyBoard.verifyProfile}
             </div>
           </label>
+          {/* Zone assignment badge — shown only for field-agent / field-incharge */}
+          {isFieldAgent && (userProfile?.zonalInfo?.length ?? 0) > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {userProfile!.zonalInfo!.map((z, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-3.5 h-3.5 shrink-0"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                  {formatZonalDisplay(z)}
+                </span>
+              ))}
+            </div>
+          )}
           <p className="mt-6 md:mt-12 text-sm md:text-lg">
             {translations.surveyBoard.startMessage}
           </p>

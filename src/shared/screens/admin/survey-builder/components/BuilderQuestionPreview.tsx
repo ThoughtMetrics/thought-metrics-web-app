@@ -58,10 +58,22 @@ const NOOP = () => {};
  * Priority: lang-specific translated options > config.options.
  */
 function resolveOptions(question: IBuilderQuestion, lang: SupportedBuilderLanguage) {
-  const langOpts = question.translations[lang].options;
   const configOpts = question.config.options ?? [];
-  const source = langOpts?.length ? langOpts : configOpts;
-  return source.map((opt) => ({ id: opt.value, value: opt.value, label: opt.label }));
+  if (lang === 'en') {
+    // config.options is always the authoritative English source in the builder
+    return configOpts.map((opt) => ({ id: opt.value, value: opt.value, label: opt.label, attributes: opt.attributes }));
+  }
+  // For non-English: iterate config.options (authoritative list) and find the translated label.
+  // Match by value first (exact), then by index as fallback.
+  // If no non-empty translation found, fall back to the English label so options never go blank.
+  const langOpts = question.translations[lang]?.options ?? [];
+  return configOpts.map((opt, idx) => {
+    const byValue = langOpts.find((o) => o.value === opt.value);
+    const byIndex = langOpts[idx];
+    const translated = byValue ?? byIndex;
+    const label = translated?.label?.trim() ? translated.label : opt.label;
+    return { id: opt.value, value: opt.value, label, attributes: opt.attributes };
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -174,14 +186,22 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
       }
 
       // ── Choice ─────────────────────────────────────────────────────────
-      case QuestionType.MCQ_SINGLE:
+      case QuestionType.MCQ_SINGLE: {
+        const mcqOptions = resolveOptions(question, lang).map((opt) => {
+          const srcOpt = (question.config.options ?? []).find((o) => o.value === opt.value);
+          return { ...opt, isIntensePurchase: srcOpt?.isIntensePurchase };
+        });
         return (
           <RadioButtons
             {...commonProps}
-            options={resolveOptions(question, lang)}
+            options={mcqOptions}
             onValueChange={onAnswerChange ?? NOOP}
+            intensePurchaseLabel={config.intensePurchaseLabel}
+            intensePurchaseAnswers={{}}
+            onIntensePurchaseChange={NOOP}
           />
         );
+      }
 
       case QuestionType.MCQ_MULTIPLE:
         return (
@@ -210,14 +230,33 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
           id: c.value,
           value: c.value,
           label: c.label,
+          isIntensePurchase: c.isIntensePurchase,
         }));
+        const rowColumnsMap =
+          config.rowOptionsMode === 'per-row' && config.rowColumns
+            ? Object.fromEntries(
+                Object.entries(config.rowColumns).map(([k, cols]) => [
+                  k,
+                  cols.map((c) => ({
+                    id: c.value,
+                    value: c.value,
+                    label: c.label,
+                    isIntensePurchase: c.isIntensePurchase,
+                  })),
+                ])
+              )
+            : undefined;
         return (
           <MatrixGrid
             {...commonProps}
             rows={rows}
             columns={columns}
+            rowColumnsMap={rowColumnsMap}
             selectedValues={{}}
             onValuesChange={NOOP}
+            intensePurchaseLabel={config.intensePurchaseLabel}
+            intensePurchaseAnswers={{}}
+            onIntensePurchaseChange={NOOP}
           />
         );
       }
@@ -226,6 +265,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
         const maxDiffItems = resolveOptions(question, lang).map((o) => ({
           id: o.value,
           label: o.label,
+          attributes: o.attributes,
         }));
         return (
           <MaxDiff
@@ -245,6 +285,13 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
             options={resolveOptions(question, lang)}
             allocatedPoints={{}}
             onAllocationChange={NOOP}
+            mode={config.constantSumMode ?? 'constant-sum'}
+            ratingMax={config.ratingConjointMax ?? 10}
+            ratings={{}}
+            onRatingChange={NOOP}
+            quantities={{}}
+            onQuantityChange={NOOP}
+            volumeMultiplierKey={config.volumeMultiplierKey}
           />
         );
 

@@ -3,6 +3,9 @@
 import React from 'react';
 import type { IBuilderQuestion, SupportedBuilderLanguage } from '@/core/types/survey-builder.type';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
+import { QuestionType } from '@/core/types/survey.type';
+import { ChevronDown } from 'lucide-react';
+import { RowColumnEditor } from './RowColumnEditor';
 
 interface Props {
   question: IBuilderQuestion;
@@ -16,6 +19,10 @@ const slugifyKey = (v: string) =>
 const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
   const { addOption, removeOption, updateOption } = useSurveyBuilderStore();
   const options = question.config.options ?? [];
+  const [expandedAttrsIdx, setExpandedAttrsIdx] = React.useState<number | null>(null);
+
+  const rowOptionsMode = question.config.rowOptionsMode ?? 'shared';
+  const rowColumns = question.config.rowColumns ?? {};
 
   const hasOthers = options.some((o) => o.value === 'others');
   const regularOptions = options.filter((o) => o.value !== 'others');
@@ -60,8 +67,17 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
 
   const handleLabelChange = (optIdx: number, value: string) => {
     if (lang === 'en') {
+      const newSlug = slugifyKey(value) || `opt${optIdx + 1}`;
       updateOption(qIdx, optIdx, 'label', value);
-      updateOption(qIdx, optIdx, 'value', slugifyKey(value) || `opt${optIdx + 1}`);
+      updateOption(qIdx, optIdx, 'value', newSlug);
+      // Sync value field in ta.options so publish modal value-based matching stays correct
+      const taOpts = question.translations.ta.options;
+      if (taOpts?.length) {
+        const updatedTaOpts = taOpts.map((o, i) =>
+          i === optIdx ? { ...o, value: newSlug } : o
+        );
+        useSurveyBuilderStore.getState().setQuestionTranslation(qIdx, 'ta', { options: updatedTaOpts });
+      }
     } else {
       const tOpts = [...(question.translations.ta.options ?? options.map((o) => ({ ...o, label: '' })))];
       tOpts[optIdx] = { ...tOpts[optIdx], label: value };
@@ -82,10 +98,64 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
     }
   };
 
+  const updateOptionAttrs = (
+    optIdx: number,
+    attrs: Array<{ key: string; value: string }>
+  ) => {
+    const next = [...options];
+    next[optIdx] = { ...next[optIdx], attributes: attrs };
+    useSurveyBuilderStore.getState().setQuestionConfig(qIdx, { options: next });
+  };
+
+  const setRowOptionsMode = (next: 'shared' | 'per-row') => {
+    if (next === 'per-row') {
+      const sharedCols = question.config.columns ?? [];
+      const seeded: Record<string, import('@/core/types/survey-builder.type').IBuilderQuestionOption[]> = {};
+      options.forEach((o) => {
+        seeded[o.value] = rowColumns[o.value]?.length ? rowColumns[o.value] : [...sharedCols];
+      });
+      useSurveyBuilderStore.getState().setQuestionConfig(qIdx, { rowOptionsMode: 'per-row', rowColumns: seeded });
+    } else {
+      useSurveyBuilderStore.getState().setQuestionConfig(qIdx, { rowOptionsMode: 'shared' });
+    }
+  };
+
+  const updateSubOptions = (
+    optValue: string,
+    cols: import('@/core/types/survey-builder.type').IBuilderQuestionOption[]
+  ) => {
+    useSurveyBuilderStore.getState().setQuestionConfig(qIdx, {
+      rowColumns: { ...rowColumns, [optValue]: cols },
+    });
+  };
+
   const othersPlaceholder = (question.config as any).othersPlaceholder ?? '';
+  const { setQuestionConfig } = useSurveyBuilderStore();
 
   return (
     <div className="space-y-3">
+      {/* ── Per-option sub-options toggle ── */}
+      {lang === 'en' && (
+        <div className="flex items-center justify-between py-2 px-3 bg-gray-50 border border-gray-200 rounded-lg">
+          <span className="text-xs font-medium text-gray-600">Different sub-options per choice</span>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={rowOptionsMode === 'per-row'}
+            onClick={() => setRowOptionsMode(rowOptionsMode === 'shared' ? 'per-row' : 'shared')}
+            className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
+              rowOptionsMode === 'per-row' ? 'bg-primary' : 'bg-gray-300'
+            }`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${
+                rowOptionsMode === 'per-row' ? 'translate-x-4' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <label className="text-xs font-medium text-gray-700">Options</label>
         <div className="flex items-center gap-3">
@@ -115,31 +185,138 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
           const optIdx = options.indexOf(opt);
           const duplicate = isDuplicateLabel(opt.label);
           const label = lang === 'en' ? opt.label : (question.translations.ta.options?.[optIdx]?.label ?? '');
+          const attrs = opt.attributes ?? [];
+          const isAttrsExpanded = expandedAttrsIdx === optIdx;
+
           return (
-            <div key={optIdx} className="space-y-0.5">
-              <div className="flex gap-2 items-center">
-                <input
-                  type="text"
-                  value={label}
-                  onChange={(e) => handleLabelChange(optIdx, e.target.value)}
-                  placeholder={lang === 'en' ? `Option ${displayIdx + 1}` : 'Tamil label'}
-                  className={`flex-1 border rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary ${
-                    duplicate ? 'border-red-400 bg-red-50' : 'border-gray-300'
-                  }`}
-                />
-                <button
-                  onClick={() => removeOption(qIdx, optIdx)}
-                  disabled={regularOptions.length <= 1}
-                  className="text-red-400 hover:text-red-600 disabled:opacity-30 flex-shrink-0"
-                  title="Remove option"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+            <div key={optIdx} className="space-y-1">
+              {/* Option label row */}
+              <div className="space-y-0.5">
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="text"
+                    value={label}
+                    onChange={(e) => handleLabelChange(optIdx, e.target.value)}
+                    placeholder={lang === 'en' ? `Option ${displayIdx + 1}` : 'Tamil label'}
+                    className={`flex-1 border rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary ${
+                      duplicate ? 'border-red-400 bg-red-50' : 'border-gray-300'
+                    }`}
+                  />
+                  {/* Attributes toggle (EN only — attributes are language-neutral) */}
+                  {lang === 'en' && (
+                    <button
+                      type="button"
+                      onClick={() => setExpandedAttrsIdx(isAttrsExpanded ? null : optIdx)}
+                      title="Option attributes"
+                      className={`flex items-center gap-1 text-xs px-1.5 py-1 rounded border transition-colors flex-shrink-0 ${
+                        attrs.length > 0
+                          ? 'border-primary text-primary bg-primary/5'
+                          : 'border-gray-300 text-gray-400 hover:border-primary hover:text-primary'
+                      }`}
+                    >
+                      {attrs.length > 0 && (
+                        <span className="font-medium">{attrs.length}</span>
+                      )}
+                      <ChevronDown
+                        className={`w-3 h-3 transition-transform duration-150 ${isAttrsExpanded ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+                  )}
+                  {/* Intense purchase per-option toggle (MCQ_SINGLE, EN only) */}
+                  {lang === 'en' && question.questionType === QuestionType.MCQ_SINGLE && question.config.isIntensePurchase && (
+                    <button
+                      type="button"
+                      title="Toggle intense purchase for this option"
+                      onClick={() => {
+                        const next = [...options];
+                        next[optIdx] = { ...next[optIdx], isIntensePurchase: !opt.isIntensePurchase };
+                        setQuestionConfig(qIdx, { options: next });
+                      }}
+                      className={`text-xs px-1.5 py-1 rounded border flex-shrink-0 transition-colors ${
+                        opt.isIntensePurchase
+                          ? 'border-primary text-primary bg-primary/5'
+                          : 'border-gray-300 text-gray-300'
+                      }`}
+                      aria-label="Intense purchase toggle"
+                    >
+                      IP
+                    </button>
+                  )}
+                  <button
+                    onClick={() => removeOption(qIdx, optIdx)}
+                    disabled={regularOptions.length <= 1}
+                    className="text-red-400 hover:text-red-600 disabled:opacity-30 flex-shrink-0"
+                    title="Remove option"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                {duplicate && (
+                  <p className="text-xs text-red-500 pl-0.5">Duplicate option label</p>
+                )}
               </div>
-              {duplicate && (
-                <p className="text-xs text-red-500 pl-0.5">Duplicate option label</p>
+
+              {/* Per-option attribute editor */}
+              {isAttrsExpanded && lang === 'en' && (
+                <div className="border border-dashed border-primary/40 rounded-lg p-2.5 space-y-1.5 bg-primary/3">
+                  <p className="text-xs font-medium text-gray-600 mb-1">
+                    Additional fields for &quot;{opt.label || `Option ${displayIdx + 1}`}&quot;
+                  </p>
+                  {attrs.map((attr, aIdx) => (
+                    <div key={aIdx} className="flex gap-1.5 items-center">
+                      <input
+                        type="text"
+                        value={attr.key}
+                        onChange={(e) => {
+                          const next = [...attrs];
+                          next[aIdx] = { ...next[aIdx], key: e.target.value };
+                          updateOptionAttrs(optIdx, next);
+                        }}
+                        placeholder="Field name"
+                        className="w-28 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                      />
+                      <input
+                        type="text"
+                        value={attr.value}
+                        onChange={(e) => {
+                          const next = [...attrs];
+                          next[aIdx] = { ...next[aIdx], value: e.target.value };
+                          updateOptionAttrs(optIdx, next);
+                        }}
+                        placeholder="Value"
+                        className="flex-1 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => updateOptionAttrs(optIdx, attrs.filter((_, i) => i !== aIdx))}
+                        className="text-red-400 hover:text-red-600 flex-shrink-0"
+                        title="Remove field"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => updateOptionAttrs(optIdx, [...attrs, { key: '', value: '' }])}
+                    className="text-xs text-primary hover:underline font-medium"
+                  >
+                    + Add Field
+                  </button>
+                </div>
+              )}
+
+              {/* Per-option sub-options editor (EN only, per-row mode) */}
+              {lang === 'en' && rowOptionsMode === 'per-row' && (
+                <RowColumnEditor
+                  rowLabel={opt.label}
+                  cols={rowColumns[opt.value] ?? []}
+                  onChange={(cols) => updateSubOptions(opt.value, cols)}
+                />
               )}
             </div>
           );
@@ -157,6 +334,17 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
           </div>
         )}
       </div>
+
+      {/* ── Shared sub-options editor (shared mode, EN only) ── */}
+      {lang === 'en' && rowOptionsMode === 'shared' && (
+        <RowColumnEditor
+          rowLabel="All options (shared)"
+          cols={question.config.columns ?? []}
+          onChange={(cols) =>
+            useSurveyBuilderStore.getState().setQuestionConfig(qIdx, { columns: cols })
+          }
+        />
+      )}
 
       {/* Others toggle */}
       <label className="flex items-center gap-2 cursor-pointer pt-1">
@@ -184,6 +372,43 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
             placeholder='Placeholder text (e.g. "Please specify…")'
             className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
           />
+        </div>
+      )}
+
+      {/* ── Is intense purchase (MCQ_SINGLE only, EN only) ── */}
+      {lang === 'en' && question.questionType === QuestionType.MCQ_SINGLE && (
+        <div className="space-y-3 pt-2 border-t border-gray-100">
+          <div className="flex items-center justify-between py-2 px-3 bg-gray-50 border border-gray-200 rounded-lg">
+            <span className="text-xs font-medium text-gray-600">Is intense purchase</span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={question.config.isIntensePurchase ?? false}
+              onClick={() => setQuestionConfig(qIdx, { isIntensePurchase: !question.config.isIntensePurchase })}
+              className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
+                question.config.isIntensePurchase ? 'bg-primary' : 'bg-gray-300'
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${
+                  question.config.isIntensePurchase ? 'translate-x-4' : 'translate-x-0'
+                }`}
+              />
+            </button>
+          </div>
+
+          {question.config.isIntensePurchase && (
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Question label</label>
+              <input
+                type="text"
+                value={question.config.intensePurchaseLabel ?? ''}
+                onChange={(e) => setQuestionConfig(qIdx, { intensePurchaseLabel: e.target.value })}
+                placeholder="Is this an intense purchase?"
+                className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+              />
+            </div>
+          )}
         </div>
       )}
     </div>

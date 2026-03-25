@@ -275,18 +275,24 @@ export interface RadioButtonOption {
   id: string;
   label: string;
   value: string;
+  attributes?: Array<{ key: string; value: string }>;
+  isIntensePurchase?: boolean;
 }
 
 export interface RadioButtonProps extends BaseSurveyQuestionProps {
   options: RadioButtonOption[];
   selectedValue?: string;
   onValueChange: (value: string) => void;
+  intensePurchaseLabel?: string;
+  intensePurchaseAnswers?: Record<string, boolean>;
+  onIntensePurchaseChange?: (answers: Record<string, boolean>) => void;
 }
 
 export interface CheckboxOption {
   id: string;
   label: string;
   value: string;
+  attributes?: Array<{ key: string; value: string }>;
 }
 
 export interface CheckboxProps extends BaseSurveyQuestionProps {
@@ -343,8 +349,13 @@ export interface MatrixOption {
 export interface MatrixGridProps extends BaseSurveyQuestionProps {
   rows: LabelValuePair[];
   columns: LabelValuePair[];
+  /** When provided, each row uses its own columns instead of the global columns array */
+  rowColumnsMap?: Record<string, LabelValuePair[]>;
   selectedValues: Record<string, string>;
   onValuesChange: (values: Record<string, string>) => void;
+  intensePurchaseLabel?: string;
+  intensePurchaseAnswers?: Record<string, boolean>;
+  onIntensePurchaseChange?: (answers: Record<string, boolean>) => void;
 }
 
 export interface RankingProps extends BaseSurveyQuestionProps {
@@ -356,6 +367,7 @@ export interface RankingProps extends BaseSurveyQuestionProps {
 export interface MaxDiffItem {
   id: string;
   label: string;
+  attributes?: Array<{ key: string; value: string }>;
 }
 
 export interface MaxDiffProps extends BaseSurveyQuestionProps {
@@ -371,4 +383,11 @@ export interface ConstantSumProps extends BaseSurveyQuestionProps {
   onAllocationChange: (allocation: Record<string, number>) => void;
   allowZero?: boolean;
   requireTotal?: boolean;
+  mode?: 'constant-sum' | 'rating-conjoint' | 'volume-conjoint';
+  ratingMax?: number;
+  ratings?: Record<string, number>;
+  onRatingChange?: (ratings: Record<string, number>) => void;
+  quantities?: Record<string, number>;
+  onQuantityChange?: (quantities: Record<string, number>) => void;
+  volumeMultiplierKey?: string;
 }
