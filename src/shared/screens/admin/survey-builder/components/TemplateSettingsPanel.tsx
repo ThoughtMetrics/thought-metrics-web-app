@@ -21,11 +21,15 @@ const TemplateSettingsPanel: React.FC = () => {
 
   const captureFields = settings.captureFields ?? [];
 
+  // Keys that are always stored at the root level of the response document
+  // (handled specially by the server — never in captureData)
+  const ROOT_LEVEL_KEYS = new Set(['conversationAudio', 'respondentPic']);
+
   const addField = () => {
     setSettings({
       captureFields: [
         ...captureFields,
-        { key: '', label: '', type: 'text', required: false, storePath: 'captureData' },
+        { key: '', label: '', type: 'text', required: false, storePath: 'root' },
       ],
     });
   };
@@ -35,6 +39,10 @@ const TemplateSettingsPanel: React.FC = () => {
     const updated = { ...next[i], ...partial };
     if ('label' in partial) {
       updated.key = labelToKey(partial.label ?? '');
+    }
+    // Root-level built-in keys must always use storePath 'root'
+    if (ROOT_LEVEL_KEYS.has(updated.key)) {
+      updated.storePath = 'root';
     }
     next[i] = updated;
     setSettings({ captureFields: next });

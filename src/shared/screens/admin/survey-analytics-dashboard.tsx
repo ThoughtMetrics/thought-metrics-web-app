@@ -512,14 +512,19 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
           ? detailsResult.value.data?.template?.settings?.captureFields || []
           : [];
 
-      // Helper: resolve a capture field value from the response using its storePath
+      // Helper: resolve a capture field value from the response using its storePath.
+      // Falls back to root level when captureData path yields nothing — this covers
+      // existing templates that were saved with the wrong storePath default.
       const resolveCaptureValue = (response: any, field: any): string => {
         const path = field.storePath || 'root';
         let raw: any;
-        if (path === 'respondent') raw = response.respondent?.[field.key];
-        else if (path === 'captureData')
-          raw = response.captureData?.[field.key];
-        else raw = response[field.key];
+        if (path === 'respondent') {
+          raw = response.respondent?.[field.key];
+        } else if (path === 'captureData') {
+          raw = response.captureData?.[field.key] ?? response[field.key];
+        } else {
+          raw = response[field.key];
+        }
         return formatRawFieldForCSV(raw);
       };
 
@@ -3151,10 +3156,13 @@ export const SurveyDownloadModal: React.FC<SurveyDownloadModalProps> = ({
       const resolveCaptureValue = (response: any, field: any): string => {
         const path = field.storePath || 'root';
         let raw: any;
-        if (path === 'respondent') raw = response.respondent?.[field.key];
-        else if (path === 'captureData')
-          raw = response.captureData?.[field.key];
-        else raw = response[field.key];
+        if (path === 'respondent') {
+          raw = response.respondent?.[field.key];
+        } else if (path === 'captureData') {
+          raw = response.captureData?.[field.key] ?? response[field.key];
+        } else {
+          raw = response[field.key];
+        }
         return formatRawField(raw);
       };
 
