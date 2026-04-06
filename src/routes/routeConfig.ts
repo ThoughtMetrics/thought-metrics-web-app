@@ -62,6 +62,7 @@ export const ROUTES = {
   ADMIN_SURVEY_BUILDER: '/admin/survey-builder',
   ADMIN_SURVEY_BUILDER_NEW: '/admin/survey-builder/new',
   ADMIN_SURVEYS: '/admin/surveys',
+  ADMIN_SURVEY_IMPORT: '/admin/survey-import',
   NOT_FOUND: '*',
   FORCE_CHANGE_PASSWORD: '/force-change-password',
 } as const;

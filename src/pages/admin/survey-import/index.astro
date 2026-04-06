@@ -1,0 +1,8 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import { SurveyImportManagement } from '@/shared/screens/admin/survey-import/SurveyImportManagement';
+---
+
+<IntractionLayout title="Survey Import | Admin" description="Import legacy agent survey responses in bulk">
+  <SurveyImportManagement client:only="react" />
+</IntractionLayout>

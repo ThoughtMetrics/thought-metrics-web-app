@@ -17,8 +17,10 @@ export const onRequest = defineMiddleware((context, next) => {
   // 2. Favicon accessible on both domains via redirect
   // 3. Single authoritative domain for Google Search Console
 
-  // Skip redirect for localhost/development
-  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+  // Skip redirect for localhost/development and local IP addresses
+  const isLocalhost = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
+  const isLocalIP = /^(\d{1,3}\.){3}\d{1,3}$/.test(url.hostname);
+  if (isLocalhost || isLocalIP) {
     return next();
   }
 

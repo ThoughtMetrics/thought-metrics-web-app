@@ -35,10 +35,19 @@ const SurveyIcon = () => (
   </svg>
 );
 
+const ImportIcon = () => (
+  <svg viewBox="0 0 24 24" className="w-full h-full" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+    <polyline points="17 8 12 3 7 8" />
+    <line x1="12" y1="3" x2="12" y2="15" />
+  </svg>
+);
+
 const sidebarLinks: SidebarLink[] = [
   { href: '/admin', label: 'Dashboard', icon: <DashboardIcon /> },
   { href: '/admin/users', label: 'Users', icon: <UsersIcon /> },
   { href: '/admin/surveys', label: 'Surveys', icon: <SurveyIcon /> },
+  { href: '/admin/survey-import', label: 'Survey Import', icon: <ImportIcon /> },
 ];
 
 const STORAGE_KEY = 'admin-sidebar-collapsed';
