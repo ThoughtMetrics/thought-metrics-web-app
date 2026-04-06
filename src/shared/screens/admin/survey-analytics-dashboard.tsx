@@ -15,6 +15,9 @@ import {
   Calendar,
   Search,
   MoreVertical,
+  Map as MapIcon,
+  Download,
+  Upload,
 } from 'lucide-react';
 import { FaFilePdf, FaFileExcel } from 'react-icons/fa';
 import * as XLSX from 'xlsx';
@@ -23,6 +26,7 @@ import { useAuth } from '@/shared/providers/auth-provider';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 import surveyService from '@services/survey/survey.service';
+import zoneService, { type AcBoundaryEntry } from '@services/api/zone.service';
 import type { ISurvey } from '@/core/types/survey.type';
 import { INDUSTRY_FILTERS } from '@/core/constants/survey.constants';
 
@@ -72,6 +76,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
   const [locationPoints, setLocationPoints] = useState<
     Array<{ latitude: number; longitude: number; count: number }>
   >([]);
+  const [acStats, setAcStats] = useState<{ ac: string; count: number }[]>([]);
   const [questionCharts, setQuestionCharts] = useState<QuestionChartData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
@@ -198,7 +203,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
       }
 
       // Load analytics data in parallel
-      const [zonalRes, districtRes, dailyRes, usersRes, locRes, chartsRes] =
+      const [zonalRes, districtRes, dailyRes, usersRes, locRes, chartsRes, acRes] =
         await Promise.all([
           surveyService.getZonalBreakdown(surveyId),
           surveyService.getDistrictBreakdown(surveyId),
@@ -206,6 +211,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
           surveyService.getTopUsers(surveyId, 1000),
           surveyService.getLocationBreakdown(surveyId),
           surveyService.getQuestionAnalytics(surveyId),
+          surveyService.getAcBreakdown(surveyId),
         ]);
 
       // Validate and set zonal stats
@@ -264,6 +270,13 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
         setQuestionCharts(chartsRes.data);
       } else {
         setQuestionCharts([]);
+      }
+
+      // Validate and set AC stats
+      if (acRes.success && Array.isArray(acRes.data)) {
+        setAcStats(acRes.data.filter((s) => s && s.ac && typeof s.count === 'number'));
+      } else {
+        setAcStats([]);
       }
 
       setIsLoadingDetails(false);
@@ -696,6 +709,26 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
       setContributorModalData({ response: match, questions });
     } catch (err) {
       console.error('[ContributorModal] Error:', err);
+      setContributorModalData({ response: null, questions: [] });
+    } finally {
+      setIsLoadingContributorModal(false);
+    }
+  };
+
+  const openMapResponseModal = async (responseId: string) => {
+    setSelectedContributor({ userId: responseId, displayName: 'Response Details', total: 0, zone: '', todayCount: 0 });
+    setIsLoadingContributorModal(true);
+    setContributorModalData(null);
+    try {
+      const [detailsRes, responseRes] = await Promise.all([
+        surveyService.getSurveyDetails(selectedSurvey!),
+        surveyService.getSurveyResponseById(responseId),
+      ]);
+      const questions = (detailsRes.data?.template?.questions ?? [])
+        .slice()
+        .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
+      setContributorModalData({ response: responseRes.data ?? null, questions });
+    } catch {
       setContributorModalData({ response: null, questions: [] });
     } finally {
       setIsLoadingContributorModal(false);
@@ -1235,7 +1268,12 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                               <div className="h-48 bg-gray-50 rounded-lg border border-gray-200 animate-pulse" />
                             }
                           >
-                            <SurveyLocationMap points={locationPoints} />
+                            <SurveyLocationMap
+                              points={locationPoints}
+                              surveyId={selectedSurvey ?? undefined}
+                              onViewResponse={openMapResponseModal}
+                              acSubmissions={Object.fromEntries(acStats.map((s) => [s.ac, s.count]))}
+                            />
                           </Suspense>
                         </div>
 
@@ -1456,7 +1494,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
 
       {/* Contributor Answers Modal */}
       {selectedContributor !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 flex flex-col max-h-[85vh]">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold text-gray-900 truncate pr-4">
@@ -1567,7 +1605,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
 
       {/* Download Modal */}
       {showDownloadModal && downloadSurvey && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">
@@ -1847,6 +1885,22 @@ export const SurveyAnalyticsDetailPanel: React.FC<
   const [filterDistricts, setFilterDistricts] = useState<string[]>([]);
   const [filterAcs, setFilterAcs] = useState<string[]>([]);
   const [filterContributors, setFilterContributors] = useState<string[]>([]);
+
+  // Boundary overlay state
+  const [showBoundaries, setShowBoundaries] = useState(false);
+  const [boundaries, setBoundaries] = useState<AcBoundaryEntry[] | null>(null);
+  const [isBoundaryLoading, setIsBoundaryLoading] = useState(false);
+  const [boundaryError, setBoundaryError] = useState<string | null>(null);
+  const boundaryUploadRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  // Pre-load boundaries in the background on mount so fullscreen map always has them
+  useEffect(() => {
+    zoneService.getBoundaries().then((res) => {
+      if (res.success && Array.isArray(res.data)) setBoundaries(res.data);
+    }).catch(() => { /* silent — user can still load manually via toggle */ });
+  }, []);
+
   const isRespondentSurvey = survey.type !== 'agent';
 
   const formatAnswerForDisplay = (
@@ -1922,6 +1976,80 @@ export const SurveyAnalyticsDetailPanel: React.FC<
   const panelFormatZone = (zone: string) =>
     zone.charAt(0).toUpperCase() + zone.slice(1).toLowerCase();
 
+  // ── Boundary helpers ──────────────────────────────────────────────────────
+
+  const handleToggleBoundaries = async () => {
+    const next = !showBoundaries;
+    setShowBoundaries(next);
+    if (next && boundaries === null) {
+      setIsBoundaryLoading(true);
+      setBoundaryError(null);
+      try {
+        const res = await zoneService.getBoundaries();
+        if (res.success && Array.isArray(res.data)) {
+          setBoundaries(res.data);
+        } else {
+          setBoundaryError(res.message ?? 'No boundary data available. Upload a boundary file first.');
+          setShowBoundaries(false);
+        }
+      } catch {
+        setBoundaryError('Failed to load boundary data.');
+        setShowBoundaries(false);
+      } finally {
+        setIsBoundaryLoading(false);
+      }
+    }
+  };
+
+  const handleDownloadBoundaries = async () => {
+    try {
+      const data = boundaries ?? (await zoneService.getBoundaries()).data;
+      if (!data?.length) { alert('No boundary data to download.'); return; }
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ac_boundaries.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert('Failed to download boundary data.');
+    }
+  };
+
+  const handleUploadBoundaries = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploading(true);
+    try {
+      const text = await file.text();
+      const parsed: AcBoundaryEntry[] = JSON.parse(text);
+      if (!Array.isArray(parsed) || !parsed[0]?.acNo) {
+        alert('Invalid boundary file format. Expected a JSON array of boundary entries.');
+        return;
+      }
+      const res = await zoneService.uploadBoundaries(parsed);
+      if (res.success) {
+        setBoundaries(parsed);
+        alert(`Boundary data updated: ${parsed.length} entries uploaded.`);
+      } else {
+        alert(res.message ?? 'Upload failed.');
+      }
+    } catch {
+      alert('Failed to parse or upload boundary file.');
+    } finally {
+      setIsUploading(false);
+      if (boundaryUploadRef.current) boundaryUploadRef.current.value = '';
+    }
+  };
+
+  // Build acSubmissions map from acStats for map coloring
+  const acSubmissionsMap: Record<string, number> = Object.fromEntries(
+    acStats.map((s) => [s.ac, s.count])
+  );
+
+  // ─────────────────────────────────────────────────────────────────────────
+
   const panelGetZoneColor = (zone: string, index: number) => {
     const zoneColors: Record<string, string> = {
       North: 'bg-blue-500',
@@ -1978,6 +2106,26 @@ export const SurveyAnalyticsDetailPanel: React.FC<
         responses.find((r) => r.respondent?.userId === contributor.userId) ??
         null;
       setContributorModalData({ response: match, questions });
+    } catch {
+      setContributorModalData({ response: null, questions: [] });
+    } finally {
+      setIsLoadingContributorModal(false);
+    }
+  };
+
+  const openMapResponseModal = async (responseId: string) => {
+    setSelectedContributor({ userId: responseId, displayName: 'Response Details', total: 0, zone: '', todayCount: 0 });
+    setIsLoadingContributorModal(true);
+    setContributorModalData(null);
+    try {
+      const [detailsRes, responseRes] = await Promise.all([
+        surveyService.getSurveyDetails(survey.surveyId ?? ''),
+        surveyService.getSurveyResponseById(responseId),
+      ]);
+      const questions = (detailsRes.data?.template?.questions ?? [])
+        .slice()
+        .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
+      setContributorModalData({ response: responseRes.data ?? null, questions });
     } catch {
       setContributorModalData({ response: null, questions: [] });
     } finally {
@@ -2180,6 +2328,12 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                       points={locationPoints}
                       expanded={mapExpanded}
                       onToggleExpand={() => setMapExpanded((e) => !e)}
+                      surveyId={survey.surveyId ?? undefined}
+                      onViewResponse={openMapResponseModal}
+                      boundaries={showBoundaries ? (boundaries ?? undefined) : undefined}
+                      fullscreenBoundaries={boundaries ?? undefined}
+                      acSubmissions={acSubmissionsMap}
+                      surveyLabel={survey.label || survey.surveyId || ''}
                     />
                   </Suspense>
                 </div>
@@ -2229,6 +2383,12 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                           points={locationPoints}
                           expanded={mapExpanded}
                           onToggleExpand={() => setMapExpanded((e) => !e)}
+                          surveyId={survey.surveyId ?? undefined}
+                          onViewResponse={openMapResponseModal}
+                          boundaries={showBoundaries ? (boundaries ?? undefined) : undefined}
+                          fullscreenBoundaries={boundaries ?? undefined}
+                          acSubmissions={acSubmissionsMap}
+                          surveyLabel={survey.label || survey.surveyId || ''}
                         />
                       </Suspense>
                     </div>
@@ -2426,8 +2586,8 @@ export const SurveyAnalyticsDetailPanel: React.FC<
           const filteredTotal = visContributors.reduce((s, u) => s + (u.total ?? 0), 0);
           return (
         <div>
-          {/* Filter bar */}
-          <div className="flex flex-wrap gap-2 mb-4">
+          {/* Filter bar + boundary controls */}
+          <div className="flex flex-wrap gap-2 mb-4 items-center">
             <MultiSelectDropdown label="Zone" options={zoneOptions} selected={filterZones} onChange={setFilterZones} />
             <MultiSelectDropdown label="District" options={districtOptions} selected={filterDistricts} onChange={setFilterDistricts} />
             <MultiSelectDropdown label="AC" options={acOptions} selected={filterAcs} onChange={setFilterAcs} />
@@ -2438,7 +2598,67 @@ export const SurveyAnalyticsDetailPanel: React.FC<
               onChange={setFilterContributors}
               renderLabel={(id) => topUsers.find(u => u.userId === id)?.displayName || id.slice(0, 8) + '\u2026'}
             />
+
+            {/* Divider */}
+            <div className="h-6 w-px bg-gray-200 mx-1" />
+
+            {/* Show Boundaries toggle */}
+            <button
+              onClick={handleToggleBoundaries}
+              disabled={isBoundaryLoading}
+              title={showBoundaries ? 'Hide AC boundaries' : 'Show AC boundaries'}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                showBoundaries
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              {isBoundaryLoading
+                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                : <MapIcon className="w-3.5 h-3.5" />}
+              Boundaries
+            </button>
+
+            {/* Download boundary JSON */}
+            <button
+              onClick={handleDownloadBoundaries}
+              title="Download boundary data as JSON"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Download
+            </button>
+
+            {/* Upload boundary JSON (admin only) */}
+            <button
+              onClick={() => boundaryUploadRef.current?.click()}
+              disabled={isUploading}
+              title="Upload new boundary data JSON"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50"
+            >
+              {isUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+              Upload
+            </button>
+            <input
+              ref={boundaryUploadRef}
+              type="file"
+              accept=".json,application/json"
+              className="hidden"
+              onChange={handleUploadBoundaries}
+            />
           </div>
+
+          {/* Boundary error notice */}
+          {boundaryError && (
+            <div className="mb-3 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-700 flex items-center justify-between">
+              <span>{boundaryError}</span>
+              <button onClick={() => setBoundaryError(null)} className="ml-2 text-amber-500 hover:text-amber-700">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          )}
 
           {mapExpanded && (
             <div className="mb-5">
@@ -2460,6 +2680,12 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                   points={locationPoints}
                   expanded={mapExpanded}
                   onToggleExpand={() => setMapExpanded((e) => !e)}
+                  surveyId={survey.surveyId ?? undefined}
+                  onViewResponse={openMapResponseModal}
+                  boundaries={showBoundaries ? (boundaries ?? undefined) : undefined}
+                  fullscreenBoundaries={boundaries ?? undefined}
+                  acSubmissions={acSubmissionsMap}
+                  surveyLabel={survey.label || survey.surveyId || ''}
                 />
               </Suspense>
             </div>
@@ -2510,6 +2736,12 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                       points={locationPoints}
                       expanded={mapExpanded}
                       onToggleExpand={() => setMapExpanded((e) => !e)}
+                      surveyId={survey.surveyId ?? undefined}
+                      onViewResponse={openMapResponseModal}
+                      boundaries={showBoundaries ? (boundaries ?? undefined) : undefined}
+                      fullscreenBoundaries={boundaries ?? undefined}
+                      acSubmissions={acSubmissionsMap}
+                      surveyLabel={survey.label || survey.surveyId || ''}
                     />
                   </Suspense>
                 </div>
@@ -2807,7 +3039,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
 
       {/* Contributor Answers Modal */}
       {selectedContributor !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 flex flex-col max-h-[85vh]">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold text-gray-900 truncate pr-4">
@@ -3235,7 +3467,7 @@ export const SurveyDownloadModal: React.FC<SurveyDownloadModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50">
       <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">

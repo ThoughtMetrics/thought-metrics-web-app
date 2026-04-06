@@ -572,6 +572,43 @@ class SurveyService {
     return apiService.get(`${this.basePath}/${surveyId}/analytics/locations`, Object.keys(params).length ? params : undefined);
   }
 
+  /**
+   * Get a single survey response by its ID (Admin endpoint)
+   */
+  async getSurveyResponseById(responseId: string): Promise<ApiResponse<ISurveyResponse>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.get<ISurveyResponse>(`${this.basePath}/responses/${responseId}`);
+  }
+
+  /**
+   * Get individual responses at a GPS location cluster (Admin endpoint)
+   * Returns up to 100 responses within ±0.0005° of the given coordinates
+   */
+  async getLocationResponses(
+    surveyId: string,
+    lat: number,
+    lng: number
+  ): Promise<ApiResponse<Array<{
+    id: string;
+    respondent: { name: string | null; userId: string | null };
+    submittedAt: string;
+    submitterZone: string | null;
+    submitterDistrict: string | null;
+    submitterAc: string | null;
+  }>>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.get(
+      `${this.basePath}/${surveyId}/analytics/locations/responses`,
+      { lat, lng }
+    );
+  }
+
   async getQuestionAnalytics(
     surveyId: string,
     lang?: string,
