@@ -5,7 +5,6 @@ import type { IBuilderQuestion, SupportedBuilderLanguage } from '@/core/types/su
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 import { QuestionType } from '@/core/types/survey.type';
 import { ChevronDown } from 'lucide-react';
-import { RowColumnEditor } from './RowColumnEditor';
 
 interface Props {
   question: IBuilderQuestion;
@@ -20,8 +19,9 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
   const { addOption, removeOption, updateOption } = useSurveyBuilderStore();
   const options = question.config.options ?? [];
   const [expandedAttrsIdx, setExpandedAttrsIdx] = React.useState<number | null>(null);
+  const [sharedAttrsExpanded, setSharedAttrsExpanded] = React.useState(false);
 
-  const rowOptionsMode = question.config.rowOptionsMode ?? 'shared';
+  const rowOptionsMode = question.config.rowOptionsMode ?? 'per-row';
   const rowColumns = question.config.rowColumns ?? {};
 
   const hasOthers = options.some((o) => o.value === 'others');
@@ -107,6 +107,10 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
     useSurveyBuilderStore.getState().setQuestionConfig(qIdx, { options: next });
   };
 
+  const updateSharedAttrs = (attrs: Array<{ key: string; value: string }>) => {
+    useSurveyBuilderStore.getState().setQuestionConfig(qIdx, { sharedOptionAttributes: attrs });
+  };
+
   const setRowOptionsMode = (next: 'shared' | 'per-row') => {
     if (next === 'per-row') {
       const sharedCols = question.config.columns ?? [];
@@ -117,27 +121,20 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
       useSurveyBuilderStore.getState().setQuestionConfig(qIdx, { rowOptionsMode: 'per-row', rowColumns: seeded });
     } else {
       useSurveyBuilderStore.getState().setQuestionConfig(qIdx, { rowOptionsMode: 'shared' });
+      setSharedAttrsExpanded(false);
     }
-  };
-
-  const updateSubOptions = (
-    optValue: string,
-    cols: import('@/core/types/survey-builder.type').IBuilderQuestionOption[]
-  ) => {
-    useSurveyBuilderStore.getState().setQuestionConfig(qIdx, {
-      rowColumns: { ...rowColumns, [optValue]: cols },
-    });
   };
 
   const othersPlaceholder = (question.config as any).othersPlaceholder ?? '';
   const { setQuestionConfig } = useSurveyBuilderStore();
+  const sharedAttrs = question.config.sharedOptionAttributes ?? [];
 
   return (
     <div className="space-y-3">
       {/* ── Per-option sub-options toggle ── */}
       {lang === 'en' && (
         <div className="flex items-center justify-between py-2 px-3 bg-gray-50 border border-gray-200 rounded-lg">
-          <span className="text-xs font-medium text-gray-600">Different sub-options per choice</span>
+          <span className="text-xs font-medium text-gray-600">Different fields per choice</span>
           <button
             type="button"
             role="switch"
@@ -202,8 +199,8 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
                       duplicate ? 'border-red-400 bg-red-50' : 'border-gray-300'
                     }`}
                   />
-                  {/* Attributes toggle (EN only — attributes are language-neutral) */}
-                  {lang === 'en' && (
+                  {/* Per-option attributes toggle — only in per-row mode */}
+                  {lang === 'en' && rowOptionsMode === 'per-row' && (
                     <button
                       type="button"
                       onClick={() => setExpandedAttrsIdx(isAttrsExpanded ? null : optIdx)}
@@ -258,8 +255,8 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
                 )}
               </div>
 
-              {/* Per-option attribute editor */}
-              {isAttrsExpanded && lang === 'en' && (
+              {/* Per-option attribute editor — only in per-row mode */}
+              {isAttrsExpanded && rowOptionsMode === 'per-row' && lang === 'en' && (
                 <div className="border border-dashed border-primary/40 rounded-lg p-2.5 space-y-1.5 bg-primary/3">
                   <p className="text-xs font-medium text-gray-600 mb-1">
                     Additional fields for &quot;{opt.label || `Option ${displayIdx + 1}`}&quot;
@@ -310,14 +307,6 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
                 </div>
               )}
 
-              {/* Per-option sub-options editor (EN only, per-row mode) */}
-              {lang === 'en' && rowOptionsMode === 'per-row' && (
-                <RowColumnEditor
-                  rowLabel={opt.label}
-                  cols={rowColumns[opt.value] ?? []}
-                  onChange={(cols) => updateSubOptions(opt.value, cols)}
-                />
-              )}
             </div>
           );
         })}
@@ -335,15 +324,78 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
         )}
       </div>
 
-      {/* ── Shared sub-options editor (shared mode, EN only) ── */}
-      {lang === 'en' && rowOptionsMode === 'shared' && (
-        <RowColumnEditor
-          rowLabel="All options (shared)"
-          cols={question.config.columns ?? []}
-          onChange={(cols) =>
-            useSurveyBuilderStore.getState().setQuestionConfig(qIdx, { columns: cols })
-          }
-        />
+      {/* ── Shared additional fields (when rowOptionsMode === 'shared', EN only) ── */}
+      {rowOptionsMode === 'shared' && lang === 'en' && (
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500 flex-1">Additional fields (shared for all options)</span>
+            <button
+              type="button"
+              onClick={() => setSharedAttrsExpanded(!sharedAttrsExpanded)}
+              title="Shared option attributes"
+              className={`flex items-center gap-1 text-xs px-1.5 py-1 rounded border transition-colors flex-shrink-0 ${
+                sharedAttrs.length > 0
+                  ? 'border-primary text-primary bg-primary/5'
+                  : 'border-gray-300 text-gray-400 hover:border-primary hover:text-primary'
+              }`}
+            >
+              {sharedAttrs.length > 0 && (
+                <span className="font-medium">{sharedAttrs.length}</span>
+              )}
+              <ChevronDown
+                className={`w-3 h-3 transition-transform duration-150 ${sharedAttrsExpanded ? 'rotate-180' : ''}`}
+              />
+            </button>
+          </div>
+          {sharedAttrsExpanded && (
+            <div className="border border-dashed border-primary/40 rounded-lg p-2.5 space-y-1.5 bg-primary/3">
+              <p className="text-xs font-medium text-gray-600 mb-1">Additional fields (applied to all options)</p>
+              {sharedAttrs.map((attr, aIdx) => (
+                <div key={aIdx} className="flex gap-1.5 items-center">
+                  <input
+                    type="text"
+                    value={attr.key}
+                    onChange={(e) => {
+                      const next = [...sharedAttrs];
+                      next[aIdx] = { ...next[aIdx], key: e.target.value };
+                      updateSharedAttrs(next);
+                    }}
+                    placeholder="Field name"
+                    className="w-28 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                  />
+                  <input
+                    type="text"
+                    value={attr.value}
+                    onChange={(e) => {
+                      const next = [...sharedAttrs];
+                      next[aIdx] = { ...next[aIdx], value: e.target.value };
+                      updateSharedAttrs(next);
+                    }}
+                    placeholder="Value"
+                    className="flex-1 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => updateSharedAttrs(sharedAttrs.filter((_, i) => i !== aIdx))}
+                    className="text-red-400 hover:text-red-600 flex-shrink-0"
+                    title="Remove field"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => updateSharedAttrs([...sharedAttrs, { key: '', value: '' }])}
+                className="text-xs text-primary hover:underline font-medium"
+              >
+                + Add Field
+              </button>
+            </div>
+          )}
+        </div>
       )}
 
       {/* Others toggle */}

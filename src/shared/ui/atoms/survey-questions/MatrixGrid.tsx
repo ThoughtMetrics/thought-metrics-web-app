@@ -18,6 +18,10 @@ export const MatrixGrid: React.FC<MatrixGridProps> = ({
   comment,
   onCommentChange,
   showComment,
+  showIntensePurchase,
+  intensePurchaseLabel,
+  intensePurchaseAnswers,
+  onIntensePurchaseChange,
   progress,
   onBack,
   onNext,
@@ -26,9 +30,6 @@ export const MatrixGrid: React.FC<MatrixGridProps> = ({
   isLastQuestion,
   isOptional,
   hasAnswer,
-  intensePurchaseLabel,
-  intensePurchaseAnswers,
-  onIntensePurchaseChange,
 }) => {
   const { translations } = useLanguage();
 
@@ -49,6 +50,8 @@ export const MatrixGrid: React.FC<MatrixGridProps> = ({
       comment={comment}
       onCommentChange={onCommentChange}
       showComment={showComment}
+      showIntensePurchase={showIntensePurchase}
+      intensePurchaseLabel={intensePurchaseLabel}
       progress={progress}
       onBack={onBack}
       onNext={onNext}

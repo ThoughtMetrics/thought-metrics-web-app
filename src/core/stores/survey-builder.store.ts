@@ -21,7 +21,7 @@ function defaultConfigFor(type: QuestionType): IBuilderQuestionConfig {
   switch (type) {
     case QuestionType.MCQ_SINGLE:
     case QuestionType.MCQ_MULTIPLE:
-      return { options: [{ value: 'opt1', label: 'Option 1' }] };
+      return { options: [{ value: 'opt1', label: 'Option 1' }], rowOptionsMode: 'per-row' };
     case QuestionType.RATING:
       return { ratingMax: 5 };
     case QuestionType.SCALE:
@@ -38,9 +38,9 @@ function defaultConfigFor(type: QuestionType): IBuilderQuestionConfig {
       };
     case QuestionType.RANKING:
     case QuestionType.MAX_DIFF:
-      return { options: [{ value: 'opt1', label: 'Option 1' }] };
+      return { options: [{ value: 'opt1', label: 'Option 1' }], rowOptionsMode: 'per-row' };
     case QuestionType.CONSTANT_SUM:
-      return { options: [{ value: 'opt1', label: 'Option 1' }], total: 100, constantSumMode: 'constant-sum' };
+      return { options: [{ value: 'opt1', label: 'Option 1' }], total: 100, constantSumMode: 'constant-sum', rowOptionsMode: 'per-row' };
     case QuestionType.FILE:
       return { acceptedFileTypes: ['pdf', 'jpg', 'png'], maxFileSizeMb: 10 };
     default:
@@ -96,6 +96,7 @@ interface SurveyBuilderState {
 
   // Questions
   addQuestion: (type: QuestionType) => void;
+  insertQuestion: (type: QuestionType, afterIndex: number) => void;
   removeQuestion: (idx: number) => void;
   duplicateQuestion: (idx: number) => void;
   moveQuestionUp: (idx: number) => void;
@@ -345,6 +346,28 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
         }));
       },
 
+      insertQuestion: (type: QuestionType, afterIndex: number) => {
+        get()._pushHistory();
+        const newQ: IBuilderQuestion = {
+          id: generateId(),
+          order: afterIndex + 2,
+          questionType: type,
+          text: '',
+          translations: { en: emptyTranslation(), ta: emptyTranslation() },
+          config: defaultConfigFor(type),
+          required: true,
+          allowComment: false,
+        };
+        set((s) => {
+          const qs = [
+            ...s.questions.slice(0, afterIndex + 1),
+            newQ,
+            ...s.questions.slice(afterIndex + 1),
+          ].map((q, i) => ({ ...q, order: i + 1 }));
+          return { isDirty: true, questions: qs, selectedQuestionIndex: afterIndex + 1 };
+        });
+      },
+
       removeQuestion: (idx) => {
         get()._pushHistory();
         set((s) => {
@@ -548,7 +571,19 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
           const q = qs[qIdx];
           const opts = [...(q.config.options ?? [])];
           opts[optIdx] = { ...opts[optIdx], [field]: value };
-          qs[qIdx] = { ...q, config: { ...q.config, options: opts } };
+          // Keep Tamil option value in sync when English value changes
+          const newTranslations = { ...q.translations };
+          const taOpts = newTranslations.ta?.options;
+          if (taOpts && taOpts[optIdx] !== undefined) {
+            const updatedTaOpts = [...taOpts];
+            if (field === 'value') {
+              // value must stay identical across languages
+              updatedTaOpts[optIdx] = { ...updatedTaOpts[optIdx], value };
+            }
+            // label: user edits Tamil label separately — don't overwrite
+            newTranslations.ta = { ...newTranslations.ta, options: updatedTaOpts };
+          }
+          qs[qIdx] = { ...q, config: { ...q.config, options: opts }, translations: newTranslations };
           return { isDirty: true, questions: qs };
         });
       },

@@ -3,6 +3,7 @@ import React, {
   useState,
   useMemo,
   useRef,
+  useCallback,
   lazy,
   Suspense,
 } from 'react';
@@ -76,6 +77,9 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
   const [locationPoints, setLocationPoints] = useState<
     Array<{ latitude: number; longitude: number; count: number }>
   >([]);
+  const [locationMapLoading, setLocationMapLoading] = useState(false);
+  const [locationLoadedCount, setLocationLoadedCount] = useState(0);
+  const [locationTotalCount, setLocationTotalCount] = useState(0);
   const [acStats, setAcStats] = useState<{ ac: string; count: number }[]>([]);
   const [questionCharts, setQuestionCharts] = useState<QuestionChartData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -111,6 +115,15 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
   } | null>(null);
   const [isLoadingContributorModal, setIsLoadingContributorModal] =
     useState(false);
+  const [mapExpanded, setMapExpanded] = useState(false);
+  const [boundaries, setBoundaries] = useState<AcBoundaryEntry[] | null>(null);
+
+  // Pre-load boundaries in background so fullscreen map always has them
+  useEffect(() => {
+    zoneService.getBoundaries().then((res) => {
+      if (res.success && Array.isArray(res.data)) setBoundaries(res.data);
+    }).catch(() => { /* silent */ });
+  }, []);
 
   // Filter surveys client-side for instant feedback
   const filteredSurveys = useMemo(() => {
@@ -180,6 +193,41 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
     }
   };
 
+  // Batch-fetch location points — accumulates all pages locally then sets state ONCE
+  // to avoid multiple progressive re-renders that freeze the browser on 42k+ clusters.
+  const loadLocationsBatched = useCallback(async (
+    surveyId: string,
+    filters?: { zones?: string[]; districts?: string[]; acs?: string[]; userIds?: string[] }
+  ) => {
+    setLocationMapLoading(true);
+    setLocationPoints([]);
+    setLocationLoadedCount(0);
+    setLocationTotalCount(0);
+    const BATCH = 1000;
+    let currentPage = 1;
+    let fetched = 0;
+    const allPoints: Array<{ latitude: number; longitude: number; count: number }> = [];
+    try {
+      while (true) {
+        const res = await surveyService.getLocationBreakdown(surveyId, filters, currentPage, BATCH);
+        const batch = res.success && Array.isArray(res.data)
+          ? (res.data as Array<{ latitude: number; longitude: number; count: number }>)
+            .filter((p) => p != null && typeof p.latitude === 'number' && typeof p.longitude === 'number')
+          : null;
+        if (!batch || batch.length === 0) break;
+        allPoints.push(...batch);
+        fetched += batch.length;
+        const total = (res as any).total as number | undefined;
+        if (total) setLocationTotalCount(total);
+        setLocationLoadedCount(fetched); // update progress without re-rendering map
+        if (!(res as any).hasMore) break;
+        currentPage++;
+      }
+    } catch { /* keep whatever was accumulated so far */ }
+    setLocationPoints(allPoints); // single render when all pages are done
+    setLocationMapLoading(false);
+  }, []);
+
   // Load detailed analytics for selected survey
   const loadSurveyDetails = async (surveyId: string) => {
     try {
@@ -194,6 +242,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
       setTopUsers([]);
       setLocationPoints([]);
       setQuestionCharts([]);
+      setMapExpanded(false);
 
       // Validate surveyId
       if (!surveyId) {
@@ -202,14 +251,13 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
         return;
       }
 
-      // Load analytics data in parallel
-      const [zonalRes, districtRes, dailyRes, usersRes, locRes, chartsRes, acRes] =
+      // Load analytics data in parallel (location loaded separately to avoid blocking)
+      const [zonalRes, districtRes, dailyRes, usersRes, chartsRes, acRes] =
         await Promise.all([
           surveyService.getZonalBreakdown(surveyId),
           surveyService.getDistrictBreakdown(surveyId),
           surveyService.getDailyBreakdown(surveyId, 14), // Last 14 days
           surveyService.getTopUsers(surveyId, 1000),
-          surveyService.getLocationBreakdown(surveyId),
           surveyService.getQuestionAnalytics(surveyId),
           surveyService.getAcBreakdown(surveyId),
         ]);
@@ -258,13 +306,6 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
         setTopUsers([]);
       }
 
-      // Validate and set location points
-      if (locRes.success && Array.isArray(locRes.data)) {
-        setLocationPoints(locRes.data);
-      } else {
-        setLocationPoints([]);
-      }
-
       // Validate and set question charts
       if (chartsRes.success && Array.isArray(chartsRes.data)) {
         setQuestionCharts(chartsRes.data);
@@ -280,6 +321,8 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
       }
 
       setIsLoadingDetails(false);
+      // Load locations in background — does not block dashboard render
+      loadLocationsBatched(surveyId);
     } catch (err) {
       console.error('[Survey Analytics] Details load error:', err);
       setError(
@@ -1271,8 +1314,15 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                             <SurveyLocationMap
                               points={locationPoints}
                               surveyId={selectedSurvey ?? undefined}
+                              surveyLabel={surveys.find((s) => s.surveyId === selectedSurvey)?.label || selectedSurvey || ''}
                               onViewResponse={openMapResponseModal}
                               acSubmissions={Object.fromEntries(acStats.map((s) => [s.ac, s.count]))}
+                              expanded={mapExpanded}
+                              onToggleExpand={() => setMapExpanded((e) => !e)}
+                              fullscreenBoundaries={boundaries ?? undefined}
+                              locationLoading={locationMapLoading}
+                              loadedCount={locationLoadedCount}
+                              totalCount={locationTotalCount}
                             />
                           </Suspense>
                         </div>
@@ -1865,6 +1915,9 @@ export const SurveyAnalyticsDetailPanel: React.FC<
   >([]);
   const [questionCharts, setQuestionCharts] = useState<QuestionChartData[]>([]);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+  const [locationMapLoading, setLocationMapLoading] = useState(false);
+  const [locationLoadedCount, setLocationLoadedCount] = useState(0);
+  const [locationTotalCount, setLocationTotalCount] = useState(0);
   const [responsesPage, setResponsesPage] = useState(0);
   const [responsesSearch, setResponsesSearch] = useState('');
   const [selectedContributor, setSelectedContributor] =
@@ -1899,6 +1952,41 @@ export const SurveyAnalyticsDetailPanel: React.FC<
     zoneService.getBoundaries().then((res) => {
       if (res.success && Array.isArray(res.data)) setBoundaries(res.data);
     }).catch(() => { /* silent — user can still load manually via toggle */ });
+  }, []);
+
+  // Batch-fetch location points — accumulates all pages locally then sets state ONCE
+  // to avoid multiple progressive re-renders that freeze the browser on 42k+ clusters.
+  const loadLocationsBatched = useCallback(async (
+    sid: string,
+    filters?: { zones?: string[]; districts?: string[]; acs?: string[]; userIds?: string[] }
+  ) => {
+    setLocationMapLoading(true);
+    setLocationPoints([]);
+    setLocationLoadedCount(0);
+    setLocationTotalCount(0);
+    const BATCH = 1000;
+    let currentPage = 1;
+    let fetched = 0;
+    const allPoints: Array<{ latitude: number; longitude: number; count: number }> = [];
+    try {
+      while (true) {
+        const res = await surveyService.getLocationBreakdown(sid, filters, currentPage, BATCH);
+        const batch = res.success && Array.isArray(res.data)
+          ? (res.data as Array<{ latitude: number; longitude: number; count: number }>)
+            .filter((p) => p != null && typeof p.latitude === 'number' && typeof p.longitude === 'number')
+          : null;
+        if (!batch || batch.length === 0) break;
+        allPoints.push(...batch);
+        fetched += batch.length;
+        const total = (res as any).total as number | undefined;
+        if (total) setLocationTotalCount(total);
+        setLocationLoadedCount(fetched); // update progress without re-rendering map
+        if (!(res as any).hasMore) break;
+        currentPage++;
+      }
+    } catch { /* keep whatever was accumulated so far */ }
+    setLocationPoints(allPoints); // single render when all pages are done
+    setLocationMapLoading(false);
   }, []);
 
   const isRespondentSurvey = survey.type !== 'agent';
@@ -2161,12 +2249,11 @@ export const SurveyAnalyticsDetailPanel: React.FC<
       surveyService.getDistrictBreakdown(survey.surveyId),
       surveyService.getDailyBreakdown(survey.surveyId, 14),
       surveyService.getTopUsers(survey.surveyId, 1000),
-      surveyService.getLocationBreakdown(survey.surveyId),
       surveyService.getQuestionAnalytics(survey.surveyId),
       surveyService.getAcBreakdown(survey.surveyId),
     ])
       .then(
-        ([zonalRes, districtRes, dailyRes, usersRes, locRes, chartsRes, acRes]) => {
+        ([zonalRes, districtRes, dailyRes, usersRes, chartsRes, acRes]) => {
           if (zonalRes.success && Array.isArray(zonalRes.data))
             setZonalStats(
               zonalRes.data.filter(
@@ -2192,8 +2279,6 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                 (u: UserStat) => u && u.userId && typeof u.total === 'number'
               )
             );
-          if (locRes.success && Array.isArray(locRes.data))
-            setLocationPoints(locRes.data);
           if (chartsRes.success && Array.isArray(chartsRes.data))
             setQuestionCharts(chartsRes.data);
           if (acRes.success && Array.isArray(acRes.data))
@@ -2203,13 +2288,15 @@ export const SurveyAnalyticsDetailPanel: React.FC<
               )
             );
           setIsLoadingDetails(false);
+          // Load locations in background — does not block dashboard render
+          loadLocationsBatched(survey.surveyId as string);
         }
       )
       .catch(() => {
         setQuestionCharts([]);
         setIsLoadingDetails(false);
       });
-  }, [survey.surveyId]);
+  }, [survey.surveyId, loadLocationsBatched]);
 
   // Re-fetch location + question charts when filters change (debounced 300 ms).
   // Always translates zone/district/AC filters into userIds so we filter by
@@ -2232,16 +2319,14 @@ export const SurveyAnalyticsDetailPanel: React.FC<
 
     const sid = survey.surveyId as string;
     const timer = setTimeout(() => {
-      Promise.all([
-        surveyService.getLocationBreakdown(sid, filters),
-        surveyService.getQuestionAnalytics(sid, undefined, filters),
-      ]).then(([locRes, chartsRes]) => {
-        if (locRes.success && Array.isArray(locRes.data))       setLocationPoints(locRes.data);
+      // Fetch question charts immediately; locations batch-load separately
+      surveyService.getQuestionAnalytics(sid, undefined, filters).then((chartsRes) => {
         if (chartsRes.success && Array.isArray(chartsRes.data)) setQuestionCharts(chartsRes.data);
       });
+      loadLocationsBatched(sid, filters);
     }, 300);
     return () => clearTimeout(timer);
-  }, [filterZones, filterDistricts, filterAcs, filterContributors, survey.surveyId, topUsers]);
+  }, [filterZones, filterDistricts, filterAcs, filterContributors, survey.surveyId, topUsers, loadLocationsBatched]);
 
   const generatePdf = () => {
     generateSurveyReportPdf({
@@ -2334,6 +2419,9 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                       fullscreenBoundaries={boundaries ?? undefined}
                       acSubmissions={acSubmissionsMap}
                       surveyLabel={survey.label || survey.surveyId || ''}
+                      locationLoading={locationMapLoading}
+                      loadedCount={locationLoadedCount}
+                      totalCount={locationTotalCount}
                     />
                   </Suspense>
                 </div>
@@ -2389,6 +2477,9 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                           fullscreenBoundaries={boundaries ?? undefined}
                           acSubmissions={acSubmissionsMap}
                           surveyLabel={survey.label || survey.surveyId || ''}
+                          locationLoading={locationMapLoading}
+                          loadedCount={locationLoadedCount}
+                          totalCount={locationTotalCount}
                         />
                       </Suspense>
                     </div>
@@ -2686,6 +2777,9 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                   fullscreenBoundaries={boundaries ?? undefined}
                   acSubmissions={acSubmissionsMap}
                   surveyLabel={survey.label || survey.surveyId || ''}
+                  locationLoading={locationMapLoading}
+                  loadedCount={locationLoadedCount}
+                  totalCount={locationTotalCount}
                 />
               </Suspense>
             </div>
@@ -2742,6 +2836,9 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                       fullscreenBoundaries={boundaries ?? undefined}
                       acSubmissions={acSubmissionsMap}
                       surveyLabel={survey.label || survey.surveyId || ''}
+                      locationLoading={locationMapLoading}
+                      loadedCount={locationLoadedCount}
+                      totalCount={locationTotalCount}
                     />
                   </Suspense>
                 </div>

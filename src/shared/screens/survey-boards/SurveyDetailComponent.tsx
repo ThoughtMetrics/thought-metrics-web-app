@@ -149,18 +149,26 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     const allQs = surveyData?.data?.template?.questions || [];
     const evalCond = (cond: any): boolean => {
       const refIdx = questionIdToIndex[cond.questionId];
-      if (refIdx === undefined) return true;
-      const actual = answers[refIdx]?.value?.toString();
-      const expected = cond.value?.toString();
-      switch (cond.operator ?? 'equals') {
-        case 'equals':
-          return actual === expected;
-        case 'not_equals':
-          return actual !== expected;
-        case 'contains':
-          return actual?.includes(expected ?? '') ?? false;
-        default:
-          return true;
+      if (refIdx === undefined) return false; // orphaned condition — hide by default
+      const answerData = answers[refIdx];
+      const expected = cond.value?.toString() ?? '';
+      const op = cond.operator ?? 'equals';
+      // MCQ_MULTIPLE stores { values: string[] }
+      if (answerData?.values && Array.isArray(answerData.values)) {
+        switch (op) {
+          case 'equals':     return answerData.values.includes(expected);
+          case 'not_equals': return !answerData.values.includes(expected);
+          case 'contains':   return answerData.values.includes(expected);
+          default:           return false;
+        }
+      }
+      // All other types store a scalar in .value
+      const actual = answerData?.value?.toString() ?? '';
+      switch (op) {
+        case 'equals':     return actual === expected;
+        case 'not_equals': return actual !== expected;
+        case 'contains':   return actual.includes(expected);
+        default:           return false;
       }
     };
     return allQs
@@ -540,13 +548,27 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         }
 
         case QuestionType.CONSTANT_SUM: {
-          const totalPoints = qData.config.total;
-          const totalAllocated =
-            answer.allocatedPoints &&
-            Object.values(answer.allocatedPoints).reduce(
-              (acc: any, val: any) => acc + val,
-              0
+          const csMode = qData.config?.constantSumMode ?? 'constant-sum';
+          const csOptions = (qData.config?.options || qData.config?.items || []) as any[];
+          if (csMode === 'rating-conjoint') {
+            // All options must have a rating > 0
+            return csOptions.length > 0 && csOptions.every((o: any) =>
+              (answer.ratings?.[o.value ?? o.id] ?? 0) > 0
             );
+          }
+          if (csMode === 'volume-conjoint') {
+            // At least one quantity must be > 0
+            return csOptions.some((o: any) =>
+              (answer.quantities?.[o.value ?? o.id] ?? 0) > 0
+            );
+          }
+          // constant-sum: allocated total must equal totalPoints
+          const totalPoints = qData.config?.total ?? qData.config?.totalPoints ?? 100;
+          const totalAllocated: number = answer.allocatedPoints
+            ? (Object.values(answer.allocatedPoints) as number[]).reduce(
+                (acc, val) => acc + (val ?? 0), 0
+              )
+            : 0;
           return totalPoints - totalAllocated === 0;
         }
 
@@ -834,9 +856,17 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             // Send selections as object: { itemId: 'best' | 'worst' | null }
             answer = answerData.selections || {};
             break;
-          case QuestionType.CONSTANT_SUM:
-            answer = answerData.allocatedPoints || null;
+          case QuestionType.CONSTANT_SUM: {
+            const csMode = q.config?.constantSumMode ?? 'constant-sum';
+            if (csMode === 'rating-conjoint') {
+              answer = answerData.ratings || null;
+            } else if (csMode === 'volume-conjoint') {
+              answer = answerData.quantities || null;
+            } else {
+              answer = answerData.allocatedPoints || null;
+            }
             break;
+          }
           case QuestionType.RATING:
             answer = answerData.stars || null;
             break;
@@ -1006,7 +1036,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         return (
           <StarRating
             {...commonProps}
-            maxStars={config.maxStars || 5}
+            maxStars={config.ratingMax || config.maxStars || 5}
             selectedStars={currentAnswer?.stars}
             onRatingChange={(stars) => onChange({ ...currentAnswer, stars })}
             image={config.image}
@@ -1198,6 +1228,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             {...commonProps}
             rows={matrixRows}
             columns={matrixColumns}
+            rowColumnsMap={config.rowColumnsMap || config.rowColumns}
             selectedValues={currentAnswer?.values || {}}
             onValuesChange={(values) => onChange({ ...currentAnswer, values })}
           />
@@ -1264,10 +1295,17 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             {...commonProps}
             totalPoints={config.totalPoints ?? config.total ?? 100}
             options={constantSumOptions}
+            mode={config.constantSumMode ?? 'constant-sum'}
+            ratingMax={config.ratingConjointMax ?? 10}
+            volumeMultiplierKey={config.volumeMultiplierKey}
             allocatedPoints={currentAnswer?.allocatedPoints || {}}
             onAllocationChange={(allocatedPoints) =>
               onChange({ ...currentAnswer, allocatedPoints })
             }
+            ratings={currentAnswer?.ratings || {}}
+            onRatingChange={(ratings) => onChange({ ...currentAnswer, ratings })}
+            quantities={currentAnswer?.quantities || {}}
+            onQuantityChange={(quantities) => onChange({ ...currentAnswer, quantities })}
             allowZero={config.allowZero}
             requireTotal={config.requireTotal}
           />

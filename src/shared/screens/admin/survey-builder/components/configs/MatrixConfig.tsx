@@ -154,6 +154,7 @@ const ItemList: React.FC<{
 const MatrixConfig: React.FC<Props> = ({ question, qIdx }) => {
   const { setQuestionConfig } = useSurveyBuilderStore();
   const { config, questionType } = question;
+  const [sharedAttrsExpanded, setSharedAttrsExpanded] = React.useState(false);
 
   if (questionType === QuestionType.MATRIX) {
     const rows = config.rows ?? [];
@@ -355,8 +356,9 @@ const MatrixConfig: React.FC<Props> = ({ question, qIdx }) => {
 
   if (questionType === QuestionType.MAX_DIFF) {
     const opts = config.options ?? [];
-    const mode = config.rowOptionsMode ?? 'shared';
+    const mode = config.rowOptionsMode ?? 'per-row';
     const rowColumns = config.rowColumns ?? {};
+    const sharedAttrs = config.sharedOptionAttributes ?? [];
 
     const setMode = (next: 'shared' | 'per-row') => {
       if (next === 'per-row') {
@@ -368,20 +370,15 @@ const MatrixConfig: React.FC<Props> = ({ question, qIdx }) => {
         setQuestionConfig(qIdx, { rowOptionsMode: 'per-row', rowColumns: seeded });
       } else {
         setQuestionConfig(qIdx, { rowOptionsMode: 'shared' });
+        setSharedAttrsExpanded(false);
       }
-    };
-
-    const updateOptionCols = (optValue: string, nextCols: IBuilderQuestionOption[]) => {
-      setQuestionConfig(qIdx, {
-        rowColumns: { ...rowColumns, [optValue]: nextCols },
-      });
     };
 
     return (
       <div className="space-y-4">
         {/* ── Per-option sub-options toggle ── */}
         <div className="flex items-center justify-between py-2 px-3 bg-gray-50 border border-gray-200 rounded-lg">
-          <span className="text-xs font-medium text-gray-600">Different options per item</span>
+          <span className="text-xs font-medium text-gray-600">Different fields per choice</span>
           <button
             type="button"
             role="switch"
@@ -437,31 +434,85 @@ const MatrixConfig: React.FC<Props> = ({ question, qIdx }) => {
             }
             setQuestionConfig(qIdx, { options: next });
           }}
-          onAttributeChange={(i, attrs) => {
+          onAttributeChange={mode === 'per-row' ? (i, attrs) => {
             const next = [...opts];
             next[i] = { ...next[i], attributes: attrs };
             setQuestionConfig(qIdx, { options: next });
-          }}
-          renderAfter={
-            mode === 'per-row'
-              ? (item) => (
-                  <RowColumnEditor
-                    rowLabel={item.label}
-                    cols={rowColumns[item.value] ?? []}
-                    onChange={(nextCols) => updateOptionCols(item.value, nextCols)}
-                  />
-                )
-              : undefined
-          }
+          } : undefined}
         />
 
-        {/* ── Shared sub-options editor (MAX_DIFF shared mode) ── */}
+        {/* ── Shared additional fields (when mode === 'shared') ── */}
         {mode === 'shared' && (
-          <RowColumnEditor
-            rowLabel="All items (shared)"
-            cols={config.columns ?? []}
-            onChange={(cols) => setQuestionConfig(qIdx, { columns: cols })}
-          />
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-500 flex-1">Additional fields (shared for all options)</span>
+              <button
+                type="button"
+                onClick={() => setSharedAttrsExpanded(!sharedAttrsExpanded)}
+                title="Shared option attributes"
+                className={`flex items-center gap-1 text-xs px-1.5 py-1 rounded border transition-colors flex-shrink-0 ${
+                  sharedAttrs.length > 0
+                    ? 'border-primary text-primary bg-primary/5'
+                    : 'border-gray-300 text-gray-400 hover:border-primary hover:text-primary'
+                }`}
+              >
+                {sharedAttrs.length > 0 && (
+                  <span className="font-medium">{sharedAttrs.length}</span>
+                )}
+                <ChevronDown
+                  className={`w-3 h-3 transition-transform duration-150 ${sharedAttrsExpanded ? 'rotate-180' : ''}`}
+                />
+              </button>
+            </div>
+            {sharedAttrsExpanded && (
+              <div className="border border-dashed border-primary/40 rounded-lg p-2.5 space-y-1.5 bg-primary/3">
+                <p className="text-xs font-medium text-gray-600 mb-1">Additional fields (applied to all options)</p>
+                {sharedAttrs.map((attr, aIdx) => (
+                  <div key={aIdx} className="flex gap-1.5 items-center">
+                    <input
+                      type="text"
+                      value={attr.key}
+                      onChange={(e) => {
+                        const next = [...sharedAttrs];
+                        next[aIdx] = { ...next[aIdx], key: e.target.value };
+                        setQuestionConfig(qIdx, { sharedOptionAttributes: next });
+                      }}
+                      placeholder="Field name"
+                      className="w-28 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                    />
+                    <input
+                      type="text"
+                      value={attr.value}
+                      onChange={(e) => {
+                        const next = [...sharedAttrs];
+                        next[aIdx] = { ...next[aIdx], value: e.target.value };
+                        setQuestionConfig(qIdx, { sharedOptionAttributes: next });
+                      }}
+                      placeholder="Value"
+                      className="flex-1 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setQuestionConfig(qIdx, { sharedOptionAttributes: sharedAttrs.filter((_, i) => i !== aIdx) })}
+                      className="text-red-400 hover:text-red-600 flex-shrink-0"
+                      title="Remove field"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setQuestionConfig(qIdx, { sharedOptionAttributes: [...sharedAttrs, { key: '', value: '' }] })}
+                  className="text-xs text-primary hover:underline font-medium"
+                >
+                  + Add Field
+                </button>
+              </div>
+            )}
+          </div>
         )}
 
         <div>
@@ -481,8 +532,9 @@ const MatrixConfig: React.FC<Props> = ({ question, qIdx }) => {
   if (questionType === QuestionType.CONSTANT_SUM) {
     const opts = config.options ?? [];
     const sumMode = config.constantSumMode ?? 'constant-sum';
-    const optionsMode = config.rowOptionsMode ?? 'shared';
+    const optionsMode = config.rowOptionsMode ?? 'per-row';
     const rowColumns = config.rowColumns ?? {};
+    const sharedAttrsCS = config.sharedOptionAttributes ?? [];
 
     const setOptionsMode = (next: 'shared' | 'per-row') => {
       if (next === 'per-row') {
@@ -493,13 +545,8 @@ const MatrixConfig: React.FC<Props> = ({ question, qIdx }) => {
         setQuestionConfig(qIdx, { rowOptionsMode: 'per-row', rowColumns: seeded });
       } else {
         setQuestionConfig(qIdx, { rowOptionsMode: 'shared' });
+        setSharedAttrsExpanded(false);
       }
-    };
-
-    const updateOptionCols = (optValue: string, nextCols: IBuilderQuestionOption[]) => {
-      setQuestionConfig(qIdx, {
-        rowColumns: { ...rowColumns, [optValue]: nextCols },
-      });
     };
 
     return (
@@ -524,7 +571,7 @@ const MatrixConfig: React.FC<Props> = ({ question, qIdx }) => {
 
         {/* ── Per-option sub-options toggle ── */}
         <div className="flex items-center justify-between py-2 px-3 bg-gray-50 border border-gray-200 rounded-lg">
-          <span className="text-xs font-medium text-gray-600">Different options per item</span>
+          <span className="text-xs font-medium text-gray-600">Different fields per choice</span>
           <button
             type="button"
             role="switch"
@@ -581,23 +628,86 @@ const MatrixConfig: React.FC<Props> = ({ question, qIdx }) => {
             }
             setQuestionConfig(qIdx, { options: next });
           }}
-          onAttributeChange={(i, attrs) => {
+          onAttributeChange={optionsMode === 'per-row' ? (i, attrs) => {
             const next = [...opts];
             next[i] = { ...next[i], attributes: attrs };
             setQuestionConfig(qIdx, { options: next });
-          }}
-          renderAfter={
-            optionsMode === 'per-row'
-              ? (item) => (
-                  <RowColumnEditor
-                    rowLabel={item.label}
-                    cols={rowColumns[item.value] ?? []}
-                    onChange={(nextCols) => updateOptionCols(item.value, nextCols)}
-                  />
-                )
-              : undefined
-          }
+          } : undefined}
         />
+
+        {/* ── Shared additional fields (when optionsMode === 'shared') ── */}
+        {optionsMode === 'shared' && (
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-500 flex-1">Additional fields (shared for all options)</span>
+              <button
+                type="button"
+                onClick={() => setSharedAttrsExpanded(!sharedAttrsExpanded)}
+                title="Shared option attributes"
+                className={`flex items-center gap-1 text-xs px-1.5 py-1 rounded border transition-colors flex-shrink-0 ${
+                  sharedAttrsCS.length > 0
+                    ? 'border-primary text-primary bg-primary/5'
+                    : 'border-gray-300 text-gray-400 hover:border-primary hover:text-primary'
+                }`}
+              >
+                {sharedAttrsCS.length > 0 && (
+                  <span className="font-medium">{sharedAttrsCS.length}</span>
+                )}
+                <ChevronDown
+                  className={`w-3 h-3 transition-transform duration-150 ${sharedAttrsExpanded ? 'rotate-180' : ''}`}
+                />
+              </button>
+            </div>
+            {sharedAttrsExpanded && (
+              <div className="border border-dashed border-primary/40 rounded-lg p-2.5 space-y-1.5 bg-primary/3">
+                <p className="text-xs font-medium text-gray-600 mb-1">Additional fields (applied to all options)</p>
+                {sharedAttrsCS.map((attr, aIdx) => (
+                  <div key={aIdx} className="flex gap-1.5 items-center">
+                    <input
+                      type="text"
+                      value={attr.key}
+                      onChange={(e) => {
+                        const next = [...sharedAttrsCS];
+                        next[aIdx] = { ...next[aIdx], key: e.target.value };
+                        setQuestionConfig(qIdx, { sharedOptionAttributes: next });
+                      }}
+                      placeholder="Field name"
+                      className="w-28 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                    />
+                    <input
+                      type="text"
+                      value={attr.value}
+                      onChange={(e) => {
+                        const next = [...sharedAttrsCS];
+                        next[aIdx] = { ...next[aIdx], value: e.target.value };
+                        setQuestionConfig(qIdx, { sharedOptionAttributes: next });
+                      }}
+                      placeholder="Value"
+                      className="flex-1 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setQuestionConfig(qIdx, { sharedOptionAttributes: sharedAttrsCS.filter((_, i) => i !== aIdx) })}
+                      className="text-red-400 hover:text-red-600 flex-shrink-0"
+                      title="Remove field"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setQuestionConfig(qIdx, { sharedOptionAttributes: [...sharedAttrsCS, { key: '', value: '' }] })}
+                  className="text-xs text-primary hover:underline font-medium"
+                >
+                  + Add Field
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ── Mode-specific inputs ── */}
         {sumMode === 'constant-sum' && (

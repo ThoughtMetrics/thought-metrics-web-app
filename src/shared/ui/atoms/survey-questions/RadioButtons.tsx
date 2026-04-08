@@ -17,6 +17,10 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
   comment,
   onCommentChange,
   showComment,
+  showIntensePurchase,
+  intensePurchaseLabel,
+  intensePurchaseAnswers,
+  onIntensePurchaseChange,
   progress,
   onBack,
   onNext,
@@ -25,9 +29,6 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
   isLastQuestion,
   isOptional,
   hasAnswer,
-  intensePurchaseLabel,
-  intensePurchaseAnswers,
-  onIntensePurchaseChange,
 }) => {
   const { translations } = useLanguage();
   const [expandedOption, setExpandedOption] = useState<string | null>(null);
@@ -44,6 +45,8 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
       comment={comment}
       onCommentChange={onCommentChange}
       showComment={showComment}
+      showIntensePurchase={showIntensePurchase}
+      intensePurchaseLabel={intensePurchaseLabel}
       progress={progress}
       onBack={onBack}
       onNext={onNext}

@@ -68,6 +68,7 @@ function SurveyImportManagementContent() {
   });
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ── Load surveys ────────────────────────────────────────────────────────
@@ -86,8 +87,11 @@ function SurveyImportManagementContent() {
 
   useEffect(() => { void loadSurveys(); }, [loadSurveys]);
 
-  // ── Stop polling on unmount ─────────────────────────────────────────────
-  useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current); }, []);
+  // ── Cleanup on unmount ──────────────────────────────────────────────────
+  useEffect(() => () => {
+    if (pollRef.current) clearInterval(pollRef.current);
+    abortRef.current?.abort();
+  }, []);
 
   // ── Open wizard for a new survey ────────────────────────────────────────
   const openNewSurvey = () => {
@@ -97,12 +101,15 @@ function SurveyImportManagementContent() {
 
   // ── Open wizard to import more for an existing survey ───────────────────
   const openImportMore = async (survey: ImportSurvey) => {
-    // Fetch templateMongoId from the most recent job for this survey
-    let templateMongoId = '';
-    try {
-      const jobs = await surveyImportService.listJobs(survey.surveyId);
-      if (jobs.length > 0) templateMongoId = jobs[0].templateMongoId ?? '';
-    } catch { /* continue without templateMongoId — server will re-derive if needed */ }
+    // templateMongoId is returned by the survey list endpoint — use it directly.
+    // Fall back to fetching from jobs only if it's somehow missing.
+    let templateMongoId = survey.templateMongoId ?? '';
+    if (!templateMongoId) {
+      try {
+        const jobs = await surveyImportService.listJobs(survey.surveyId);
+        if (jobs.length > 0) templateMongoId = jobs[0].templateMongoId ?? '';
+      } catch { /* ignore */ }
+    }
 
     setWizard({
       step: 'upload',
@@ -119,6 +126,8 @@ function SurveyImportManagementContent() {
 
   const closeWizard = () => {
     setWizardOpen(false);
+    abortRef.current?.abort();
+    abortRef.current = null;
     if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
   };
 
@@ -178,7 +187,7 @@ function SurveyImportManagementContent() {
         totalRows: wizard.preview.totalRows,
       });
       setWizard((w) => ({ ...w, jobId: result.jobId, step: 'progress' }));
-      startPolling(result.jobId);
+      startStreaming(result.jobId);
     } catch (e: any) {
       toast.error(e?.message ?? 'Failed to start import');
     } finally {
@@ -186,7 +195,7 @@ function SurveyImportManagementContent() {
     }
   };
 
-  // ── Step 3: Progress polling ────────────────────────────────────────────
+  // ── Step 3: SSE streaming (with polling fallback) ──────────────────────
   const startPolling = (jobId: string) => {
     if (pollRef.current) clearInterval(pollRef.current);
     pollRef.current = setInterval(async () => {
@@ -205,6 +214,32 @@ function SurveyImportManagementContent() {
         }
       } catch { /* ignore polling errors */ }
     }, 2000);
+  };
+
+  const startStreaming = (jobId: string) => {
+    abortRef.current?.abort();
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+
+    surveyImportService
+      .streamJobStatus(
+        jobId,
+        (status) => {
+          setWizard((w) => ({ ...w, jobStatus: status as ImportJobStatus }));
+          if (status.status === 'completed') {
+            toast.success(`Import complete — ${status.insertedCount.toLocaleString()} responses inserted`);
+            void loadSurveys();
+          } else if (status.status === 'failed') {
+            toast.error('Import failed. Check the error log.');
+          }
+        },
+        ctrl.signal
+      )
+      .catch((err: unknown) => {
+        if ((err as Error)?.name === 'AbortError') return; // wizard closed — expected
+        // SSE unavailable — fall back to 2-second polling
+        startPolling(jobId);
+      });
   };
 
   const handleDownloadErrors = () => {
