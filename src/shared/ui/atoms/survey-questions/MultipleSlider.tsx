@@ -17,6 +17,8 @@ export const MultipleSlider: React.FC<MultipleSliderProps> = ({
   comment,
   onCommentChange,
   showComment,
+  showIntensePurchase,
+  intensePurchaseLabel,
   progress,
   onBack,
   onNext,
@@ -43,6 +45,8 @@ export const MultipleSlider: React.FC<MultipleSliderProps> = ({
       comment={comment}
       onCommentChange={onCommentChange}
       showComment={showComment}
+      showIntensePurchase={showIntensePurchase}
+      intensePurchaseLabel={intensePurchaseLabel}
       progress={progress}
       onBack={onBack}
       onNext={onNext}

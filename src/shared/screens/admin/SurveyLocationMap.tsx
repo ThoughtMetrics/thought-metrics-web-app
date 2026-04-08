@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import L from 'leaflet';
-import { MapContainer, TileLayer, CircleMarker, Tooltip, Polygon, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Tooltip, Polygon, Marker, Popup, useMap } from 'react-leaflet';
 import surveyService from '@services/survey/survey.service';
 import type { AcBoundaryEntry } from '@services/api/zone.service';
 
@@ -32,6 +32,16 @@ function pointInRing(lat: number, lng: number, ring: number[][]): boolean {
   return inside;
 }
 
+// Pin marker icon — circle head (AC-colored, count badge) + triangle tail pointer
+function createPinIcon(color: string, count: number, dimmed: boolean): L.DivIcon {
+  const opacity = dimmed ? 0.3 : 1;
+  const badge = count > 1
+    ? `<span style="position:absolute;top:3px;left:50%;transform:translateX(-50%);color:#fff;font-size:9px;font-weight:700;line-height:1;pointer-events:none">${count > 99 ? '99+' : count}</span>`
+    : '';
+  const html = `<div style="position:relative;width:28px;height:36px;opacity:${opacity}"><div style="width:28px;height:28px;background:${color};border:2px solid rgba(0,0,0,0.2);border-radius:50%;position:absolute;top:0;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.35)">${badge}</div><div style="width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:12px solid ${color};position:absolute;bottom:0;left:50%;transform:translateX(-50%)"></div></div>`;
+  return L.divIcon({ html, className: '', iconSize: [28, 36], iconAnchor: [14, 36], popupAnchor: [0, -36] });
+}
+
 interface LocationResponseItem {
   id: string;
   respondent: { name: string | null; userId: string | null };
@@ -43,6 +53,60 @@ interface LocationResponseItem {
 
 interface ActiveCluster { lat: number; lng: number; }
 
+// Popup content for pin mode — lazy-fetches responses for the given coordinate on mount
+function PinPopupContent({
+  surveyId, lat, lng, onViewResponse,
+}: {
+  surveyId: string; lat: number; lng: number; onViewResponse?: (id: string) => void;
+}) {
+  const [loading, setLoading] = useState(true);
+  const [items, setItems] = useState<LocationResponseItem[]>([]);
+
+  useEffect(() => {
+    surveyService
+      .getLocationResponses(surveyId, lat, lng)
+      .then((res) => setItems((res as any).data ?? res ?? []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [surveyId, lat, lng]);
+
+  if (loading) {
+    return (
+      <div style={{ minWidth: 200, padding: '10px 4px', textAlign: 'center' }}>
+        <div style={{ width: 16, height: 16, border: '2px solid #E8505E', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.6s linear infinite', margin: '0 auto' }} />
+      </div>
+    );
+  }
+  if (!items.length) {
+    return <div style={{ minWidth: 200, padding: '8px 4px', textAlign: 'center', color: '#6B7280', fontSize: 12 }}>No response data</div>;
+  }
+  return (
+    <div style={{ minWidth: 220, maxWidth: 280, maxHeight: 240, overflowY: 'auto' }}>
+      {items.map((item) => (
+        <div key={item.id} style={{ padding: '6px 4px', borderBottom: '1px solid #F3F4F6', fontSize: 12 }}>
+          <div style={{ fontWeight: 600, color: '#1F2937', marginBottom: 2 }}>
+            {item.respondent.name ?? 'Anonymous'}
+          </div>
+          {item.submitterAc && <div style={{ color: '#6B7280', fontSize: 11 }}>{item.submitterAc}</div>}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }}>
+            <span style={{ color: '#9CA3AF', fontSize: 10 }}>
+              {new Date(item.submittedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+            </span>
+            {onViewResponse && (
+              <button
+                onClick={() => onViewResponse(item.id)}
+                style={{ background: 'none', border: 'none', color: '#E8505E', fontSize: 11, fontWeight: 600, cursor: 'pointer', padding: '0 4px' }}
+              >
+                View →
+              </button>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // Fix Leaflet's default icon path broken by bundlers
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -51,15 +115,21 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1/dist/images/marker-shadow.png',
 });
 
-// Auto-fit map to response points, or to Tamil Nadu if no points
+// Auto-fit map to response points, or to Tamil Nadu if no points.
+// Only uses first 200 points for bounds calculation — sufficient to get the region.
 const FitBounds: React.FC<{ points: LocationPoint[] }> = ({ points }) => {
   const map = useMap();
   useEffect(() => {
     if (points.length > 0) {
-      const bounds = L.latLngBounds(points.map((p) => [p.latitude, p.longitude]));
-      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
+      // Cap at 200 so L.latLngBounds never iterates tens of thousands of items
+      const sample = points.slice(0, 200);
+      const bounds = L.latLngBounds(
+        sample.map((p) => [p.latitude, p.longitude] as [number, number])
+      );
+      if (bounds.isValid()) {
+        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
+      }
     } else {
-      // Fit to Tamil Nadu bounding box
       map.fitBounds([[8.0, 76.2], [13.6, 80.5]], { padding: [20, 20] });
     }
   }, [map, points]);
@@ -166,15 +236,31 @@ const FullscreenMapOverlay: React.FC<{
   acSubmissions?: Record<string, number>;
   onViewResponse?: (id: string) => void;
   onClose: () => void;
-}> = ({ points, surveyId, surveyLabel, boundaries, acSubmissions, onViewResponse, onClose }) => {
+  locationLoading?: boolean;
+  loadedCount?: number;
+  totalCount?: number;
+}> = ({ points, surveyId, surveyLabel, boundaries, acSubmissions, onViewResponse, onClose, locationLoading, loadedCount, totalCount }) => {
   const [selectedAc, setSelectedAc] = useState<string | null>(null);
   const [sidebarMinimized, setSidebarMinimized] = useState(false);
+  const [markerType, setMarkerType] = useState<'circle' | 'pin'>('circle');
   const [acResponsesMap, setAcResponsesMap] = useState<
     Record<string, { loading: boolean; error: string | null; items: LocationResponseItem[] }>
   >({});
   const sidebarContentRef = useRef<HTMLDivElement>(null);
   const defaultCenter: [number, number] = [10.7905, 78.6557];
-  const maxCount = Math.max(...points.map((p) => p.count), 1);
+
+  // Cap rendered markers for fullscreen — 5000 highest-count clusters
+  const MAX_FULLSCREEN_MARKERS = 5000;
+  const visiblePoints = useMemo(() => {
+    const valid = points.filter(
+      (p) => p != null && typeof p.latitude === 'number' && typeof p.longitude === 'number'
+    );
+    if (valid.length <= MAX_FULLSCREEN_MARKERS) return valid;
+    return [...valid].sort((a, b) => (b.count ?? 0) - (a.count ?? 0)).slice(0, MAX_FULLSCREEN_MARKERS);
+  }, [points]);
+
+  // Safe max via reduce — Math.max(...hugeArray) throws RangeError for >10k elements
+  const maxCount = visiblePoints.reduce((m, p) => Math.max(m, p.count ?? 0), 1);
 
   // Build acNo → color map (only when boundaries provided)
   const acColorMap = useMemo(() => {
@@ -184,10 +270,14 @@ const FullscreenMapOverlay: React.FC<{
     return m;
   }, [boundaries]);
 
-  // For each point, find which AC it falls in and return { color, acName }
+  // Compute AC membership only for visible (capped) points — not all 42k.
+  // pointAcInfo[i] corresponds to visiblePoints[i].
   const pointAcInfo = useMemo(() => {
     if (!boundaries || !acColorMap) return null;
-    return points.map((p) => {
+    return visiblePoints.map((p) => {
+      if (p == null || typeof p.latitude !== 'number' || typeof p.longitude !== 'number') {
+        return { color: '#E8505E', acName: null };
+      }
       for (const b of boundaries) {
         const polys = b.geometry.type === 'Polygon'
           ? [b.geometry.coordinates as number[][][]]
@@ -200,7 +290,7 @@ const FullscreenMapOverlay: React.FC<{
       }
       return { color: '#E8505E', acName: null };
     });
-  }, [points, boundaries, acColorMap]);
+  }, [visiblePoints, boundaries, acColorMap]);
 
   // Sorted AC list for sidebar.
   // Primary source: aggregate GPS points by AC using pointAcInfo (boundary polygon lookup).
@@ -210,15 +300,17 @@ const FullscreenMapOverlay: React.FC<{
   const acList = useMemo(() => {
     const map: Record<string, { color: string; count: number }> = {};
 
-    // 1. Tally GPS points into ACs via polygon lookup
+    // 1. Tally GPS points into ACs via polygon lookup (pointAcInfo maps to visiblePoints)
     if (pointAcInfo) {
       pointAcInfo.forEach((info, i) => {
         if (!info.acName) return;
+        const pt = visiblePoints[i];
+        if (!pt) return;
         const existing = map[info.acName];
         if (existing) {
-          existing.count += points[i].count;
+          existing.count += pt.count ?? 0;
         } else {
-          map[info.acName] = { color: info.color, count: points[i].count };
+          map[info.acName] = { color: info.color, count: pt.count ?? 0 };
         }
       });
     }
@@ -235,7 +327,7 @@ const FullscreenMapOverlay: React.FC<{
     return Object.entries(map)
       .map(([acName, { color, count }]) => ({ acName, color, count }))
       .sort((a, b) => b.count - a.count);
-  }, [pointAcInfo, points, acSubmissions]);
+  }, [pointAcInfo, visiblePoints, acSubmissions]);
 
   // Lock body scroll and handle Escape key
   useEffect(() => {
@@ -263,8 +355,8 @@ const FullscreenMapOverlay: React.FC<{
     // Already fetched — reuse cached data
     if (acResponsesMap[acName]) return;
 
-    // Find all GPS points inside this AC via pointAcInfo
-    const acPoints = points.filter((_, i) => pointAcInfo?.[i]?.acName === acName);
+    // Find all GPS points inside this AC via pointAcInfo (indexes into visiblePoints, not points)
+    const acPoints = visiblePoints.filter((_, i) => pointAcInfo?.[i]?.acName === acName);
     if (!acPoints.length || !surveyId) {
       setAcResponsesMap((prev) => ({ ...prev, [acName]: { loading: false, error: null, items: [] } }));
       return;
@@ -305,8 +397,27 @@ const FullscreenMapOverlay: React.FC<{
           <span className="text-xs text-gray-400 ml-1">
             {points.reduce((s, p) => s + p.count, 0)} responses with GPS
           </span>
+          {locationLoading && (
+            <span className="flex items-center gap-1 text-xs text-primary ml-1">
+              <span className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin inline-block shrink-0" />
+              {totalCount && loadedCount ? `${Math.round((loadedCount / totalCount) * 100)}%` : 'Loading…'}
+            </span>
+          )}
         </div>
-        <button
+        <div className="flex items-center gap-3">
+          {/* Pointer type selector */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-gray-500">Pointer:</span>
+            <select
+              value={markerType}
+              onChange={(e) => setMarkerType(e.target.value as 'circle' | 'pin')}
+              className="border border-gray-300 rounded-md px-2 py-1 text-xs bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+            >
+              <option value="circle">Circle</option>
+              <option value="pin">Pin</option>
+            </select>
+          </div>
+          <button
           onClick={onClose}
           title="Close fullscreen (Esc)"
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
@@ -317,6 +428,7 @@ const FullscreenMapOverlay: React.FC<{
           </svg>
           Exit fullscreen
         </button>
+        </div>
       </div>
 
       {/* Body: map + right sidebar side-by-side */}
@@ -336,37 +448,63 @@ const FullscreenMapOverlay: React.FC<{
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <FitBounds points={points} />
+            <FitBounds points={visiblePoints} />
             {boundaries && <BoundaryLayers boundaries={boundaries} acSubmissions={acSubmissions} />}
-            {points.map((p, i) => {
-              const acInfo = pointAcInfo?.[i];
-              const pointAcName = acInfo?.acName ?? null;
-              const isSelected = selectedAc !== null && pointAcName === selectedAc;
-              const isDimmed = selectedAc !== null && pointAcName !== selectedAc;
-              const radius = 8 + Math.round((p.count / maxCount) * 12);
-              const baseColor = acInfo?.color ?? '#E8505E';
-              const dotColor = isSelected ? '#C0392B' : baseColor;
-              return (
-                <CircleMarker
-                  key={i}
-                  center={[p.latitude, p.longitude]}
-                  radius={radius}
-                  pathOptions={{
-                    color: dotColor,
-                    fillColor: dotColor,
-                    fillOpacity: isDimmed ? 0.15 : isSelected ? 0.9 : 0.75,
-                    weight: isSelected ? 2.5 : 1.5,
-                    opacity: isDimmed ? 0.3 : 1,
-                  }}
-                  eventHandlers={surveyId ? { click: () => handleAcSelect(pointAcName) } : {}}
-                >
-                  <Tooltip direction="top" offset={[0, -radius]}>
-                    {p.count} {p.count === 1 ? 'response' : 'responses'}
-                    {pointAcName && <span style={{ color: '#9CA3AF', marginLeft: 4 }}>· {pointAcName}</span>}
-                  </Tooltip>
-                </CircleMarker>
-              );
-            })}
+            {markerType === 'circle'
+              ? visiblePoints.map((p, i) => {
+                  const acInfo = pointAcInfo?.[i];
+                  const pointAcName = acInfo?.acName ?? null;
+                  const isSelected = selectedAc !== null && pointAcName === selectedAc;
+                  const isDimmed = selectedAc !== null && pointAcName !== selectedAc;
+                  const radius = 8 + Math.round(((p.count ?? 0) / maxCount) * 12);
+                  const baseColor = acInfo?.color ?? '#E8505E';
+                  const dotColor = isSelected ? '#C0392B' : baseColor;
+                  return (
+                    <CircleMarker
+                      key={i}
+                      center={[p.latitude, p.longitude]}
+                      radius={radius}
+                      pathOptions={{
+                        color: dotColor,
+                        fillColor: dotColor,
+                        fillOpacity: isDimmed ? 0.15 : isSelected ? 0.9 : 0.75,
+                        weight: isSelected ? 2.5 : 1.5,
+                        opacity: isDimmed ? 0.3 : 1,
+                      }}
+                      eventHandlers={surveyId ? { click: () => handleAcSelect(pointAcName) } : {}}
+                    >
+                      <Tooltip direction="top" offset={[0, -radius]}>
+                        {p.count ?? 0} {(p.count ?? 0) === 1 ? 'response' : 'responses'}
+                        {pointAcName && <span style={{ color: '#9CA3AF', marginLeft: 4 }}>· {pointAcName}</span>}
+                      </Tooltip>
+                    </CircleMarker>
+                  );
+                })
+              : visiblePoints.map((p, i) => {
+                  const acInfo = pointAcInfo?.[i];
+                  const pointAcName = acInfo?.acName ?? null;
+                  const isDimmed = selectedAc !== null && pointAcName !== selectedAc;
+                  const color = acInfo?.color ?? '#E8505E';
+                  return (
+                    <Marker
+                      key={i}
+                      position={[p.latitude, p.longitude]}
+                      icon={createPinIcon(color, p.count, isDimmed)}
+                    >
+                      {surveyId && (
+                        <Popup maxWidth={300} minWidth={220} closeButton>
+                          <PinPopupContent
+                            surveyId={surveyId}
+                            lat={p.latitude}
+                            lng={p.longitude}
+                            onViewResponse={onViewResponse}
+                          />
+                        </Popup>
+                      )}
+                    </Marker>
+                  );
+                })
+            }
           </MapContainer>
         </div>
 
@@ -512,12 +650,19 @@ interface SurveyLocationMapProps {
   /** Always pass raw boundary data here so fullscreen auto-enables it even when the inline toggle is off */
   fullscreenBoundaries?: AcBoundaryEntry[];
   acSubmissions?: Record<string, number>;
+  /** True while location data is being batch-fetched in the background */
+  locationLoading?: boolean;
+  /** Number of raw responses loaded so far (for progress display) */
+  loadedCount?: number;
+  /** Total raw responses matching the query (for progress %) */
+  totalCount?: number;
 }
 
 const SurveyLocationMap: React.FC<SurveyLocationMapProps> = ({
   points, surveyId, surveyLabel, onViewResponse,
   expanded: controlledExpanded, onToggleExpand,
   boundaries, fullscreenBoundaries, acSubmissions,
+  locationLoading, loadedCount, totalCount,
 }) => {
   const [internalExpanded, setInternalExpanded] = useState(false);
   const isControlled = controlledExpanded !== undefined && onToggleExpand !== undefined;
@@ -570,7 +715,32 @@ const SurveyLocationMap: React.FC<SurveyLocationMapProps> = ({
     }
   };
 
+  // Cap rendered markers to avoid browser freeze on large datasets (e.g. 42k clusters).
+  // Sort by count desc so the most significant clusters are always shown.
+  const MAX_INLINE_MARKERS = 2000;
+  const visiblePoints = useMemo(() => {
+    const valid = points.filter(
+      (p) => p != null && typeof p.latitude === 'number' && typeof p.longitude === 'number'
+    );
+    if (valid.length <= MAX_INLINE_MARKERS) return valid;
+    return [...valid].sort((a, b) => (b.count ?? 0) - (a.count ?? 0)).slice(0, MAX_INLINE_MARKERS);
+  }, [points]);
+
+  // Safe max — Math.max(...hugeArray) throws RangeError for >10k elements
+  const maxCount = visiblePoints.reduce((m, p) => Math.max(m, p.count ?? 0), 1);
+
   if (points.length === 0) {
+    if (locationLoading) {
+      const pct = totalCount && loadedCount ? Math.round((loadedCount / totalCount) * 100) : null;
+      return (
+        <div className="flex flex-col items-center justify-center gap-2 h-40 bg-gray-50 rounded-lg border border-gray-200">
+          <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-gray-500">
+            Loading map{pct !== null ? ` — ${pct}%` : '…'}
+          </p>
+        </div>
+      );
+    }
     return (
       <div className="flex items-center justify-center h-40 bg-gray-50 rounded-lg border border-gray-200">
         <p className="text-xs text-gray-400">No GPS coordinates recorded</p>
@@ -578,7 +748,6 @@ const SurveyLocationMap: React.FC<SurveyLocationMapProps> = ({
     );
   }
 
-  const maxCount = Math.max(...points.map((p) => p.count), 1);
   const defaultCenter: [number, number] = [10.7905, 78.6557];
   const mapHeight = expanded ? 450 : 220;
 
@@ -598,11 +767,11 @@ const SurveyLocationMap: React.FC<SurveyLocationMapProps> = ({
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          <FitBounds points={points} />
+          <FitBounds points={visiblePoints} />
           {boundaries && <BoundaryLayers boundaries={boundaries} acSubmissions={acSubmissions} />}
-          {points.map((p, i) => {
+          {visiblePoints.map((p, i) => {
             const isActive = activeCluster?.lat === p.latitude && activeCluster?.lng === p.longitude;
-            const radius = 8 + Math.round((p.count / maxCount) * 12);
+            const radius = 8 + Math.round(((p.count ?? 0) / maxCount) * 12);
             return (
               <CircleMarker
                 key={i}
@@ -616,8 +785,8 @@ const SurveyLocationMap: React.FC<SurveyLocationMapProps> = ({
                 }}
                 eventHandlers={surveyId ? { click: () => handleCircleClick(p.latitude, p.longitude) } : {}}
               >
-                <Tooltip permanent={p.count > 1} direction="top" offset={[0, -radius]}>
-                  {p.count} {p.count === 1 ? 'response' : 'responses'}
+                <Tooltip direction="top" offset={[0, -radius]}>
+                  {p.count ?? 0} {(p.count ?? 0) === 1 ? 'response' : 'responses'}
                 </Tooltip>
               </CircleMarker>
             );
@@ -632,6 +801,27 @@ const SurveyLocationMap: React.FC<SurveyLocationMapProps> = ({
             onClose={() => { setActiveCluster(null); setClusterResponses([]); }}
             onViewResponse={onViewResponse}
           />
+        )}
+
+        {/* Capped-marker notice */}
+        {!locationLoading && visiblePoints.length < points.length && (
+          <div className="absolute top-2 left-2 z-1000 px-2 py-1 bg-white/90 rounded-md border border-gray-200 shadow-sm">
+            <span className="text-[10px] text-gray-500">
+              Showing top {visiblePoints.length.toLocaleString()} of {points.length.toLocaleString()} clusters
+            </span>
+          </div>
+        )}
+
+        {/* Loading progress badge — shown while batch fetch is ongoing */}
+        {locationLoading && (
+          <div className="absolute top-2 left-2 z-1000 flex items-center gap-1.5 px-2 py-1 bg-white/90 rounded-md border border-gray-200 shadow-sm">
+            <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin shrink-0" />
+            <span className="text-[10px] text-gray-600 font-medium">
+              {totalCount && loadedCount
+                ? `Loading ${Math.round((loadedCount / totalCount) * 100)}%`
+                : 'Loading…'}
+            </span>
+          </div>
         )}
 
         {/* Fullscreen button — top-left */}
@@ -676,6 +866,9 @@ const SurveyLocationMap: React.FC<SurveyLocationMapProps> = ({
           acSubmissions={acSubmissions}
           onViewResponse={onViewResponse}
           onClose={() => setFullscreen(false)}
+          locationLoading={locationLoading}
+          loadedCount={loadedCount}
+          totalCount={totalCount}
         />
       )}
     </>

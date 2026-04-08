@@ -558,18 +558,20 @@ class SurveyService {
    */
   async getLocationBreakdown(
     surveyId: string,
-    filters?: { zones?: string[]; districts?: string[]; acs?: string[]; userIds?: string[] }
-  ): Promise<ApiResponse<Array<{ latitude: number; longitude: number; count: number }>>> {
+    filters?: { zones?: string[]; districts?: string[]; acs?: string[]; userIds?: string[] },
+    page = 1,
+    limit = 1000
+  ): Promise<ApiResponse<Array<{ latitude: number; longitude: number; count: number }>> & { page?: number; limit?: number; total?: number; hasMore?: boolean }> {
     const user = authService.getCurrentUser();
     if (!user) throw new Error('No authenticated user');
     const token = await user.getIdToken();
     apiService.setAuthToken(token);
-    const params: Record<string, string> = {};
+    const params: Record<string, string> = { page: String(page), limit: String(limit) };
     if (filters?.zones?.length)     params.zones     = filters.zones.join(',');
     if (filters?.districts?.length) params.districts = filters.districts.join(',');
     if (filters?.acs?.length)       params.acs       = filters.acs.join(',');
     if (filters?.userIds?.length)   params.userIds   = filters.userIds.join(',');
-    return apiService.get(`${this.basePath}/${surveyId}/analytics/locations`, Object.keys(params).length ? params : undefined);
+    return apiService.get(`${this.basePath}/${surveyId}/analytics/locations`, params);
   }
 
   /**

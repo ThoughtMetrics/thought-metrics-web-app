@@ -242,6 +242,8 @@ export interface BaseSurveyQuestionProps {
   comment?: string;
   onCommentChange?: (value: string) => void;
   showComment?: boolean;
+  showIntensePurchase?: boolean;
+  intensePurchaseLabel?: string;
   progress: number;
   onBack?: () => void;
   onNext?: () => void;

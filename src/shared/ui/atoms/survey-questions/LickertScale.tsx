@@ -19,6 +19,8 @@ export const LickertScale: React.FC<LickertScaleProps> = ({
   comment,
   onCommentChange,
   showComment,
+  showIntensePurchase,
+  intensePurchaseLabel,
   progress,
   onBack,
   onNext,
@@ -43,6 +45,8 @@ export const LickertScale: React.FC<LickertScaleProps> = ({
       comment={comment}
       onCommentChange={onCommentChange}
       showComment={showComment}
+      showIntensePurchase={showIntensePurchase}
+      intensePurchaseLabel={intensePurchaseLabel}
       progress={progress}
       onBack={onBack}
       onNext={onNext}

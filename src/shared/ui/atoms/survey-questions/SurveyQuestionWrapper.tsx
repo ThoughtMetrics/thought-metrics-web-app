@@ -47,6 +47,13 @@ interface SurveyQuestionWrapperProps {
   comment?: string;
   onCommentChange?: (value: string) => void;
   showComment?: boolean;
+  /** When true, renders a Yes / No question below the answer (intense-purchase feature). */
+  showIntensePurchase?: boolean;
+  /** Label shown above the Yes / No buttons. Falls back to a default prompt. */
+  intensePurchaseLabel?: string;
+  /** Controlled value for the Yes / No selection ('yes' | 'no' | null). */
+  intensePurchaseAnswer?: 'yes' | 'no' | null;
+  onIntensePurchaseAnswerChange?: (value: 'yes' | 'no') => void;
   progress: number;
   onBack?: () => void;
   onNext?: () => void;
@@ -70,6 +77,10 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
   comment = '',
   onCommentChange,
   showComment = false,
+  showIntensePurchase = false,
+  intensePurchaseLabel,
+  intensePurchaseAnswer = null,
+  onIntensePurchaseAnswerChange,
   progress,
   onBack,
   onNext,
@@ -116,6 +127,37 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
               maxLength={500}
               placeholder={translations.surveyDetail.commentPlaceholder}
             />
+          </div>
+        )}
+        {showIntensePurchase && (
+          <div className="mt-3">
+            <p className="text-xs md:text-sm text-black mb-2">
+              {intensePurchaseLabel || 'If you could purchase this offer right now, would you?'}
+            </p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => onIntensePurchaseAnswerChange?.('yes')}
+                className={`px-6 py-2 rounded border text-sm font-medium transition-colors ${
+                  intensePurchaseAnswer === 'yes'
+                    ? 'bg-primary text-white border-primary'
+                    : 'bg-white text-black border-custom-grey-2 hover:border-primary'
+                }`}
+              >
+                Yes
+              </button>
+              <button
+                type="button"
+                onClick={() => onIntensePurchaseAnswerChange?.('no')}
+                className={`px-6 py-2 rounded border text-sm font-medium transition-colors ${
+                  intensePurchaseAnswer === 'no'
+                    ? 'bg-primary text-white border-primary'
+                    : 'bg-white text-black border-custom-grey-2 hover:border-primary'
+                }`}
+              >
+                No
+              </button>
+            </div>
           </div>
         )}
         {error && (
@@ -187,6 +229,39 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
               <p className="mt-0.5 text-xs text-text-dark text-right">
                 {comment.length}/500
               </p>
+            </div>
+          )}
+
+          {/* Intense Purchase Yes/No - Conditional */}
+          {showIntensePurchase && (
+            <div className="mb-2 mt-3">
+              <p className="text-xs md:text-sm text-black mb-2">
+                {intensePurchaseLabel || 'If you could purchase this offer right now, would you?'}
+              </p>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => onIntensePurchaseAnswerChange?.('yes')}
+                  className={`px-6 py-2 rounded border text-sm font-medium transition-colors ${
+                    intensePurchaseAnswer === 'yes'
+                      ? 'bg-primary text-white border-primary'
+                      : 'bg-white text-black border-custom-grey-2 hover:border-primary'
+                  }`}
+                >
+                  Yes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onIntensePurchaseAnswerChange?.('no')}
+                  className={`px-6 py-2 rounded border text-sm font-medium transition-colors ${
+                    intensePurchaseAnswer === 'no'
+                      ? 'bg-primary text-white border-primary'
+                      : 'bg-white text-black border-custom-grey-2 hover:border-primary'
+                  }`}
+                >
+                  No
+                </button>
+              </div>
             </div>
           )}
 

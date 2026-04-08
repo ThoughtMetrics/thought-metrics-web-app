@@ -17,6 +17,8 @@ export const StarRating: React.FC<StarRatingProps> = ({
   comment,
   onCommentChange,
   showComment,
+  showIntensePurchase,
+  intensePurchaseLabel,
   progress,
   onBack,
   onNext,
@@ -37,6 +39,8 @@ export const StarRating: React.FC<StarRatingProps> = ({
       comment={comment}
       onCommentChange={onCommentChange}
       showComment={showComment}
+      showIntensePurchase={showIntensePurchase}
+      intensePurchaseLabel={intensePurchaseLabel}
       progress={progress}
       onBack={onBack}
       onNext={onNext}

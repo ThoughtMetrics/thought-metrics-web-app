@@ -35,6 +35,8 @@ export interface IBuilderQuestionConfig {
   rowOptionsMode?: 'shared' | 'per-row';
   /** Per-row column definitions when rowOptionsMode === 'per-row'. Key = row.value */
   rowColumns?: Record<string, IBuilderQuestionOption[]>;
+  /** Shared additional fields for all options when rowOptionsMode === 'shared' */
+  sharedOptionAttributes?: Array<{ key: string; value: string }>;
   sliders?: IBuilderQuestionOption[];
   itemCount?: number;
   total?: number;

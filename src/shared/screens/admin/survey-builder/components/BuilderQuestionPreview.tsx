@@ -103,6 +103,8 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
     surveyId: 'PREVIEW',
     comment: '',
     showComment: question.allowComment,
+    showIntensePurchase: !!config.isIntensePurchase,
+    intensePurchaseLabel: config.intensePurchaseLabel || undefined,
     progress: questionNumber / totalQuestions,
     onBack: NOOP,
     onNext: NOOP,

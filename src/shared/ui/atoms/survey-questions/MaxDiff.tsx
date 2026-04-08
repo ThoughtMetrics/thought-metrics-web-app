@@ -19,6 +19,8 @@ export const MaxDiff: React.FC<MaxDiffProps> = ({
   comment,
   onCommentChange,
   showComment,
+  showIntensePurchase,
+  intensePurchaseLabel,
   progress,
   onBack,
   onNext,
@@ -47,6 +49,8 @@ export const MaxDiff: React.FC<MaxDiffProps> = ({
       comment={comment}
       onCommentChange={onCommentChange}
       showComment={showComment}
+      showIntensePurchase={showIntensePurchase}
+      intensePurchaseLabel={intensePurchaseLabel}
       progress={progress}
       onBack={onBack}
       onNext={onNext}

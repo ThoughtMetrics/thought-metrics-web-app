@@ -17,6 +17,8 @@ export const Ranking: React.FC<RankingProps> = ({
   comment,
   onCommentChange,
   showComment,
+  showIntensePurchase,
+  intensePurchaseLabel,
   progress,
   onBack,
   onNext,
@@ -61,6 +63,8 @@ export const Ranking: React.FC<RankingProps> = ({
       comment={comment}
       onCommentChange={onCommentChange}
       showComment={showComment}
+      showIntensePurchase={showIntensePurchase}
+      intensePurchaseLabel={intensePurchaseLabel}
       progress={progress}
       onBack={onBack}
       onNext={onNext}

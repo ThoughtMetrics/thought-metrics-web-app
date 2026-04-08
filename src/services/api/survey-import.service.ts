@@ -5,6 +5,7 @@ import authService from './auth.service';
 export interface ImportSurvey {
   id: string;
   surveyId: string;
+  templateMongoId: string;
   label: string;
   status: string;
   type: string;
@@ -120,6 +121,52 @@ class SurveyImportService {
     await this.ensureAuth();
     const res = await ApiService.get<ImportJobStatus[]>(`${this.basePath}/${surveyId}/jobs`);
     return res.data ?? [];
+  }
+
+  async streamJobStatus(
+    jobId: string,
+    onEvent: (status: ImportJobStatus) => void,
+    signal?: AbortSignal
+  ): Promise<void> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+
+    const { getAPIConfig } = await import('@/core/configs/api-config');
+    const cfg = getAPIConfig();
+    const baseURL = `${cfg.baseURL}${cfg.apiPath}/${cfg.baseAPIVersion}`;
+
+    const response = await fetch(`${baseURL}${this.basePath}/jobs/${jobId}/stream`, {
+      headers: { Authorization: `Bearer firebase:${token}` },
+      signal,
+    });
+
+    if (!response.ok || !response.body) {
+      throw new Error(`SSE stream failed (${response.status})`);
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      // Each SSE event is terminated by "\n\n"
+      const parts = buffer.split('\n\n');
+      buffer = parts.pop() ?? '';
+      for (const part of parts) {
+        const line = part.trim();
+        if (line.startsWith('data: ')) {
+          try {
+            onEvent(JSON.parse(line.slice(6)) as ImportJobStatus);
+          } catch {
+            // skip malformed event
+          }
+        }
+      }
+    }
   }
 }
 
