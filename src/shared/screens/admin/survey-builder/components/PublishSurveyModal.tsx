@@ -1,20 +1,41 @@
 // components/PublishSurveyModal.tsx
 
 import React, { useEffect, useRef, useState } from 'react';
-import { usePublishSurvey, useSaveSurveyDraft, useUpdateTemplate, useUpdateSurveyInstance } from '@/core/hooks/mutations/survey-template.mutations';
+import { useCreateTemplate, usePublishSurvey, useUpdateTemplate, useUpdateSurveyInstance } from '@/core/hooks/mutations/survey-template.mutations';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 import type { ISurveyPublishRequest, ISurveyUpdateRequest } from '@/core/types/survey-builder.type';
 import type { SupportedBuilderLanguage } from '@/core/types/survey-builder.type';
 import type { SurveyFormLayout } from '@/core/types/survey.type';
 import { QuestionType } from '@/core/types/survey.type';
 
+// Industry options (mirrors backend Industry enum)
+const INDUSTRY_OPTIONS: { value: string; label: string }[] = [
+  { value: 'All Industries', label: 'All Industries' },
+  { value: 'Advertising & Marketing', label: 'Advertising & Marketing' },
+  { value: 'Automotive', label: 'Automotive' },
+  { value: 'Education', label: 'Education' },
+  { value: 'Financial Services & Insurance', label: 'Financial Services & Insurance' },
+  { value: 'FMCG', label: 'FMCG' },
+  { value: 'Healthcare & Life Sciences', label: 'Healthcare & Life Sciences' },
+  { value: 'Human Resources', label: 'Human Resources' },
+  { value: 'Internet & Media', label: 'Internet & Media' },
+  { value: 'Investor & Private Equity', label: 'Investor & Private Equity' },
+  { value: 'Retail & Merchandising', label: 'Retail & Merchandising' },
+  { value: 'Technology', label: 'Technology' },
+  { value: 'Fitness & Wellness', label: 'Fitness & Wellness' },
+  { value: 'Apparel', label: 'Apparel' },
+  { value: 'Political', label: 'Political' },
+  { value: 'Others', label: 'Others' },
+];
+
 interface Props {
-  templateId: string;
+  templateId: string | null; // null = new unsaved template
   defaultLabel: string;
   defaultFormLayout: SurveyFormLayout;
   defaultType?: 'respondent' | 'agent';
   existingSurveyId?: string;
   onClose: () => void;
+  onPublished?: () => void;
 }
 
 type Step = 'form' | 'lang-prompt' | 'translation';
@@ -50,19 +71,19 @@ const PublishSurveyModal: React.FC<Props> = ({
   defaultType = 'respondent',
   existingSurveyId,
   onClose,
+  onPublished,
 }) => {
-  const publish = usePublishSurvey();
-  const saveDraft = useSaveSurveyDraft();
+  const createTemplate = useCreateTemplate();
   const updateTemplate = useUpdateTemplate();
+  const publish = usePublishSurvey();
   const updateSurvey = useUpdateSurveyInstance();
 
-  const isUpdate = !!existingSurveyId;
-
-  const { questions, translations: storeTranslations, setQuestionTranslation, setTranslation, toUpdateRequest } = useSurveyBuilderStore();
+  const { questions, translations: storeTranslations, setQuestionTranslation, setTranslation, toCreateRequest, toUpdateRequest } = useSurveyBuilderStore();
 
   // ── Publish form state ───────────────────────────────────────────────────
   const [label, setLabel] = useState(defaultLabel);
   const [surveyId, setSurveyId] = useState('');
+  const [industry, setIndustry] = useState('Others');
   const [type, setType] = useState<'respondent' | 'agent'>(defaultType);
   const [visibility, setVisibility] = useState<'public' | 'private'>('public');
   const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10));
@@ -78,7 +99,8 @@ const PublishSurveyModal: React.FC<Props> = ({
   const [savedLangs, setSavedLangs] = useState<Set<SupportedBuilderLanguage>>(new Set());
 
   const backdropRef = useRef<HTMLDivElement>(null);
-  const isBusy = publish.isPending || saveDraft.isPending || updateTemplate.isPending || updateSurvey.isPending;
+  const publishingRef = useRef(false);
+  const isBusy = createTemplate.isPending || updateTemplate.isPending || publish.isPending || updateSurvey.isPending;
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -90,10 +112,11 @@ const PublishSurveyModal: React.FC<Props> = ({
     if (e.target === backdropRef.current) onClose();
   };
 
-  const buildPayload = (): ISurveyPublishRequest => {
+  const buildPublishPayload = (effectiveTplId: string): ISurveyPublishRequest => {
     const payload: ISurveyPublishRequest = {
-      templateId,
+      templateId: effectiveTplId,
       label: label.trim(),
+      industry,
       type,
       visibility,
       startDate: startDate || undefined,
@@ -104,13 +127,6 @@ const PublishSurveyModal: React.FC<Props> = ({
     };
     if (surveyId.trim()) payload.surveyId = surveyId.trim();
     return payload;
-  };
-
-  const doPublish = async () => {
-    if (savedLangs.size > 0) {
-      await updateTemplate.mutateAsync({ id: templateId, data: toUpdateRequest() });
-    }
-    await publish.mutateAsync(buildPayload());
   };
 
   const buildUpdatePayload = (): ISurveyUpdateRequest => ({
@@ -124,13 +140,40 @@ const PublishSurveyModal: React.FC<Props> = ({
     formLayout,
   });
 
-  const doUpdate = async () => {
-    if (savedLangs.size > 0) {
-      await updateTemplate.mutateAsync({ id: templateId, data: toUpdateRequest() });
+  // ── Unified publish handler ──────────────────────────────────────────────
+  const handlePublish = async () => {
+    if (publishingRef.current) return;
+    publishingRef.current = true;
+    try {
+      let effectiveTemplateId = templateId;
+
+      if (!effectiveTemplateId) {
+        // New template — create it first (backend also creates MySQL draft via _upsertMySQLDraft)
+        const res = await createTemplate.mutateAsync(toCreateRequest());
+        effectiveTemplateId = res.data?._id ?? null;
+        if (!effectiveTemplateId) return; // error toast shown by mutation
+      } else {
+        // Save all changes (questions, Tamil translations, settings)
+        await updateTemplate.mutateAsync({ id: effectiveTemplateId, data: toUpdateRequest() });
+      }
+
+      if (existingSurveyId) {
+        // Already published — update survey metadata
+        await updateSurvey.mutateAsync({ id: existingSurveyId, data: buildUpdatePayload() });
+        useSurveyBuilderStore.setState({ isDirty: false });
+        onPublished?.();
+        window.location.href = '/admin/surveys';
+      } else {
+        // First publish — backend promotes draft row to published (no duplicate created)
+        await publish.mutateAsync(buildPublishPayload(effectiveTemplateId));
+        // usePublishSurvey.onSuccess handles toast + isDirty reset + redirect
+        onPublished?.();
+      }
+    } catch {
+      // individual mutations show their own error toasts
+    } finally {
+      publishingRef.current = false;
     }
-    await updateSurvey.mutateAsync({ id: existingSurveyId!, data: buildUpdatePayload() });
-    useSurveyBuilderStore.setState({ isDirty: false });
-    window.location.href = '/admin/surveys';
   };
 
   // ── Step 1 form submit → go to translation prompt ────────────────────────
@@ -138,11 +181,6 @@ const PublishSurveyModal: React.FC<Props> = ({
     e.preventDefault();
     if (!label.trim()) return;
     setStep('lang-prompt');
-  };
-
-  const handleSaveAsDraft = async () => {
-    if (!label.trim()) return;
-    await saveDraft.mutateAsync(buildPayload());
   };
 
   // ── Translation helpers ──────────────────────────────────────────────────
@@ -160,7 +198,6 @@ const PublishSurveyModal: React.FC<Props> = ({
           text: existingQ?.text ?? '',
           options: enOptions.map((enOpt, i) => ({
             value: enOpt.value,
-            // Try value-based match first; fall back to same index if values diverged
             label: existingOpts.find((o) => o.value === enOpt.value)?.label
               ?? existingOpts[i]?.label
               ?? '',
@@ -176,7 +213,6 @@ const PublishSurveyModal: React.FC<Props> = ({
     setStep('translation');
   };
 
-  // ── Save translation to store, mark lang done, go back to checklist ──────
   const handleSaveTranslation = async () => {
     if (!draft) return;
     const enTemplate = storeTranslations['en'];
@@ -230,141 +266,148 @@ const PublishSurveyModal: React.FC<Props> = ({
   // ── Render helpers ────────────────────────────────────────────────────────
 
   const renderForm = () => (
-    <form onSubmit={handleFormSubmit} className="px-6 py-5 space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Survey Label <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          value={label}
-          onChange={(e) => setLabel(e.target.value)}
-          required
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-        />
-      </div>
-
-      {!isUpdate && (
+    <form onSubmit={handleFormSubmit} className="flex flex-col">
+      <div className="px-6 py-5 space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Survey ID</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Survey Label <span className="text-red-500">*</span>
+          </label>
           <input
             type="text"
-            value={surveyId}
-            onChange={(e) => setSurveyId(e.target.value)}
-            placeholder="Auto-generated if left blank"
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+            required
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
-      )}
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Mode</label>
-        <div className="flex gap-2">
-          {(['respondent', 'agent'] as const).map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setType(t)}
-              className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
-                type === t
-                  ? 'border-primary bg-primary/10 text-primary'
-                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
-              }`}
-            >
-              {t === 'respondent' ? 'Public' : 'Agent'}
-            </button>
-          ))}
-        </div>
-      </div>
+        {!existingSurveyId && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Survey ID</label>
+            <input
+              type="text"
+              value={surveyId}
+              onChange={(e) => setSurveyId(e.target.value)}
+              placeholder="Auto-generated if left blank"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+        )}
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Visibility</label>
-        <div className="flex gap-2">
-          {(['public', 'private'] as const).map((v) => (
-            <button
-              key={v}
-              type="button"
-              onClick={() => setVisibility(v)}
-              className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium capitalize transition-colors ${
-                visibility === v
-                  ? 'border-primary bg-primary/10 text-primary'
-                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
-              }`}
-            >
-              {v}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+          <label className="block text-sm font-medium text-gray-700 mb-1">Industry</label>
+          <select
+            value={industry}
+            onChange={(e) => setIndustry(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white"
+          >
+            {INDUSTRY_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+          <p className="text-xs text-gray-400 mt-1">Determines the survey ID prefix (e.g. TM-POL001)</p>
         </div>
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Expire Date</label>
-          <input type="date" value={expireDate} onChange={(e) => setExpireDate(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+          <label className="block text-sm font-medium text-gray-700 mb-2">Mode</label>
+          <div className="flex gap-2">
+            {(['respondent', 'agent'] as const).map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setType(t)}
+                className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                  type === t
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                }`}
+              >
+                {t === 'respondent' ? 'Public' : 'Agent'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Visibility</label>
+          <div className="flex gap-2">
+            {(['public', 'private'] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setVisibility(v)}
+                className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium capitalize transition-colors ${
+                  visibility === v
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                }`}
+              >
+                {v}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Expire Date</label>
+            <input type="date" value={expireDate} onChange={(e) => setExpireDate(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Max Responses</label>
+          <input
+            type="number"
+            value={maxResponses}
+            onChange={(e) => setMaxResponses(e.target.value)}
+            min={1}
+            placeholder="No limit"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-medium text-gray-700">Zonal Based Survey</label>
+          <button
+            type="button"
+            onClick={() => setZonalBasedSurvey((v) => !v)}
+            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${zonalBasedSurvey ? 'bg-primary' : 'bg-gray-200'}`}
+          >
+            <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow ${zonalBasedSurvey ? 'translate-x-4' : 'translate-x-1'}`} />
+          </button>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Form Layout</label>
+          <div className="flex gap-2">
+            {(['paginated', 'list'] as const).map((l) => (
+              <button
+                key={l}
+                type="button"
+                onClick={() => setFormLayout(l)}
+                className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium capitalize transition-colors ${
+                  formLayout === l
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                }`}
+              >
+                {l}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Max Responses</label>
-        <input
-          type="number"
-          value={maxResponses}
-          onChange={(e) => setMaxResponses(e.target.value)}
-          min={1}
-          placeholder="No limit"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-        />
-      </div>
-
-      <div className="flex items-center justify-between">
-        <label className="text-sm font-medium text-gray-700">Zonal Based Survey</label>
-        <button
-          type="button"
-          onClick={() => setZonalBasedSurvey((v) => !v)}
-          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${zonalBasedSurvey ? 'bg-primary' : 'bg-gray-200'}`}
-        >
-          <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow ${zonalBasedSurvey ? 'translate-x-4' : 'translate-x-1'}`} />
-        </button>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Form Layout</label>
-        <div className="flex gap-2">
-          {(['paginated', 'list'] as const).map((l) => (
-            <button
-              key={l}
-              type="button"
-              onClick={() => setFormLayout(l)}
-              className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium capitalize transition-colors ${
-                formLayout === l
-                  ? 'border-primary bg-primary/10 text-primary'
-                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
-              }`}
-            >
-              {l}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="flex gap-3 pt-2">
+      {/* Sticky footer */}
+      <div className="flex gap-3 px-6 py-4 border-t border-gray-200 bg-white sticky bottom-0 flex-shrink-0">
         <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
           Cancel
         </button>
-        {!isUpdate && (
-          <button
-            type="button"
-            onClick={handleSaveAsDraft}
-            disabled={isBusy || !label.trim()}
-            className="flex-1 px-4 py-2 border border-primary text-primary rounded-lg text-sm font-medium hover:bg-primary/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {saveDraft.isPending ? 'Saving…' : 'Save as Draft'}
-          </button>
-        )}
         <button
           type="submit"
           disabled={!label.trim()}
@@ -377,46 +420,49 @@ const PublishSurveyModal: React.FC<Props> = ({
   );
 
   const renderLangPrompt = () => (
-    <div className="px-6 py-5 space-y-4">
-      <p className="text-sm text-gray-500">
-        Optionally add translations before publishing.
-      </p>
+    <div className="flex flex-col h-full">
+      <div className="px-6 py-5 space-y-4 flex-1">
+        <p className="text-sm text-gray-500">
+          Optionally add translations before publishing.
+        </p>
 
-      <div className="space-y-2">
-        {LANG_OPTIONS.map((lang) => {
-          const isSaved = savedLangs.has(lang.code);
-          return (
-            <button
-              key={lang.code}
-              type="button"
-              onClick={() => handleOpenTranslation(lang.code)}
-              className="w-full flex items-center justify-between border border-gray-200 rounded-lg px-4 py-3 hover:border-primary/50 hover:bg-gray-50 transition-colors text-left"
-            >
-              <div className="flex items-center gap-2">
-                {isSaved ? (
-                  <svg className="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : (
-                  <div className="w-4 h-4 rounded border border-gray-300 flex-shrink-0" />
-                )}
-                <span className="text-sm font-medium text-gray-800">{lang.label}</span>
-              </div>
-              <span className="text-sm text-primary font-medium">
-                {isSaved ? `Edit ${lang.label} translation` : `Add ${lang.label} translation`}
-              </span>
-            </button>
-          );
-        })}
+        <div className="space-y-2">
+          {LANG_OPTIONS.map((lang) => {
+            const isSaved = savedLangs.has(lang.code);
+            return (
+              <button
+                key={lang.code}
+                type="button"
+                onClick={() => handleOpenTranslation(lang.code)}
+                className="w-full flex items-center justify-between border border-gray-200 rounded-lg px-4 py-3 hover:border-primary/50 hover:bg-gray-50 transition-colors text-left"
+              >
+                <div className="flex items-center gap-2">
+                  {isSaved ? (
+                    <svg className="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                  ) : (
+                    <div className="w-4 h-4 rounded border border-gray-300 flex-shrink-0" />
+                  )}
+                  <span className="text-sm font-medium text-gray-800">{lang.label}</span>
+                </div>
+                <span className="text-sm text-primary font-medium">
+                  {isSaved ? `Edit ${lang.label} translation` : `Add ${lang.label} translation`}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <div className="flex flex-col gap-2 pt-2">
+      {/* Sticky footer */}
+      <div className="flex flex-col gap-2 px-6 py-4 border-t border-gray-200 bg-white sticky bottom-0 flex-shrink-0">
         <button
-          onClick={isUpdate ? doUpdate : doPublish}
+          onClick={handlePublish}
           disabled={isBusy}
           className="w-full px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {(isUpdate ? updateSurvey.isPending : publish.isPending) ? 'Saving…' : (isUpdate ? 'Update now' : 'Publish now')}
+          {isBusy ? 'Publishing…' : 'Publish'}
         </button>
         <button
           onClick={() => setStep('form')}
@@ -619,21 +665,21 @@ const PublishSurveyModal: React.FC<Props> = ({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
     >
       <div className={`bg-white rounded-xl shadow-2xl mx-4 flex flex-col overflow-hidden transition-all ${
-        isTranslationStep ? 'w-full max-w-2xl h-[90vh]' : 'w-full max-w-lg max-h-[90vh] overflow-y-auto'
+        isTranslationStep ? 'w-full max-w-2xl h-[90vh]' : 'w-full max-w-lg max-h-[90vh]'
       }`}>
-        {/* Header */}
+        {/* Header — always fixed, never scrolls */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">
-              {step === 'form' && (isUpdate ? 'Update Survey' : 'Publish as Survey')}
-              {step === 'lang-prompt' && (isUpdate ? 'Before you update…' : 'Before you publish…')}
+              {step === 'form' && 'Publish Survey'}
+              {step === 'lang-prompt' && 'Before you publish…'}
               {step === 'translation' && `${selectedLangLabel} Translations`}
             </h2>
             {step === 'form' && (
-              <p className="text-xs text-gray-400 mt-0.5">{isUpdate ? 'Edit survey details' : 'Step 1 of 2 — Survey details'}</p>
+              <p className="text-xs text-gray-400 mt-0.5">Step 1 of 2 — Survey details</p>
             )}
             {step === 'lang-prompt' && (
-              <p className="text-xs text-gray-400 mt-0.5">{isUpdate ? 'Translations (optional)' : 'Step 2 of 2 — Translations'}</p>
+              <p className="text-xs text-gray-400 mt-0.5">Step 2 of 2 — Translations (optional)</p>
             )}
             {step === 'translation' && (
               <p className="text-xs text-gray-400 mt-0.5">
@@ -648,10 +694,12 @@ const PublishSurveyModal: React.FC<Props> = ({
           </button>
         </div>
 
-        {/* Step content */}
-        {step === 'form' && renderForm()}
-        {step === 'lang-prompt' && renderLangPrompt()}
-        {step === 'translation' && renderTranslation()}
+        {/* Step content — scrollable area, header stays pinned */}
+        <div className={isTranslationStep ? 'flex-1 flex flex-col min-h-0 overflow-hidden' : 'flex-1 overflow-y-auto min-h-0'}>
+          {step === 'form' && renderForm()}
+          {step === 'lang-prompt' && renderLangPrompt()}
+          {step === 'translation' && renderTranslation()}
+        </div>
       </div>
     </div>
   );

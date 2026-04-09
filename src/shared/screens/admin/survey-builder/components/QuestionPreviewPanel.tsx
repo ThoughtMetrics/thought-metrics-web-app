@@ -181,7 +181,7 @@ const QuestionPreviewPanel: React.FC = () => {
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
-            Interactive
+            Show Preview
           </button>
         )}
         <div className="flex items-center bg-gray-100 rounded-lg p-0.5 gap-0.5">
