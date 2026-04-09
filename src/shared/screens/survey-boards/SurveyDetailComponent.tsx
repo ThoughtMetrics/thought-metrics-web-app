@@ -1557,7 +1557,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             ))}
 
             {/* Submit */}
-            <div className="flex justify-end pt-4 border-t border-custom-grey-2">
+            <div className="flex justify-end pt-4 border-t border-custom-grey-2 md:mb-10">
               <button
                 type="button"
                 onClick={handleListSubmit}
