@@ -111,6 +111,7 @@ export interface ISurveyPublishRequest {
   templateId: string;
   label: string;
   surveyId?: string;
+  industry?: string;
   type?: 'respondent' | 'agent';
   visibility?: 'public' | 'private';
   startDate?: string;

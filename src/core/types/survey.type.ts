@@ -8,6 +8,7 @@ export enum SurveyStatus {
   PUBLISHED = 'published',
   EXPIRED = 'expired',
   ARCHIVED = 'archived',
+  DELETED = 'deleted',
 }
 
 export enum SurveyResponseStatus {

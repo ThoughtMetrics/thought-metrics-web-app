@@ -19,10 +19,8 @@ export const useCreateTemplate = () => {
     mutationFn: (data: ISurveyTemplateCreateRequest) => surveyService.createTemplate(data),
     onSuccess: (res) => {
       void queryClient.invalidateQueries({ queryKey: QueryKeys.surveyTemplates.lists() });
-      toast.success('Template created');
-      if (res.data?._id) {
-        window.location.href = `/admin/survey-builder/${res.data._id}`;
-      }
+      useSurveyBuilderStore.setState({ isDirty: false });
+      // Toast and redirect are handled by the caller (handleSave vs handlePublishClick)
     },
     onError: (e: Error) => toast.error(e.message),
     retry: 1,
@@ -41,6 +39,7 @@ export const useUpdateTemplate = () => {
       }
       void queryClient.invalidateQueries({ queryKey: QueryKeys.surveyTemplates.lists() });
       toast.success('Saved');
+      useSurveyBuilderStore.setState({ isDirty: false });
     },
     onError: (e: Error) => toast.error(e.message),
     retry: 1,

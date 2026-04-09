@@ -2,11 +2,12 @@
 
 import React, { useEffect, useCallback, useState } from 'react';
 import { RotateCcw, RotateCw } from 'lucide-react';
+import { toast } from 'sonner';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 import { useTemplateQuery } from '@/core/hooks/queries/survey-templates/index.queries';
-import { useCreateTemplate, useUpdateTemplate } from '@/core/hooks/mutations/survey-template.mutations';
+import { useCreateTemplate, useUpdateTemplate, useSaveSurveyDraft } from '@/core/hooks/mutations/survey-template.mutations';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 import QuestionListPanel from './components/QuestionListPanel';
 import QuestionPreviewPanel from './components/QuestionPreviewPanel';
@@ -17,6 +18,12 @@ interface Props {
   templateId?: string;
 }
 
+const LOCAL_KEY = (id: string | undefined) => `tm-builder-${id ?? 'new'}`;
+
+const clearLocalDraft = (id: string | undefined) => {
+  try { localStorage.removeItem(LOCAL_KEY(id)); } catch {}
+};
+
 const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
   const { data, isLoading, isError } = useTemplateQuery(templateId);
 
@@ -25,9 +32,11 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
 
   const createTemplate = useCreateTemplate();
   const updateTemplate = useUpdateTemplate();
+  const saveSurveyDraft = useSaveSurveyDraft();
 
-  const isSaving = createTemplate.isPending || updateTemplate.isPending;
+  const isSaving = createTemplate.isPending || updateTemplate.isPending || saveSurveyDraft.isPending;
   const [showPublishModal, setShowPublishModal] = useState(false);
+  const [localSavedAt, setLocalSavedAt] = useState<Date | null>(null);
 
   // Load template data into store when it arrives
   useEffect(() => {
@@ -38,9 +47,43 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
     }
   }, [data, templateId]);
 
-  // Warn before unloading with unsaved changes
-  // Read directly from store (not closed-over isDirty) so that synchronous
-  // setState({ isDirty: false }) + window.location.href in doUpdate works correctly.
+  // For new templates: restore from localStorage on mount
+  useEffect(() => {
+    if (templateId) return;
+    try {
+      const raw = localStorage.getItem(LOCAL_KEY(undefined));
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved.translations || saved.questions) {
+          // Restore individual store fields directly — avoids ISurveyTemplate shape requirement
+          useSurveyBuilderStore.setState({
+            name: saved.name ?? '',
+            translations: saved.translations,
+            questions: saved.questions ?? [],
+            settings: saved.settings,
+            isDirty: false,
+          });
+          setLocalSavedAt(new Date(saved.savedAt));
+        }
+      }
+    } catch {}
+  }, []); // mount only
+
+  // Debounced auto-save to localStorage when title is present
+  useEffect(() => {
+    if (!translations?.en?.label?.trim()) return;
+    const timer = setTimeout(() => {
+      try {
+        localStorage.setItem(LOCAL_KEY(templateId), JSON.stringify({
+          name, translations, questions, settings, savedAt: new Date().toISOString(),
+        }));
+        setLocalSavedAt(new Date());
+      } catch {}
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [name, translations, questions, settings, templateId]);
+
+  // Warn before unloading with unsaved changes.
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (useSurveyBuilderStore.getState().isDirty) {
@@ -80,18 +123,36 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
     }
   };
 
+  // Save Draft — three cases based on template state
   const handleSave = useCallback(async () => {
-    // Auto-set internal name from label if still empty
     const enLabel = translations?.en?.label?.trim();
-    if (!name.trim() && enLabel) {
-      setName(slugify(enLabel));
-    }
-    if (templateId) {
+    if (!name.trim() && enLabel) setName(slugify(enLabel));
+
+    if (!templateId) {
+      // New survey — create template (backend auto-creates MySQL draft via _upsertMySQLDraft)
+      const res = await createTemplate.mutateAsync(toCreateRequest());
+      if (res.data?._id) {
+        clearLocalDraft(undefined);
+        toast.success('Draft saved');
+        window.location.href = `/admin/survey-builder/${res.data._id}`;
+      }
+    } else if (!data?.data?.surveyId) {
+      // Existing template, not yet published — just update the template
       await updateTemplate.mutateAsync({ id: templateId, data: toUpdateRequest() });
+      clearLocalDraft(templateId);
     } else {
-      await createTemplate.mutateAsync(toCreateRequest());
+      // Already published — update template + create a new draft MySQL row for future publishing
+      await updateTemplate.mutateAsync({ id: templateId, data: toUpdateRequest() });
+      await saveSurveyDraft.mutateAsync({ templateId, label: enLabel || name });
+      clearLocalDraft(templateId);
+      // saveSurveyDraft.onSuccess handles toast + redirect to /admin/surveys
     }
-  }, [templateId, name, translations, toCreateRequest, toUpdateRequest, createTemplate, updateTemplate, setName]);
+  }, [templateId, name, translations, data, toCreateRequest, toUpdateRequest, createTemplate, updateTemplate, saveSurveyDraft, setName]);
+
+  // Publish — always open panel immediately, no pre-API calls
+  const handlePublishClick = useCallback(() => {
+    setShowPublishModal(true);
+  }, []);
 
   if (isLoading && templateId) {
     return (
@@ -113,6 +174,10 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
       </div>
     );
   }
+
+  const allQuestionsHaveText = questions.length > 0 && questions.every((q) => !!q.translations.en.text.trim());
+  const isFirstPublish = !data?.data?.surveyId;
+  const hasChangesToPublish = isDirty || isFirstPublish;
 
   return (
     <div className="h-full flex bg-gray-50 text-text-dark">
@@ -143,6 +208,11 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
             {isDirty && (
               <span className="text-xs text-orange-500 font-medium">Unsaved changes</span>
             )}
+            {localSavedAt && (
+              <span className="text-xs text-gray-400" title={`Auto-saved at ${localSavedAt.toLocaleTimeString()}`}>
+                ✓ Locally saved {localSavedAt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            )}
 
             <button
               onClick={undo}
@@ -161,13 +231,22 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
               <RotateCw size={16} />
             </button>
 
-            {templateId && !!translations?.en?.label?.trim() && questions.every((q) => !!q.translations.en.text.trim()) && (
+            {!!translations?.en?.label?.trim() && (
               <button
-                onClick={() => setShowPublishModal(true)}
-                disabled={isSaving}
+                onClick={handlePublishClick}
+                disabled={isSaving || !hasChangesToPublish || !allQuestionsHaveText}
+                title={
+                  questions.length === 0
+                    ? 'Add at least one question before publishing'
+                    : !allQuestionsHaveText
+                    ? 'All questions must have text before publishing'
+                    : !hasChangesToPublish
+                    ? 'No changes to publish'
+                    : undefined
+                }
                 className="px-4 py-1.5 border border-primary text-primary rounded-lg text-sm font-medium hover:bg-primary/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {data?.data?.surveyId ? 'Update Survey' : 'Publish as Survey'}
+                Publish
               </button>
             )}
 
@@ -200,14 +279,15 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
         </div>
       </div>
 
-      {showPublishModal && templateId && (
+      {showPublishModal && (
         <PublishSurveyModal
-          templateId={templateId}
+          templateId={templateId ?? null}
           defaultLabel={translations?.en?.label ?? name}
           defaultFormLayout={settings.defaultFormLayout}
           defaultType={settings.defaultType}
           existingSurveyId={data?.data?.surveyId}
           onClose={() => setShowPublishModal(false)}
+          onPublished={() => clearLocalDraft(templateId)}
         />
       )}
     </div>
