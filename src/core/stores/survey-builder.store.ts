@@ -159,6 +159,7 @@ const defaultSettings = (): IBuilderSettings => ({
   defaultType: 'agent',
   allowAnonymous: false,
   captureFields: [],
+  industry: 'Others',
 });
 
 // ─── Store ───────────────────────────────────────────────────────────────────
@@ -273,6 +274,7 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
             defaultType: t.settings?.defaultType ?? 'respondent',
             allowAnonymous: t.settings?.allowAnonymous ?? false,
             captureFields: t.settings?.captureFields ?? [],
+            industry: (t as any).industry ?? (t.settings as any)?.industry ?? 'Others',
           },
           selectedQuestionIndex: null,
           activeLanguage: 'en',
@@ -604,6 +606,7 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
           translations: s.translations,
           questions: s.questions.map(syncEnOptions),
           settings: s.settings,
+          industry: s.settings.industry,
         };
       },
 
@@ -614,6 +617,7 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
           translations: s.translations,
           questions: s.questions.map(syncEnOptions),
           settings: s.settings,
+          industry: s.settings.industry,
         };
       },
     }),

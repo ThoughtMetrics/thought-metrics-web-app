@@ -372,6 +372,31 @@ class SurveyService {
   }
 
   /**
+   * Save draft content for a published template without overwriting live fields
+   */
+  async saveDraftContent(
+    id: string,
+    content: { questions?: any[]; translations?: any; settings?: any }
+  ): Promise<ApiResponse<ISurveyTemplate>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.patch<ISurveyTemplate>(`${this.basePath}/templates/${id}/draft`, content);
+  }
+
+  /**
+   * Discard saved draft content for a template
+   */
+  async discardDraftContent(id: string): Promise<ApiResponse<ISurveyTemplate>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.delete<ISurveyTemplate>(`${this.basePath}/templates/${id}/draft`);
+  }
+
+  /**
    * Get survey statistics (Admin endpoint)
    */
   async getSurveyStatistics(surveyId: string): Promise<

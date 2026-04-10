@@ -1509,7 +1509,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     return (
       <div className="flex flex-col bg-white text-black h-full accent-primary caret-primary scheme-light">
         {/* Sticky header */}
-        <div className="shrink-0 border-b border-custom-grey-2 px-4 py-3 md:px-12 md:py-4 bg-white z-10 sticky top-0">
+        <div className="shrink-0 border-b border-custom-grey-2 px-4 py-3 md:px-12 md:pb-4 md:pt-6 bg-white z-10 sticky top-0">
           <div className="flex items-center justify-between gap-4 mb-3 max-w-4xl mx-auto">
             <h1 className="text-base md:text-lg font-semibold text-black truncate">
               {surveyData?.data?.survey?.surveyId}: {getSurveyLabel()}

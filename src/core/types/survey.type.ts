@@ -181,6 +181,14 @@ export interface ISurveyTemplate {
   };
   createdAt: string;
   updatedAt: string;
+  draftContent?: {
+    questions?: any[];
+    translations?: Record<string, any>;
+    settings?: Record<string, any>;
+    savedAt?: string;
+  };
+  /** Set to the MySQL survey's surveyId (e.g. "TM-POL-001") only when a PUBLISHED row exists. Null for unpublished/draft templates. */
+  publishedSurveyId?: string | null;
 }
 
 export interface ISurveyDetails {

@@ -1,13 +1,13 @@
 // src/shared/screens/admin/survey-builder/SurveyBuilderEditor.tsx
 
 import React, { useEffect, useCallback, useState } from 'react';
-import { RotateCcw, RotateCw } from 'lucide-react';
+import { RotateCcw, RotateCw, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 import { useTemplateQuery } from '@/core/hooks/queries/survey-templates/index.queries';
-import { useCreateTemplate, useUpdateTemplate, useSaveSurveyDraft } from '@/core/hooks/mutations/survey-template.mutations';
+import { useCreateTemplate, useUpdateTemplate, useSaveSurveyDraft, useSaveDraftContent, useDiscardDraftContent } from '@/core/hooks/mutations/survey-template.mutations';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 import QuestionListPanel from './components/QuestionListPanel';
 import QuestionPreviewPanel from './components/QuestionPreviewPanel';
@@ -33,29 +33,73 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
   const createTemplate = useCreateTemplate();
   const updateTemplate = useUpdateTemplate();
   const saveSurveyDraft = useSaveSurveyDraft();
+  const saveDraftContent = useSaveDraftContent();
+  const discardDraftContent = useDiscardDraftContent();
 
-  const isSaving = createTemplate.isPending || updateTemplate.isPending || saveSurveyDraft.isPending;
+  const isSaving = createTemplate.isPending || updateTemplate.isPending || saveSurveyDraft.isPending || saveDraftContent.isPending;
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [localSavedAt, setLocalSavedAt] = useState<Date | null>(null);
+  const [showDraftPrompt, setShowDraftPrompt] = useState(false);
+  const [showSaveSuccess, setShowSaveSuccess] = useState(false);
+
+  // Auto-redirect 2 seconds after save-draft success overlay appears
+  useEffect(() => {
+    if (!showSaveSuccess) return;
+    const t = setTimeout(() => { window.location.href = '/admin/surveys'; }, 2000);
+    return () => clearTimeout(t);
+  }, [showSaveSuccess]);
 
   // Load template data into store when it arrives
   useEffect(() => {
     if (data?.data) {
-      loadTemplate(data.data);
+      const template = data.data;
+      // If published template has a saved draft, prompt before loading
+      if (template.draftContent?.savedAt && template.publishedSurveyId) {
+        setShowDraftPrompt(true);
+      } else {
+        // Explicitly close the dialog if it was open (e.g. stale cache showed draftContent
+        // but the fresh refetch has none — or after a successful discard).
+        setShowDraftPrompt(false);
+        loadTemplate(template);
+      }
     } else if (!templateId) {
       resetEditor();
     }
   }, [data, templateId]);
 
-  // For new templates: restore from localStorage on mount
+  // For new templates: check for duplicate prefill first, then fall back to localStorage
   useEffect(() => {
     if (templateId) return;
+    try {
+      const prefillRaw = sessionStorage.getItem('tm-duplicate-prefill');
+      if (prefillRaw) {
+        sessionStorage.removeItem('tm-duplicate-prefill');
+        const prefill = JSON.parse(prefillRaw);
+        const originalLabel = prefill.translations?.en?.label ?? prefill.name ?? '';
+        const copiedLabel = `${originalLabel} (Copy)`;
+        // Internal name: use original slug + numeric suffix (no "copy" wording)
+        const baseName = slugify(originalLabel) || 'survey';
+        const numericSuffix = Date.now().toString().slice(-4);
+        // Use loadTemplate for proper question/translation normalization,
+        // then override: new survey has no templateId and should be dirty
+        loadTemplate({
+          ...prefill,
+          _id: '',
+          name: `${baseName}-${numericSuffix}`,
+          translations: {
+            ...prefill.translations,
+            en: { ...(prefill.translations?.en ?? {}), label: copiedLabel },
+          },
+        } as any);
+        useSurveyBuilderStore.setState({ isDirty: true });
+        return;
+      }
+    } catch {}
     try {
       const raw = localStorage.getItem(LOCAL_KEY(undefined));
       if (raw) {
         const saved = JSON.parse(raw);
         if (saved.translations || saved.questions) {
-          // Restore individual store fields directly — avoids ISurveyTemplate shape requirement
           useSurveyBuilderStore.setState({
             name: saved.name ?? '',
             translations: saved.translations,
@@ -119,9 +163,44 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
   const handleLabelChange = (value: string) => {
     setTranslation('en', 'label', value);
     if (!templateId) {
-      setName(slugify(value));
+      // Strip trailing "(Copy)" variants so the internal name never contains "copy"
+      const nameBase = value.replace(/\s*\(copy\)\s*$/i, '').trim();
+      setName(slugify(nameBase || value));
     }
   };
+
+  const handleContinueDraft = useCallback(() => {
+    const template = data!.data!;
+    const draft = template.draftContent!;
+    loadTemplate({
+      ...template,
+      questions: (draft.questions as any) ?? template.questions,
+      translations: (draft.translations as any) ?? template.translations,
+      settings: (draft.settings as any) ?? template.settings,
+    });
+    setShowDraftPrompt(false);
+  }, [data, loadTemplate]);
+
+  const handleDiscardDraft = useCallback(async () => {
+    const response = await discardDraftContent.mutateAsync(templateId!);
+    if (response?.data) {
+      loadTemplate(response.data);
+    }
+    setShowDraftPrompt(false);
+  }, [templateId, discardDraftContent, loadTemplate]);
+
+  // Returns true when current editor state is identical to the published template fields.
+  // Used to prevent saving a draftContent that adds no new information.
+  const isSameAsPublished = useCallback((): boolean => {
+    if (!data?.data || !templateId) return false;
+    const current = toUpdateRequest();
+    const pub = data.data;
+    return (
+      JSON.stringify(current.questions) === JSON.stringify(pub.questions) &&
+      JSON.stringify(current.translations) === JSON.stringify(pub.translations) &&
+      JSON.stringify(current.settings) === JSON.stringify(pub.settings)
+    );
+  }, [data, templateId, toUpdateRequest]);
 
   // Save Draft — three cases based on template state
   const handleSave = useCallback(async () => {
@@ -133,21 +212,29 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
       const res = await createTemplate.mutateAsync(toCreateRequest());
       if (res.data?._id) {
         clearLocalDraft(undefined);
-        toast.success('Draft saved');
-        window.location.href = `/admin/survey-builder/${res.data._id}`;
+        setShowSaveSuccess(true);
       }
-    } else if (!data?.data?.surveyId) {
+    } else if (!data?.data?.publishedSurveyId) {
       // Existing template, not yet published — just update the template
       await updateTemplate.mutateAsync({ id: templateId, data: toUpdateRequest() });
       clearLocalDraft(templateId);
+      setShowSaveSuccess(true);
     } else {
-      // Already published — update template + create a new draft MySQL row for future publishing
-      await updateTemplate.mutateAsync({ id: templateId, data: toUpdateRequest() });
-      await saveSurveyDraft.mutateAsync({ templateId, label: enLabel || name });
+      // Published survey — if current content matches published, discard any stale draftContent
+      if (isSameAsPublished()) {
+        if (data?.data?.draftContent?.savedAt) {
+          await discardDraftContent.mutateAsync(templateId);
+        }
+        clearLocalDraft(templateId);
+        setShowSaveSuccess(true);
+        return;
+      }
+      // Content differs — save to draftContent only, never overwrite live template
+      await saveDraftContent.mutateAsync({ id: templateId, content: toUpdateRequest() });
       clearLocalDraft(templateId);
-      // saveSurveyDraft.onSuccess handles toast + redirect to /admin/surveys
+      setShowSaveSuccess(true);
     }
-  }, [templateId, name, translations, data, toCreateRequest, toUpdateRequest, createTemplate, updateTemplate, saveSurveyDraft, setName]);
+  }, [templateId, name, translations, data, isSameAsPublished, toCreateRequest, toUpdateRequest, createTemplate, updateTemplate, saveDraftContent, discardDraftContent, setName]);
 
   // Publish — always open panel immediately, no pre-API calls
   const handlePublishClick = useCallback(() => {
@@ -176,121 +263,169 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
   }
 
   const allQuestionsHaveText = questions.length > 0 && questions.every((q) => !!q.translations.en.text.trim());
-  const isFirstPublish = !data?.data?.surveyId;
-  const hasChangesToPublish = isDirty || isFirstPublish;
+  const isFirstPublish = !data?.data?.publishedSurveyId;
+  const hasDraftContent = !!(data?.data?.draftContent?.savedAt);
+  const canPublish = allQuestionsHaveText && (isFirstPublish || isDirty || hasDraftContent);
 
   return (
-    <div className="h-full flex bg-gray-50 text-text-dark">
-      <AdminSidebar />
-
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Header bar */}
-        <div className="flex items-center gap-4 px-6 py-3 bg-white border-b border-gray-200 flex-shrink-0">
-          <a
-            href="/admin/surveys"
-            className="text-gray-400 hover:text-gray-700 transition-colors flex-shrink-0"
-            title="Back to Surveys"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </a>
-
-          <input
-            type="text"
-            value={translations?.en?.label ?? ''}
-            onChange={(e) => handleLabelChange(e.target.value)}
-            placeholder="Survey display title (e.g. Political Survey 2026)"
-            className="flex-1 min-w-0 border border-gray-200 rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary bg-gray-50"
-          />
-
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {isDirty && (
-              <span className="text-xs text-orange-500 font-medium">Unsaved changes</span>
-            )}
-            {localSavedAt && (
-              <span className="text-xs text-gray-400" title={`Auto-saved at ${localSavedAt.toLocaleTimeString()}`}>
-                ✓ Locally saved {localSavedAt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
-              </span>
-            )}
-
-            <button
-              onClick={undo}
-              disabled={_past.length === 0}
-              title="Undo (Ctrl+Z)"
-              className="p-1.5 rounded-md text-gray-500 hover:text-black hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-            >
-              <RotateCcw size={16} />
-            </button>
-            <button
-              onClick={redo}
-              disabled={_future.length === 0}
-              title="Redo (Ctrl+Y)"
-              className="p-1.5 rounded-md text-gray-500 hover:text-black hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-            >
-              <RotateCw size={16} />
-            </button>
-
-            {!!translations?.en?.label?.trim() && (
+    <>
+      {showDraftPrompt && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl">
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">Unsaved draft found</h2>
+            <p className="text-sm text-gray-600 mb-6">
+              A saved draft exists for this survey. Do you want to continue editing the draft or
+              discard it and start fresh from the published version?
+            </p>
+            <div className="flex gap-3 justify-end">
               <button
-                onClick={handlePublishClick}
-                disabled={isSaving || !hasChangesToPublish || !allQuestionsHaveText}
-                title={
-                  questions.length === 0
-                    ? 'Add at least one question before publishing'
-                    : !allQuestionsHaveText
-                    ? 'All questions must have text before publishing'
-                    : !hasChangesToPublish
-                    ? 'No changes to publish'
-                    : undefined
-                }
-                className="px-4 py-1.5 border border-primary text-primary rounded-lg text-sm font-medium hover:bg-primary/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => void handleDiscardDraft()}
+                disabled={discardDraftContent.isPending}
+                className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
               >
-                Publish
+                {discardDraftContent.isPending ? 'Discarding…' : 'Discard'}
               </button>
-            )}
-
-            <button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="px-4 py-1.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSaving ? 'Saving…' : 'Save Draft'}
-            </button>
+              <button
+                onClick={handleContinueDraft}
+                className="px-4 py-2 text-sm text-white bg-primary rounded-lg hover:bg-primary/90"
+              >
+                Continue editing
+              </button>
+            </div>
           </div>
         </div>
-
-        {/* 3-panel layout */}
-        <div className="flex-1 flex min-h-0 overflow-hidden">
-          {/* LEFT: Question list — 256px */}
-          <div className="w-64 flex-shrink-0 overflow-hidden">
-            <QuestionListPanel />
-          </div>
-
-          {/* CENTER: Preview */}
-          <div className="flex-1 min-w-0 overflow-hidden">
-            <QuestionPreviewPanel />
-          </div>
-
-          {/* RIGHT: Config — 320px */}
-          <div className="w-80 flex-shrink-0 overflow-hidden border-l border-gray-200">
-            <QuestionConfigPanel />
-          </div>
-        </div>
-      </div>
-
-      {showPublishModal && (
-        <PublishSurveyModal
-          templateId={templateId ?? null}
-          defaultLabel={translations?.en?.label ?? name}
-          defaultFormLayout={settings.defaultFormLayout}
-          defaultType={settings.defaultType}
-          existingSurveyId={data?.data?.surveyId}
-          onClose={() => setShowPublishModal(false)}
-          onPublished={() => clearLocalDraft(templateId)}
-        />
       )}
-    </div>
+
+      {showSaveSuccess && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-8 max-w-sm w-full mx-4 shadow-xl flex flex-col items-center text-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+              <CheckCircle className="w-9 h-9 text-green-600" />
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-1">Draft saved!</h3>
+              <p className="text-sm text-gray-500">Redirecting to surveys…</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="h-full flex bg-gray-50 text-text-dark">
+        <AdminSidebar />
+
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+          {/* Header bar */}
+          <div className="flex items-center gap-4 px-6 py-3 bg-white border-b border-gray-200 flex-shrink-0">
+            <a
+              href="/admin/surveys"
+              className="text-gray-400 hover:text-gray-700 transition-colors flex-shrink-0"
+              title="Back to Surveys"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </a>
+
+            <input
+              type="text"
+              value={translations?.en?.label ?? ''}
+              onChange={(e) => handleLabelChange(e.target.value)}
+              placeholder="Survey display title (e.g. Political Survey 2026)"
+              className="flex-1 min-w-0 border border-gray-200 rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary bg-gray-50"
+            />
+
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {isDirty && (
+                <span className="text-xs text-orange-500 font-medium">Unsaved changes</span>
+              )}
+              {hasDraftContent && !isDirty && (
+                <span className="text-xs text-amber-500 font-medium">Draft saved</span>
+              )}
+              {localSavedAt && (
+                <span className="text-xs text-gray-400" title={`Auto-saved at ${localSavedAt.toLocaleTimeString()}`}>
+                  ✓ Locally saved {localSavedAt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              )}
+
+              <button
+                onClick={undo}
+                disabled={_past.length === 0}
+                title="Undo (Ctrl+Z)"
+                className="p-1.5 rounded-md text-gray-500 hover:text-black hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <RotateCcw size={16} />
+              </button>
+              <button
+                onClick={redo}
+                disabled={_future.length === 0}
+                title="Redo (Ctrl+Y)"
+                className="p-1.5 rounded-md text-gray-500 hover:text-black hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <RotateCw size={16} />
+              </button>
+
+              {!!translations?.en?.label?.trim() && (
+                <button
+                  onClick={handlePublishClick}
+                  disabled={isSaving || !canPublish}
+                  title={
+                    questions.length === 0
+                      ? 'Add at least one question before publishing'
+                      : !allQuestionsHaveText
+                      ? 'All questions must have text before publishing'
+                      : !canPublish
+                      ? 'No changes to publish'
+                      : undefined
+                  }
+                  className="px-4 py-1.5 border border-primary text-primary rounded-lg text-sm font-medium hover:bg-primary/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Publish
+                </button>
+              )}
+
+              <button
+                onClick={() => void handleSave()}
+                disabled={isSaving || (!!templateId && !isDirty)}
+                className="px-4 py-1.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSaving ? 'Saving…' : 'Save Draft'}
+              </button>
+            </div>
+          </div>
+
+          {/* 3-panel layout */}
+          <div className="flex-1 flex min-h-0 overflow-hidden">
+            {/* LEFT: Question list — 256px */}
+            <div className="w-64 flex-shrink-0 overflow-hidden">
+              <QuestionListPanel />
+            </div>
+
+            {/* CENTER: Preview */}
+            <div className="flex-1 min-w-0 overflow-hidden">
+              <QuestionPreviewPanel />
+            </div>
+
+            {/* RIGHT: Config — 320px */}
+            <div className="w-80 flex-shrink-0 overflow-hidden border-l border-gray-200">
+              <QuestionConfigPanel />
+            </div>
+          </div>
+        </div>
+
+        {showPublishModal && (
+          <PublishSurveyModal
+            templateId={templateId ?? null}
+            defaultLabel={translations?.en?.label ?? name}
+            defaultFormLayout={settings.defaultFormLayout}
+            defaultType={settings.defaultType}
+            existingSurveyId={data?.data?.publishedSurveyId ?? undefined}
+            hasDraftContent={hasDraftContent}
+            onClose={() => setShowPublishModal(false)}
+            onPublished={() => clearLocalDraft(templateId)}
+          />
+        )}
+      </div>
+    </>
   );
 };
 

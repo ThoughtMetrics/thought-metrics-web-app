@@ -9,28 +9,13 @@ interface Props {
 }
 
 const TemplateMetadataForm: React.FC<Props> = ({ activeLanguage }) => {
-  const { name, translations, setName, setTranslation } = useSurveyBuilderStore();
+  const { translations, setTranslation } = useSurveyBuilderStore();
   const t = translations[activeLanguage];
 
   return (
     <div className="space-y-5 p-4">
-      <div>
-        <h3 className="text-sm font-semibold text-gray-800 mb-3">Template Info</h3>
-        <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">Internal Name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. TM-POL-2026-Q1"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-          />
-          <p className="text-xs text-gray-400 mt-1">Used as the template identifier (not shown to respondents)</p>
-        </div>
-      </div>
-
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-gray-800">Translations ({activeLanguage.toUpperCase()})</h3>
+        <h3 className="text-sm font-semibold text-gray-800">Template Info ({activeLanguage.toUpperCase()})</h3>
 
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1">Label</label>

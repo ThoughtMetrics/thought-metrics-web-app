@@ -43,10 +43,17 @@ const ImportIcon = () => (
   </svg>
 );
 
+const CampaignsIcon = () => (
+  <svg viewBox="0 0 24 24" className="w-full h-full" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+  </svg>
+);
+
 const sidebarLinks: SidebarLink[] = [
   { href: '/admin', label: 'Dashboard', icon: <DashboardIcon /> },
   { href: '/admin/users', label: 'Users', icon: <UsersIcon /> },
   { href: '/admin/surveys', label: 'Surveys', icon: <SurveyIcon /> },
+  { href: '/admin/campaigns', label: 'Campaigns', icon: <CampaignsIcon /> },
   { href: '/admin/survey-import', label: 'Survey Import', icon: <ImportIcon /> },
 ];
 

@@ -1,7 +1,8 @@
 // components/PublishSurveyModal.tsx
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useCreateTemplate, usePublishSurvey, useUpdateTemplate, useUpdateSurveyInstance } from '@/core/hooks/mutations/survey-template.mutations';
+import { CheckCircle } from 'lucide-react';
+import { useCreateTemplate, usePublishSurvey, useUpdateTemplate, useUpdateSurveyInstance, useDiscardDraftContent } from '@/core/hooks/mutations/survey-template.mutations';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 import type { ISurveyPublishRequest, ISurveyUpdateRequest } from '@/core/types/survey-builder.type';
 import type { SupportedBuilderLanguage } from '@/core/types/survey-builder.type';
@@ -34,11 +35,12 @@ interface Props {
   defaultFormLayout: SurveyFormLayout;
   defaultType?: 'respondent' | 'agent';
   existingSurveyId?: string;
+  hasDraftContent?: boolean;
   onClose: () => void;
   onPublished?: () => void;
 }
 
-type Step = 'form' | 'lang-prompt' | 'translation';
+type Step = 'form' | 'lang-prompt' | 'translation' | 'success';
 
 const LANG_OPTIONS: { code: SupportedBuilderLanguage; label: string }[] = [
   { code: 'ta', label: 'Tamil' },
@@ -70,6 +72,7 @@ const PublishSurveyModal: React.FC<Props> = ({
   defaultFormLayout,
   defaultType = 'respondent',
   existingSurveyId,
+  hasDraftContent,
   onClose,
   onPublished,
 }) => {
@@ -77,13 +80,14 @@ const PublishSurveyModal: React.FC<Props> = ({
   const updateTemplate = useUpdateTemplate();
   const publish = usePublishSurvey();
   const updateSurvey = useUpdateSurveyInstance();
+  const discardDraft = useDiscardDraftContent();
 
-  const { questions, translations: storeTranslations, setQuestionTranslation, setTranslation, toCreateRequest, toUpdateRequest } = useSurveyBuilderStore();
+  const { questions, translations: storeTranslations, settings: storeSettings, setQuestionTranslation, setTranslation, toCreateRequest, toUpdateRequest } = useSurveyBuilderStore();
 
   // ── Publish form state ───────────────────────────────────────────────────
   const [label, setLabel] = useState(defaultLabel);
   const [surveyId, setSurveyId] = useState('');
-  const [industry, setIndustry] = useState('Others');
+  const [industry, setIndustry] = useState(storeSettings.industry ?? 'Others');
   const [type, setType] = useState<'respondent' | 'agent'>(defaultType);
   const [visibility, setVisibility] = useState<'public' | 'private'>('public');
   const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10));
@@ -94,19 +98,28 @@ const PublishSurveyModal: React.FC<Props> = ({
 
   // ── Step & translation state ─────────────────────────────────────────────
   const [step, setStep] = useState<Step>('form');
+  const [publishedLabel, setPublishedLabel] = useState('');
+  const [publishedSurveyId, setPublishedSurveyId] = useState('');
   const [selectedLang, setSelectedLang] = useState<SupportedBuilderLanguage>('ta');
   const [draft, setDraft] = useState<TranslationDraft | null>(null);
   const [savedLangs, setSavedLangs] = useState<Set<SupportedBuilderLanguage>>(new Set());
 
   const backdropRef = useRef<HTMLDivElement>(null);
   const publishingRef = useRef(false);
-  const isBusy = createTemplate.isPending || updateTemplate.isPending || publish.isPending || updateSurvey.isPending;
+  const isBusy = createTemplate.isPending || updateTemplate.isPending || publish.isPending || updateSurvey.isPending || discardDraft.isPending;
 
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape' && step !== 'success') onClose(); };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [onClose]);
+  }, [onClose, step]);
+
+  // Auto-redirect after showing success
+  useEffect(() => {
+    if (step !== 'success') return;
+    const t = setTimeout(() => { window.location.href = '/admin/surveys'; }, 3000);
+    return () => clearTimeout(t);
+  }, [step]);
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === backdropRef.current) onClose();
@@ -160,15 +173,20 @@ const PublishSurveyModal: React.FC<Props> = ({
       if (existingSurveyId) {
         // Already published — update survey metadata
         await updateSurvey.mutateAsync({ id: existingSurveyId, data: buildUpdatePayload() });
+        // Clear any saved draftContent now that the live template has been updated
+        if (hasDraftContent && effectiveTemplateId) {
+          await discardDraft.mutateAsync(effectiveTemplateId);
+        }
         useSurveyBuilderStore.setState({ isDirty: false });
         onPublished?.();
-        window.location.href = '/admin/surveys';
       } else {
         // First publish — backend promotes draft row to published (no duplicate created)
-        await publish.mutateAsync(buildPublishPayload(effectiveTemplateId));
-        // usePublishSurvey.onSuccess handles toast + isDirty reset + redirect
+        const res = await publish.mutateAsync(buildPublishPayload(effectiveTemplateId));
+        setPublishedSurveyId((res as any)?.data?.surveyId ?? '');
         onPublished?.();
       }
+      setPublishedLabel(label.trim());
+      setStep('success');
     } catch {
       // individual mutations show their own error toasts
     } finally {
@@ -654,6 +672,28 @@ const PublishSurveyModal: React.FC<Props> = ({
     );
   };
 
+  const renderSuccess = () => (
+    <div className="flex flex-col items-center justify-center px-6 py-12 text-center gap-4">
+      <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+        <CheckCircle className="w-9 h-9 text-green-600" />
+      </div>
+      <div>
+        <h3 className="text-xl font-semibold text-gray-900 mb-1">Published successfully!</h3>
+        <p className="text-sm text-gray-500">{publishedLabel}</p>
+        {publishedSurveyId && (
+          <p className="text-xs text-gray-400 mt-0.5 font-mono">{publishedSurveyId}</p>
+        )}
+      </div>
+      <p className="text-xs text-gray-400">Redirecting to surveys in a moment…</p>
+      <button
+        onClick={() => { window.location.href = '/admin/surveys'; }}
+        className="mt-2 px-6 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+      >
+        Go to Surveys
+      </button>
+    </div>
+  );
+
   // ── Modal shell ───────────────────────────────────────────────────────────
 
   const isTranslationStep = step === 'translation';
@@ -667,38 +707,41 @@ const PublishSurveyModal: React.FC<Props> = ({
       <div className={`bg-white rounded-xl shadow-2xl mx-4 flex flex-col overflow-hidden transition-all ${
         isTranslationStep ? 'w-full max-w-2xl h-[90vh]' : 'w-full max-w-lg max-h-[90vh]'
       }`}>
-        {/* Header — always fixed, never scrolls */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">
-              {step === 'form' && 'Publish Survey'}
-              {step === 'lang-prompt' && 'Before you publish…'}
-              {step === 'translation' && `${selectedLangLabel} Translations`}
-            </h2>
-            {step === 'form' && (
-              <p className="text-xs text-gray-400 mt-0.5">Step 1 of 2 — Survey details</p>
-            )}
-            {step === 'lang-prompt' && (
-              <p className="text-xs text-gray-400 mt-0.5">Step 2 of 2 — Translations (optional)</p>
-            )}
-            {step === 'translation' && (
-              <p className="text-xs text-gray-400 mt-0.5">
-                {savedLangs.has(selectedLang) ? 'Editing' : 'Adding'} {selectedLangLabel} translations
-              </p>
-            )}
+        {/* Header — hidden on success step */}
+        {step !== 'success' && (
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                {step === 'form' && 'Publish Survey'}
+                {step === 'lang-prompt' && 'Before you publish…'}
+                {step === 'translation' && `${selectedLangLabel} Translations`}
+              </h2>
+              {step === 'form' && (
+                <p className="text-xs text-gray-400 mt-0.5">Step 1 of 2 — Survey details</p>
+              )}
+              {step === 'lang-prompt' && (
+                <p className="text-xs text-gray-400 mt-0.5">Step 2 of 2 — Translations (optional)</p>
+              )}
+              {step === 'translation' && (
+                <p className="text-xs text-gray-400 mt-0.5">
+                  {savedLangs.has(selectedLang) ? 'Editing' : 'Adding'} {selectedLangLabel} translations
+                </p>
+              )}
+            </div>
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-700 transition-colors flex-shrink-0">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-700 transition-colors flex-shrink-0">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
+        )}
 
         {/* Step content — scrollable area, header stays pinned */}
         <div className={isTranslationStep ? 'flex-1 flex flex-col min-h-0 overflow-hidden' : 'flex-1 overflow-y-auto min-h-0'}>
           {step === 'form' && renderForm()}
           {step === 'lang-prompt' && renderLangPrompt()}
           {step === 'translation' && renderTranslation()}
+          {step === 'success' && renderSuccess()}
         </div>
       </div>
     </div>

@@ -38,7 +38,6 @@ export const useUpdateTemplate = () => {
         queryClient.setQueryData(QueryKeys.surveyTemplates.detail(id), res);
       }
       void queryClient.invalidateQueries({ queryKey: QueryKeys.surveyTemplates.lists() });
-      toast.success('Saved');
       useSurveyBuilderStore.setState({ isDirty: false });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -79,9 +78,8 @@ export const usePublishSurvey = () => {
     mutationFn: (data: ISurveyPublishRequest) => surveyService.publishSurvey(data),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: QueryKeys.surveysAdmin.lists() });
-      toast.success('Survey published');
       useSurveyBuilderStore.setState({ isDirty: false });
-      window.location.href = '/admin/surveys';
+      // Redirect and success feedback handled by PublishSurveyModal success step
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -117,26 +115,42 @@ export const useUpdateSurveyInstance = () => {
   });
 };
 
-export const useDuplicateTemplate = () => {
+export const useSaveDraftContent = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (id: string) => {
-      const res = await surveyService.getTemplate(id);
-      if (!res.data) throw new Error('Template not found');
-      const { _id, ...rest } = res.data as any;
-      const cloned: ISurveyTemplateCreateRequest = {
-        name: `${rest.name} (Copy)`,
-        translations: rest.translations,
-        questions: (rest.questions ?? []).map(({ id: _qid, ...q }: any) => q),
-        settings: rest.settings,
-      };
-      return surveyService.createTemplate(cloned);
-    },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: QueryKeys.surveyTemplates.lists() });
-      toast.success('Template duplicated');
+    mutationFn: ({
+      id,
+      content,
+    }: {
+      id: string;
+      content: { questions?: any[]; translations?: any; settings?: any };
+    }) => surveyService.saveDraftContent(id, content),
+    onSuccess: (response, { id }) => {
+      if (response?.data) {
+        queryClient.setQueryData(QueryKeys.surveyTemplates.detail(id), response);
+      }
+      void queryClient.invalidateQueries({ queryKey: QueryKeys.surveyTemplates.detail(id) });
+      useSurveyBuilderStore.setState({ isDirty: false });
     },
     onError: (e: Error) => toast.error(e.message),
   });
 };
+
+export const useDiscardDraftContent = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => surveyService.discardDraftContent(id),
+    onSuccess: (response, id) => {
+      // Immediately write the fresh template (no draftContent) into the cache so that
+      // any navigation back to the editor sees clean data without waiting for a refetch.
+      if (response?.data) {
+        queryClient.setQueryData(QueryKeys.surveyTemplates.detail(id), response);
+      }
+      void queryClient.invalidateQueries({ queryKey: QueryKeys.surveyTemplates.detail(id) });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+};
+
