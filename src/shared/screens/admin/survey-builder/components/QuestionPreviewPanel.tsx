@@ -2,19 +2,20 @@
 //
 // Centre panel of the survey builder.
 //
-// Responsibilities:
-//   - Language toggle (EN / TA) — controls which translation is previewed.
-//   - View-mode toggle (single | list) — controls how questions are displayed.
-//   - Single mode: shows the selected question in paginated layout (Back/Next/
-//     progress bar identical to what respondents see). Falls back to
-//     TemplateMetadataForm when no question is selected.
-//   - List mode: renders every question in the scrollable list layout.
+// View modes:
+//   - Single (paginated): shows the selected question in static read-only preview.
+//     When "Show Preview" is active it switches to an interactive walk-through
+//     of all questions starting from q1, with real Back/Next navigation and
+//     conditional visibility.
+//   - List: renders all questions in a scrollable list.
+//     When "Show Preview" is active, questions become interactive and
+//     conditional visibility hides/shows questions based on answers.
 //
-// Coupling kept low: this component reads from the survey-builder store and
-// passes plain data props to BuilderQuestionPreview. BuilderQuestionPreview
-// has no store dependency — it is a pure mapping component.
+// Coupling kept low: reads from the survey-builder store, passes plain data
+// props to BuilderQuestionPreview. BuilderQuestionPreview has no store dep.
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
+import { Play, X } from 'lucide-react';
 import type { IBuilderShowIfCondition, SupportedBuilderLanguage } from '@/core/types/survey-builder.type';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 import TemplateMetadataForm from './TemplateMetadataForm';
@@ -37,7 +38,7 @@ const LANG_LABELS: Record<SupportedBuilderLanguage, string> = {
 };
 
 // ---------------------------------------------------------------------------
-// Small internal icon components — avoids importing a whole icon library.
+// Small internal icon components
 // ---------------------------------------------------------------------------
 
 const SingleViewIcon: React.FC<{ active: boolean }> = ({ active }) => (
@@ -82,12 +83,11 @@ const MobileIcon: React.FC = () => (
 );
 
 // ---------------------------------------------------------------------------
-// QuestionPreviewPanel
+// Conditional visibility helpers
 // ---------------------------------------------------------------------------
 
-// Evaluate a single condition against a previewAnswers map
-function evalCond(cond: IBuilderShowIfCondition, previewAnswers: Record<string, string>): boolean {
-  const actual = previewAnswers[cond.questionId];
+function evalCond(cond: IBuilderShowIfCondition, answers: Record<string, string>): boolean {
+  const actual = answers[cond.questionId];
   const expected = cond.value;
   switch (cond.operator ?? 'equals') {
     case 'equals':     return actual === expected;
@@ -97,13 +97,16 @@ function evalCond(cond: IBuilderShowIfCondition, previewAnswers: Record<string, 
   }
 }
 
-// Returns true if the question should be shown given current preview answers
-function isVisible(cfg: Record<string, any>, previewAnswers: Record<string, string>): boolean {
-  if (cfg.showIf && !evalCond(cfg.showIf, previewAnswers)) return false;
-  if (cfg.showIfAll?.length && cfg.showIfAll.some((c: IBuilderShowIfCondition) => !evalCond(c, previewAnswers))) return false;
-  if (cfg.showIfAny?.length && !cfg.showIfAny.some((c: IBuilderShowIfCondition) => evalCond(c, previewAnswers))) return false;
+function isVisible(cfg: Record<string, any>, answers: Record<string, string>): boolean {
+  if (cfg.showIf && !evalCond(cfg.showIf, answers)) return false;
+  if (cfg.showIfAll?.length && cfg.showIfAll.some((c: IBuilderShowIfCondition) => !evalCond(c, answers))) return false;
+  if (cfg.showIfAny?.length && !cfg.showIfAny.some((c: IBuilderShowIfCondition) => evalCond(c, answers))) return false;
   return true;
 }
+
+// ---------------------------------------------------------------------------
+// QuestionPreviewPanel
+// ---------------------------------------------------------------------------
 
 const QuestionPreviewPanel: React.FC = () => {
   const { questions, selectedQuestionIndex, activeLanguage, setActiveLanguage } =
@@ -111,19 +114,42 @@ const QuestionPreviewPanel: React.FC = () => {
 
   const [viewMode, setViewMode] = useState<ViewMode>('single');
   const [deviceView, setDeviceView] = useState<DeviceView>('desktop');
-  const [interactiveMode, setInteractiveMode] = useState(false);
-  const [previewAnswers, setPreviewAnswers] = useState<Record<string, string>>({});
 
-  const handleInteractiveToggle = () => {
-    setInteractiveMode((v) => !v);
-    setPreviewAnswers({});
-  };
+  // ── Show Preview state ───────────────────────────────────────────────────
+  // showPreview: interactive mode active (works in both single + list modes)
+  const [showPreview, setShowPreview] = useState(false);
+  // previewAnswers: tracks answers for conditional visibility
+  const [previewAnswers, setPreviewAnswers] = useState<Record<string, string>>({});
+  // previewNavIdx: current step in the paginated walk-through (Show Preview + single mode)
+  const [previewNavIdx, setPreviewNavIdx] = useState(0);
+  // previewDone: reached the end of the paginated walk-through
+  const [previewDone, setPreviewDone] = useState(false);
+
+  // Visible question indices based on current preview answers (for conditional logic)
+  const visiblePreviewIndices = useMemo(
+    () => questions.map((_, i) => i).filter((i) => isVisible(questions[i].config as Record<string, any>, previewAnswers)),
+    [questions, previewAnswers]
+  );
 
   const handleAnswerChange = useCallback((questionId: string, value: string) => {
     setPreviewAnswers((prev) => ({ ...prev, [questionId]: value }));
   }, []);
 
-  // ── Toolbar (language tabs + device dropdown + view-mode toggle) ─────────
+  const exitPreview = () => {
+    setShowPreview(false);
+    setPreviewAnswers({});
+    setPreviewNavIdx(0);
+    setPreviewDone(false);
+  };
+
+  const enterPreview = () => {
+    setPreviewAnswers({});
+    setPreviewNavIdx(0);
+    setPreviewDone(false);
+    setShowPreview(true);
+  };
+
+  // ── Toolbar ──────────────────────────────────────────────────────────────
   const toolbar = (
     <div className="flex items-center justify-between p-3 border-b border-gray-200 bg-white shrink-0">
       {/* Left: Language tabs + Device dropdown */}
@@ -155,11 +181,9 @@ const QuestionPreviewPanel: React.FC = () => {
             <option value="desktop">Desktop</option>
             <option value="mobile">Mobile</option>
           </select>
-          {/* Icon overlay */}
           <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-gray-500">
             {deviceView === 'desktop' ? <DesktopIcon /> : <MobileIcon />}
           </span>
-          {/* Chevron */}
           <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-gray-400">
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
@@ -168,27 +192,35 @@ const QuestionPreviewPanel: React.FC = () => {
         </div>
       </div>
 
-      {/* Right side: Interactive toggle (list mode only) + view-mode toggle */}
+      {/* Right side */}
       <div className="flex items-center gap-2">
-        {viewMode === 'list' && (
+        {/* Show Preview toggle — visible in both view modes */}
+        {!showPreview ? (
           <button
             type="button"
-            title="Toggle interactive preview (conditional logic)"
-            onClick={handleInteractiveToggle}
-            className={`text-xs px-2 py-1 rounded font-medium transition-colors ${
-              interactiveMode
-                ? 'bg-primary text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+            onClick={enterPreview}
+            className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
           >
+            <Play size={11} />
             Show Preview
           </button>
+        ) : (
+          <button
+            type="button"
+            onClick={exitPreview}
+            className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+          >
+            <X size={11} />
+            Exit Preview
+          </button>
         )}
+
+        {/* View-mode toggle */}
         <div className="flex items-center bg-gray-100 rounded-lg p-0.5 gap-0.5">
           <button
             type="button"
             title="Single question view"
-            onClick={() => { setViewMode('single'); setInteractiveMode(false); setPreviewAnswers({}); }}
+            onClick={() => { setViewMode('single'); exitPreview(); }}
             className={`p-1.5 rounded-md transition-all ${
               viewMode === 'single' ? 'bg-white shadow-sm' : 'hover:text-black'
             }`}
@@ -198,7 +230,7 @@ const QuestionPreviewPanel: React.FC = () => {
           <button
             type="button"
             title="All questions list view"
-            onClick={() => setViewMode('list')}
+            onClick={() => { setViewMode('list'); exitPreview(); }}
             className={`p-1.5 rounded-md transition-all ${
               viewMode === 'list' ? 'bg-white shadow-sm' : 'hover:text-black'
             }`}
@@ -211,8 +243,7 @@ const QuestionPreviewPanel: React.FC = () => {
   );
 
   // ── Mobile frame wrapper ─────────────────────────────────────────────────
-  // Wraps children in a phone-shaped frame when deviceView === 'mobile'.
-  const withDeviceFrame = (children: React.ReactNode, scrollable = false) => {
+  const withDeviceFrame = (children: React.ReactNode) => {
     if (deviceView === 'desktop') {
       return <>{children}</>;
     }
@@ -222,18 +253,15 @@ const QuestionPreviewPanel: React.FC = () => {
           className="relative bg-gray-900 rounded-[2.5rem] shadow-2xl flex flex-col"
           style={{ width: 390, minHeight: 720 }}
         >
-          {/* Status bar notch */}
           <div className="flex items-center justify-center pt-3 pb-1 shrink-0">
             <div className="w-24 h-5 bg-gray-800 rounded-full" />
           </div>
-          {/* Screen */}
           <div
-            className={`mx-2 mb-2 rounded-[1.75rem] bg-white overflow-hidden flex flex-col ${scrollable ? 'overflow-y-auto' : ''}`}
+            className="mx-2 mb-2 rounded-[1.75rem] bg-white overflow-hidden flex flex-col"
             style={{ flex: 1 }}
           >
             {children}
           </div>
-          {/* Home indicator */}
           <div className="flex items-center justify-center py-2 shrink-0">
             <div className="w-20 h-1 bg-gray-600 rounded-full" />
           </div>
@@ -242,61 +270,65 @@ const QuestionPreviewPanel: React.FC = () => {
     );
   };
 
-  // ── List mode: all questions scrollable ─────────────────────────────────
-  const renderQuestionList = (containerClass: string, cardClass: string) => {
-    if (questions.length === 0) {
-      return (
-        <div className="flex items-center justify-center py-16">
-          <p className="text-sm text-gray-400">No questions added yet.</p>
-        </div>
-      );
-    }
-
-    // In interactive mode, filter by conditional visibility
-    const visibleQuestions = interactiveMode
-      ? questions.filter((q) => isVisible(q.config as Record<string, any>, previewAnswers))
-      : questions;
-
-    return (
-      <div className={containerClass}>
-        {interactiveMode && (
-          <div className="mb-3 p-2 bg-amber-50 border border-amber-200 rounded-lg">
-            <p className="text-xs text-amber-700 font-medium">
-              Interactive mode: answer questions to preview conditional logic.
-            </p>
-          </div>
-        )}
-        {visibleQuestions.map((question, idx) => (
-          <div key={question.id} className={cardClass}>
-            <BuilderQuestionPreview
-              question={question}
-              lang={activeLanguage}
-              questionNumber={idx + 1}
-              totalQuestions={visibleQuestions.length}
-              previewLayout="list"
-              onAnswerChange={interactiveMode ? (v) => handleAnswerChange(question.id, v) : undefined}
-            />
-          </div>
-        ))}
-      </div>
-    );
-  };
+  // ── LIST MODE ─────────────────────────────────────────────────────────────
 
   if (viewMode === 'list') {
+    const renderListContent = () => {
+      if (questions.length === 0) {
+        return (
+          <div className="flex items-center justify-center py-16">
+            <p className="text-sm text-gray-400">No questions added yet.</p>
+          </div>
+        );
+      }
+
+      const displayIndices = showPreview
+        ? visiblePreviewIndices
+        : questions.map((_, i) => i);
+
+      return (
+        <div className="space-y-4">
+          {showPreview && (
+            <div className="mb-1 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-xs text-blue-700 font-medium">
+                Preview mode: answers update conditional logic in real-time.
+              </p>
+            </div>
+          )}
+          {displayIndices.map((qIdx, displayIdx) => {
+            const question = questions[qIdx];
+            return (
+              <div key={question.id} className="p-4 md:p-6 border border-custom-grey-2 bg-white rounded-xl">
+                <BuilderQuestionPreview
+                  question={question}
+                  lang={activeLanguage}
+                  questionNumber={displayIdx + 1}
+                  totalQuestions={displayIndices.length}
+                  previewLayout="list"
+                  interactive={showPreview}
+                  onAnswerChange={showPreview ? (v) => handleAnswerChange(question.id, v) : undefined}
+                />
+              </div>
+            );
+          })}
+        </div>
+      );
+    };
+
     return (
       <div className="h-full flex flex-col bg-gray-50">
         {toolbar}
         {deviceView === 'desktop' ? (
           <div className="flex-1 overflow-y-auto">
             <div className="p-4">
-              {renderQuestionList('space-y-4', 'p-4 md:p-6 border border-custom-grey-2 bg-white rounded-xl')}
+              {renderListContent()}
             </div>
           </div>
         ) : (
           withDeviceFrame(
             <div className="overflow-y-auto flex-1">
               <div className="p-4">
-                {renderQuestionList('space-y-4', 'p-3 border border-custom-grey-2 bg-white rounded-xl')}
+                {renderListContent()}
               </div>
             </div>
           )
@@ -305,8 +337,95 @@ const QuestionPreviewPanel: React.FC = () => {
     );
   }
 
-  // ── Single mode: selected question or metadata form ─────────────────────
-  // When no question is selected, show the template metadata form.
+  // ── SINGLE MODE + SHOW PREVIEW: walk-through all questions ───────────────
+
+  if (showPreview) {
+    const renderPreviewWalkthrough = () => {
+      if (questions.length === 0) {
+        return (
+          <div className="flex items-center justify-center flex-1">
+            <p className="text-sm text-gray-400">No questions added yet.</p>
+          </div>
+        );
+      }
+
+      if (previewDone) {
+        return (
+          <div className="flex-1 flex items-center justify-center p-8">
+            <div className="flex flex-col items-center text-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
+                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-base font-semibold text-gray-900 mb-1">Preview complete!</p>
+                <p className="text-sm text-gray-500">This is how the survey would look to respondents.</p>
+              </div>
+              <button
+                onClick={() => { setPreviewAnswers({}); setPreviewNavIdx(0); setPreviewDone(false); }}
+                className="mt-2 px-5 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+              >
+                Restart
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      if (visiblePreviewIndices.length === 0) {
+        return (
+          <div className="flex-1 flex items-center justify-center">
+            <p className="text-sm text-gray-400">No visible questions based on current answers.</p>
+          </div>
+        );
+      }
+
+      const safeIdx = Math.min(previewNavIdx, visiblePreviewIndices.length - 1);
+      const qIdx = visiblePreviewIndices[safeIdx];
+      const question = questions[qIdx];
+      const isFirst = safeIdx === 0;
+      const isLast = safeIdx === visiblePreviewIndices.length - 1;
+
+      return (
+        <div className="flex-1 overflow-hidden flex bg-white accent-primary caret-primary scheme-light">
+          <BuilderQuestionPreview
+            question={question}
+            lang={activeLanguage}
+            questionNumber={safeIdx + 1}
+            totalQuestions={visiblePreviewIndices.length}
+            previewLayout="paginated"
+            interactive={true}
+            isFirst={isFirst}
+            isLast={isLast}
+            onAnswerChange={(v) => handleAnswerChange(question.id, v)}
+            onBack={() => { if (!isFirst) setPreviewNavIdx(safeIdx - 1); }}
+            onNext={() => { if (isLast) { setPreviewDone(true); } else { setPreviewNavIdx(safeIdx + 1); } }}
+          />
+        </div>
+      );
+    };
+
+    return (
+      <div className="h-full flex flex-col bg-gray-50">
+        {toolbar}
+        {deviceView === 'desktop' ? (
+          <div className="flex-1 overflow-hidden flex flex-col">
+            {renderPreviewWalkthrough()}
+          </div>
+        ) : (
+          withDeviceFrame(
+            <div className="flex-1 overflow-hidden flex flex-col">
+              {renderPreviewWalkthrough()}
+            </div>
+          )
+        )}
+      </div>
+    );
+  }
+
+  // ── SINGLE MODE (static): selected question or metadata form ─────────────
+
   if (selectedQuestionIndex === null) {
     return (
       <div className="h-full flex flex-col bg-gray-50">
@@ -335,8 +454,6 @@ const QuestionPreviewPanel: React.FC = () => {
     question.config.showIfAny?.length
   );
 
-  // Single mode with a selected question: render in full paginated layout
-  // (Back/Next/progress bar) — identical to what respondents see.
   return (
     <div className="h-full flex flex-col bg-gray-50">
       {toolbar}
@@ -349,7 +466,6 @@ const QuestionPreviewPanel: React.FC = () => {
         </div>
       )}
       {deviceView === 'desktop' ? (
-        /* Matches the paginated survey page wrapper so colours and layout are identical */
         <div className="flex-1 overflow-hidden flex bg-white accent-primary caret-primary scheme-light">
           <BuilderQuestionPreview
             question={question}

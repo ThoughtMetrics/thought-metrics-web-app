@@ -88,6 +88,7 @@ export interface IBuilderSettings {
   defaultType: 'respondent' | 'agent';
   allowAnonymous: boolean;
   captureFields: ISurveyCaptureField[];
+  industry?: string;
 }
 
 export interface IBuilderTemplate {
@@ -103,6 +104,7 @@ export interface ISurveyTemplateCreateRequest {
   translations: Record<SupportedBuilderLanguage, IBuilderTemplateTranslation>;
   questions: IBuilderQuestion[];
   settings: IBuilderSettings;
+  industry?: string;
 }
 
 export type ISurveyTemplateUpdateRequest = Partial<ISurveyTemplateCreateRequest>;

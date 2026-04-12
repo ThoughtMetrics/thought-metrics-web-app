@@ -431,7 +431,7 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
       {lang === 'en' && question.questionType === QuestionType.MCQ_SINGLE && (
         <div className="space-y-3 pt-2 border-t border-gray-100">
           <div className="flex items-center justify-between py-2 px-3 bg-gray-50 border border-gray-200 rounded-lg">
-            <span className="text-xs font-medium text-gray-600">Is intense purchase</span>
+            <span className="text-xs font-medium text-gray-600">Is there purchase intent</span>
             <button
               type="button"
               role="switch"
@@ -456,7 +456,7 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
                 type="text"
                 value={question.config.intensePurchaseLabel ?? ''}
                 onChange={(e) => setQuestionConfig(qIdx, { intensePurchaseLabel: e.target.value })}
-                placeholder="Is this an intense purchase?"
+                placeholder="Is there purchase intent?"
                 className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
               />
             </div>

@@ -172,8 +172,8 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
     <div className="common-component flex-col bg-white text-black h-full">
       {/* Survey Label Header */}
       {surveyLabel && (
-        <div className="border-b border-custom-grey-2 px-4 py-3 md:px-12 md:pb-4 md:pt-8">
-          <div className="flex items-center justify-between gap-4">
+        <div className="border-b border-custom-grey-2 px-4 py-3 md:px-12 md:pb-4 md:pt-6">
+          <div className="flex items-center justify-between gap-4 max-w-4xl mx-auto">
             <h1 className="text-base md:text-lg font-semibold text-black truncate">
               {surveyId}: {surveyLabel}
             </h1>

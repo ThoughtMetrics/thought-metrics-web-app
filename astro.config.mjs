@@ -57,6 +57,8 @@ export default defineConfig({
 
   vite: {
     server: {
+      // Bind to all network interfaces so the Network URL is exposed in terminal
+      host: true,
       // Allow access via local network IPs (phones, tablets on same WiFi)
       allowedHosts: true,
       watch: {

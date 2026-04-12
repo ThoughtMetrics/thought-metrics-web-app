@@ -47,7 +47,17 @@
       "Bash(npx tsx:*)",
       "Bash(flutter analyze:*)",
       "Bash(ts-node:*)",
-      "Bash(taskkill /F /IM node.exe)"
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(find D:Projectsthought_metricsthought-metrics-web-api -path */node_modules -prune -o -type f \\\\\\(-name *migrate* -o -name *seed* -o -name *import* -o -name *export* \\\\\\) -print)",
+      "Bash(mongodump:*)",
+      "Bash(cmd.exe /c \"mongodump --version\")",
+      "Bash(cmd.exe /c \"where mongodump\")",
+      "Bash(cmd.exe /c \"mongodump.exe --version 2>&1 & where mongodump.exe 2>&1\")",
+      "Bash(powershell.exe -Command \"Get-Command mongodump -ErrorAction SilentlyContinue; Get-Command mongodump.exe -ErrorAction SilentlyContinue; \\(Get-Command mongodump -ErrorAction SilentlyContinue\\).Source\")",
+      "Bash(powershell.exe -Command \"\n\\\\$paths = @\\(\n  'C:\\\\\\\\Program Files\\\\\\\\MongoDB\\\\\\\\Tools\\\\\\\\*\\\\\\\\bin',\n  'C:\\\\\\\\Program Files\\\\\\\\MongoDB\\\\\\\\Server\\\\\\\\*\\\\\\\\bin',\n  'C:\\\\\\\\mongodb\\\\\\\\bin'\n\\)\nforeach \\(\\\\$p in \\\\$paths\\) {\n  \\\\$found = Get-ChildItem -Path \\\\$p -Filter 'mongodump.exe' -ErrorAction SilentlyContinue\n  if \\(\\\\$found\\) { Write-Host \\\\$found.FullName }\n}\n\")",
+      "Bash(powershell.exe -Command \"Get-ChildItem 'C:\\\\\\\\Program Files\\\\\\\\MongoDB' -Recurse -Filter 'mongodump.exe' -ErrorAction SilentlyContinue | Select-Object -First 5 FullName\" 2>&1)",
+      "Bash(powershell.exe -Command \"\n\\\\$toolsPath = 'C:\\\\\\\\Program Files\\\\\\\\MongoDB\\\\\\\\Tools\\\\\\\\100\\\\\\\\bin'\n\\\\$date = Get-Date -Format 'yyyyMMdd'\n\\\\$outDir = \\\\\"D:\\\\\\\\mongo_backup\\\\\\\\thought_metrics_\\\\$date\\\\\"\nNew-Item -ItemType Directory -Force -Path \\\\$outDir | Out-Null\nWrite-Host \\\\\"Dumping to: \\\\$outDir\\\\\"\n& \\\\\"\\\\$toolsPath\\\\\\\\mongodump.exe\\\\\" --uri='mongodb+srv://contact_db_user:M9FxWJWhmRbSIBsE@thoughtmetrics.adcetbr.mongodb.net/thought_metrics_db?retryWrites=true&w=majority' --out=\\\\\"\\\\$outDir\\\\\"\nWrite-Host \\\\\"Exit code: \\\\$LASTEXITCODE\\\\\"\n\" 2>&1)",
+      "Bash(powershell.exe -Command \"\n\\\\$toolsPath = 'C:\\\\\\\\Program Files\\\\\\\\MongoDB\\\\\\\\Tools\\\\\\\\100\\\\\\\\bin'\n\\\\$date = '20260331'\n\\\\$backupDir = \\\\\"D:\\\\\\\\mongo_backup\\\\\\\\thought_metrics_\\\\$date\\\\\\\\thought_metrics_db\\\\\"\nWrite-Host \\\\\"Restoring from: \\\\$backupDir\\\\\"\n& \\\\\"\\\\$toolsPath\\\\\\\\mongorestore.exe\\\\\" --uri='mongodb://localhost:27017' --db='thought_metrics_db' --drop \\\\\"\\\\$backupDir\\\\\"\nWrite-Host \\\\\"Exit code: \\\\$LASTEXITCODE\\\\\"\n\" 2>&1)"
     ],
     "deny": [],
     "ask": []

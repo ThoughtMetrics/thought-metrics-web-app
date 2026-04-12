@@ -4,6 +4,14 @@ import React from 'react';
 import type { ISurveyCaptureField } from '@/core/types/survey.type';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 
+const INDUSTRY_OPTIONS = [
+  'All Industries', 'Advertising & Marketing', 'Automotive', 'Education',
+  'Financial Services & Insurance', 'FMCG', 'Healthcare & Life Sciences',
+  'Human Resources', 'Internet & Media', 'Investor & Private Equity',
+  'Retail & Merchandising', 'Technology', 'Fitness & Wellness',
+  'Apparel', 'Political', 'Others',
+];
+
 const CAPTURE_TYPES: ISurveyCaptureField['type'][] = ['image', 'audio', 'video', 'file', 'text'];
 
 function labelToKey(label: string): string {
@@ -94,6 +102,20 @@ const TemplateSettingsPanel: React.FC = () => {
                 </button>
               ))}
             </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Industry</label>
+            <select
+              value={settings.industry ?? 'Others'}
+              onChange={(e) => setSettings({ industry: e.target.value })}
+              className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+            >
+              {INDUSTRY_OPTIONS.map((opt) => (
+                <option key={opt} value={opt}>{opt}</option>
+              ))}
+            </select>
+            <p className="text-xs text-gray-400 mt-1">Sets the survey ID prefix (e.g. TM-POL001)</p>
           </div>
 
           <div className="flex items-center justify-between">

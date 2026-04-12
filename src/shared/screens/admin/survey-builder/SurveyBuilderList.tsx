@@ -5,12 +5,13 @@ import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 import { useTemplatesQuery } from '@/core/hooks/queries/survey-templates/index.queries';
-import { useDeleteTemplate, useDuplicateTemplate } from '@/core/hooks/mutations/survey-template.mutations';
+import { toast } from 'sonner';
+import { useDeleteTemplate } from '@/core/hooks/mutations/survey-template.mutations';
+import surveyService from '@/services/survey/survey.service';
 
 const SurveyBuilderListContent: React.FC = () => {
   const { data, isLoading, isError } = useTemplatesQuery();
   const deleteTemplate = useDeleteTemplate();
-  const duplicateTemplate = useDuplicateTemplate();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
 
@@ -29,8 +30,13 @@ const SurveyBuilderListContent: React.FC = () => {
   const handleDuplicate = async (id: string) => {
     setDuplicatingId(id);
     try {
-      await duplicateTemplate.mutateAsync(id);
-    } finally {
+      const res = await surveyService.getTemplate(id);
+      if (!res.data) throw new Error('Template not found');
+      const { questions, translations, settings, name } = res.data as any;
+      sessionStorage.setItem('tm-duplicate-prefill', JSON.stringify({ questions, translations, settings, name }));
+      window.location.href = '/admin/survey-builder/new';
+    } catch (e: any) {
+      toast.error(e.message ?? 'Failed to duplicate');
       setDuplicatingId(null);
     }
   };
@@ -97,7 +103,6 @@ const SurveyBuilderListContent: React.FC = () => {
                         <div className="font-medium text-gray-900">
                           {t.translations?.en?.label ?? t.label ?? '—'}
                         </div>
-                        <div className="text-xs text-gray-400 mt-0.5">{t.name}</div>
                       </td>
                       <td className="px-6 py-4 text-gray-600">{t.questions?.length ?? 0}</td>
                       <td className="px-6 py-4">
@@ -161,7 +166,6 @@ export default SurveyBuilderList;
 const SurveyBuilderListPanelContent: React.FC = () => {
   const { data, isLoading, isError } = useTemplatesQuery();
   const deleteTemplate = useDeleteTemplate();
-  const duplicateTemplate = useDuplicateTemplate();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
 
@@ -180,8 +184,13 @@ const SurveyBuilderListPanelContent: React.FC = () => {
   const handleDuplicate = async (id: string) => {
     setDuplicatingId(id);
     try {
-      await duplicateTemplate.mutateAsync(id);
-    } finally {
+      const res = await surveyService.getTemplate(id);
+      if (!res.data) throw new Error('Template not found');
+      const { questions, translations, settings, name } = res.data as any;
+      sessionStorage.setItem('tm-duplicate-prefill', JSON.stringify({ questions, translations, settings, name }));
+      window.location.href = '/admin/survey-builder/new';
+    } catch (e: any) {
+      toast.error(e.message ?? 'Failed to duplicate');
       setDuplicatingId(null);
     }
   };

@@ -1,0 +1,8 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import { CampaignsManagement } from '@/shared/screens/admin/campaigns/CampaignsManagement';
+---
+
+<IntractionLayout title="Campaigns | Admin" description="Manage tracking links and campaign performance">
+  <CampaignsManagement client:only="react" />
+</IntractionLayout>
