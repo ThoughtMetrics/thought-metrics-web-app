@@ -1,61 +1,40 @@
 // components/QuestionConfigPanel.tsx
+//
+// Right panel in the question builder section.
+// Shows behaviour-level settings for the selected question:
+//   - Required toggle
+//   - Allow Comment toggle
+//   - Option Filter (MCQ types only)
+//   - Conditional Logic
+//
+// Type-specific config (options, scale range, etc.) lives in the centre editor panel.
 
 import React from 'react';
 import { QuestionType } from '@/core/types/survey.type';
-import type { SupportedBuilderLanguage } from '@/core/types/survey-builder.type';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
-import TemplateSettingsPanel from './TemplateSettingsPanel';
-import TextConfig from './configs/TextConfig';
-import ChoiceConfig from './configs/ChoiceConfig';
-import ScaleConfig from './configs/ScaleConfig';
-import SliderConfig from './configs/SliderConfig';
-import MatrixConfig from './configs/MatrixConfig';
-import FileConfig from './configs/FileConfig';
 import ConditionalLogicConfig from './ConditionalLogicConfig';
 import OptionFilterConfig from './configs/OptionFilterConfig';
-
-const TEXT_TYPES = new Set([
-  QuestionType.TEXT, QuestionType.TEXTAREA, QuestionType.NUMBER,
-  QuestionType.EMAIL, QuestionType.PHONE, QuestionType.DATE,
-  QuestionType.CURRENCY,
-]);
-
-const CHOICE_TYPES = new Set([
-  QuestionType.MCQ_SINGLE, QuestionType.MCQ_MULTIPLE, QuestionType.RANKING,
-]);
-
-const SCALE_TYPES = new Set([
-  QuestionType.RATING, QuestionType.LIKERT_SCALE, QuestionType.SCALE,
-]);
-
-const SLIDER_TYPES = new Set([
-  QuestionType.DOUBLE_SLIDER, QuestionType.MULTI_SLIDER,
-]);
-
-const MATRIX_TYPES = new Set([
-  QuestionType.MATRIX, QuestionType.MAX_DIFF, QuestionType.CONSTANT_SUM,
-]);
-
-const LANG_LABELS: Record<SupportedBuilderLanguage, string> = { en: 'English', ta: 'Tamil' };
 
 const QuestionConfigPanel: React.FC = () => {
   const {
     questions,
     selectedQuestionIndex,
-    activeLanguage,
-    setActiveLanguage,
     setQuestionField,
-    setQuestionTranslation,
-    changeQuestionType,
   } = useSurveyBuilderStore();
 
   if (selectedQuestionIndex === null) {
     return (
-      <div className="h-full bg-white overflow-y-auto">
-        <div className="p-3 border-b border-gray-200">
-          <h3 className="text-sm font-semibold text-gray-700">Template Settings</h3>
+      <div className="h-full bg-white flex items-center justify-center p-6">
+        <div className="text-center">
+          <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <p className="text-xs font-medium text-gray-500">Select a question</p>
+          <p className="text-xs text-gray-400 mt-1">Question settings will appear here</p>
         </div>
-        <TemplateSettingsPanel />
       </div>
     );
   }
@@ -63,147 +42,66 @@ const QuestionConfigPanel: React.FC = () => {
   const question = questions[selectedQuestionIndex];
   if (!question) return null;
 
-  const lang = activeLanguage;
-  const t = question.translations[lang];
-
-  const renderTypeConfig = () => {
-    if (TEXT_TYPES.has(question.questionType)) {
-      return <TextConfig question={question} qIdx={selectedQuestionIndex} lang={lang} />;
-    }
-    if (CHOICE_TYPES.has(question.questionType)) {
-      return <ChoiceConfig question={question} qIdx={selectedQuestionIndex} lang={lang} />;
-    }
-    if (SCALE_TYPES.has(question.questionType)) {
-      return <ScaleConfig question={question} qIdx={selectedQuestionIndex} lang={lang} />;
-    }
-    if (SLIDER_TYPES.has(question.questionType)) {
-      return <SliderConfig question={question} qIdx={selectedQuestionIndex} />;
-    }
-    if (MATRIX_TYPES.has(question.questionType)) {
-      return <MatrixConfig question={question} qIdx={selectedQuestionIndex} />;
-    }
-    if (question.questionType === QuestionType.FILE) {
-      return <FileConfig question={question} qIdx={selectedQuestionIndex} />;
-    }
-    return null;
-  };
+  const hasOptions =
+    question.questionType === QuestionType.MCQ_SINGLE ||
+    question.questionType === QuestionType.MCQ_MULTIPLE ||
+    question.questionType === QuestionType.RANKING;
 
   return (
     <div className="h-full bg-white flex flex-col">
-      {/* Question type selector */}
+      {/* Header */}
       <div className="px-4 pt-3 pb-2 border-b border-gray-100">
-        <label className="block text-xs text-gray-500 mb-1.5 font-medium">Question Type</label>
-        <select
-          value={question.questionType}
-          onChange={(e) => changeQuestionType(selectedQuestionIndex!, e.target.value as QuestionType)}
-          className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
-        >
-          <optgroup label="Text">
-            <option value={QuestionType.TEXT}>Short Text</option>
-            <option value={QuestionType.TEXTAREA}>Long Text</option>
-            <option value={QuestionType.NUMBER}>Number</option>
-            <option value={QuestionType.EMAIL}>Email</option>
-            <option value={QuestionType.PHONE}>Phone</option>
-            <option value={QuestionType.DATE}>Date</option>
-            <option value={QuestionType.CURRENCY}>Currency</option>
-          </optgroup>
-          <optgroup label="Choice">
-            <option value={QuestionType.MCQ_SINGLE}>Single Choice (MCQ)</option>
-            <option value={QuestionType.MCQ_MULTIPLE}>Multiple Choice</option>
-            <option value={QuestionType.RANKING}>Ranking</option>
-          </optgroup>
-          <optgroup label="Scale">
-            <option value={QuestionType.RATING}>Star Rating</option>
-            <option value={QuestionType.LIKERT_SCALE}>Likert Scale</option>
-            <option value={QuestionType.SCALE}>Slider Scale</option>
-            <option value={QuestionType.DOUBLE_SLIDER}>Double Slider</option>
-            <option value={QuestionType.MULTI_SLIDER}>Multi Slider</option>
-          </optgroup>
-          <optgroup label="Grid">
-            <option value={QuestionType.MATRIX}>Matrix</option>
-            <option value={QuestionType.MAX_DIFF}>Max Diff</option>
-            <option value={QuestionType.CONSTANT_SUM}>Constant Sum</option>
-            <option value={QuestionType.FILE}>File Upload</option>
-          </optgroup>
-        </select>
-      </div>
-
-      {/* Lang tabs */}
-      <div className="flex gap-1 p-3 border-b border-gray-200">
-        {(['en', 'ta'] as SupportedBuilderLanguage[]).map((l) => (
-          <button
-            key={l}
-            onClick={() => setActiveLanguage(l)}
-            className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
-              lang === l
-                ? 'bg-primary text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            {LANG_LABELS[l]}
-          </button>
-        ))}
+        <h3 className="text-sm font-semibold text-gray-700">Question Settings</h3>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-5">
-        {/* Question text */}
-        <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">
-            Question Text ({lang.toUpperCase()})
+        {/* Required / Allow Comment */}
+        <div className="space-y-3">
+          <label className="flex items-center justify-between cursor-pointer">
+            <div>
+              <span className="text-sm font-medium text-gray-700">Required</span>
+              <p className="text-xs text-gray-400 mt-0.5">Respondents must answer this question</p>
+            </div>
+            <button
+              onClick={() => setQuestionField(selectedQuestionIndex, 'required', !question.required)}
+              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors flex-shrink-0 ml-3 ${
+                question.required ? 'bg-primary' : 'bg-gray-200'
+              }`}
+            >
+              <span
+                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow ${
+                  question.required ? 'translate-x-4' : 'translate-x-1'
+                }`}
+              />
+            </button>
           </label>
-          <textarea
-            value={t.text}
-            onChange={(e) => {
-              setQuestionTranslation(selectedQuestionIndex, lang, { text: e.target.value });
-              if (lang === 'en') {
-                setQuestionField(selectedQuestionIndex, 'text', e.target.value);
-              }
-            }}
-            placeholder="Enter question text..."
-            rows={3}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-          />
-        </div>
 
-        {/* Required / Comment toggles */}
-        <div className="flex gap-6">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={question.required}
-              onChange={(e) => setQuestionField(selectedQuestionIndex, 'required', e.target.checked)}
-              className="w-4 h-4 accent-primary"
-            />
-            <span className="text-xs font-medium text-gray-700">
-              {question.required ? 'Required' : 'Optional'}
-            </span>
-          </label>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={question.allowComment}
-              onChange={(e) => setQuestionField(selectedQuestionIndex, 'allowComment', e.target.checked)}
-              className="w-4 h-4 accent-primary"
-            />
-            <span className="text-xs font-medium text-gray-700">Allow Comment</span>
+          <label className="flex items-center justify-between cursor-pointer">
+            <div>
+              <span className="text-sm font-medium text-gray-700">Allow Comment</span>
+              <p className="text-xs text-gray-400 mt-0.5">Add an optional comment field</p>
+            </div>
+            <button
+              onClick={() => setQuestionField(selectedQuestionIndex, 'allowComment', !question.allowComment)}
+              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors flex-shrink-0 ml-3 ${
+                question.allowComment ? 'bg-primary' : 'bg-gray-200'
+              }`}
+            >
+              <span
+                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow ${
+                  question.allowComment ? 'translate-x-4' : 'translate-x-1'
+                }`}
+              />
+            </button>
           </label>
         </div>
 
-        {/* Type-specific config */}
-        <div>
-          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-            Question Options
-          </h4>
-          {renderTypeConfig()}
-        </div>
-
-        {/* Option filter — only for MCQ question types */}
-        {(question.questionType === QuestionType.MCQ_SINGLE ||
-          question.questionType === QuestionType.MCQ_MULTIPLE) && (
+        {/* Option Filter — MCQ / Ranking (any question with options) */}
+        {hasOptions && (
           <OptionFilterConfig question={question} qIdx={selectedQuestionIndex} />
         )}
 
-        {/* Conditional logic */}
+        {/* Conditional Logic */}
         <ConditionalLogicConfig question={question} qIdx={selectedQuestionIndex} />
       </div>
     </div>

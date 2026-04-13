@@ -138,7 +138,9 @@ const ConditionalLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
         </span>
         <button
           onClick={handleToggle}
-          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+          disabled={!isEnabled && otherQuestions.length === 0}
+          title={!isEnabled && otherQuestions.length === 0 ? 'Add more questions first' : ''}
+          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-40 ${
             isEnabled ? 'bg-primary' : 'bg-gray-200'
           }`}
         >

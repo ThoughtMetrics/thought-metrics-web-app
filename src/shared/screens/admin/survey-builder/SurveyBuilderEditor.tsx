@@ -10,8 +10,10 @@ import { useTemplateQuery } from '@/core/hooks/queries/survey-templates/index.qu
 import { useCreateTemplate, useUpdateTemplate, useSaveSurveyDraft, useSaveDraftContent, useDiscardDraftContent } from '@/core/hooks/mutations/survey-template.mutations';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 import QuestionListPanel from './components/QuestionListPanel';
-import QuestionPreviewPanel from './components/QuestionPreviewPanel';
+import QuestionEditorPanel from './components/QuestionEditorPanel';
 import QuestionConfigPanel from './components/QuestionConfigPanel';
+import SurveyDetailsSection from './components/SurveyDetailsSection';
+import { BuilderLanguageCompact } from './components/BuilderLanguageCompact';
 import PublishSurveyModal from './components/PublishSurveyModal';
 
 interface Props {
@@ -42,6 +44,9 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
   const [showDraftPrompt, setShowDraftPrompt] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
 
+  // Two-section layout: 'details' (survey metadata + settings) or 'questions' (builder)
+  const [editorSection, setEditorSection] = useState<'details' | 'questions'>('details');
+
   // Auto-redirect 2 seconds after save-draft success overlay appears
   useEffect(() => {
     if (!showSaveSuccess) return;
@@ -61,6 +66,12 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
         // but the fresh refetch has none — or after a successful discard).
         setShowDraftPrompt(false);
         loadTemplate(template);
+      }
+      // Existing templates with questions open directly in the question builder
+      const questionCount =
+        template.draftContent?.questions?.length ?? template.questions?.length ?? 0;
+      if (questionCount > 0) {
+        setEditorSection('questions');
       }
     } else if (!templateId) {
       resetEditor();
@@ -316,15 +327,29 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           {/* Header bar */}
           <div className="flex items-center gap-4 px-6 py-3 bg-white border-b border-gray-200 flex-shrink-0">
-            <a
-              href="/admin/surveys"
-              className="text-gray-400 hover:text-gray-700 transition-colors flex-shrink-0"
-              title="Back to Surveys"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </a>
+            {editorSection === 'questions' ? (
+              <button
+                onClick={() => setEditorSection('details')}
+                className="flex items-center gap-1.5 text-secondary hover:text-secondary/80 transition-colors flex-shrink-0"
+                title="Back to Survey Details"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                <span className="text-sm font-medium">Survey Details</span>
+              </button>
+            ) : (
+              <a
+                href="/admin/surveys"
+                className="flex items-center gap-1.5 text-secondary hover:text-secondary/80 transition-colors flex-shrink-0"
+                title="Back to Surveys"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                <span className="text-sm font-medium">Back</span>
+              </a>
+            )}
 
             <input
               type="text"
@@ -364,6 +389,8 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
                 <RotateCw size={16} />
               </button>
 
+              <BuilderLanguageCompact />
+
               {!!translations?.en?.label?.trim() && (
                 <button
                   onClick={handlePublishClick}
@@ -393,22 +420,32 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
             </div>
           </div>
 
-          {/* 3-panel layout */}
+          {/* Section layout */}
           <div className="flex-1 flex min-h-0 overflow-hidden">
-            {/* LEFT: Question list — 256px */}
-            <div className="w-64 flex-shrink-0 overflow-hidden">
-              <QuestionListPanel />
-            </div>
+            {editorSection === 'details' ? (
+              /* ── Survey Details: full-width center, no side panels ── */
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <SurveyDetailsSection onContinue={() => setEditorSection('questions')} />
+              </div>
+            ) : (
+              /* ── Question Builder: 3-panel layout ── */
+              <>
+                {/* LEFT: Question list — 256px */}
+                <div className="w-64 flex-shrink-0 overflow-hidden">
+                  <QuestionListPanel />
+                </div>
 
-            {/* CENTER: Preview */}
-            <div className="flex-1 min-w-0 overflow-hidden">
-              <QuestionPreviewPanel />
-            </div>
+                {/* CENTER: Question editor */}
+                <div className="flex-1 min-w-0 overflow-hidden">
+                  <QuestionEditorPanel />
+                </div>
 
-            {/* RIGHT: Config — 320px */}
-            <div className="w-80 flex-shrink-0 overflow-hidden border-l border-gray-200">
-              <QuestionConfigPanel />
-            </div>
+                {/* RIGHT: Question settings — 288px */}
+                <div className="w-72 flex-shrink-0 overflow-hidden border-l border-gray-200">
+                  <QuestionConfigPanel />
+                </div>
+              </>
+            )}
           </div>
         </div>
 
