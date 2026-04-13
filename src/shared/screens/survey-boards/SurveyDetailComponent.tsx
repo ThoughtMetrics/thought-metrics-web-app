@@ -148,8 +148,9 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   const visibleIndices = React.useMemo(() => {
     const allQs = surveyData?.data?.template?.questions || [];
     const evalCond = (cond: any): boolean => {
+      if (!cond.questionId) return true;   // empty questionId → no real condition, always visible
       const refIdx = questionIdToIndex[cond.questionId];
-      if (refIdx === undefined) return false; // orphaned condition — hide by default
+      if (refIdx === undefined) return true; // orphaned/deleted parent → treat as always visible
       const answerData = answers[refIdx];
       const expected = cond.value?.toString() ?? '';
       const op = cond.operator ?? 'equals';
