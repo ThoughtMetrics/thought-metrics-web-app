@@ -29,11 +29,33 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
   isLastQuestion,
   isOptional,
   hasAnswer,
+  othersPlaceholder,
+  onOthersTextChange,
 }) => {
   const { translations } = useLanguage();
   const [expandedOption, setExpandedOption] = useState<string | null>(null);
+  const [othersInputText, setOthersInputText] = useState('');
   // Use dropdown for more than 5 options, radio buttons for 5 or fewer
   const useDropdown = options.length > 5;
+
+  const handleOthersTextChange = (text: string) => {
+    setOthersInputText(text);
+    onOthersTextChange?.(text);
+  };
+
+  const othersInput = (
+    <div className="px-3 pb-3 pt-2">
+      <input
+        type="text"
+        value={othersInputText}
+        onChange={(e) => handleOthersTextChange(e.target.value)}
+        placeholder={othersPlaceholder || 'Please specify...'}
+        className="w-full text-sm px-3 py-2 border border-primary/40 rounded-md focus:outline-none focus:ring-1 focus:ring-primary bg-white transition-colors"
+        autoFocus
+        onClick={(e) => e.stopPropagation()}
+      />
+    </div>
+  );
 
   return (
     <SurveyQuestionWrapper
@@ -57,24 +79,40 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
       hasAnswer={hasAnswer}
     >
       {useDropdown ? (
-        <select
-          value={selectedValue || ''}
-          onChange={(e) => onValueChange(e.target.value)}
-          className="w-full px-3 py-2 border border-custom-grey-1 rounded bg-white focus:bg-white focus:outline-none focus:border-primary transition-colors text-sm md:text-base text-black"
-        >
-          <option value="">{translations.surveyQuestions.selectOption}</option>
-          {options.map((option) => (
-            <option key={option.id} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+        <div className="space-y-2">
+          <select
+            value={selectedValue || ''}
+            onChange={(e) => {
+              onValueChange(e.target.value);
+              if (e.target.value !== 'others') handleOthersTextChange('');
+            }}
+            className="w-full px-3 py-2 border border-custom-grey-1 rounded bg-white focus:bg-white focus:outline-none focus:border-primary transition-colors text-sm md:text-base text-black"
+          >
+            <option value="">{translations.surveyQuestions.selectOption}</option>
+            {options.map((option) => (
+              <option key={option.id} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          {selectedValue === 'others' && (
+            <input
+              type="text"
+              value={othersInputText}
+              onChange={(e) => handleOthersTextChange(e.target.value)}
+              placeholder={othersPlaceholder || 'Please specify...'}
+              className="w-full text-sm px-3 py-2 border border-primary/40 rounded-md focus:outline-none focus:ring-1 focus:ring-primary bg-white transition-colors"
+              autoFocus
+            />
+          )}
+        </div>
       ) : (
         <div className="space-y-2">
           {options.map((option) => {
             const hasAttrs = option.attributes && option.attributes.length > 0;
             const isExpanded = expandedOption === option.value;
             const showIP = option.isIntensePurchase && intensePurchaseLabel;
+            const isOthersSelected = option.value === 'others' && selectedValue === 'others';
             return (
               <div key={option.id}>
                 <div
@@ -91,7 +129,10 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
                         name={`radio-option-${questionNumber}`}
                         value={option.value}
                         checked={selectedValue === option.value}
-                        onChange={() => onValueChange(option.value)}
+                        onChange={() => {
+                          onValueChange(option.value);
+                          if (option.value !== 'others') handleOthersTextChange('');
+                        }}
                         className="h-4 w-4 flex-shrink-0 text-primary focus:ring-primary border-custom-grey-2"
                       />
                       <span className="text-sm md:text-base text-black">{option.label}</span>
@@ -118,6 +159,8 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
                       ))}
                     </div>
                   )}
+                  {/* Others free-text input — shown inline when "others" is selected */}
+                  {isOthersSelected && othersInput}
                 </div>
                 {showIP && (
                   <div className="ml-6 mt-1 flex items-center gap-2">
