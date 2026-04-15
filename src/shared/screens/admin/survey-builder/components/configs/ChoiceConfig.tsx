@@ -5,6 +5,7 @@ import type { IBuilderQuestion, SupportedBuilderLanguage } from '@/core/types/su
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 import { QuestionType } from '@/core/types/survey.type';
 import { ChevronDown } from 'lucide-react';
+import PipeTokenButton from '../PipeTokenButton';
 
 interface Props {
   question: IBuilderQuestion;
@@ -16,7 +17,7 @@ const slugifyKey = (v: string) =>
   v.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '').slice(0, 30);
 
 const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
-  const { addOption, removeOption, updateOption } = useSurveyBuilderStore();
+  const { addOption, removeOption, updateOption, questions } = useSurveyBuilderStore();
   const options = question.config.options ?? [];
   const [expandedAttrsIdx, setExpandedAttrsIdx] = React.useState<number | null>(null);
   const [sharedAttrsExpanded, setSharedAttrsExpanded] = React.useState(false);
@@ -88,6 +89,7 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
   const toggleOthers = (checked: boolean) => {
     if (checked) {
       useSurveyBuilderStore.getState().setQuestionConfig(qIdx, {
+        // Keep existing order; just append 'others' at the end
         options: [...options, { value: 'others', label: 'Others' }],
       });
     } else {
@@ -199,6 +201,15 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
                       duplicate ? 'border-red-400 bg-red-50' : 'border-gray-300'
                     }`}
                   />
+                  {/* Pipe token button — appends {{N}} to this option's label */}
+                  {lang === 'en' && (
+                    <PipeTokenButton
+                      questions={questions}
+                      currentQuestionIndex={qIdx}
+                      onInsert={(token) => handleLabelChange(optIdx, label + token)}
+                      title="Append a piped answer reference to this option label"
+                    />
+                  )}
                   {/* Per-option attributes toggle — only in per-row mode */}
                   {lang === 'en' && rowOptionsMode === 'per-row' && (
                     <button

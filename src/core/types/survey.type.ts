@@ -297,6 +297,10 @@ export interface RadioButtonProps extends BaseSurveyQuestionProps {
   intensePurchaseLabel?: string;
   intensePurchaseAnswers?: Record<string, boolean>;
   onIntensePurchaseChange?: (answers: Record<string, boolean>) => void;
+  /** Placeholder text for the free-text input that appears when "others" is selected. */
+  othersPlaceholder?: string;
+  /** Called whenever the respondent types in the "others" free-text input. */
+  onOthersTextChange?: (text: string) => void;
 }
 
 export interface CheckboxOption {
@@ -310,6 +314,10 @@ export interface CheckboxProps extends BaseSurveyQuestionProps {
   options: CheckboxOption[];
   selectedValues: string[];
   onValueChange: (values: string[]) => void;
+  /** Placeholder text for the free-text input that appears when "others" is checked. */
+  othersPlaceholder?: string;
+  /** Called whenever the respondent types in the "others" free-text input. */
+  onOthersTextChange?: (text: string) => void;
 }
 
 export interface SingleSliderProps extends BaseSurveyQuestionProps {

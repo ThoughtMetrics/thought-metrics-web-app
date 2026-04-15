@@ -14,10 +14,10 @@
 //   - Preview Survey toggle (enters interactive walkthrough)
 //   - View mode toggle (single card / all questions list)
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { Play, X } from 'lucide-react';
 import { QuestionType } from '@/core/types/survey.type';
-import type { IBuilderShowIfCondition, SupportedBuilderLanguage } from '@/core/types/survey-builder.type';
+import type { IBuilderQuestion, IBuilderShowIfCondition, SupportedBuilderLanguage } from '@/core/types/survey-builder.type';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 import { useSetLanguage } from '@/core/stores/language.store';
 import { BuilderQuestionPreview } from './BuilderQuestionPreview';
@@ -27,6 +27,7 @@ import ScaleConfig from './configs/ScaleConfig';
 import SliderConfig from './configs/SliderConfig';
 import MatrixConfig from './configs/MatrixConfig';
 import FileConfig from './configs/FileConfig';
+import PipeTokenButton from './PipeTokenButton';
 
 // ---------------------------------------------------------------------------
 // Type sets for config routing
@@ -58,6 +59,28 @@ type ViewMode = 'single' | 'list';
 type DeviceView = 'desktop' | 'mobile';
 
 const LANG_LABELS: Record<SupportedBuilderLanguage, string> = { en: 'English', ta: 'Tamil' };
+
+const QUESTION_TYPE_LABEL: Record<string, string> = {
+  [QuestionType.TEXT]:          'Short Text',
+  [QuestionType.TEXTAREA]:      'Long Text',
+  [QuestionType.NUMBER]:        'Number',
+  [QuestionType.EMAIL]:         'Email',
+  [QuestionType.PHONE]:         'Phone',
+  [QuestionType.DATE]:          'Date',
+  [QuestionType.CURRENCY]:      'Currency',
+  [QuestionType.MCQ_SINGLE]:    'Single Choice',
+  [QuestionType.MCQ_MULTIPLE]:  'Multiple Choice',
+  [QuestionType.RANKING]:       'Ranking',
+  [QuestionType.RATING]:        'Star Rating',
+  [QuestionType.LIKERT_SCALE]:  'Likert Scale',
+  [QuestionType.SCALE]:         'Slider Scale',
+  [QuestionType.DOUBLE_SLIDER]: 'Double Slider',
+  [QuestionType.MULTI_SLIDER]:  'Multi Slider',
+  [QuestionType.MATRIX]:        'Matrix',
+  [QuestionType.MAX_DIFF]:      'Max Diff',
+  [QuestionType.CONSTANT_SUM]:  'Constant Sum',
+  [QuestionType.FILE]:          'File Upload',
+};
 
 // ---------------------------------------------------------------------------
 // Toolbar icons
@@ -112,6 +135,89 @@ function isVisible(cfg: Record<string, any>, answers: Record<string, string>): b
 }
 
 // ---------------------------------------------------------------------------
+// Answer-pipe helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Replace {{N}} tokens in text with actual preview answers (or a placeholder).
+ * N is the question's 1-based order number. Runs up to 3 passes to resolve
+ * nested chains (e.g. a resolved answer that itself contains a token).
+ * Answers map is keyed by question ID; we look up Q by order then use its ID.
+ */
+function resolvePipes(
+  text: string,
+  answers: Record<string, string>,
+  questions: IBuilderQuestion[]
+): string {
+  if (!text.includes('{{')) return text;
+  let result = text;
+  for (let pass = 0; pass < 3; pass++) {
+    result = result.replace(/\{\{Q(\d+)\}\}/g, (match, numStr) => {
+      const order = parseInt(numStr, 10);
+      const q = questions.find((q) => q.order === order);
+      if (!q) return match; // unknown order — leave token as-is
+      const answer = answers[q.id];
+      if (answer !== undefined && answer !== '') return answer;
+      return `[Q${order}]`; // unanswered placeholder
+    });
+    if (!result.includes('{{')) break;
+  }
+  return result;
+}
+
+/**
+ * Returns a shallow-cloned question with {{N}} pipe tokens resolved in the
+ * question text AND in all option labels, based on current preview answers.
+ */
+function resolveQuestionForPreview(
+  question: IBuilderQuestion,
+  lang: SupportedBuilderLanguage,
+  answers: Record<string, string>,
+  allQuestions: IBuilderQuestion[]
+): IBuilderQuestion {
+  const t = question.translations[lang];
+  const resolvedText = resolvePipes(t.text, answers, allQuestions);
+
+  // Resolve pipe tokens inside option labels (inline — no separate piped entries)
+  const rawOptions = question.config.options ?? [];
+  const resolvedOptions = rawOptions.map((opt) => ({
+    ...opt,
+    label: resolvePipes(opt.label, answers, allQuestions),
+  }));
+
+  return {
+    ...question,
+    translations: {
+      ...question.translations,
+      [lang]: { ...t, text: resolvedText },
+    },
+    config: { ...question.config, options: resolvedOptions },
+  };
+}
+
+/**
+ * Insert a token string at the current cursor position in a textarea.
+ * Falls back to appending if no selection data is available.
+ */
+function insertTokenAtCursor(
+  textarea: HTMLTextAreaElement,
+  token: string,
+  currentValue: string,
+  onChange: (newValue: string) => void
+): void {
+  const start = textarea.selectionStart ?? currentValue.length;
+  const end = textarea.selectionEnd ?? currentValue.length;
+  const newValue = currentValue.slice(0, start) + token + currentValue.slice(end);
+  onChange(newValue);
+  // Restore focus and move cursor after the inserted token
+  requestAnimationFrame(() => {
+    textarea.focus();
+    const pos = start + token.length;
+    textarea.setSelectionRange(pos, pos);
+  });
+}
+
+// ---------------------------------------------------------------------------
 // QuestionEditorPanel
 // ---------------------------------------------------------------------------
 
@@ -131,6 +237,11 @@ const QuestionEditorPanel: React.FC = () => {
 
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [deviceView, setDeviceView] = useState<DeviceView>('desktop');
+
+  // Refs for textarea cursor-based pipe insertion (single-question editor)
+  const singleTextareaRef = useRef<HTMLTextAreaElement>(null);
+  // Refs for list-view textarea cursor insertion (keyed by question index)
+  const listTextareaRefs = useRef<Record<number, HTMLTextAreaElement | null>>({});
 
   // Preview mode state
   const [showPreview, setShowPreview] = useState(false);
@@ -309,7 +420,12 @@ const QuestionEditorPanel: React.FC = () => {
                 </p>
               </div>
               {displayIndices.map((qIdx, displayIdx) => {
-                const question = questions[qIdx];
+                const question = resolveQuestionForPreview(
+                  questions[qIdx],
+                  activeLanguage,
+                  previewAnswers,
+                  questions
+                );
                 return (
                   <div key={question.id} className="p-4 md:p-6 border border-custom-grey-2 bg-white rounded-xl">
                     <BuilderQuestionPreview
@@ -364,7 +480,12 @@ const QuestionEditorPanel: React.FC = () => {
 
       const safeIdx = Math.min(previewNavIdx, visiblePreviewIndices.length - 1);
       const qIdx = visiblePreviewIndices[safeIdx];
-      const question = questions[qIdx];
+      const question = resolveQuestionForPreview(
+        questions[qIdx],
+        activeLanguage,
+        previewAnswers,
+        questions
+      );
       const isFirst = safeIdx === 0;
       const isLast = safeIdx === visiblePreviewIndices.length - 1;
 
@@ -426,19 +547,16 @@ const QuestionEditorPanel: React.FC = () => {
                 isSelected ? 'border-primary ring-1 ring-primary/30' : 'border-gray-200 hover:border-gray-300'
               }`}
             >
-              {/* Card header */}
-              <div className="flex items-center gap-2 px-4 py-2.5 border-b border-gray-100">
-                <span className="text-xs font-semibold text-gray-400">Q{question.order}</span>
-                <span className="text-xs px-1.5 py-0.5 rounded font-medium bg-gray-100 text-gray-600">
-                  {question.questionType}
-                </span>
-                {hasCondition && (
-                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">IF</span>
-                )}
-              </div>
-              {/* Editable question text */}
-              <div className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+              {/* Single row: Q-number | textarea | pipe button | type selector */}
+              <div className="flex items-center gap-2 px-4 py-2.5" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  <span className="text-xs font-semibold text-gray-400">Q{question.order}</span>
+                  {hasCondition && (
+                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">IF</span>
+                  )}
+                </div>
                 <textarea
+                  ref={(el) => { listTextareaRefs.current[qIdx] = el; }}
                   value={t.text}
                   onChange={(e) => {
                     setQuestionTranslation(qIdx, activeLanguage, { text: e.target.value });
@@ -448,9 +566,56 @@ const QuestionEditorPanel: React.FC = () => {
                   }}
                   onFocus={() => selectQuestion(qIdx)}
                   placeholder="Enter question text..."
-                  rows={2}
-                  className="w-full text-sm text-gray-800 placeholder-gray-400 resize-none focus:outline-none bg-transparent"
+                  rows={1}
+                  className="flex-1 text-sm text-gray-800 placeholder-gray-400 resize-none focus:outline-none bg-transparent leading-snug py-0.5"
                 />
+                <PipeTokenButton
+                  questions={questions}
+                  currentQuestionIndex={qIdx}
+                  onInsert={(token) => {
+                    const el = listTextareaRefs.current[qIdx];
+                    if (el) {
+                      insertTokenAtCursor(el, token, t.text, (newVal) => {
+                        setQuestionTranslation(qIdx, activeLanguage, { text: newVal });
+                        if (activeLanguage === 'en') setQuestionField(qIdx, 'text', newVal);
+                      });
+                    }
+                  }}
+                />
+                <select
+                  value={question.questionType}
+                  onChange={(e) => changeQuestionType(qIdx, e.target.value as QuestionType)}
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex-shrink-0 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white text-gray-600"
+                >
+                  <optgroup label="Text">
+                    <option value={QuestionType.TEXT}>Short Text</option>
+                    <option value={QuestionType.TEXTAREA}>Long Text</option>
+                    <option value={QuestionType.NUMBER}>Number</option>
+                    <option value={QuestionType.EMAIL}>Email</option>
+                    <option value={QuestionType.PHONE}>Phone</option>
+                    <option value={QuestionType.DATE}>Date</option>
+                    <option value={QuestionType.CURRENCY}>Currency</option>
+                  </optgroup>
+                  <optgroup label="Choice">
+                    <option value={QuestionType.MCQ_SINGLE}>Single Choice (MCQ)</option>
+                    <option value={QuestionType.MCQ_MULTIPLE}>Multiple Choice</option>
+                    <option value={QuestionType.RANKING}>Ranking</option>
+                  </optgroup>
+                  <optgroup label="Scale">
+                    <option value={QuestionType.RATING}>Star Rating</option>
+                    <option value={QuestionType.LIKERT_SCALE}>Likert Scale</option>
+                    <option value={QuestionType.SCALE}>Slider Scale</option>
+                    <option value={QuestionType.DOUBLE_SLIDER}>Double Slider</option>
+                    <option value={QuestionType.MULTI_SLIDER}>Multi Slider</option>
+                  </optgroup>
+                  <optgroup label="Grid">
+                    <option value={QuestionType.MATRIX}>Matrix</option>
+                    <option value={QuestionType.MAX_DIFF}>Max Diff</option>
+                    <option value={QuestionType.CONSTANT_SUM}>Constant Sum</option>
+                    <option value={QuestionType.FILE}>File Upload</option>
+                  </optgroup>
+                </select>
               </div>
 
               {/* Type-specific config — shown inline when card is selected */}
@@ -526,21 +691,29 @@ const QuestionEditorPanel: React.FC = () => {
 
       {/* ── Editable question card ── */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        {/* Card header: language tabs (left) + question type select (right) */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50/50">
-          {/* Language tabs */}
-          <div className="flex gap-1">
-            {(['en', 'ta'] as SupportedBuilderLanguage[]).map((l) => (
-              <button
-                key={l}
-                onClick={() => { setActiveLanguage(l); setGlobalLanguage(l as 'en' | 'ta'); }}
-                className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
-                  lang === l ? 'bg-primary text-white' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                }`}
-              >
-                {LANG_LABELS[l]}
-              </button>
-            ))}
+        {/* Card header: Q-number + pipe button (left) | type select (right) */}
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-gray-50/50">
+          <div className="flex items-center gap-2">
+            <div>
+              <span className="text-xs font-semibold text-gray-400">Q{question.order}</span>
+              <span className="block text-[10px] text-gray-400 mt-0.5 leading-none">
+                {QUESTION_TYPE_LABEL[question.questionType] ?? question.questionType}
+              </span>
+            </div>
+            <PipeTokenButton
+              questions={questions}
+              currentQuestionIndex={selectedQuestionIndex}
+              onInsert={(token) => {
+                const el = singleTextareaRef.current;
+                if (el) {
+                  insertTokenAtCursor(el, token, t.text, (newVal) => {
+                    setQuestionTranslation(selectedQuestionIndex, lang, { text: newVal });
+                    if (lang === 'en') setQuestionField(selectedQuestionIndex, 'text', newVal);
+                  });
+                }
+              }}
+              title="Insert answer from a previous question into this text"
+            />
           </div>
 
           {/* Question type select */}
@@ -581,23 +754,34 @@ const QuestionEditorPanel: React.FC = () => {
 
         {/* Question text */}
         <div className="p-4 space-y-4">
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1.5">
-              Question Text ({lang.toUpperCase()})
-            </label>
-            <textarea
-              value={t.text}
-              onChange={(e) => {
-                setQuestionTranslation(selectedQuestionIndex, lang, { text: e.target.value });
-                if (lang === 'en') {
-                  setQuestionField(selectedQuestionIndex, 'text', e.target.value);
-                }
-              }}
-              placeholder="Enter question text..."
-              rows={2}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-            />
+          {/* Language tabs */}
+          <div className="flex gap-1">
+            {(['en', 'ta'] as SupportedBuilderLanguage[]).map((l) => (
+              <button
+                key={l}
+                onClick={() => { setActiveLanguage(l); setGlobalLanguage(l as 'en' | 'ta'); }}
+                className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                  lang === l ? 'bg-primary text-white' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                }`}
+              >
+                {LANG_LABELS[l]}
+              </button>
+            ))}
           </div>
+
+          <textarea
+            ref={singleTextareaRef}
+            value={t.text}
+            onChange={(e) => {
+              setQuestionTranslation(selectedQuestionIndex, lang, { text: e.target.value });
+              if (lang === 'en') {
+                setQuestionField(selectedQuestionIndex, 'text', e.target.value);
+              }
+            }}
+            placeholder="Enter question text..."
+            rows={2}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+          />
 
           {/* Type-specific config */}
           {renderTypeConfig(selectedQuestionIndex)}

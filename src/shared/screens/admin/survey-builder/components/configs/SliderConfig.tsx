@@ -4,6 +4,7 @@ import React from 'react';
 import { QuestionType } from '@/core/types/survey.type';
 import type { IBuilderQuestion } from '@/core/types/survey-builder.type';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
+import PipeTokenButton from '../PipeTokenButton';
 
 interface Props {
   question: IBuilderQuestion;
@@ -11,7 +12,7 @@ interface Props {
 }
 
 const SliderConfig: React.FC<Props> = ({ question, qIdx }) => {
-  const { setQuestionConfig } = useSurveyBuilderStore();
+  const { setQuestionConfig, questions } = useSurveyBuilderStore();
   const { config, questionType } = question;
 
   if (questionType === QuestionType.MULTI_SLIDER) {
@@ -57,6 +58,15 @@ const SliderConfig: React.FC<Props> = ({ question, qIdx }) => {
                   }}
                   placeholder="Label"
                   className="flex-1 border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+                <PipeTokenButton
+                  questions={questions}
+                  currentQuestionIndex={qIdx}
+                  onInsert={(token) => {
+                    const next = [...sliders];
+                    next[i] = { ...next[i], label: next[i].label + token };
+                    setQuestionConfig(qIdx, { sliders: next });
+                  }}
                 />
                 <button
                   onClick={() => {

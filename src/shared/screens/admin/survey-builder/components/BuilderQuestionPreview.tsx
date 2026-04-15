@@ -265,6 +265,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
               if (!interactive) return;
               setIntensePurchaseAnswers(vals);
             }}
+            othersPlaceholder={config.othersPlaceholder}
           />
         );
       }
@@ -281,6 +282,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
               setSelectedValues(vals);
               onAnswerChange?.(vals.join(','));
             }}
+            othersPlaceholder={config.othersPlaceholder}
           />
         );
 

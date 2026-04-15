@@ -6,6 +6,7 @@ import type { IBuilderQuestion, IBuilderQuestionOption } from '@/core/types/surv
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 import { ChevronDown } from 'lucide-react';
 import { RowColumnEditor } from './RowColumnEditor';
+import PipeTokenButton from '../PipeTokenButton';
 
 interface Props {
   question: IBuilderQuestion;
@@ -22,7 +23,9 @@ const ItemList: React.FC<{
   renderAfter?: (item: IBuilderQuestionOption, index: number) => React.ReactNode;
   showIntensePurchasePer?: boolean;
   onIntensePurchaseToggle?: (i: number, val: boolean) => void;
-}> = ({ label, items, onAdd, onRemove, onChange, onAttributeChange, renderAfter, showIntensePurchasePer, onIntensePurchaseToggle }) => {
+  /** When provided, pipe buttons are shown next to each label input */
+  pipeContext?: { questions: IBuilderQuestion[]; qIdx: number };
+}> = ({ label, items, onAdd, onRemove, onChange, onAttributeChange, renderAfter, showIntensePurchasePer, onIntensePurchaseToggle, pipeContext }) => {
   const [expandedAttrsIdx, setExpandedAttrsIdx] = React.useState<number | null>(null);
 
   return (
@@ -51,6 +54,13 @@ const ItemList: React.FC<{
                 placeholder="Label"
                 className="flex-1 border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
               />
+              {pipeContext && (
+                <PipeTokenButton
+                  questions={pipeContext.questions}
+                  currentQuestionIndex={pipeContext.qIdx}
+                  onInsert={(token) => onChange(i, 'label', item.label + token)}
+                />
+              )}
               {onAttributeChange && (
                 <button
                   type="button"
@@ -152,7 +162,7 @@ const ItemList: React.FC<{
 };
 
 const MatrixConfig: React.FC<Props> = ({ question, qIdx }) => {
-  const { setQuestionConfig } = useSurveyBuilderStore();
+  const { setQuestionConfig, questions } = useSurveyBuilderStore();
   const { config, questionType } = question;
   const [sharedAttrsExpanded, setSharedAttrsExpanded] = React.useState(false);
 
@@ -260,6 +270,15 @@ const MatrixConfig: React.FC<Props> = ({ question, qIdx }) => {
                   placeholder="Label"
                   className="flex-1 border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
                 />
+                <PipeTokenButton
+                  questions={questions}
+                  currentQuestionIndex={qIdx}
+                  onInsert={(token) => {
+                    const next = [...rows];
+                    next[i] = { ...next[i], label: next[i].label + token };
+                    setQuestionConfig(qIdx, { rows: next });
+                  }}
+                />
                 <button
                   onClick={() => {
                     const next = rows.filter((_, idx) => idx !== i);
@@ -313,6 +332,7 @@ const MatrixConfig: React.FC<Props> = ({ question, qIdx }) => {
               next[i] = { ...next[i], isIntensePurchase: val };
               setQuestionConfig(qIdx, { columns: next });
             }}
+            pipeContext={{ questions, qIdx }}
           />
         )}
 
@@ -439,6 +459,7 @@ const MatrixConfig: React.FC<Props> = ({ question, qIdx }) => {
             next[i] = { ...next[i], attributes: attrs };
             setQuestionConfig(qIdx, { options: next });
           } : undefined}
+          pipeContext={{ questions, qIdx }}
         />
 
         {/* ── Shared additional fields (when mode === 'shared') ── */}
@@ -633,6 +654,7 @@ const MatrixConfig: React.FC<Props> = ({ question, qIdx }) => {
             next[i] = { ...next[i], attributes: attrs };
             setQuestionConfig(qIdx, { options: next });
           } : undefined}
+          pipeContext={{ questions, qIdx }}
         />
 
         {/* ── Shared additional fields (when optionsMode === 'shared') ── */}

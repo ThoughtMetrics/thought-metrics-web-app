@@ -4,6 +4,7 @@ import React from 'react';
 import { QuestionType } from '@/core/types/survey.type';
 import type { IBuilderQuestion, SupportedBuilderLanguage } from '@/core/types/survey-builder.type';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
+import PipeTokenButton from '../PipeTokenButton';
 
 interface Props {
   question: IBuilderQuestion;
@@ -12,7 +13,7 @@ interface Props {
 }
 
 const ScaleConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
-  const { setQuestionConfig } = useSurveyBuilderStore();
+  const { setQuestionConfig, questions } = useSurveyBuilderStore();
   const { config, questionType } = question;
 
   if (questionType === QuestionType.RATING) {
@@ -66,7 +67,14 @@ const ScaleConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">Min Label ({lang})</label>
+          <div className="flex items-center justify-between mb-1">
+            <label className="text-xs font-medium text-gray-700">Min Label ({lang})</label>
+            <PipeTokenButton
+              questions={questions}
+              currentQuestionIndex={qIdx}
+              onInsert={(token) => setQuestionConfig(qIdx, { minLabel: (config.minLabel ?? '') + token })}
+            />
+          </div>
           <input
             type="text"
             value={config.minLabel ?? ''}
@@ -76,7 +84,14 @@ const ScaleConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">Max Label ({lang})</label>
+          <div className="flex items-center justify-between mb-1">
+            <label className="text-xs font-medium text-gray-700">Max Label ({lang})</label>
+            <PipeTokenButton
+              questions={questions}
+              currentQuestionIndex={qIdx}
+              onInsert={(token) => setQuestionConfig(qIdx, { maxLabel: (config.maxLabel ?? '') + token })}
+            />
+          </div>
           <input
             type="text"
             value={config.maxLabel ?? ''}

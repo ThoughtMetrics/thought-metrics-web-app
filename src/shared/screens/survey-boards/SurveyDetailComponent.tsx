@@ -1104,7 +1104,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
               // Clear child answers whose optionFilter depends on this question
               const newAnswers = {
                 ...answers,
-                [qIdx]: { ...currentAnswer, value },
+                [qIdx]: { ...currentAnswer, value, ...(value !== 'others' ? { othersText: undefined } : {}) },
               };
               questions.forEach((q: any, i: number) => {
                 if (q.config?.optionFilter?.questionId === qData.id) {
@@ -1112,9 +1112,17 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
                 }
               });
               if (isListMode) {
-                handleAnswerChangeForIndex(qIdx, { ...currentAnswer, value });
+                handleAnswerChangeForIndex(qIdx, { ...currentAnswer, value, ...(value !== 'others' ? { othersText: undefined } : {}) });
               } else {
-                onChange({ ...currentAnswer, value });
+                onChange({ ...currentAnswer, value, ...(value !== 'others' ? { othersText: undefined } : {}) });
+              }
+            }}
+            othersPlaceholder={config.othersPlaceholder}
+            onOthersTextChange={(text) => {
+              if (isListMode) {
+                handleAnswerChangeForIndex(qIdx, { ...currentAnswer, othersText: text });
+              } else {
+                onChange({ ...currentAnswer, othersText: text });
               }
             }}
           />
@@ -1138,7 +1146,13 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             {...commonProps}
             options={mcqMultipleOptions as CheckboxOption[]}
             selectedValues={currentAnswer?.values || []}
-            onValueChange={(values) => onChange({ ...currentAnswer, values })}
+            onValueChange={(values) => onChange({
+              ...currentAnswer,
+              values,
+              ...(!values.includes('others') ? { othersText: undefined } : {}),
+            })}
+            othersPlaceholder={config.othersPlaceholder}
+            onOthersTextChange={(text) => onChange({ ...currentAnswer, othersText: text })}
           />
         );
       }
