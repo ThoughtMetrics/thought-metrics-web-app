@@ -1,12 +1,12 @@
 // src/shared/ui/atoms/survey-questions/SurveyQuestionWrapper.tsx
-import React from 'react';
+import React, { useContext } from 'react';
 import { useLanguage } from '@/core/hooks/use-language';
 import { LanguageToggle } from '@/shared/ui/molecules/language-toggle';
 import { SurveyLayoutContext } from '@/shared/screens/survey-boards/survey-layout-context';
 
 /** Compact two-button layout switcher rendered in the paginated survey header. */
 const LayoutToggle: React.FC = () => {
-  const { layout, setLayout } = React.useContext(SurveyLayoutContext);
+  const { layout, setLayout } = useContext(SurveyLayoutContext);
   return (
     <div className="flex items-center bg-custom-grey-1 rounded-lg p-0.5 gap-0.5">
       <button
@@ -93,7 +93,7 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
   listMode = false,
 }) => {
   const { translations } = useLanguage();
-  const { layout } = React.useContext(SurveyLayoutContext);
+  const { layout } = useContext(SurveyLayoutContext);
   const isListMode = listMode || layout === 'list';
 
   // ── List-mode: simplified card (no header, nav, progress) ──────────────────

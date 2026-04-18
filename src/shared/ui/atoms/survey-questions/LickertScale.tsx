@@ -88,23 +88,7 @@ export const LickertScale: React.FC<LickertScaleProps> = ({
           </div>
         )}
 
-        {/* Feedback Section */}
-        {description && (
-          <div className="mt-6">
-            <label
-              htmlFor="feedback"
-              className="block text-base md:text-lg text-black mb-3"
-            >
-              {description}
-            </label>
-            <textarea
-              id="feedback"
-              className="w-full px-3 py-2 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors resize-vertical border-custom-grey-2 focus:border-primary"
-              rows={4}
-              placeholder=""
-            />
-          </div>
-        )}
+
       </div>
     </SurveyQuestionWrapper>
   );
