@@ -8,6 +8,8 @@ import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import surveyImportService from '@/services/api/survey-import.service';
 import type { ImportSurvey, ColumnPreview, ImportJobStatus } from '@/services/api/survey-import.service';
 import { ROUTES } from '@/routes/routeConfig';
+import { SurveyAnalyticsDetailPanel } from '../survey-analytics-dashboard';
+import type { ISurvey } from '@/core/types/survey.type';
 
 // ── System field labels for the column override dropdown ──────────────────
 const SYSTEM_FIELD_OPTIONS: { value: string; label: string }[] = [
@@ -53,6 +55,7 @@ function SurveyImportManagementContent() {
   const [surveys, setSurveys] = useState<ImportSurvey[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedSurvey, setSelectedSurvey] = useState<ImportSurvey | null>(null);
 
   // Wizard modal
   const [wizardOpen, setWizardOpen] = useState(false);
@@ -259,10 +262,10 @@ function SurveyImportManagementContent() {
 
   // ── Render ──────────────────────────────────────────────────────────────
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="h-full flex bg-gray-50">
       <AdminSidebar />
 
-      <div className="flex-1 p-6 overflow-auto">
+      <div className="h-full overflow-y-auto flex-1 p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -281,7 +284,7 @@ function SurveyImportManagementContent() {
         </div>
 
         {/* Surveys table */}
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-200">
           {loading ? (
             <div className="flex justify-center py-12">
               <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -294,32 +297,36 @@ function SurveyImportManagementContent() {
               <p className="text-sm text-gray-400">No import surveys yet. Click "Import New Survey" to get started.</p>
             </div>
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-100 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wide">
-                  <th className="px-4 py-3 text-left">Survey Name</th>
-                  <th className="px-4 py-3 text-left">Survey ID</th>
-                  <th className="px-4 py-3 text-right">Responses</th>
-                  <th className="px-4 py-3 text-left">Created</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {surveys.map((s) => (
-                  <tr key={s.surveyId} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 font-medium text-gray-800">{s.label}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{s.surveyId}</td>
-                    <td className="px-4 py-3 text-right text-gray-700">{(s.currentResponses ?? 0).toLocaleString()}</td>
-                    <td className="px-4 py-3 text-gray-500">{formatDate(s.createdAt)}</td>
-                    <td className="px-4 py-3">
+            <div className="text-sm">
+              {/* Header row */}
+              <div className="grid grid-cols-[1fr_180px_90px_110px_210px] border-b border-gray-100 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wide">
+                <div className="px-4 py-3">Survey Name</div>
+                <div className="px-4 py-3">Survey ID</div>
+                <div className="px-4 py-3 text-right">Responses</div>
+                <div className="px-4 py-3">Created</div>
+                <div className="px-4 py-3 text-right">Actions</div>
+              </div>
+              {/* Survey rows — each row owns its own analytics panel so it expands inline */}
+              {surveys.map((s) => (
+                <div key={s.surveyId} className="border-b border-gray-50 last:border-0">
+                  <div className="grid grid-cols-[1fr_180px_90px_110px_210px] hover:bg-gray-50 transition-colors">
+                    <div className="px-4 py-3 font-medium text-gray-800 truncate">{s.label}</div>
+                    <div className="px-4 py-3 font-mono text-xs text-gray-500 truncate">{s.surveyId}</div>
+                    <div className="px-4 py-3 text-right text-gray-700">{(s.currentResponses ?? 0).toLocaleString()}</div>
+                    <div className="px-4 py-3 text-gray-500">{formatDate(s.createdAt)}</div>
+                    <div className="px-4 py-3">
                       <div className="flex items-center justify-end gap-2">
-                        <a
-                          href={`/admin/survey-analytics?surveyId=${s.surveyId}`}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary border border-primary/30 rounded-lg hover:bg-primary/5 transition-colors"
+                        <button
+                          onClick={() => setSelectedSurvey((prev) => prev?.id === s.id ? null : s)}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border rounded-lg transition-colors ${
+                            selectedSurvey?.id === s.id
+                              ? 'bg-primary/10 text-primary border-primary/40'
+                              : 'text-primary border-primary/30 hover:bg-primary/5'
+                          }`}
                         >
                           <BarChart2 className="w-3.5 h-3.5" />
-                          Analytics
-                        </a>
+                          {selectedSurvey?.id === s.id ? 'Hide' : 'Analytics'}
+                        </button>
                         <button
                           onClick={() => void openImportMore(s)}
                           className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
@@ -328,11 +335,30 @@ function SurveyImportManagementContent() {
                           Import More
                         </button>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                  </div>
+                  {selectedSurvey?.id === s.id && (
+                    <div className="border-t border-blue-100 bg-blue-50/30 px-6 py-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-sm font-semibold text-gray-800">
+                          {s.label} — Analytics
+                        </h3>
+                        <button
+                          onClick={() => setSelectedSurvey(null)}
+                          className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <SurveyAnalyticsDetailPanel
+                        survey={selectedSurvey as unknown as ISurvey}
+                        onDownload={() => {}}
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>

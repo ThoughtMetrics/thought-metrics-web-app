@@ -33,7 +33,7 @@ import {
 import { COUNTRY_CODES } from '@/core/constants/country-codes';
 import { FileUpload } from '@/shared/ui/atoms/survey-questions/FileUpload';
 import { QueryClientProvider } from '@tanstack/react-query';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef, useContext } from 'react';
 import { useLanguage } from '@/core/hooks/use-language';
 import { useProfileQuery } from '@/core/hooks/queries/use-profile.query';
 import zoneService from '@/services/api/zone.service';
@@ -41,7 +41,7 @@ import { LanguageToggle } from '@/shared/ui/molecules/language-toggle';
 
 /** Two-button toggle that switches between paginated and list layouts. */
 const LayoutToggle: React.FC = () => {
-  const { layout, setLayout } = React.useContext(SurveyLayoutContext);
+  const { layout, setLayout } = useContext(SurveyLayoutContext);
   return (
     <div className="flex items-center bg-custom-grey-1 rounded-lg p-0.5 gap-0.5">
       <button
@@ -122,11 +122,12 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     {}
   );
   const [listErrors, setListErrors] = useState<Record<number, string>>({});
+  const [activeQuestion, setActiveQuestion] = useState<number | null>(null);
   // null = no user override; derives from server data after load
   const [layoutOverride, setLayoutOverride] = useState<SurveyFormLayout | null>(
     null
   );
-  const prevParentValues = React.useRef<Record<string, string>>({});
+  const prevParentValues = useRef<Record<string, string>>({});
 
   const { data: surveyData, isLoading } = useSurveyDetailsQuery(surveyId);
   const { data: userProfile } = useProfileQuery();
@@ -135,7 +136,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   const { translations, language } = useLanguage();
 
   // Map questionId → array index for cascade resolution
-  const questionIdToIndex = React.useMemo(() => {
+  const questionIdToIndex = useMemo(() => {
     const map: Record<string, number> = {};
     (surveyData?.data?.template?.questions || []).forEach((q, idx) => {
       map[q.id] = idx;
@@ -145,7 +146,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
 
   // Indices of questions that are currently visible, evaluated against current answers.
   // Supports showIf (single condition), showIfAll (AND logic), and showIfAny (OR logic).
-  const visibleIndices = React.useMemo(() => {
+  const visibleIndices = useMemo(() => {
     const allQs = surveyData?.data?.template?.questions || [];
     const evalCond = (cond: any): boolean => {
       if (!cond.questionId) return true;   // empty questionId → no real condition, always visible
@@ -191,7 +192,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
 
   // Returns filtered options for MCQ questions that have an optionFilter config.
   // If the parent answer has no mapping defined, all options are returned unchanged.
-  const getFilteredOptions = React.useCallback(
+  const getFilteredOptions = useCallback(
     (
       qIdx: number,
       rawOptions: Array<{ id?: string; value?: string; label: string }>
@@ -237,7 +238,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   };
 
   // Load draft on mount if exists - MUST be before any early returns
-  React.useEffect(() => {
+  useEffect(() => {
     if (surveyData?.data && !isDraftLoaded) {
       const totalQuestions = surveyData.data.template.questions.length;
 
@@ -274,7 +275,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   // Auto-populate questions from user profile (e.g., Zone/AC from zonalInfo)
   // Runs after draft is loaded to avoid overwriting saved draft answers.
   // Re-runs on language change so displayLabel updates to the new language.
-  React.useEffect(() => {
+  useEffect(() => {
     if (!surveyData?.data || !userProfile || !isDraftLoaded) return;
     const qs = surveyData.data.template.questions;
 
@@ -336,7 +337,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   }, [surveyData, userProfile, isDraftLoaded, language]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Cascade loading: fetch dependent options when parent answer or language changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (!surveyData?.data) return;
     const qs = surveyData.data.template.questions;
 
@@ -406,7 +407,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   }, [answers, surveyData, questionIdToIndex, language]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Set navigation lock if user arrived via tracking link
-  React.useEffect(() => {
+  useEffect(() => {
     const tmLinkId = localStorage.getItem('tm_link_id');
     if (tmLinkId && surveyId) {
       localStorage.setItem(
@@ -421,7 +422,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   }, [surveyId]);
 
   // Clear lock if survey is already completed (don't trap user)
-  React.useEffect(() => {
+  useEffect(() => {
     if (surveyData?.data?.userResponse?.isCompleted) {
       localStorage.removeItem('tm_survey_lock');
       localStorage.removeItem('tm_link_id');
@@ -429,7 +430,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   }, [surveyData]);
 
   // Validate any question by index — used for both paginated and list mode
-  const isQuestionValid = React.useCallback(
+  const isQuestionValid = useCallback(
     (index: number): boolean => {
       if (!isQuestionVisible(index)) return true;
 
@@ -581,7 +582,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   ); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Backward-compat alias for paginated navigation
-  const isCurrentQuestionValid = React.useCallback(
+  const isCurrentQuestionValid = useCallback(
     () => isQuestionValid(currentQuestion),
     [isQuestionValid, currentQuestion]
   );
@@ -685,12 +686,45 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   const isLastQuestion =
     visibleIndices[visibleIndices.length - 1] === currentQuestion;
 
+  // Replace {{QN}} tokens with the respondent's live answer for question order N
+  const resolveTokens = (text: string): string => {
+    if (!text || !text.includes('{{')) return text;
+    let resolved = text;
+    for (let pass = 0; pass < 3; pass++) {
+      resolved = resolved.replace(/\{\{Q(\d+)\}\}/gi, (_, numStr) => {
+        const order = parseInt(numStr, 10);
+        const qIdx = questions.findIndex((q: any) => q.order === order);
+        if (qIdx === -1) return '';
+        const ans = answers[qIdx];
+        if (!ans) return '';
+        if (typeof ans.value === 'string' || typeof ans.value === 'number') return String(ans.value);
+        if (ans.stars != null) return String(ans.stars);
+        if (Array.isArray(ans.values)) {
+          const q = questions[qIdx];
+          const opts: any[] =
+            (q.translations?.[language]?.options as any[]) ||
+            (q.translations?.en?.options as any[]) ||
+            q.config?.options ||
+            [];
+          return (ans.values as string[])
+            .map((v) => opts.find((o: any) => o.value === v)?.label ?? v)
+            .join(', ');
+        }
+        return '';
+      });
+      if (!resolved.includes('{{')) break;
+    }
+    return resolved;
+  };
+
   // Return translated question text with English fallback
   const getQuestionText = (q: any): string =>
-    q.translations?.[language]?.text ||
-    q.translations?.en?.text ||
-    q.text ||
-    '';
+    resolveTokens(
+      q.translations?.[language]?.text ||
+      q.translations?.en?.text ||
+      q.text ||
+      ''
+    );
 
   const handleNext = () => {
     if (!isCurrentQuestionValid()) return;
@@ -773,6 +807,9 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     setAnswers(newAnswers);
     // Auto-save on every answer change in list mode (mirrors mobile app behaviour)
     handleSaveDraft(newAnswers);
+    // Collapsing is handled by onBlur when focus leaves the card, so all
+    // question types (text, MCQ, sliders, etc.) collapse only when the user
+    // moves to the next question — not immediately on answer change.
   };
 
   // Submit handler for list mode — validates all visible questions first
@@ -790,6 +827,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     if (Object.keys(errors).length > 0) {
       setListErrors(errors);
       if (firstErrorIdx !== null) {
+        setActiveQuestion(firstErrorIdx);
         const el = document.getElementById(`list-q-${firstErrorIdx}`);
         el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
@@ -962,6 +1000,71 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     return visibleQuestionNumber / totalVisibleQuestions;
   };
 
+  // Returns a short human-readable summary of the answer for a given question index.
+  // Used in the collapsed card view in list layout.
+  const getAnswerSummary = (qIdx: number): string => {
+    const qData = questions[qIdx];
+    const answer = answers[qIdx];
+    if (!answer || !qData) return '';
+    const config = qData.config || {};
+
+    switch (qData.questionType) {
+      case QuestionType.MCQ_SINGLE: {
+        if (answer.displayLabel) return answer.displayLabel;
+        const rawOpts = dynamicOptions[qData.id]?.length
+          ? dynamicOptions[qData.id]
+          : (qData.translations?.[language]?.options as any[]) ||
+            (qData.translations?.en?.options as any[]) ||
+            config.options ||
+            [];
+        const matched = rawOpts.find(
+          (o: any) => (o.value ?? o.id) === answer.value
+        );
+        return matched?.label || answer.value || '';
+      }
+      case QuestionType.MCQ_MULTIPLE: {
+        const rawOpts =
+          (qData.translations?.[language]?.options as any[]) ||
+          (qData.translations?.en?.options as any[]) ||
+          config.options ||
+          [];
+        return (answer.values || [])
+          .map(
+            (v: string) =>
+              rawOpts.find((o: any) => (o.value ?? o.id) === v)?.label || v
+          )
+          .join(', ');
+      }
+      case QuestionType.RATING:
+        return `${answer.stars} / ${config.ratingMax || config.maxStars || 5} \u2605`;
+      case QuestionType.LIKERT_SCALE:
+        return `${answer.value} / ${config.max || 10}`;
+      case QuestionType.SCALE:
+        return String(answer.value ?? '');
+      case QuestionType.DOUBLE_SLIDER:
+        return answer.range ? `${answer.range.min} \u2013 ${answer.range.max}` : '';
+      case QuestionType.RANKING:
+        return (answer.rankedItems || [])
+          .slice(0, 3)
+          .join(' > ')
+          .concat((answer.rankedItems?.length ?? 0) > 3 ? '...' : '');
+      case QuestionType.FILE:
+        return answer.file?.fileName || 'File uploaded';
+      case QuestionType.MATRIX:
+        return `${Object.keys(answer.values || {}).length} rows answered`;
+      case QuestionType.MULTI_SLIDER:
+        return `${Object.keys(answer.values || {}).length} values set`;
+      case QuestionType.CONSTANT_SUM:
+        return 'Points allocated';
+      case QuestionType.MAX_DIFF:
+        return `${Object.values(answer.selections || {}).filter((v) => v === 'best' || v === 'worst').length} items selected`;
+      case QuestionType.PHONE:
+        return `${answer.countryCode || ''} ${answer.value || ''}`.trim();
+      default:
+        return String(answer.value ?? '');
+    }
+  };
+
   // Renders a question for either paginated (default) or list mode.
   // In list mode, qIdx targets any visible question; commonProps adapts accordingly.
   const renderQuestion = (
@@ -1062,6 +1165,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           ...opt,
           id: (opt.id ?? opt.value ?? '') as string,
           value: (opt.value ?? opt.id ?? '') as string,
+          label: resolveTokens(opt.label ?? ''),
         }));
         const mcqSingleOptions = getFilteredOptions(qIdx, mappedOptions);
 
@@ -1139,6 +1243,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           ...opt,
           id: (opt.id ?? opt.value ?? '') as string,
           value: (opt.value ?? opt.id ?? '') as string,
+          label: resolveTokens(opt.label ?? ''),
         }));
         const mcqMultipleOptions = getFilteredOptions(qIdx, rawMultiOptions);
         return (
@@ -1232,11 +1337,13 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           ...row,
           id: row.id ?? row.value,
           value: row.value ?? row.id,
+          label: resolveTokens(row.label ?? ''),
         }));
         const matrixColumns = (config.columns || []).map((col: any) => ({
           ...col,
           id: col.id ?? col.value,
           value: col.value ?? col.id,
+          label: resolveTokens(col.label ?? ''),
         }));
         return (
           <MatrixGrid
@@ -1256,6 +1363,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             ...item,
             id: item.id ?? item.value,
             value: item.value ?? item.id,
+            label: resolveTokens(item.label ?? ''),
           })
         );
         return (
@@ -1283,7 +1391,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           [];
         const maxDiffItems = maxDiffItemsSource.map((item: any) => ({
           id: item.id || item.value,
-          label: item.label,
+          label: resolveTokens(item.label ?? ''),
         }));
         return (
           <MaxDiff
@@ -1303,6 +1411,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             ...item,
             id: item.id ?? item.value,
             value: item.value ?? item.id,
+            label: resolveTokens(item.label ?? ''),
           })
         );
         return (
@@ -1557,19 +1666,80 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
                 'calc(max(env(safe-area-inset-bottom, 0px), 100lvh - 100dvh))',
             }}
           >
-            {visibleIndices.map((qIdx) => (
-              <div
-                key={qIdx}
-                id={`list-q-${qIdx}`}
-                className={`p-4 md:p-6 border rounded-xl transition-colors ${
-                  listErrors[qIdx]
-                    ? 'border-primary bg-red-50'
-                    : 'border-custom-grey-2 bg-white'
-                }`}
-              >
-                {renderQuestion(qIdx, true)}
-              </div>
-            ))}
+            {visibleIndices.map((qIdx) => {
+              const currentAnswer = answers[qIdx];
+              const hasAnswer =
+                currentAnswer !== undefined &&
+                currentAnswer !== null &&
+                Object.keys(currentAnswer).some((k) => k !== 'comment');
+              const isCollapsed =
+                hasAnswer && activeQuestion !== qIdx && !listErrors[qIdx];
+              const visPos = visibleIndices.indexOf(qIdx);
+
+              return (
+                <div
+                  key={qIdx}
+                  id={`list-q-${qIdx}`}
+                  className={`border rounded-xl transition-colors ${
+                    listErrors[qIdx]
+                      ? 'border-primary bg-red-50'
+                      : 'border-custom-grey-2 bg-white'
+                  }`}
+                >
+                  {isCollapsed ? (
+                    <div
+                      className="flex items-start gap-3 p-4 md:p-6 cursor-pointer"
+                      onClick={() => setActiveQuestion(qIdx)}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-baseline gap-1.5 flex-wrap mb-1.5">
+                          <span className="text-xs font-semibold text-gray-500 shrink-0">
+                            Q{visPos + 1}
+                          </span>
+                          <span className="text-sm font-semibold text-gray-900 leading-snug">
+                            {getQuestionText(questions[qIdx])}
+                          </span>
+                        </div>
+                        <p className="text-sm text-primary font-medium break-words">
+                          {getAnswerSummary(qIdx)}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveQuestion(qIdx);
+                        }}
+                        className="shrink-0 p-2 rounded-md hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                        title="Edit answer"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                          <path d="m15 5 4 4" />
+                        </svg>
+                      </button>
+                    </div>
+                  ) : (
+                    <div
+                      className="p-4 md:p-6"
+                      onFocus={() => setActiveQuestion(qIdx)}
+                    >
+                      {renderQuestion(qIdx, true)}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
 
             {/* Submit */}
             <div className="flex justify-end pt-4 border-t border-custom-grey-2 md:mb-10">

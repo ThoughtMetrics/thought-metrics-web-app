@@ -1,8 +1,7 @@
 // src/shared/screens/admin/surveys/SurveyManagement.tsx
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, MoreVertical, X } from 'lucide-react';
-import { FaFilePdf, FaFileExcel } from 'react-icons/fa';
+import { Search, MoreVertical, X, FileText, FileSpreadsheet } from 'lucide-react';
 import { toast } from 'sonner';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
@@ -94,7 +93,7 @@ const SurveyManagementContent: React.FC = () => {
   const surveyTotal: number = (data as any)?.total ?? 0;
   const surveyTotalPages = Math.max(1, Math.ceil(surveyTotal / surveyLimit));
 
-  const filteredSurveys = allSurveys;
+  const filteredSurveys = allSurveys.filter((s) => !s.surveyId?.startsWith('TM-IMP-'));
 
   // Close kebab menu on outside click
   useEffect(() => {
@@ -443,14 +442,14 @@ const SurveyManagementContent: React.FC = () => {
                                           title="Download PDF Report"
                                           className="p-1.5 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                                         >
-                                          <FaFilePdf className="w-5 h-5 text-red-600" />
+                                          <FileText className="w-5 h-5 text-red-600" />
                                         </button>
                                         <button
                                           onClick={() => setDownloadSurvey(s)}
                                           title="Download XLSX"
                                           className="p-1.5 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                                         >
-                                          <FaFileExcel className="w-5 h-5 text-green-600" />
+                                          <FileSpreadsheet className="w-5 h-5 text-green-600" />
                                         </button>
                                         <button
                                           onClick={() => setSelectedSurvey(null)}

@@ -20,7 +20,6 @@ import {
   Download,
   Upload,
 } from 'lucide-react';
-import { FaFilePdf, FaFileExcel } from 'react-icons/fa';
 import * as XLSX from 'xlsx';
 import { generateSurveyReportPdf } from './survey-report-pdf';
 import { useAuth } from '@/shared/providers/auth-provider';
