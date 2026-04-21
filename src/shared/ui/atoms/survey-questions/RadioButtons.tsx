@@ -131,7 +131,7 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
                         checked={selectedValue === option.value}
                         onChange={() => {
                           onValueChange(option.value);
-                          if (option.value !== 'others') handleOthersTextChange('');
+                          if (option.value !== 'others') setOthersInputText('');
                         }}
                         className="h-4 w-4 flex-shrink-0 text-primary focus:ring-primary border-custom-grey-2"
                       />
