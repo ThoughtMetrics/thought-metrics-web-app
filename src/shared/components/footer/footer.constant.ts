@@ -110,6 +110,6 @@ export const footerData = {
       ],
     },
   ] as FooterSectionData[],
-  copyright: '© Copyright 2025. All Rights Reserved.',
+  copyright: '© Copyright 2026. All Rights Reserved.',
   backToTopIcon: ArrowUp,
 };
