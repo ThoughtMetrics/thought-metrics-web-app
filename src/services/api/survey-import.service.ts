@@ -50,17 +50,18 @@ class SurveyImportService {
     ApiService.setAuthToken(token);
   }
 
-  async listSurveys(): Promise<ImportSurvey[]> {
+  async listSurveys(type?: string): Promise<ImportSurvey[]> {
     await this.ensureAuth();
-    const res = await ApiService.get<ImportSurvey[]>(`${this.basePath}/surveys`);
+    const query = type ? `?type=${encodeURIComponent(type)}` : '';
+    const res = await ApiService.get<ImportSurvey[]>(`${this.basePath}/surveys${query}`);
     return res.data ?? [];
   }
 
-  async createSurvey(name: string): Promise<{ surveyId: string; templateMongoId: string }> {
+  async createSurvey(name: string, type: string = 'sample'): Promise<{ surveyId: string; templateMongoId: string }> {
     await this.ensureAuth();
     const res = await ApiService.post<{ surveyId: string; templateMongoId: string }>(
       `${this.basePath}/surveys`,
-      { name }
+      { name, type }
     );
     if (!res.data) throw new Error('Failed to create survey');
     return res.data;

@@ -87,6 +87,14 @@ body {
   box-sizing: border-box;
 }
 
+/* Force black text in all form controls — prevents white text under OS dark mode */
+input,
+select,
+textarea {
+  color: #111827;
+  color-scheme: light;
+}
+
 .common-component {
   @apply w-full flex justify-center min-w-7xl;
 }

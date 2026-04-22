@@ -2391,7 +2391,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
 
           return (
             <div>
-              {mapExpanded && (
+              {mapExpanded && locationPoints.length > 0 && (
                 <div className="mb-5">
                   <div className="flex items-center gap-2 mb-3">
                     <MapPin className="w-4 h-4 text-primary" />
@@ -2449,7 +2449,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
 
                 {/* RIGHT — map + responses */}
                 <div className="flex-2 min-w-0 space-y-5">
-                  {!mapExpanded && (
+                  {!mapExpanded && locationPoints.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-3">
                         <MapPin className="w-4 h-4 text-primary" />
@@ -2485,18 +2485,14 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                   )}
 
                   {/* Responses list */}
-                  <div>
+                  {topUsers.length > 0 && <div>
                     <div className="flex items-center gap-2 mb-3">
                       <Users className="w-4 h-4 text-primary" />
                       <h3 className="text-sm font-semibold text-gray-900">
                         Responses ({topUsers.length})
                       </h3>
                     </div>
-                    {topUsers.length === 0 ? (
-                      <p className="text-xs text-gray-500 text-center py-4">
-                        No responses yet
-                      </p>
-                    ) : (
+                    {(
                       <>
                         <div className="relative mb-2">
                           <input
@@ -2598,7 +2594,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                         )}
                       </>
                     )}
-                  </div>
+                  </div>}
                 </div>
               </div>
             </div>
@@ -2750,7 +2746,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
             </div>
           )}
 
-          {mapExpanded && (
+          {mapExpanded && locationPoints.length > 0 && (
             <div className="mb-5">
               <div className="flex items-center gap-2 mb-3">
                 <MapPin className="w-4 h-4 text-primary" />
@@ -2808,7 +2804,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
 
             {/* RIGHT — Analytics sidebar */}
             <div className="flex-[2] min-w-0 space-y-6">
-              {!mapExpanded && (
+              {!mapExpanded && locationPoints.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <MapPin className="w-4 h-4 text-primary" />
@@ -2844,18 +2840,14 @@ export const SurveyAnalyticsDetailPanel: React.FC<
               )}
 
               {/* By Zone */}
-              <div>
+              {visZonal.length > 0 && <div>
                 <div className="flex items-center gap-2 mb-3">
                   <MapPin className="w-4 h-4 text-primary" />
                   <h3 className="text-sm font-semibold text-gray-900">
                     By Zone
                   </h3>
                 </div>
-                {visZonal.length === 0 ? (
-                  <p className="text-xs text-gray-500 text-center py-3">
-                    No zonal data available
-                  </p>
-                ) : (
+                {(
                   <div className="space-y-2">
                     {visZonal.map((stat, index) => {
                       const maxCount = Math.max(
@@ -2884,21 +2876,17 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                     })}
                   </div>
                 )}
-              </div>
+              </div>}
 
               {/* By District — paginated 5 */}
-              <div>
+              {visDistrict.length > 0 && <div>
                 <div className="flex items-center gap-2 mb-3">
                   <MapPin className="w-4 h-4 text-green-600" />
                   <h3 className="text-sm font-semibold text-gray-900">
                     By District
                   </h3>
                 </div>
-                {visDistrict.length === 0 ? (
-                  <p className="text-xs text-gray-500 text-center py-3">
-                    No district data available
-                  </p>
-                ) : (
+                {(
                   (() => {
                     const PAGE_SIZE = 5;
                     const totalPages = Math.ceil(
@@ -2955,7 +2943,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                     );
                   })()
                 )}
-              </div>
+              </div>}
 
               {/* By AC */}
               {visAc.length > 0 && (
@@ -2985,7 +2973,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
               )}
 
               {/* Last 14 Days — paginated 5 */}
-              <div>
+              {visDailyStats.length > 0 && <div>
                 <div className="flex items-center gap-2 mb-3">
                   <Calendar className="w-4 h-4 text-primary" />
                   <h3 className="text-sm font-semibold text-gray-900">
@@ -2997,11 +2985,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                     </span>
                   )}
                 </div>
-                {visDailyStats.length === 0 ? (
-                  <p className="text-xs text-gray-500 text-center py-3">
-                    No daily data available
-                  </p>
-                ) : (
+                {(
                   (() => {
                     const PAGE_SIZE = 5;
                     const totalPages = Math.ceil(visDailyStats.length / PAGE_SIZE);
@@ -3042,10 +3026,10 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                     );
                   })()
                 )}
-              </div>
+              </div>}
 
               {/* Top Contributors — paginated 5 */}
-              <div>
+              {visContributors.length > 0 && <div>
                 <div className="flex items-center gap-2 mb-3">
                   <Users className="w-4 h-4 text-primary" />
                   <h3 className="text-sm font-semibold text-gray-900">
@@ -3057,11 +3041,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                     </span>
                   )}
                 </div>
-                {visContributors.length === 0 ? (
-                  <p className="text-xs text-gray-500 text-center py-3">
-                    No contributor data available
-                  </p>
-                ) : (
+                {(
                   (() => {
                     const PAGE_SIZE = 5;
                     const totalPages = Math.ceil(visContributors.length / PAGE_SIZE);
@@ -3125,7 +3105,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                     );
                   })()
                 )}
-              </div>
+              </div>}
             </div>
           </div>
         </div>
