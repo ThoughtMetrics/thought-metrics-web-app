@@ -21,6 +21,7 @@ export enum SurveyResponseStatus {
 export enum SurveyType {
   RESPONDENT = 'respondent',
   AGENT = 'agent',
+  SAMPLE = 'sample',
 }
 
 export type SurveyFormLayout = 'paginated' | 'list';

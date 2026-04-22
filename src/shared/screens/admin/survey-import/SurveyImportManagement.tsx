@@ -36,6 +36,19 @@ function formatDate(d?: string | null): string {
   return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
+// ── Survey type config ────────────────────────────────────────────────────
+const SURVEY_TYPES = [
+  { value: 'sample',     label: 'Sample',     desc: 'Imported demo / reference dataset' },
+  { value: 'agent',      label: 'Agent',      desc: 'Field agent collected data' },
+  { value: 'respondent', label: 'Respondent', desc: 'Direct respondent submissions' },
+] as const;
+
+const TYPE_BADGE: Record<string, { bg: string; text: string }> = {
+  sample:     { bg: 'bg-amber-50',  text: 'text-amber-700' },
+  agent:      { bg: 'bg-blue-50',   text: 'text-blue-700' },
+  respondent: { bg: 'bg-green-50',  text: 'text-green-700' },
+};
+
 // ── Wizard step types ─────────────────────────────────────────────────────
 type WizardStep = 'name' | 'upload' | 'progress';
 
@@ -44,6 +57,7 @@ interface WizardState {
   surveyId: string;
   templateMongoId: string;
   surveyName: string;
+  surveyType: string;
   preview: ColumnPreview | null;
   columnMap: Record<string, string>;
   jobId: string | null;
@@ -56,6 +70,7 @@ function SurveyImportManagementContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedSurvey, setSelectedSurvey] = useState<ImportSurvey | null>(null);
+  const [typeFilter, setTypeFilter] = useState('');
 
   // Wizard modal
   const [wizardOpen, setWizardOpen] = useState(false);
@@ -64,6 +79,7 @@ function SurveyImportManagementContent() {
     surveyId: '',
     templateMongoId: '',
     surveyName: '',
+    surveyType: 'sample',
     preview: null,
     columnMap: {},
     jobId: null,
@@ -78,7 +94,7 @@ function SurveyImportManagementContent() {
   const loadSurveys = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await surveyImportService.listSurveys();
+      const data = await surveyImportService.listSurveys(typeFilter || undefined);
       setSurveys(data);
       setError(null);
     } catch (e: any) {
@@ -86,7 +102,7 @@ function SurveyImportManagementContent() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [typeFilter]);
 
   useEffect(() => { void loadSurveys(); }, [loadSurveys]);
 
@@ -98,7 +114,7 @@ function SurveyImportManagementContent() {
 
   // ── Open wizard for a new survey ────────────────────────────────────────
   const openNewSurvey = () => {
-    setWizard({ step: 'name', surveyId: '', templateMongoId: '', surveyName: '', preview: null, columnMap: {}, jobId: null, jobStatus: null });
+    setWizard({ step: 'name', surveyId: '', templateMongoId: '', surveyName: '', surveyType: 'sample', preview: null, columnMap: {}, jobId: null, jobStatus: null });
     setWizardOpen(true);
   };
 
@@ -119,6 +135,7 @@ function SurveyImportManagementContent() {
       surveyId: survey.surveyId,
       templateMongoId,
       surveyName: survey.label,
+      surveyType: survey.type ?? 'sample',
       preview: null,
       columnMap: {},
       jobId: null,
@@ -141,7 +158,7 @@ function SurveyImportManagementContent() {
     if (!wizard.surveyName.trim()) { toast.error('Survey name is required'); return; }
     try {
       setNameLoading(true);
-      const result = await surveyImportService.createSurvey(wizard.surveyName.trim());
+      const result = await surveyImportService.createSurvey(wizard.surveyName.trim(), wizard.surveyType);
       setWizard((w) => ({ ...w, surveyId: result.surveyId, templateMongoId: result.templateMongoId, step: 'upload' }));
     } catch (e: any) {
       toast.error(e?.message ?? 'Failed to create survey');
@@ -267,11 +284,11 @@ function SurveyImportManagementContent() {
 
       <div className="h-full overflow-y-auto flex-1 p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-xl font-bold text-gray-800">Survey Import</h1>
             <p className="text-xs text-gray-500 mt-0.5">
-              Import legacy agent-type survey responses from CSV or Excel files.
+              Import survey responses from CSV or Excel files — supports sample, agent, and respondent survey types.
             </p>
           </div>
           <button
@@ -281,6 +298,28 @@ function SurveyImportManagementContent() {
             <Upload className="w-4 h-4" />
             Import New Survey
           </button>
+        </div>
+
+        {/* Type filter tabs */}
+        <div className="flex items-center gap-1 mb-4">
+          {[
+            { label: 'All', value: '' },
+            { label: 'Sample', value: 'sample' },
+            { label: 'Agent', value: 'agent' },
+            { label: 'Respondent', value: 'respondent' },
+          ].map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setTypeFilter(tab.value)}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                typeFilter === tab.value
+                  ? 'bg-primary text-white'
+                  : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
         {/* Surveys table */}
@@ -299,20 +338,28 @@ function SurveyImportManagementContent() {
           ) : (
             <div className="text-sm">
               {/* Header row */}
-              <div className="grid grid-cols-[1fr_180px_90px_110px_210px] border-b border-gray-100 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wide">
+              <div className="grid grid-cols-[1fr_180px_90px_90px_110px_210px] border-b border-gray-100 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wide">
                 <div className="px-4 py-3">Survey Name</div>
                 <div className="px-4 py-3">Survey ID</div>
                 <div className="px-4 py-3 text-right">Responses</div>
+                <div className="px-4 py-3">Type</div>
                 <div className="px-4 py-3">Created</div>
                 <div className="px-4 py-3 text-right">Actions</div>
               </div>
               {/* Survey rows — each row owns its own analytics panel so it expands inline */}
-              {surveys.map((s) => (
+              {surveys.map((s) => {
+                const badgeCls = TYPE_BADGE[s.type ?? ''] ?? { bg: 'bg-gray-50', text: 'text-gray-500' };
+                return (
                 <div key={s.surveyId} className="border-b border-gray-50 last:border-0">
-                  <div className="grid grid-cols-[1fr_180px_90px_110px_210px] hover:bg-gray-50 transition-colors">
+                  <div className="grid grid-cols-[1fr_180px_90px_90px_110px_210px] hover:bg-gray-50 transition-colors">
                     <div className="px-4 py-3 font-medium text-gray-800 truncate">{s.label}</div>
                     <div className="px-4 py-3 font-mono text-xs text-gray-500 truncate">{s.surveyId}</div>
                     <div className="px-4 py-3 text-right text-gray-700">{(s.currentResponses ?? 0).toLocaleString()}</div>
+                    <div className="px-4 py-3">
+                      <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full capitalize ${badgeCls.bg} ${badgeCls.text}`}>
+                        {s.type ?? '—'}
+                      </span>
+                    </div>
                     <div className="px-4 py-3 text-gray-500">{formatDate(s.createdAt)}</div>
                     <div className="px-4 py-3">
                       <div className="flex items-center justify-end gap-2">
@@ -357,7 +404,7 @@ function SurveyImportManagementContent() {
                     </div>
                   )}
                 </div>
-              ))}
+              ); })}
             </div>
           )}
         </div>
@@ -399,7 +446,7 @@ function SurveyImportManagementContent() {
               {wizard.step === 'name' && (
                 <div className="space-y-4">
                   <p className="text-sm text-gray-600">
-                    Give this import dataset a name. You can import additional responses into the same survey later.
+                    Give this import dataset a name and choose its survey type. You can import additional responses into the same survey later.
                   </p>
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1.5">Survey Name</label>
@@ -408,10 +455,24 @@ function SurveyImportManagementContent() {
                       value={wizard.surveyName}
                       onChange={(e) => setWizard((w) => ({ ...w, surveyName: e.target.value }))}
                       placeholder="e.g. Tamil Nadu Field Survey 2024"
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                       onKeyDown={(e) => { if (e.key === 'Enter') void handleCreateSurvey(); }}
                       autoFocus
                     />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Survey Type</label>
+                    <select
+                      value={wizard.surveyType}
+                      onChange={(e) => setWizard((w) => ({ ...w, surveyType: e.target.value }))}
+                      className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white"
+                    >
+                      {SURVEY_TYPES.map((t) => (
+                        <option key={t.value} value={t.value}>
+                          {t.label} — {t.desc}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div className="flex justify-end">
                     <button
