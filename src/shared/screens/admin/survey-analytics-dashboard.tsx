@@ -83,6 +83,23 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
   const [questionCharts, setQuestionCharts] = useState<QuestionChartData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+
+  const handleChartTypeChange = useCallback(async (questionId: string, chartType: string | null) => {
+    if (!selectedSurvey) return;
+    try {
+      await surveyService.updateQuestionChartType(selectedSurvey, questionId, chartType);
+      if (chartType !== null) {
+        setQuestionCharts(prev => prev.map(q =>
+          q.questionId === questionId
+            ? { ...q, chartType: chartType as QuestionChartData['chartType'], chartTypeOverride: chartType }
+            : q
+        ));
+      } else {
+        const res = await surveyService.getQuestionAnalytics(selectedSurvey);
+        if (res.success && Array.isArray(res.data)) setQuestionCharts(res.data);
+      }
+    } catch { /* silent — UI stays as-is on failure */ }
+  }, [selectedSurvey]);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | 'respondent' | 'agent'>(
@@ -1289,6 +1306,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                             <SurveyQuestionCharts
                               questions={questionCharts}
                               isLoading={false}
+                              onChartTypeChange={handleChartTypeChange}
                             />
                           </Suspense>
                         </div>
@@ -1921,6 +1939,23 @@ export const SurveyAnalyticsDetailPanel: React.FC<
   const [responsesSearch, setResponsesSearch] = useState('');
   const [selectedContributor, setSelectedContributor] =
     useState<UserStat | null>(null);
+
+  const handleChartTypeChange = useCallback(async (questionId: string, chartType: string | null) => {
+    if (!survey.surveyId) return;
+    try {
+      await surveyService.updateQuestionChartType(survey.surveyId, questionId, chartType);
+      if (chartType !== null) {
+        setQuestionCharts(prev => prev.map(q =>
+          q.questionId === questionId
+            ? { ...q, chartType: chartType as QuestionChartData['chartType'], chartTypeOverride: chartType }
+            : q
+        ));
+      } else {
+        const res = await surveyService.getQuestionAnalytics(survey.surveyId);
+        if (res.success && Array.isArray(res.data)) setQuestionCharts(res.data);
+      }
+    } catch { /* silent */ }
+  }, [survey.surveyId]);
   const [contributorModalData, setContributorModalData] = useState<{
     response: any;
     questions: any[];
@@ -2443,6 +2478,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                     <SurveyQuestionCharts
                       questions={questionCharts}
                       isLoading={false}
+                      onChartTypeChange={handleChartTypeChange}
                     />
                   </Suspense>
                 </div>
