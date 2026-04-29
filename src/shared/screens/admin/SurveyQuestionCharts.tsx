@@ -519,37 +519,110 @@ function renderChart(q: QuestionChartData): React.ReactNode {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   CARD SHELL
+   CHART TYPE SELECTOR
 ═══════════════════════════════════════════════════════════════════ */
 
-const Card: React.FC<{ q: QuestionChartData }> = ({ q }) => {
-  const sampled = (q as any).sampled as boolean | undefined;
+const ChartTypeSelector: React.FC<{
+  q: QuestionChartData;
+  onChartTypeChange: (questionId: string, chartType: string | null) => void;
+}> = ({ q, onChartTypeChange }) => {
+  const [open, setOpen] = useState(false);
+  const available = q.availableChartTypes ?? [];
+  const hasOverride = !!q.chartTypeOverride;
+
+  if (available.length <= 1) {
+    return (
+      <span className="text-[9px] font-medium text-indigo-500 bg-indigo-50 rounded-full px-2 py-0.5">
+        {CHART_LABEL[q.chartType] ?? q.chartType}
+      </span>
+    );
+  }
+
   return (
-    <div className="flex flex-col border border-gray-100 rounded-xl bg-white overflow-hidden h-full shadow-sm">
-      {/* Header */}
-      <div className="px-3 pt-2.5 pb-2 border-b border-gray-50 flex-shrink-0">
-        <p className="text-[11px] font-semibold text-gray-800 leading-snug line-clamp-2 mb-1.5" title={q.questionText}>
-          {q.questionText}
-        </p>
-        <div className="flex items-center gap-1 flex-wrap">
-          <span className="text-[9px] font-medium text-gray-400 bg-gray-100 rounded-full px-2 py-0.5">
-            {q.totalAnswered.toLocaleString()}/{q.totalResponses.toLocaleString()} answered
-          </span>
-          <span className="text-[9px] font-medium text-indigo-500 bg-indigo-50 rounded-full px-2 py-0.5">
-            {CHART_LABEL[q.chartType] ?? q.chartType}
-          </span>
-          {sampled && (
-            <span className="text-[9px] font-medium text-amber-600 bg-amber-50 rounded-full px-2 py-0.5">sampled</span>
-          )}
-        </div>
-      </div>
-      {/* Chart body */}
-      <div className="p-2 flex-1 min-h-0 flex flex-col">
-        {renderChart(q)}
-      </div>
+    <div className="relative">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="flex items-center gap-1 text-[9px] font-medium text-indigo-500 bg-indigo-50 hover:bg-indigo-100 rounded-full px-2 py-0.5 transition-colors">
+        {CHART_LABEL[q.chartType] ?? q.chartType}
+        {hasOverride && (
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0" title="Manual override active" />
+        )}
+        <svg className="w-2.5 h-2.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {open && (
+        <>
+          {/* Backdrop */}
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute top-full left-0 mt-1 bg-white border border-gray-100 rounded-lg shadow-lg z-20 py-1 min-w-[120px]">
+            {available.map(ct => (
+              <button
+                key={ct}
+                onClick={() => { onChartTypeChange(q.questionId, ct); setOpen(false); }}
+                className={`w-full text-left px-3 py-1.5 text-[10px] hover:bg-gray-50 flex items-center gap-1.5 ${q.chartType === ct ? 'text-indigo-600 font-semibold' : 'text-gray-600'}`}>
+                {q.chartType === ct && (
+                  <svg className="w-2.5 h-2.5 text-indigo-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+                {!(q.chartType === ct) && <span className="w-2.5 flex-shrink-0" />}
+                {CHART_LABEL[ct] ?? ct}
+              </button>
+            ))}
+            {hasOverride && (
+              <>
+                <div className="border-t border-gray-100 my-1 mx-2" />
+                <button
+                  onClick={() => { onChartTypeChange(q.questionId, null); setOpen(false); }}
+                  className="w-full text-left px-3 py-1.5 text-[10px] text-amber-600 hover:bg-amber-50 flex items-center gap-1.5">
+                  <svg className="w-2.5 h-2.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Reset to auto
+                </button>
+              </>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 };
+
+/* ═══════════════════════════════════════════════════════════════════
+   CARD SHELL
+═══════════════════════════════════════════════════════════════════ */
+
+const Card: React.FC<{
+  q: QuestionChartData;
+  onChartTypeChange?: (questionId: string, chartType: string | null) => void;
+}> = ({ q, onChartTypeChange }) => (
+  <div className="flex flex-col border border-gray-100 rounded-xl bg-white overflow-hidden h-full shadow-sm">
+    {/* Header */}
+    <div className="px-3 pt-2.5 pb-2 border-b border-gray-50 flex-shrink-0">
+      <p className="text-[11px] font-semibold text-gray-800 leading-snug line-clamp-2 mb-1.5" title={q.questionText}>
+        {q.questionText}
+      </p>
+      <div className="flex items-center gap-1 flex-wrap">
+        <span className="text-[9px] font-medium text-gray-400 bg-gray-100 rounded-full px-2 py-0.5">
+          {q.totalAnswered.toLocaleString()}/{q.totalResponses.toLocaleString()} answered
+        </span>
+        {onChartTypeChange
+          ? <ChartTypeSelector q={q} onChartTypeChange={onChartTypeChange} />
+          : <span className="text-[9px] font-medium text-indigo-500 bg-indigo-50 rounded-full px-2 py-0.5">{CHART_LABEL[q.chartType] ?? q.chartType}</span>
+        }
+        {q.sampled && (
+          <span className="text-[9px] font-medium text-amber-600 bg-amber-50 rounded-full px-2 py-0.5">sampled</span>
+        )}
+      </div>
+    </div>
+    {/* Chart body */}
+    <div className="p-2 flex-1 min-h-0 flex flex-col">
+      {renderChart(q)}
+    </div>
+  </div>
+);
 
 /* ═══════════════════════════════════════════════════════════════════
    MAIN — paginated bento slider
@@ -560,6 +633,7 @@ const Card: React.FC<{ q: QuestionChartData }> = ({ q }) => {
 interface Props {
   questions: QuestionChartData[];
   isLoading: boolean;
+  onChartTypeChange?: (questionId: string, chartType: string | null) => void;
 }
 
 const GRID: React.CSSProperties = {
@@ -569,7 +643,7 @@ const GRID: React.CSSProperties = {
   gap: '8px',
 };
 
-const SurveyQuestionCharts: React.FC<Props> = ({ questions, isLoading }) => {
+const SurveyQuestionCharts: React.FC<Props> = ({ questions, isLoading, onChartTypeChange }) => {
   const [page, setPage] = useState(0);
 
   /* ── Loading ── */
@@ -657,24 +731,24 @@ const SurveyQuestionCharts: React.FC<Props> = ({ questions, isLoading }) => {
         {/* Row 1 */}
         {row1[0] && (
           <div style={{ gridColumn: `span ${s1}` }}>
-            <Card q={row1[0]} />
+            <Card q={row1[0]} onChartTypeChange={onChartTypeChange} />
           </div>
         )}
         {row1[1] && (
           <div style={{ gridColumn: `span ${s2}` }}>
-            <Card q={row1[1]} />
+            <Card q={row1[1]} onChartTypeChange={onChartTypeChange} />
           </div>
         )}
 
         {/* Row 2 */}
         {row2[0] && (
           <div style={{ gridColumn: `span ${s3}` }}>
-            <Card q={row2[0]} />
+            <Card q={row2[0]} onChartTypeChange={onChartTypeChange} />
           </div>
         )}
         {row2[1] && (
           <div style={{ gridColumn: `span ${s4}` }}>
-            <Card q={row2[1]} />
+            <Card q={row2[1]} onChartTypeChange={onChartTypeChange} />
           </div>
         )}
 

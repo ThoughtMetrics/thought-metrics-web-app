@@ -30,5 +30,8 @@ export interface QuestionChartData {
   totalAnswered: number;
   totalResponses: number;
   chartType: QuestionChartType;
+  availableChartTypes: string[];
+  chartTypeOverride: string | null;
+  sampled?: boolean;
   data: any;
 }

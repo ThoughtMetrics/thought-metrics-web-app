@@ -653,6 +653,21 @@ class SurveyService {
     if (filters?.userIds?.length)   params.userIds   = filters.userIds.join(',');
     return apiService.get(`${this.basePath}/${surveyId}/analytics/questions`, Object.keys(params).length ? params : undefined);
   }
+
+  async updateQuestionChartType(
+    surveyId: string,
+    questionId: string,
+    chartType: string | null,
+  ): Promise<ApiResponse<void>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.patch(
+      `${this.basePath}/${surveyId}/analytics/questions/${questionId}/chart-type`,
+      { chartType },
+    );
+  }
 }
 
 export default new SurveyService();
