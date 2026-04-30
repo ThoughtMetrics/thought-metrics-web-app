@@ -47,6 +47,12 @@ const QUESTION_GROUPS: {
       { type: QuestionType.CONSTANT_SUM, label: 'Constant Sum' },
     ],
   },
+  {
+    label: 'Display',
+    types: [
+      { type: QuestionType.TEXT_DISPLAY, label: 'Text / Graphic Display' },
+    ],
+  },
 ];
 
 const TYPE_BADGE_COLORS: Partial<Record<QuestionType, string>> = {
@@ -69,6 +75,7 @@ const TYPE_BADGE_COLORS: Partial<Record<QuestionType, string>> = {
   [QuestionType.MAX_DIFF]: 'bg-pink-100 text-pink-700',
   [QuestionType.CONSTANT_SUM]: 'bg-pink-100 text-pink-700',
   [QuestionType.FILE]: 'bg-gray-100 text-gray-700',
+  [QuestionType.TEXT_DISPLAY]: 'bg-teal-100 text-teal-700',
 };
 
 const QuestionListPanel: React.FC = () => {

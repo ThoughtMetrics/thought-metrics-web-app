@@ -488,8 +488,14 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         case QuestionType.MCQ_SINGLE:
           return !!answer.value;
 
-        case QuestionType.MCQ_MULTIPLE:
-          return answer.values && answer.values.length > 0;
+        case QuestionType.MCQ_MULTIPLE: {
+          if (!answer.values || answer.values.length === 0) return false;
+          const minSel = qData.config?.minSelections;
+          const maxSel = qData.config?.maxSelections;
+          if (minSel && answer.values.length < minSel) return false;
+          if (maxSel && answer.values.length > maxSel) return false;
+          return true;
+        }
 
         case QuestionType.DOUBLE_SLIDER:
           return (
@@ -573,6 +579,9 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             : 0;
           return totalPoints - totalAllocated === 0;
         }
+
+        case QuestionType.TEXT_DISPLAY:
+          return true;
 
         default:
           return false;
@@ -729,6 +738,40 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   const handleNext = () => {
     if (!isCurrentQuestionValid()) return;
     handleSaveDraft();
+
+    // Evaluate post-skip rules for the current question
+    const currentQ = questions[currentQuestion];
+    const skipRules: any[] = currentQ?.config?.skipRules ?? [];
+    for (const rule of skipRules) {
+      if (rule.timing !== 'post') continue;
+      const conds: any[] = rule.conditions ?? [];
+      const mode = rule.conditionMode ?? 'and';
+      const evalCond = (c: any): boolean => {
+        if (!c.questionId) return true;
+        const refIdx = questionIdToIndex[c.questionId];
+        if (refIdx === undefined) return true;
+        const ans = answers[refIdx];
+        const expected = c.value?.toString() ?? '';
+        const op = c.operator ?? 'equals';
+        if (ans?.values && Array.isArray(ans.values)) {
+          if (op === 'equals' || op === 'contains') return ans.values.includes(expected);
+          if (op === 'not_equals') return !ans.values.includes(expected);
+          return false;
+        }
+        const actual = ans?.value?.toString() ?? '';
+        if (op === 'equals') return actual === expected;
+        if (op === 'not_equals') return actual !== expected;
+        if (op === 'contains') return actual.includes(expected);
+        return false;
+      };
+      const conditionsMet = conds.length === 0
+        ? true
+        : mode === 'or' ? conds.some(evalCond) : conds.every(evalCond);
+      if (!conditionsMet) continue;
+      if (rule.jumpToQuestionId === 'END') { void handleSubmit(); return; }
+      const targetIdx = questions.findIndex((q: any) => q.id === rule.jumpToQuestionId);
+      if (targetIdx !== -1) { setCurrentQuestion(targetIdx); return; }
+    }
 
     // Skip hidden questions when advancing
     let next = currentQuestion + 1;
@@ -1199,28 +1242,43 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           );
         }
 
+        const handleMcqSingleChange = (value: string) => {
+          questions.forEach((q: any, i: number) => {
+            if (q.config?.optionFilter?.questionId === qData.id) {
+              answers[i] = undefined;
+            }
+          });
+          const newAnswer = { ...currentAnswer, value, ...(value !== 'others' ? { othersText: undefined } : {}) };
+          if (isListMode) {
+            handleAnswerChangeForIndex(qIdx, newAnswer);
+          } else {
+            onChange(newAnswer);
+          }
+        };
+
+        if (config.mcqSubType === 'dropdown') {
+          return (
+            <SurveyQuestionWrapper {...commonProps}>
+              <select
+                value={currentAnswer?.value ?? ''}
+                onChange={(e) => handleMcqSingleChange(e.target.value)}
+                className="w-full px-4 py-3 border border-custom-grey-2 rounded bg-white text-base focus:outline-none focus:border-primary transition-colors"
+              >
+                <option value="">Select an option...</option>
+                {mcqSingleOptions.map((opt: any) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </SurveyQuestionWrapper>
+          );
+        }
+
         return (
           <RadioButtons
             {...commonProps}
             options={mcqSingleOptions as RadioButtonOption[]}
             selectedValue={currentAnswer?.value}
-            onValueChange={(value) => {
-              // Clear child answers whose optionFilter depends on this question
-              const newAnswers = {
-                ...answers,
-                [qIdx]: { ...currentAnswer, value, ...(value !== 'others' ? { othersText: undefined } : {}) },
-              };
-              questions.forEach((q: any, i: number) => {
-                if (q.config?.optionFilter?.questionId === qData.id) {
-                  newAnswers[i] = undefined;
-                }
-              });
-              if (isListMode) {
-                handleAnswerChangeForIndex(qIdx, { ...currentAnswer, value, ...(value !== 'others' ? { othersText: undefined } : {}) });
-              } else {
-                onChange({ ...currentAnswer, value, ...(value !== 'others' ? { othersText: undefined } : {}) });
-              }
-            }}
+            onValueChange={handleMcqSingleChange}
             othersPlaceholder={config.othersPlaceholder}
             onOthersTextChange={(text) => {
               if (isListMode) {
@@ -1436,12 +1494,15 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         );
       }
 
-      case QuestionType.TEXT:
+      case QuestionType.TEXT: {
+        const textMaxChars = config.maxChars ?? config.maxLength;
+        const textMinChars = config.minChars ?? config.minLength;
+        const textVal = (currentAnswer?.value || '') as string;
         return (
           <SurveyQuestionWrapper {...commonProps}>
             <input
               type="text"
-              value={currentAnswer?.value || ''}
+              value={textVal}
               onChange={(e) =>
                 onChange({ ...currentAnswer, value: e.target.value })
               }
@@ -1450,10 +1511,16 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
                 config.placeholder ||
                 ''
               }
-              minLength={config.minLength}
-              maxLength={config.maxLength}
-              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors border-custom-grey-2 focus:border-primary text-base md:text-lg"
+              minLength={textMinChars}
+              maxLength={textMaxChars}
+              style={config.inputWidthPx ? { width: `${config.inputWidthPx}px`, maxWidth: '100%' } : undefined}
+              className="px-4 py-3 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors border-custom-grey-2 focus:border-primary text-base md:text-lg w-full"
             />
+            {(textMaxChars || textMinChars) && (
+              <p className="mt-1 text-sm text-custom-grey-3 text-right">
+                {textVal.length}{textMaxChars ? `/${textMaxChars}` : ''} chars{textMinChars && textVal.length < textMinChars ? ` (min ${textMinChars})` : ''}
+              </p>
+            )}
             {config.helpText && (
               <p className="mt-2 text-sm text-custom-grey-3">
                 {config.helpText}
@@ -1461,12 +1528,17 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             )}
           </SurveyQuestionWrapper>
         );
+      }
 
-      case QuestionType.TEXTAREA:
+      case QuestionType.TEXTAREA: {
+        const taMaxChars = config.maxChars ?? config.maxLength;
+        const taMinChars = config.minChars;
+        const taRows = config.inputHeightPx ? Math.max(2, Math.round(config.inputHeightPx / 24)) : 6;
+        const taVal = (currentAnswer?.value || '') as string;
         return (
           <SurveyQuestionWrapper {...commonProps}>
             <textarea
-              value={currentAnswer?.value || ''}
+              value={taVal}
               onChange={(e) =>
                 onChange({ ...currentAnswer, value: e.target.value })
               }
@@ -1475,37 +1547,60 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
                 config.placeholder ||
                 ''
               }
-              maxLength={config.maxLength}
-              rows={6}
+              maxLength={taMaxChars}
+              rows={taRows}
               className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors resize-vertical border-custom-grey-2 focus:border-primary text-base md:text-lg"
             />
-            {config.maxLength && (
+            {(taMaxChars || taMinChars) && (
               <p className="mt-1 text-sm text-custom-grey-3 text-right">
-                {(currentAnswer?.value || '').length}/{config.maxLength}
+                {taVal.length}{taMaxChars ? `/${taMaxChars}` : ''} chars{taMinChars && taVal.length < taMinChars ? ` (min ${taMinChars})` : ''}
               </p>
             )}
           </SurveyQuestionWrapper>
         );
+      }
 
-      case QuestionType.NUMBER:
+      case QuestionType.NUMBER: {
+        const isDontKnow = config.hasDontKnow === true;
+        const dkLabel = config.dontKnowLabel || "Don't Know";
+        const dkValue = config.dontKnowValue || 'DK';
+        const isDkSelected = currentAnswer?.value?.toString() === dkValue;
         return (
           <SurveyQuestionWrapper {...commonProps}>
             <input
               type="number"
-              value={currentAnswer?.value || ''}
+              value={isDkSelected ? '' : (currentAnswer?.value ?? '')}
+              readOnly={isDkSelected}
               onChange={(e) =>
                 onChange({
                   ...currentAnswer,
-                  value: parseFloat(e.target.value),
+                  value: e.target.value === '' ? undefined : parseFloat(e.target.value),
                 })
               }
+              placeholder={isDkSelected ? dkLabel : '0'}
               min={config.min}
               max={config.max}
               step={config.step || 1}
               className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors border-custom-grey-2 focus:border-primary text-base md:text-lg"
             />
+            {isDontKnow && (
+              <button
+                type="button"
+                onClick={() =>
+                  onChange({ ...currentAnswer, value: isDkSelected ? undefined : dkValue })
+                }
+                className={`mt-2 px-4 py-1.5 text-sm rounded border transition-colors ${
+                  isDkSelected
+                    ? 'bg-gray-600 text-white border-gray-600'
+                    : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
+                }`}
+              >
+                {dkLabel}
+              </button>
+            )}
           </SurveyQuestionWrapper>
         );
+      }
 
       case QuestionType.CURRENCY: {
         const currencySymbol = config.currency || '₹';
@@ -1609,6 +1704,36 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             subLabel={config.subLabel}
           />
         );
+
+      case QuestionType.TEXT_DISPLAY: {
+        const displayHtml = config.displayHtml ?? '';
+        const displayImageUrl = config.displayImageUrl;
+        const displayImageMaxWidth = config.displayImageMaxWidth ?? '100%';
+        return (
+          <SurveyQuestionWrapper {...commonProps} isNextDisabled={false}>
+            <div className="space-y-3">
+              {displayHtml && (
+                <div
+                  className="text-base text-gray-800 prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: displayHtml }}
+                />
+              )}
+              {displayImageUrl && (
+                <img
+                  src={displayImageUrl}
+                  alt="Display content"
+                  style={{ maxWidth: displayImageMaxWidth }}
+                  className="rounded-lg"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                />
+              )}
+              {!displayHtml && !displayImageUrl && (
+                <p className="text-gray-400 italic">Display element — no content configured.</p>
+              )}
+            </div>
+          </SurveyQuestionWrapper>
+        );
+      }
 
       default:
         return (
