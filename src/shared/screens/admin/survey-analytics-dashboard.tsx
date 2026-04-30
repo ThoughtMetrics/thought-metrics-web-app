@@ -88,16 +88,8 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
     if (!selectedSurvey) return;
     try {
       await surveyService.updateQuestionChartType(selectedSurvey, questionId, chartType);
-      if (chartType !== null) {
-        setQuestionCharts(prev => prev.map(q =>
-          q.questionId === questionId
-            ? { ...q, chartType: chartType as QuestionChartData['chartType'], chartTypeOverride: chartType }
-            : q
-        ));
-      } else {
-        const res = await surveyService.getQuestionAnalytics(selectedSurvey);
-        if (res.success && Array.isArray(res.data)) setQuestionCharts(res.data);
-      }
+      const res = await surveyService.getQuestionAnalytics(selectedSurvey);
+      if (res.success && Array.isArray(res.data)) setQuestionCharts(res.data);
     } catch { /* silent — UI stays as-is on failure */ }
   }, [selectedSurvey]);
   const [error, setError] = useState<string | null>(null);
