@@ -27,6 +27,7 @@ import ScaleConfig from './configs/ScaleConfig';
 import SliderConfig from './configs/SliderConfig';
 import MatrixConfig from './configs/MatrixConfig';
 import FileConfig from './configs/FileConfig';
+import DisplayConfig from './configs/DisplayConfig';
 import PipeTokenButton from './PipeTokenButton';
 
 // ---------------------------------------------------------------------------
@@ -80,6 +81,8 @@ const QUESTION_TYPE_LABEL: Record<string, string> = {
   [QuestionType.MAX_DIFF]:      'Max Diff',
   [QuestionType.CONSTANT_SUM]:  'Constant Sum',
   [QuestionType.FILE]:          'File Upload',
+  [QuestionType.TEXT_DISPLAY]:  'Text / Graphic Display',
+  [QuestionType.SMART_FOLLOWUP]: 'Smart Follow-Up (AI)',
 };
 
 // ---------------------------------------------------------------------------
@@ -295,6 +298,9 @@ const QuestionEditorPanel: React.FC = () => {
     }
     if (question.questionType === QuestionType.FILE) {
       return <FileConfig question={question} qIdx={qIdx} />;
+    }
+    if (question.questionType === QuestionType.TEXT_DISPLAY) {
+      return <DisplayConfig question={question} qIdx={qIdx} />;
     }
     return null;
   };
@@ -539,6 +545,7 @@ const QuestionEditorPanel: React.FC = () => {
             question.config.showIfAll?.length ||
             question.config.showIfAny?.length
           );
+          const hasSkipRules = !!(question.config.skipRules?.length);
           return (
             <div
               key={question.id}
@@ -553,6 +560,9 @@ const QuestionEditorPanel: React.FC = () => {
                   <span className="text-xs font-semibold text-gray-400">Q{question.order}</span>
                   {hasCondition && (
                     <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">IF</span>
+                  )}
+                  {hasSkipRules && (
+                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">SKIP</span>
                   )}
                 </div>
                 <textarea
@@ -615,6 +625,9 @@ const QuestionEditorPanel: React.FC = () => {
                     <option value={QuestionType.CONSTANT_SUM}>Constant Sum</option>
                     <option value={QuestionType.FILE}>File Upload</option>
                   </optgroup>
+                  <optgroup label="Display">
+                    <option value={QuestionType.TEXT_DISPLAY}>Text / Graphic Display</option>
+                  </optgroup>
                 </select>
               </div>
 
@@ -676,6 +689,7 @@ const QuestionEditorPanel: React.FC = () => {
     question.config.showIfAll?.length ||
     question.config.showIfAny?.length
   );
+  const hasSkipRulesSingle = !!(question.config.skipRules?.length);
 
   const editorContent = (
     <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -685,6 +699,14 @@ const QuestionEditorPanel: React.FC = () => {
           <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">IF</span>
           <span className="text-xs text-amber-700">
             This question has conditional logic — it may be hidden for some respondents.
+          </span>
+        </div>
+      )}
+      {hasSkipRulesSingle && (
+        <div className="px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
+          <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">SKIP</span>
+          <span className="text-xs text-blue-700">
+            This question has skip rules — respondents may be navigated to a different question.
           </span>
         </div>
       )}

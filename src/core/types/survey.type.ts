@@ -46,6 +46,8 @@ export enum QuestionType {
   CONSTANT_SUM = 'constant-sum',
   FILE = 'file',
   CURRENCY = 'currency',
+  TEXT_DISPLAY = 'text-display',
+  SMART_FOLLOWUP = 'smart-followup',
 }
 
 // ========== API RESPONSE TYPES ==========

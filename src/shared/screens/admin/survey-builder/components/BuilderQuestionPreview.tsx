@@ -249,6 +249,22 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
           const srcOpt = (question.config.options ?? []).find((o) => o.value === opt.value);
           return { ...opt, isIntensePurchase: srcOpt?.isIntensePurchase };
         });
+        if (config.mcqSubType === 'dropdown') {
+          return (
+            <SurveyQuestionWrapper {...commonProps}>
+              <select
+                value={interactive ? selectedValue : ''}
+                onChange={interactive ? (e) => { setSelectedValue(e.target.value); onAnswerChange?.(e.target.value); } : undefined}
+                className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-base focus:outline-none focus:bg-white focus:border-primary transition-colors"
+              >
+                <option value="">Select an option...</option>
+                {mcqOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </SurveyQuestionWrapper>
+          );
+        }
         return (
           <RadioButtons
             {...commonProps}
@@ -271,10 +287,18 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
       }
 
       // ── MCQ Multiple ──────────────────────────────────────────────────
-      case QuestionType.MCQ_MULTIPLE:
+      case QuestionType.MCQ_MULTIPLE: {
+        const minSel = config.minSelections;
+        const maxSel = config.maxSelections;
+        const selHint = minSel && maxSel
+          ? `Select between ${minSel} and ${maxSel} options`
+          : minSel ? `Select at least ${minSel} options`
+          : maxSel ? `Select up to ${maxSel} options`
+          : undefined;
         return (
           <Checkboxes
             {...commonProps}
+            question={selHint ? `${questionText}\n${selHint}` : questionText}
             options={resolveOptions(question, lang)}
             selectedValues={interactive ? selectedValues : []}
             onValueChange={(vals: string[]) => {
@@ -285,6 +309,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
             othersPlaceholder={config.othersPlaceholder}
           />
         );
+      }
 
       // ── Ranking ───────────────────────────────────────────────────────
       case QuestionType.RANKING:
@@ -397,49 +422,99 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
         );
 
       // ── Text inputs ────────────────────────────────────────────────────
-      case QuestionType.TEXT:
+      case QuestionType.TEXT: {
+        const textMaxChars = config.maxChars;
+        const textMinChars = config.minChars;
         return (
           <SurveyQuestionWrapper {...commonProps}>
             <input
               type="text"
               value={interactive ? textVal : undefined}
               readOnly={!interactive}
+              maxLength={textMaxChars}
               onChange={interactive ? (e) => { setTextVal(e.target.value); onAnswerChange?.(e.target.value); } : undefined}
               placeholder={placeholder || 'Enter your answer...'}
+              style={config.inputWidthPx ? { width: `${config.inputWidthPx}px`, maxWidth: '100%' } : undefined}
               className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-base md:text-lg focus:outline-none focus:bg-white focus:border-primary transition-colors"
             />
+            {(textMaxChars || textMinChars) && (
+              <p className="mt-1 text-sm text-custom-grey-3 text-right">
+                {textVal.length}{textMaxChars ? `/${textMaxChars}` : ''} chars
+                {textMinChars && textVal.length < textMinChars ? ` (min ${textMinChars})` : ''}
+              </p>
+            )}
           </SurveyQuestionWrapper>
         );
+      }
 
-      case QuestionType.TEXTAREA:
+      case QuestionType.TEXTAREA: {
+        const taMaxChars = config.maxChars;
+        const taMinChars = config.minChars;
+        const taRows = config.inputHeightPx
+          ? Math.max(2, Math.round(config.inputHeightPx / 24))
+          : 6;
         return (
           <SurveyQuestionWrapper {...commonProps}>
             <textarea
               value={interactive ? textVal : undefined}
               readOnly={!interactive}
+              maxLength={taMaxChars}
               onChange={interactive ? (e) => { setTextVal(e.target.value); onAnswerChange?.(e.target.value); } : undefined}
               placeholder={placeholder || 'Enter your answer...'}
-              rows={6}
+              rows={taRows}
               className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-base md:text-lg resize-vertical focus:outline-none focus:bg-white focus:border-primary transition-colors"
             />
+            {(taMaxChars || taMinChars) && (
+              <p className="mt-1 text-sm text-custom-grey-3 text-right">
+                {textVal.length}{taMaxChars ? `/${taMaxChars}` : ''} chars
+                {taMinChars && textVal.length < taMinChars ? ` (min ${taMinChars})` : ''}
+              </p>
+            )}
           </SurveyQuestionWrapper>
         );
+      }
 
-      case QuestionType.NUMBER:
+      case QuestionType.NUMBER: {
+        const hasDK = config.hasDontKnow === true;
+        const dkLabel = config.dontKnowLabel ?? "Don't Know";
+        const dkVal = config.dontKnowValue ?? 'DK';
+        const isDKSelected = interactive && textVal === dkLabel;
         return (
           <SurveyQuestionWrapper {...commonProps}>
             <input
               type="number"
-              value={interactive ? textVal : undefined}
-              readOnly={!interactive}
-              onChange={interactive ? (e) => { setTextVal(e.target.value); onAnswerChange?.(e.target.value); } : undefined}
+              value={interactive ? (isDKSelected ? '' : textVal) : undefined}
+              readOnly={!interactive || isDKSelected}
+              onChange={interactive && !isDKSelected ? (e) => { setTextVal(e.target.value); onAnswerChange?.(e.target.value); } : undefined}
               placeholder="0"
               min={config.min}
               max={config.max}
               className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-base md:text-lg focus:outline-none focus:bg-white focus:border-primary transition-colors"
             />
+            {hasDK && (
+              <button
+                type="button"
+                onClick={interactive ? () => {
+                  if (isDKSelected) {
+                    setTextVal('');
+                    onAnswerChange?.('');
+                  } else {
+                    setTextVal(dkLabel);
+                    onAnswerChange?.(dkVal);
+                  }
+                } : undefined}
+                className={`mt-2 px-4 py-1.5 text-sm rounded border transition-colors ${
+                  isDKSelected
+                    ? 'bg-primary text-white border-primary'
+                    : 'bg-white text-custom-grey-3 border-custom-grey-2 hover:border-primary hover:text-primary'
+                }`}
+              >
+                {isDKSelected ? `✓ ${dkLabel}` : dkLabel}
+              </button>
+            )}
           </SurveyQuestionWrapper>
         );
+      }
 
       case QuestionType.EMAIL:
         return (
@@ -509,6 +584,32 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
             onFileChange={NOOP}
             maxSizeMB={config.maxFileSizeMb ?? 5}
           />
+        );
+
+      case QuestionType.TEXT_DISPLAY:
+        return (
+          <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-2">
+            {config.displayHtml && (
+              <div
+                className="text-sm text-gray-800 prose prose-sm max-w-none"
+                dangerouslySetInnerHTML={{ __html: config.displayHtml }}
+              />
+            )}
+            {config.displayImageUrl && (
+              <img
+                src={config.displayImageUrl}
+                alt="Display element"
+                style={{ maxWidth: config.displayImageMaxWidth ?? '100%' }}
+                className="rounded"
+                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+              />
+            )}
+            {!config.displayHtml && !config.displayImageUrl && (
+              <p className="text-xs text-gray-400 italic text-center py-2">
+                Text / Graphic Display — add HTML content or an image URL in the editor.
+              </p>
+            )}
+          </div>
         );
 
       default:

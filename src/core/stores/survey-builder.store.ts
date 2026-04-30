@@ -43,6 +43,8 @@ function defaultConfigFor(type: QuestionType): IBuilderQuestionConfig {
       return { options: [{ value: 'opt1', label: 'Option 1' }], total: 100, constantSumMode: 'constant-sum', rowOptionsMode: 'per-row' };
     case QuestionType.FILE:
       return { acceptedFileTypes: ['pdf', 'jpg', 'png'], maxFileSizeMb: 10 };
+    case QuestionType.TEXT_DISPLAY:
+      return { displayHtml: '', displayImageUrl: '', displayImageMaxWidth: '100%' };
     default:
       return {};
   }

@@ -13,6 +13,7 @@ import React from 'react';
 import { QuestionType } from '@/core/types/survey.type';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 import ConditionalLogicConfig from './ConditionalLogicConfig';
+import SkipLogicConfig from './SkipLogicConfig';
 import OptionFilterConfig from './configs/OptionFilterConfig';
 
 const QuestionConfigPanel: React.FC = () => {
@@ -103,6 +104,9 @@ const QuestionConfigPanel: React.FC = () => {
 
         {/* Conditional Logic */}
         <ConditionalLogicConfig question={question} qIdx={selectedQuestionIndex} />
+
+        {/* Skip Logic */}
+        <SkipLogicConfig question={question} qIdx={selectedQuestionIndex} />
       </div>
     </div>
   );
