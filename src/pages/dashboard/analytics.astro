@@ -1,0 +1,8 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import ClientSurveyAnalyticsDashboard from '@/shared/screens/client/client-survey-analytics-dashboard';
+---
+
+<IntractionLayout title="Analytics | Thought Metrics" description="View your survey analytics">
+  <ClientSurveyAnalyticsDashboard client:only="react" />
+</IntractionLayout>

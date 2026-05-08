@@ -11,6 +11,7 @@ interface AuthContextType {
   isAdmin: boolean;
   isSuperAdmin: boolean;
   isFieldIncharge: boolean;
+  isClient: boolean;
   userZone: string | null;
 }
 
@@ -21,6 +22,7 @@ const AuthContext = createContext<AuthContextType>({
   isAdmin: false,
   isSuperAdmin: false,
   isFieldIncharge: false,
+  isClient: false,
   userZone: null,
 });
 
@@ -37,6 +39,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [isFieldIncharge, setIsFieldIncharge] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const [userZone, setUserZone] = useState<string | null>(null);
 
   useEffect(() => {
@@ -74,11 +77,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               const computedIsAdmin = role === 'admin' || role === 'super-admin';
               const computedIsSuperAdmin = role === 'super-admin';
               const computedIsFieldIncharge = role === 'field-incharge';
+              const computedIsClient = role === 'client';
 
               setUserRole(role || 'respondent');
               setIsAdmin(computedIsAdmin);
               setIsSuperAdmin(computedIsSuperAdmin);
               setIsFieldIncharge(computedIsFieldIncharge);
+              setIsClient(computedIsClient);
               setUserZone(zone || null);
             } catch (error) {
               console.error('Failed to get auth token:', error);
@@ -87,6 +92,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               setIsAdmin(false);
               setIsSuperAdmin(false);
               setIsFieldIncharge(false);
+              setIsClient(false);
               setUserZone(null);
             }
           } else {
@@ -95,6 +101,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setIsAdmin(false);
             setIsSuperAdmin(false);
             setIsFieldIncharge(false);
+            setIsClient(false);
             setUserZone(null);
           }
 
@@ -124,7 +131,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isAuthReady, userRole, isAdmin, isSuperAdmin, isFieldIncharge, userZone }}>
+    <AuthContext.Provider value={{ user, isAuthReady, userRole, isAdmin, isSuperAdmin, isFieldIncharge, isClient, userZone }}>
       {children}
     </AuthContext.Provider>
   );

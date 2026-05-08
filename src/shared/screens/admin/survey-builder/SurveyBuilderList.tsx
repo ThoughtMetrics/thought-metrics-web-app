@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { useDeleteTemplate } from '@/core/hooks/mutations/survey-template.mutations';
 import surveyService from '@/services/survey/survey.service';
 
-const SurveyBuilderListContent: React.FC = () => {
+export const SurveyBuilderListContent: React.FC<{ SidebarComponent?: React.ComponentType }> = ({ SidebarComponent = AdminSidebar }) => {
   const { data, isLoading, isError } = useTemplatesQuery();
   const deleteTemplate = useDeleteTemplate();
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -43,7 +43,7 @@ const SurveyBuilderListContent: React.FC = () => {
 
   return (
     <div className="h-full flex bg-gray-50 text-text-dark">
-      <AdminSidebar />
+      <SidebarComponent />
 
       <main className="h-full overflow-y-scroll flex-1 p-8">
         <div className="max-w-7xl mx-auto">

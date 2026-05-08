@@ -63,6 +63,14 @@ export const ROUTES = {
   ADMIN_SURVEY_BUILDER_NEW: '/admin/survey-builder/new',
   ADMIN_SURVEYS: '/admin/surveys',
   ADMIN_SURVEY_IMPORT: '/admin/survey-import',
+  /* Client Dashboard Routes */
+  DASHBOARD: '/dashboard',
+  DASHBOARD_SURVEYS: '/dashboard/surveys',
+  DASHBOARD_BUILDER: '/dashboard/survey-builder',
+  DASHBOARD_BUILDER_NEW: '/dashboard/survey-builder/new',
+  DASHBOARD_ANALYTICS: '/dashboard/analytics',
+  DASHBOARD_CAMPAIGNS: '/dashboard/campaigns',
+  DASHBOARD_CREATE_LINK: '/dashboard/create-tracking-link',
   NOT_FOUND: '*',
   FORCE_CHANGE_PASSWORD: '/force-change-password',
 } as const;

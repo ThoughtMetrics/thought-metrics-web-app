@@ -1,0 +1,8 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import ClientCampaignsManagement from '@/shared/screens/client/client-campaigns-management';
+---
+
+<IntractionLayout title="Campaigns | Thought Metrics" description="Manage your tracking links and campaigns">
+  <ClientCampaignsManagement client:only="react" />
+</IntractionLayout>

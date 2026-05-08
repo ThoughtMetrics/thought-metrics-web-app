@@ -1,0 +1,10 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import ClientSurveyBuilderEditor from '@/shared/screens/client/client-survey-builder-editor';
+
+const { templateId } = Astro.params;
+---
+
+<IntractionLayout title="Edit Template | Survey Builder | Thought Metrics" description="Edit your survey template">
+  <ClientSurveyBuilderEditor templateId={templateId} client:only="react" />
+</IntractionLayout>

@@ -1,0 +1,8 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import ClientDashboard from '@/shared/screens/client/client-dashboard';
+---
+
+<IntractionLayout title="My Workspace | Thought Metrics" description="Client dashboard for managing your surveys and campaigns">
+  <ClientDashboard client:only="react" />
+</IntractionLayout>

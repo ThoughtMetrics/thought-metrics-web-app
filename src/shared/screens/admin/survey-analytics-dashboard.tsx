@@ -65,7 +65,7 @@ interface UserStat {
   dailyByDate?: { date: string; count: number }[];
 }
 
-const SurveyAnalyticsDashboardContent: React.FC = () => {
+export const SurveyAnalyticsDashboardContent: React.FC<{ SidebarComponent?: React.ComponentType }> = ({ SidebarComponent = AdminSidebar }) => {
   const { user, isAuthReady, isFieldIncharge } = useAuth();
   const [surveys, setSurveys] = useState<SurveyWithAnalytics[]>([]);
   const [selectedSurvey, setSelectedSurvey] = useState<string | null>(null);
@@ -826,7 +826,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
   return (
     <>
       <div className="h-full flex bg-gray-50 text-text-dark">
-        <AdminSidebar />
+        <SidebarComponent />
 
         <main className="h-full overflow-y-scroll flex-1 p-8">
           <div className="max-w-7xl mx-auto">

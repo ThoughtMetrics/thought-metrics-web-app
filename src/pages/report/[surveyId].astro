@@ -1,0 +1,10 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import SurveyPublicReport from '@/shared/screens/report/SurveyPublicReport';
+
+const { surveyId } = Astro.params;
+---
+
+<IntractionLayout title="Survey Report | Thought Metrics" description="View survey results and analytics">
+  <SurveyPublicReport surveyId={surveyId!} client:only="react" />
+</IntractionLayout>

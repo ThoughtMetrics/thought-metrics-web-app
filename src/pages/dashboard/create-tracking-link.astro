@@ -1,0 +1,8 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import ClientTrackingLinkForm from '@/shared/screens/client/client-tracking-link-form';
+---
+
+<IntractionLayout title="Create Campaign | Thought Metrics" description="Create a new tracking link for your campaign">
+  <ClientTrackingLinkForm client:only="react" />
+</IntractionLayout>

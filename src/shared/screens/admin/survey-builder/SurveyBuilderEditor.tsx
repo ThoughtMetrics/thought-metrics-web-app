@@ -18,6 +18,8 @@ import PublishSurveyModal from './components/PublishSurveyModal';
 
 interface Props {
   templateId?: string;
+  redirectPath?: string;
+  SidebarComponent?: React.ComponentType;
 }
 
 const LOCAL_KEY = (id: string | undefined) => `tm-builder-${id ?? 'new'}`;
@@ -26,7 +28,7 @@ const clearLocalDraft = (id: string | undefined) => {
   try { localStorage.removeItem(LOCAL_KEY(id)); } catch {}
 };
 
-const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
+export const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId, redirectPath = '/admin/surveys', SidebarComponent = AdminSidebar }) => {
   const { data, isLoading, isError } = useTemplateQuery(templateId);
 
   const { name, isDirty, questions, settings, translations, setName, setTranslation, loadTemplate, resetEditor, toCreateRequest, toUpdateRequest, undo, redo, _past, _future } =
@@ -50,9 +52,9 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
   // Auto-redirect 2 seconds after save-draft success overlay appears
   useEffect(() => {
     if (!showSaveSuccess) return;
-    const t = setTimeout(() => { window.location.href = '/admin/surveys'; }, 2000);
+    const t = setTimeout(() => { window.location.href = redirectPath; }, 2000);
     return () => clearTimeout(t);
-  }, [showSaveSuccess]);
+  }, [showSaveSuccess, redirectPath]);
 
   // Load template data into store when it arrives
   useEffect(() => {
@@ -322,7 +324,7 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
       )}
 
       <div className="h-full flex bg-gray-50 text-text-dark">
-        <AdminSidebar />
+        <SidebarComponent />
 
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           {/* Header bar */}

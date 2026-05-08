@@ -45,8 +45,8 @@ function formatDate(d?: string | null): string {
   });
 }
 
-const SurveyManagementContent: React.FC = () => {
-  const { isAdmin, isFieldIncharge } = useAuth();
+const SurveyManagementContent: React.FC<{ SidebarComponent?: React.ComponentType }> = ({ SidebarComponent = AdminSidebar }) => {
+  const { isAdmin, isFieldIncharge, isClient } = useAuth();
   const updateSurvey = useUpdateSurveyInstance();
   const deleteSurvey = useDeleteSurveyInstance();
   const [isDuplicating, setIsDuplicating] = useState(false);
@@ -123,6 +123,11 @@ const SurveyManagementContent: React.FC = () => {
     void navigator.clipboard.writeText(link).then(() => toast.success('Link copied!'));
   };
 
+  const handleShareReport = (survey: ISurvey) => {
+    const link = `${PUBLIC_SITE_URL}/report/${survey.surveyId}`;
+    void navigator.clipboard.writeText(link).then(() => toast.success('Report link copied!'));
+  };
+
   const handleDelete = (survey: ISurvey) => {
     setSurveyToDelete(survey);
     setShowDeleteConfirm(true);
@@ -162,7 +167,7 @@ const SurveyManagementContent: React.FC = () => {
 
   return (
     <div className="h-full flex bg-gray-50 text-text-dark">
-      <AdminSidebar />
+      <SidebarComponent />
 
       <main className="h-full overflow-y-scroll flex-1 p-8">
         <div className="max-w-7xl mx-auto">
@@ -385,8 +390,19 @@ const SurveyManagementContent: React.FC = () => {
                                         }}
                                         className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                                       >
-                                        Copy Link
+                                        Copy Survey Link
                                       </button>
+                                      {isClient && (
+                                        <button
+                                          onClick={() => {
+                                            handleShareReport(s);
+                                            setOpenMenuId(null);
+                                          }}
+                                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                        >
+                                          Share Report
+                                        </button>
+                                      )}
                                       {isAdmin && (
                                         <>
                                           <button
@@ -552,6 +568,8 @@ const SurveyManagementContent: React.FC = () => {
     </div>
   );
 };
+
+export { SurveyManagementContent };
 
 export const SurveyManagement: React.FC = () => (
   <AdminRouteGuard>

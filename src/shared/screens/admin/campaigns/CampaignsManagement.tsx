@@ -125,7 +125,7 @@ const CampaignDetailPanel: React.FC<{ link: TrackingLink }> = ({ link }) => {
   );
 };
 
-const CampaignsManagementContent: React.FC = () => {
+export const CampaignsManagementContent: React.FC<{ SidebarComponent?: React.ComponentType }> = ({ SidebarComponent = AdminSidebar }) => {
   const { data: linksResponse, isLoading: linksLoading } = useTrackingLinks();
   const links: TrackingLink[] = linksResponse?.data ?? [];
 
@@ -142,7 +142,7 @@ const CampaignsManagementContent: React.FC = () => {
 
   return (
     <div className="h-full flex bg-gray-50 text-text-dark">
-      <AdminSidebar />
+      <SidebarComponent />
 
       <main className="h-full overflow-y-scroll flex-1 p-8">
         <div className="max-w-7xl mx-auto">
