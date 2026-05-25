@@ -64,6 +64,10 @@ class AuthService {
           location: additionalData.location,
         };
 
+        if (additionalData.role) {
+          syncData.role = additionalData.role as UserProfile['role'];
+        }
+
         // Map payment info to backend structure based on payment method
         if (
           additionalData.paymentMethod &&

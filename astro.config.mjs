@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import { loadEnv } from 'vite';
 import react from '@astrojs/react';
 import partytown from '@astrojs/partytown';
 import tailwindcss from '@tailwindcss/vite';
@@ -13,6 +14,9 @@ import {
   SITEMAP_EXCLUDE_PATTERNS,
   SITEMAP_PRIORITY,
 } from './src/core/constants/seo.constants';
+
+const env = loadEnv(process.env.NODE_ENV || 'development', process.cwd(), '');
+const apiProxyTarget = env.API_PROXY_TARGET || 'http://localhost:3000';
 
 // https://astro.build/config
 export default defineConfig({
@@ -64,6 +68,13 @@ export default defineConfig({
       watch: {
         // Prevent server restart when .env is edited — restart manually if needed
         ignored: ['**/.env', '**/.env.*', '!**/.env.example'],
+      },
+      proxy: {
+        '/api': {
+          target: apiProxyTarget,
+          changeOrigin: true,
+          secure: false,
+        },
       },
     },
     resolve: {

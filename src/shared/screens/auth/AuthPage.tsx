@@ -157,6 +157,14 @@ const LoginPage: React.FC = () => {
     }
   }, []);
 
+  // Propagate userType to the sign-up link so new users land on the right signup path
+  const signUpHref = (() => {
+    const userType = typeof window !== 'undefined'
+      ? new URLSearchParams(window.location.search).get('userType')
+      : null;
+    return userType ? `${ROUTES.SIGN_UP}?userType=${userType}` : ROUTES.SIGN_UP;
+  })();
+
   // Get redirect URL based on tracking parameters
   const getRedirectUrl = () => {
     const allocatedSurveyId = localStorage.getItem('tm_allocated_survey');
@@ -468,7 +476,7 @@ const LoginPage: React.FC = () => {
                 </div>
 
                 <a
-                  href={ROUTES.SIGN_UP}
+                  href={signUpHref}
                   className="w-full inline-flex items-center justify-between px-4 py-2 border border-primary shadow-sm bg-transparent font-medium text-primary hover:bg-primary-50 transition-colors rounded-none"
                 >
                   <label>{translations.auth.login.createAccount}</label>
@@ -480,7 +488,7 @@ const LoginPage: React.FC = () => {
               </div>
               <div className="flex items-center max-w-[380px] shrink-0 w-full mt-5">
                 <a
-                  href={ROUTES.SIGN_UP}
+                  href={signUpHref}
                   //NOTE: Uncomment the line below to enable the reset password link
                   // href={ROUTES.RESET_PASSWORD}
                   className="border-t border-t-custom-grey w-full pt-3"

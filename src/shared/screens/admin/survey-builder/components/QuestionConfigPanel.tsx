@@ -4,23 +4,81 @@
 // Shows behaviour-level settings for the selected question:
 //   - Required toggle
 //   - Allow Comment toggle
+//   - MCQ-specific settings (Order of Options, Force selections, Others/All/None toggles)
 //   - Option Filter (MCQ types only)
 //   - Conditional Logic
-//
-// Type-specific config (options, scale range, etc.) lives in the centre editor panel.
 
 import React from 'react';
 import { QuestionType } from '@/core/types/survey.type';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
-import ConditionalLogicConfig from './ConditionalLogicConfig';
-import SkipLogicConfig from './SkipLogicConfig';
-import OptionFilterConfig from './configs/OptionFilterConfig';
+
+// ── Local toggle/spinner components ─────────────────────────────────────────
+
+const RightPanelToggle: React.FC<{
+  label: string;
+  description?: string;
+  checked: boolean;
+  onChange: () => void;
+}> = ({ label, description, checked, onChange }) => (
+  <div className="flex items-center justify-between">
+    <div className="flex-1 pr-3">
+      <span className="text-sm font-medium text-gray-700">{label}</span>
+      {description && <p className="text-xs text-gray-400 mt-0.5">{description}</p>}
+    </div>
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={onChange}
+      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors flex-shrink-0 ${
+        checked ? 'bg-primary' : 'bg-gray-200'
+      }`}
+    >
+      <span
+        className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow ${
+          checked ? 'translate-x-4' : 'translate-x-1'
+        }`}
+      />
+    </button>
+  </div>
+);
+
+const Spinner: React.FC<{
+  value: number | undefined;
+  min?: number;
+  onChange: (v: number) => void;
+}> = ({ value, min = 1, onChange }) => (
+  <div className="flex items-center gap-1">
+    <button
+      type="button"
+      onClick={() => onChange(Math.max(min, (value ?? min) - 1))}
+      className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:bg-gray-100 text-sm font-medium leading-none"
+    >
+      −
+    </button>
+    <span className="w-6 text-center text-xs font-medium text-gray-700 tabular-nums">
+      {value ?? '—'}
+    </span>
+    <button
+      type="button"
+      onClick={() => onChange((value ?? min - 1) + 1)}
+      className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 text-gray-600 hover:bg-gray-100 text-sm font-medium leading-none"
+    >
+      +
+    </button>
+  </div>
+);
+
+// ── Main panel ───────────────────────────────────────────────────────────────
 
 const QuestionConfigPanel: React.FC = () => {
   const {
     questions,
     selectedQuestionIndex,
+    activeLanguage,
     setQuestionField,
+    setQuestionConfig,
+    setQuestionTranslation,
   } = useSurveyBuilderStore();
 
   if (selectedQuestionIndex === null) {
@@ -43,10 +101,60 @@ const QuestionConfigPanel: React.FC = () => {
   const question = questions[selectedQuestionIndex];
   if (!question) return null;
 
-  const hasOptions =
+  const cfg = question.config;
+  const isMcq =
     question.questionType === QuestionType.MCQ_SINGLE ||
-    question.questionType === QuestionType.MCQ_MULTIPLE ||
-    question.questionType === QuestionType.RANKING;
+    question.questionType === QuestionType.MCQ_MULTIPLE;
+  const isMcqMultiple = question.questionType === QuestionType.MCQ_MULTIPLE;
+  const isRanking = question.questionType === QuestionType.RANKING;
+  const isFile = question.questionType === QuestionType.FILE;
+  const isVideo = question.questionType === QuestionType.VIDEO;
+  const isAudio = question.questionType === QuestionType.AUDIO;
+
+  const isText = question.questionType === QuestionType.TEXT;
+  const isTextarea = question.questionType === QuestionType.TEXTAREA;
+  const isNumber = question.questionType === QuestionType.NUMBER;
+  const isCurrency = question.questionType === QuestionType.CURRENCY;
+  const isTextType = [
+    QuestionType.TEXT, QuestionType.TEXTAREA, QuestionType.NUMBER,
+    QuestionType.EMAIL, QuestionType.PHONE, QuestionType.DATE, QuestionType.CURRENCY,
+  ].includes(question.questionType);
+
+  // Others option — derived from options array
+  const opts = cfg.options ?? [];
+  const hasOthers = opts.some((o) => o.value === 'others');
+  const hasAllOfAbove = opts.some((o) => o.value === 'all_of_above');
+
+  const toggleOthers = (on: boolean) => {
+    if (on) {
+      setQuestionConfig(selectedQuestionIndex, {
+        options: [...opts.filter((o) => o.value !== 'others'), { value: 'others', label: 'Others' }],
+      });
+    } else {
+      setQuestionConfig(selectedQuestionIndex, {
+        options: opts.filter((o) => o.value !== 'others'),
+        othersPlaceholder: undefined,
+      });
+    }
+  };
+
+  const toggleAllOfAbove = (on: boolean) => {
+    const withoutAoa = opts.filter((o) => o.value !== 'all_of_above');
+    if (on) {
+      const othersIdx = withoutAoa.findIndex((o) => o.value === 'others');
+      const inserted =
+        othersIdx >= 0
+          ? [
+              ...withoutAoa.slice(0, othersIdx),
+              { value: 'all_of_above', label: 'All of the above' },
+              ...withoutAoa.slice(othersIdx),
+            ]
+          : [...withoutAoa, { value: 'all_of_above', label: 'All of the above' }];
+      setQuestionConfig(selectedQuestionIndex, { options: inserted });
+    } else {
+      setQuestionConfig(selectedQuestionIndex, { options: withoutAoa });
+    }
+  };
 
   return (
     <div className="h-full bg-white flex flex-col">
@@ -56,57 +164,482 @@ const QuestionConfigPanel: React.FC = () => {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-5">
+
         {/* Required / Allow Comment */}
         <div className="space-y-3">
-          <label className="flex items-center justify-between cursor-pointer">
-            <div>
-              <span className="text-sm font-medium text-gray-700">Required</span>
-              <p className="text-xs text-gray-400 mt-0.5">Respondents must answer this question</p>
-            </div>
-            <button
-              onClick={() => setQuestionField(selectedQuestionIndex, 'required', !question.required)}
-              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors flex-shrink-0 ml-3 ${
-                question.required ? 'bg-primary' : 'bg-gray-200'
-              }`}
-            >
-              <span
-                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow ${
-                  question.required ? 'translate-x-4' : 'translate-x-1'
-                }`}
-              />
-            </button>
-          </label>
-
-          <label className="flex items-center justify-between cursor-pointer">
-            <div>
-              <span className="text-sm font-medium text-gray-700">Allow Comment</span>
-              <p className="text-xs text-gray-400 mt-0.5">Add an optional comment field</p>
-            </div>
-            <button
-              onClick={() => setQuestionField(selectedQuestionIndex, 'allowComment', !question.allowComment)}
-              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors flex-shrink-0 ml-3 ${
-                question.allowComment ? 'bg-primary' : 'bg-gray-200'
-              }`}
-            >
-              <span
-                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow ${
-                  question.allowComment ? 'translate-x-4' : 'translate-x-1'
-                }`}
-              />
-            </button>
-          </label>
+          <RightPanelToggle
+            label="Required"
+            description="Respondents must answer this question"
+            checked={question.required ?? false}
+            onChange={() => setQuestionField(selectedQuestionIndex, 'required', !question.required)}
+          />
+          <RightPanelToggle
+            label="Allow Comment"
+            description="Add an optional comment field"
+            checked={question.allowComment ?? false}
+            onChange={() => setQuestionField(selectedQuestionIndex, 'allowComment', !question.allowComment)}
+          />
         </div>
 
-        {/* Option Filter — MCQ / Ranking (any question with options) */}
-        {hasOptions && (
-          <OptionFilterConfig question={question} qIdx={selectedQuestionIndex} />
+        {/* MCQ-specific settings */}
+        {isMcq && (
+          <div className="space-y-4 pt-3 border-t border-gray-100">
+
+            {/* Order of Options */}
+            <div className="space-y-2">
+              <RightPanelToggle
+                label="Order of Options"
+                description="Change the order the options appear"
+                checked={cfg.randomizeOptions ?? false}
+                onChange={() =>
+                  setQuestionConfig(selectedQuestionIndex, {
+                    randomizeOptions: !cfg.randomizeOptions,
+                    optionOrderStrategy: !cfg.randomizeOptions
+                      ? (cfg.optionOrderStrategy ?? 'random')
+                      : undefined,
+                  })
+                }
+              />
+              {cfg.randomizeOptions && (
+                <select
+                  value={cfg.optionOrderStrategy ?? 'random'}
+                  onChange={(e) =>
+                    setQuestionConfig(selectedQuestionIndex, {
+                      optionOrderStrategy: e.target.value as typeof cfg.optionOrderStrategy,
+                    })
+                  }
+                  className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                >
+                  <option value="random">Random</option>
+                  <option value="alphabetical">Alphabetical</option>
+                  <option value="numerical_high_to_low">Numerical High to Low</option>
+                  <option value="numerical_low_to_high">Numerical Low to High</option>
+                  <option value="flip">Flip</option>
+                  <option value="rotate">Rotate</option>
+                </select>
+              )}
+            </div>
+
+            {/* Force number of Options — MCQ_MULTIPLE only */}
+            {isMcqMultiple && (
+              <div className="space-y-3">
+                <RightPanelToggle
+                  label="Force number of Options"
+                  description="Make respondents choose one or more"
+                  checked={cfg.forceSelectionCount ?? false}
+                  onChange={() =>
+                    setQuestionConfig(selectedQuestionIndex, {
+                      forceSelectionCount: !cfg.forceSelectionCount,
+                      ...(!cfg.forceSelectionCount
+                        ? {}
+                        : { minSelections: undefined, maxSelections: undefined }),
+                    })
+                  }
+                />
+                {cfg.forceSelectionCount && (
+                  <div className="space-y-2 pl-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-600">Minimum selections</span>
+                      <Spinner
+                        value={cfg.minSelections}
+                        onChange={(v) => setQuestionConfig(selectedQuestionIndex, { minSelections: v })}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-600">Maximum selections</span>
+                      <Spinner
+                        value={cfg.maxSelections}
+                        onChange={(v) => setQuestionConfig(selectedQuestionIndex, { maxSelections: v })}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Show "others" option */}
+            <RightPanelToggle
+              label='Show "others" option'
+              description="Allow users to enter their own answer"
+              checked={hasOthers}
+              onChange={() => toggleOthers(!hasOthers)}
+            />
+
+            {/* Show "All of the above" — MCQ_MULTIPLE only */}
+            {isMcqMultiple && (
+              <RightPanelToggle
+                label='"All of the above" option'
+                description="Allow users to select all of the options"
+                checked={hasAllOfAbove}
+                onChange={() => toggleAllOfAbove(!hasAllOfAbove)}
+              />
+            )}
+
+            {/* Show "None of the above" */}
+            <RightPanelToggle
+              label='"None of the above" option'
+              description="Allow users to select none of the options"
+              checked={cfg.hasExclusiveOption ?? false}
+              onChange={() =>
+                setQuestionConfig(selectedQuestionIndex, {
+                  hasExclusiveOption: !cfg.hasExclusiveOption,
+                  exclusiveOptionLabel: !cfg.hasExclusiveOption
+                    ? (cfg.exclusiveOptionLabel || 'None of the above')
+                    : undefined,
+                })
+              }
+            />
+          </div>
         )}
 
-        {/* Conditional Logic */}
-        <ConditionalLogicConfig question={question} qIdx={selectedQuestionIndex} />
+        {/* Ranking-specific settings */}
+        {isRanking && (
+          <div className="space-y-4 pt-3 border-t border-gray-100">
 
-        {/* Skip Logic */}
-        <SkipLogicConfig question={question} qIdx={selectedQuestionIndex} />
+            {/* Response format */}
+            <div className="space-y-1.5">
+              <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Response Format</span>
+              <select
+                value={cfg.rankingFormat ?? 'drag-vertical'}
+                onChange={(e) =>
+                  setQuestionConfig(selectedQuestionIndex, {
+                    rankingFormat: e.target.value as typeof cfg.rankingFormat,
+                  })
+                }
+                className="w-full border border-gray-200 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+              >
+                <option value="drag-vertical">Drag to sort (vertical)</option>
+                <option value="drag-horizontal">Drag to sort (horizontal)</option>
+                <option value="drag-container">Drag to container</option>
+                <option value="dropdown">Dropdown per item</option>
+                <option value="numeric-input">Number input per item</option>
+              </select>
+            </div>
+
+            {/* Dropdown placeholder — only when format is dropdown */}
+            {cfg.rankingFormat === 'dropdown' && (
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs text-gray-600">Dropdown placeholder</span>
+                <input
+                  type="text"
+                  value={cfg.rankingDropdownPlaceholder ?? ''}
+                  onChange={(e) =>
+                    setQuestionConfig(selectedQuestionIndex, {
+                      rankingDropdownPlaceholder: e.target.value || undefined,
+                    })
+                  }
+                  placeholder="Click to select rank..."
+                  className="w-36 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+              </div>
+            )}
+
+            {/* Partial ranking */}
+            <RightPanelToggle
+              label="Partial ranking"
+              description="Allow ranking only N items instead of all"
+              checked={cfg.allowPartialRanking ?? false}
+              onChange={() =>
+                setQuestionConfig(selectedQuestionIndex, {
+                  allowPartialRanking: !cfg.allowPartialRanking,
+                  ...(!cfg.allowPartialRanking ? {} : { partialRankCount: undefined }),
+                })
+              }
+            />
+            {cfg.allowPartialRanking && (
+              <div className="flex items-center justify-between pl-1">
+                <span className="text-xs text-gray-600">Items to rank</span>
+                <Spinner
+                  value={cfg.partialRankCount}
+                  min={1}
+                  onChange={(v) => setQuestionConfig(selectedQuestionIndex, { partialRankCount: v })}
+                />
+              </div>
+            )}
+
+            {/* Show Others option */}
+            <RightPanelToggle
+              label='Show "Others" option'
+              description="Allow respondents to enter their own answer"
+              checked={opts.some((o) => o.value === 'others')}
+              onChange={() => {
+                const hasOthers = opts.some((o) => o.value === 'others');
+                if (hasOthers) {
+                  setQuestionConfig(selectedQuestionIndex, {
+                    options: opts.filter((o) => o.value !== 'others'),
+                  });
+                } else {
+                  setQuestionConfig(selectedQuestionIndex, {
+                    options: [...opts, { value: 'others', label: 'Others' }],
+                  });
+                }
+              }}
+            />
+
+          </div>
+        )}
+
+        {/* File Upload settings */}
+        {isFile && (
+          <div className="space-y-4 pt-3 border-t border-gray-100">
+            <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">File Upload Settings</span>
+
+            {/* Accepted file types */}
+            <div className="space-y-2">
+              <span className="text-xs text-gray-600">Accepted file types</span>
+              <div className="flex flex-wrap gap-x-3 gap-y-1.5">
+                {(['pdf', 'jpg', 'png', 'doc', 'mp4'] as const).map((type) => {
+                  const accepted = cfg.acceptedFileTypes ?? [];
+                  const checked = accepted.includes(type);
+                  return (
+                    <label key={type} className="flex items-center gap-1.5 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => {
+                          const next = checked
+                            ? accepted.filter((t) => t !== type)
+                            : [...accepted, type];
+                          setQuestionConfig(selectedQuestionIndex, { acceptedFileTypes: next });
+                        }}
+                        className="w-3.5 h-3.5 accent-primary"
+                      />
+                      <span className="text-xs font-medium text-gray-600 uppercase">{type}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Max file size */}
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs text-gray-600">Max file size (MB)</span>
+              <input
+                type="number"
+                min={1}
+                max={100}
+                value={cfg.maxFileSizeMb ?? 10}
+                onChange={(e) =>
+                  setQuestionConfig(selectedQuestionIndex, { maxFileSizeMb: Number(e.target.value) })
+                }
+                className="w-20 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary text-right"
+              />
+            </div>
+
+          </div>
+        )}
+
+        {/* Video Response settings */}
+        {isVideo && (
+          <div className="space-y-4 pt-3 border-t border-gray-100">
+            <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Video Settings</span>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs text-gray-600">Max duration (seconds)</span>
+              <input
+                type="number"
+                min={5}
+                max={600}
+                value={cfg.maxVideoDurationSec ?? 120}
+                onChange={(e) =>
+                  setQuestionConfig(selectedQuestionIndex, { maxVideoDurationSec: Number(e.target.value) })
+                }
+                className="w-20 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary text-right"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Audio Response settings */}
+        {isAudio && (
+          <div className="space-y-4 pt-3 border-t border-gray-100">
+            <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Audio Settings</span>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs text-gray-600">Max duration (seconds)</span>
+              <input
+                type="number"
+                min={5}
+                max={600}
+                value={cfg.maxAudioDurationSec ?? 120}
+                onChange={(e) =>
+                  setQuestionConfig(selectedQuestionIndex, { maxAudioDurationSec: Number(e.target.value) })
+                }
+                className="w-20 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary text-right"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Text-type settings */}
+        {isTextType && (
+          <div className="space-y-4 pt-3 border-t border-gray-100">
+
+            {/* Placeholder */}
+            <div className="space-y-1.5">
+              <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Placeholder</span>
+              <input
+                type="text"
+                value={question.translations[activeLanguage]?.placeholder ?? ''}
+                onChange={(e) => setQuestionTranslation(selectedQuestionIndex, activeLanguage, { placeholder: e.target.value })}
+                placeholder="e.g. Enter your answer..."
+                className="w-full border border-gray-200 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+
+            {/* Character limits — TEXT / TEXTAREA only */}
+            {(isText || isTextarea) && (
+              <div className="space-y-2">
+                <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Character Limits</span>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600">Min chars</span>
+                  <Spinner
+                    value={cfg.minChars}
+                    min={0}
+                    onChange={(v) => setQuestionConfig(selectedQuestionIndex, { minChars: v > 0 ? v : undefined })}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600">Max chars</span>
+                  <Spinner
+                    value={cfg.maxChars}
+                    min={1}
+                    onChange={(v) => setQuestionConfig(selectedQuestionIndex, { maxChars: v })}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Input size — TEXT (width) / TEXTAREA (height) */}
+            {(isText || isTextarea) && (
+              <div className="space-y-2">
+                <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Input Size</span>
+                {isText && (
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs text-gray-600">Width (px)</span>
+                    <input
+                      type="number"
+                      min={50}
+                      value={cfg.inputWidthPx ?? ''}
+                      onChange={(e) => setQuestionConfig(selectedQuestionIndex, { inputWidthPx: e.target.value ? Number(e.target.value) : undefined })}
+                      placeholder="Full width"
+                      className="w-24 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary text-right"
+                    />
+                  </div>
+                )}
+                {isTextarea && (
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs text-gray-600">Height (px)</span>
+                    <input
+                      type="number"
+                      min={60}
+                      value={cfg.inputHeightPx ?? ''}
+                      onChange={(e) => setQuestionConfig(selectedQuestionIndex, { inputHeightPx: e.target.value ? Number(e.target.value) : undefined })}
+                      placeholder="Auto"
+                      className="w-24 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary text-right"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Number: value range */}
+            {isNumber && (
+              <div className="space-y-2">
+                <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Value Range</span>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs text-gray-600">Min</span>
+                  <input
+                    type="number"
+                    value={cfg.min ?? ''}
+                    onChange={(e) => setQuestionConfig(selectedQuestionIndex, { min: e.target.value ? Number(e.target.value) : undefined })}
+                    className="w-24 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary text-right"
+                  />
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs text-gray-600">Max</span>
+                  <input
+                    type="number"
+                    value={cfg.max ?? ''}
+                    onChange={(e) => setQuestionConfig(selectedQuestionIndex, { max: e.target.value ? Number(e.target.value) : undefined })}
+                    className="w-24 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary text-right"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Number: decimal delimiter */}
+            {isNumber && (
+              <div className="space-y-2">
+                <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Decimal Delimiter</span>
+                <div className="flex gap-4">
+                  {(['period', 'comma'] as const).map((d) => (
+                    <label key={d} className="flex items-center gap-1.5 cursor-pointer text-xs text-gray-700">
+                      <input
+                        type="radio"
+                        name={`decimal-${selectedQuestionIndex}`}
+                        checked={(cfg.decimalDelimiter ?? 'period') === d}
+                        onChange={() => setQuestionConfig(selectedQuestionIndex, { decimalDelimiter: d })}
+                        className="accent-primary"
+                      />
+                      {d === 'period' ? 'Period ( . )' : 'Comma ( , )'}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Number: Don't Know / Refuse */}
+            {isNumber && (
+              <div className="space-y-2">
+                <RightPanelToggle
+                  label={`Allow "Don't Know / Refuse"`}
+                  checked={cfg.hasDontKnow ?? false}
+                  onChange={() => setQuestionConfig(selectedQuestionIndex, { hasDontKnow: !cfg.hasDontKnow })}
+                />
+                {cfg.hasDontKnow && (
+                  <div className="space-y-2 pl-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs text-gray-600">Button label</span>
+                      <input
+                        type="text"
+                        value={cfg.dontKnowLabel ?? ''}
+                        onChange={(e) => setQuestionConfig(selectedQuestionIndex, { dontKnowLabel: e.target.value || undefined })}
+                        placeholder="Don't Know"
+                        className="w-28 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs text-gray-600">Stored value</span>
+                      <input
+                        type="text"
+                        value={cfg.dontKnowValue ?? ''}
+                        onChange={(e) => setQuestionConfig(selectedQuestionIndex, { dontKnowValue: e.target.value || undefined })}
+                        placeholder="DK"
+                        className="w-28 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Currency code */}
+            {isCurrency && (
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs text-gray-600">Currency code</span>
+                <input
+                  type="text"
+                  value={cfg.currency ?? ''}
+                  onChange={(e) => setQuestionConfig(selectedQuestionIndex, { currency: e.target.value })}
+                  placeholder="INR, USD..."
+                  maxLength={5}
+                  className="w-24 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+              </div>
+            )}
+
+          </div>
+        )}
+
       </div>
     </div>
   );

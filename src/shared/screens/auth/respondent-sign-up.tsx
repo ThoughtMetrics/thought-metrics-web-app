@@ -284,6 +284,7 @@ const RespondentSignUpPage: React.FC = () => {
     const linkId = params.get('tm_link_id');
     const allocatedSurvey = params.get('allocated_survey');
     const redirectAfter = params.get('redirect_after');
+    const userType = params.get('userType');
 
     // Store tracking parameters in localStorage for persistence
     if (linkId) {
@@ -294,6 +295,9 @@ const RespondentSignUpPage: React.FC = () => {
     }
     if (redirectAfter) {
       localStorage.setItem('tm_redirect_after_signup', redirectAfter);
+    }
+    if (userType) {
+      localStorage.setItem('tm_user_type', userType);
     }
   }, []);
 
@@ -384,6 +388,8 @@ const RespondentSignUpPage: React.FC = () => {
       );
     }
 
+    const storedUserType = localStorage.getItem('tm_user_type');
+
     const result = await signUpMutation.mutateAsync({
       type: 'email',
       data: {
@@ -400,6 +406,7 @@ const RespondentSignUpPage: React.FC = () => {
         privacyAccepted: formData.privacyAccepted,
         paymentMethod: formData.paymentMethod,
         payment: formData.payment,
+        role: storedUserType ?? 'respondent',
       },
     });
 

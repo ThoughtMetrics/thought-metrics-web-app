@@ -13,6 +13,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
   selectedStars,
   onRatingChange,
   image,
+  video,
   ratingLabels,
   comment,
   onCommentChange,
@@ -59,6 +60,13 @@ export const StarRating: React.FC<StarRatingProps> = ({
               alt="Rating content"
               className="w-auto max-h-80 rounded-lg"
             />
+          </div>
+        )}
+
+        {/* Video */}
+        {video && !image && (
+          <div className="w-full flex justify-center">
+            <video src={video} controls className="w-auto max-h-80 rounded-lg" />
           </div>
         )}
 

@@ -138,6 +138,7 @@ export interface SignUpData {
   privacyAccepted: boolean;
   paymentMethod: 'upi' | 'bank' | 'skip' | undefined;
   payment?: Payment;
+  role?: string;
 }
 
 // Update Profile Data Interface - For profile updates (PATCH /users/profile)

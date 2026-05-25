@@ -118,6 +118,10 @@ interface SurveyBuilderState {
   // Language
   setActiveLanguage: (lang: SupportedBuilderLanguage) => void;
 
+  // UI triggers (not persisted)
+  conditionalLogicHighlight: number;
+  triggerConditionalLogicHighlight: () => void;
+
   // Serialise for API
   toCreateRequest: () => ISurveyTemplateCreateRequest;
   toUpdateRequest: () => ISurveyTemplateUpdateRequest;
@@ -177,6 +181,7 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
       settings: defaultSettings(),
       selectedQuestionIndex: null,
       activeLanguage: 'en',
+      conditionalLogicHighlight: 0,
       _past: [],
       _future: [],
 
@@ -277,6 +282,7 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
             allowAnonymous: t.settings?.allowAnonymous ?? false,
             captureFields: t.settings?.captureFields ?? [],
             industry: (t as any).industry ?? (t.settings as any)?.industry ?? 'Others',
+            methodology: t.settings?.methodology ?? undefined,
           },
           selectedQuestionIndex: null,
           activeLanguage: 'en',
@@ -594,6 +600,10 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
 
       // ── Language ─────────────────────────────────────────────────────────
       setActiveLanguage: (lang) => set({ activeLanguage: lang }),
+
+      // ── UI triggers (not persisted) ───────────────────────────────────────
+      triggerConditionalLogicHighlight: () =>
+        set((s) => ({ conditionalLogicHighlight: s.conditionalLogicHighlight + 1 })),
 
       // ── Serialise ────────────────────────────────────────────────────────
 

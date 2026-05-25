@@ -21,14 +21,17 @@ import type { IBuilderQuestion, IBuilderShowIfCondition, SupportedBuilderLanguag
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 import { useSetLanguage } from '@/core/stores/language.store';
 import { BuilderQuestionPreview } from './BuilderQuestionPreview';
-import TextConfig from './configs/TextConfig';
 import ChoiceConfig from './configs/ChoiceConfig';
 import ScaleConfig from './configs/ScaleConfig';
 import SliderConfig from './configs/SliderConfig';
 import MatrixConfig from './configs/MatrixConfig';
 import FileConfig from './configs/FileConfig';
+import VideoConfig from './configs/VideoConfig';
+import AudioConfig from './configs/AudioConfig';
 import DisplayConfig from './configs/DisplayConfig';
 import PipeTokenButton from './PipeTokenButton';
+import McqCanvasEditor from './McqCanvasEditor';
+import RankingCanvasEditor from './RankingCanvasEditor';
 
 // ---------------------------------------------------------------------------
 // Type sets for config routing
@@ -40,7 +43,7 @@ const TEXT_TYPES = new Set([
   QuestionType.CURRENCY,
 ]);
 const CHOICE_TYPES = new Set([
-  QuestionType.MCQ_SINGLE, QuestionType.MCQ_MULTIPLE, QuestionType.RANKING,
+  QuestionType.MCQ_SINGLE, QuestionType.MCQ_MULTIPLE,
 ]);
 const SCALE_TYPES = new Set([
   QuestionType.RATING, QuestionType.LIKERT_SCALE, QuestionType.SCALE,
@@ -50,6 +53,9 @@ const SLIDER_TYPES = new Set([
 ]);
 const MATRIX_TYPES = new Set([
   QuestionType.MATRIX, QuestionType.MAX_DIFF, QuestionType.CONSTANT_SUM,
+]);
+const MEDIA_TYPES = new Set([
+  QuestionType.VIDEO, QuestionType.AUDIO,
 ]);
 
 // ---------------------------------------------------------------------------
@@ -81,6 +87,8 @@ const QUESTION_TYPE_LABEL: Record<string, string> = {
   [QuestionType.MAX_DIFF]:      'Max Diff',
   [QuestionType.CONSTANT_SUM]:  'Constant Sum',
   [QuestionType.FILE]:          'File Upload',
+  [QuestionType.VIDEO]:         'Video Response',
+  [QuestionType.AUDIO]:         'Audio Response',
   [QuestionType.TEXT_DISPLAY]:  'Text / Graphic Display',
   [QuestionType.SMART_FOLLOWUP]: 'Smart Follow-Up (AI)',
 };
@@ -232,6 +240,7 @@ const QuestionEditorPanel: React.FC = () => {
     setActiveLanguage,
     selectQuestion,
     setQuestionField,
+    setQuestionConfig,
     setQuestionTranslation,
     changeQuestionType,
   } = useSurveyBuilderStore();
@@ -272,7 +281,6 @@ const QuestionEditorPanel: React.FC = () => {
     setPreviewAnswers({});
     setPreviewNavIdx(0);
     setPreviewDone(false);
-    setViewMode('list');
     setShowPreview(true);
   };
 
@@ -282,7 +290,28 @@ const QuestionEditorPanel: React.FC = () => {
     const question = questions[qIdx];
     const lang = activeLanguage;
     if (TEXT_TYPES.has(question.questionType)) {
-      return <TextConfig question={question} qIdx={qIdx} lang={lang} />;
+      // Visual-only bottom-border input — all settings are in the right panel
+      const t = question.translations[lang];
+      const defaultPh: Partial<Record<QuestionType, string>> = {
+        [QuestionType.TEXT]: 'Type your answer here...',
+        [QuestionType.TEXTAREA]: 'Type your answer here...',
+        [QuestionType.NUMBER]: '0',
+        [QuestionType.EMAIL]: 'email@example.com',
+        [QuestionType.PHONE]: 'Phone number',
+        [QuestionType.DATE]: 'Select a date...',
+        [QuestionType.CURRENCY]: '0.00',
+      };
+      const ph = t.placeholder || defaultPh[question.questionType] || 'Type your answer here...';
+      const isTextarea = question.questionType === QuestionType.TEXTAREA;
+      return (
+        <div className={`flex gap-0.5 border-b-2 border-primary/50 pb-1.5 ${isTextarea ? 'items-start pt-1 min-h-[56px]' : 'items-center'}`}>
+          <span
+            className="flex-shrink-0 inline-block w-px bg-primary/70"
+            style={{ height: '1.1em', animation: 'cursor-blink 1s step-end infinite' }}
+          />
+          <span className="text-sm text-primary/40 italic select-none">{ph}</span>
+        </div>
+      );
     }
     if (CHOICE_TYPES.has(question.questionType)) {
       return <ChoiceConfig question={question} qIdx={qIdx} lang={lang} />;
@@ -299,6 +328,11 @@ const QuestionEditorPanel: React.FC = () => {
     if (question.questionType === QuestionType.FILE) {
       return <FileConfig question={question} qIdx={qIdx} />;
     }
+    if (MEDIA_TYPES.has(question.questionType)) {
+      return question.questionType === QuestionType.VIDEO
+        ? <VideoConfig question={question} qIdx={qIdx} />
+        : <AudioConfig question={question} qIdx={qIdx} />;
+    }
     if (question.questionType === QuestionType.TEXT_DISPLAY) {
       return <DisplayConfig question={question} qIdx={qIdx} />;
     }
@@ -310,20 +344,9 @@ const QuestionEditorPanel: React.FC = () => {
   const withDeviceFrame = (children: React.ReactNode) => {
     if (deviceView === 'desktop') return <>{children}</>;
     return (
-      <div className="flex-1 overflow-y-auto flex items-start justify-center bg-gray-100 py-6">
-        <div
-          className="relative bg-gray-900 rounded-[2.5rem] shadow-2xl flex flex-col"
-          style={{ width: 390, minHeight: 720 }}
-        >
-          <div className="flex items-center justify-center pt-3 pb-1 shrink-0">
-            <div className="w-24 h-5 bg-gray-800 rounded-full" />
-          </div>
-          <div className="mx-2 mb-2 rounded-[1.75rem] bg-white overflow-hidden flex flex-col" style={{ flex: 1 }}>
-            {children}
-          </div>
-          <div className="flex items-center justify-center py-2 shrink-0">
-            <div className="w-20 h-1 bg-gray-600 rounded-full" />
-          </div>
+      <div className="flex-1 overflow-hidden flex justify-center bg-gray-50">
+        <div className="w-[390px] flex flex-col overflow-hidden">
+          {children}
         </div>
       </div>
     );
@@ -356,29 +379,27 @@ const QuestionEditorPanel: React.FC = () => {
         </div>
       </div>
 
-      {/* Right: Preview Survey + View mode toggle (toggle only in preview mode) */}
+      {/* Right: View mode toggle + Preview Survey */}
       <div className="flex items-center gap-2">
-        {/* View mode toggle — only visible during preview */}
-        {showPreview && (
-          <div className="flex items-center bg-gray-100 rounded-lg p-0.5 gap-0.5">
-            <button
-              type="button"
-              title="Single question view"
-              onClick={() => setViewMode('single')}
-              className={`p-1.5 rounded-md transition-all ${viewMode === 'single' ? 'bg-white shadow-sm' : 'hover:text-black'}`}
-            >
-              <SingleViewIcon active={viewMode === 'single'} />
-            </button>
-            <button
-              type="button"
-              title="All questions list view"
-              onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-white shadow-sm' : 'hover:text-black'}`}
-            >
-              <ListViewIcon active={viewMode === 'list'} />
-            </button>
-          </div>
-        )}
+        {/* View mode toggle — always visible */}
+        <div className="flex items-center bg-gray-100 rounded-lg p-0.5 gap-0.5">
+          <button
+            type="button"
+            title="Single question view"
+            onClick={() => setViewMode('single')}
+            className={`p-1.5 rounded-md transition-all ${viewMode === 'single' ? 'bg-white shadow-sm' : 'hover:text-black'}`}
+          >
+            <SingleViewIcon active={viewMode === 'single'} />
+          </button>
+          <button
+            type="button"
+            title="All questions list view"
+            onClick={() => setViewMode('list')}
+            className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-white shadow-sm' : 'hover:text-black'}`}
+          >
+            <ListViewIcon active={viewMode === 'list'} />
+          </button>
+        </div>
 
         {/* Preview Survey toggle */}
         {!showPreview ? (
@@ -528,6 +549,47 @@ const QuestionEditorPanel: React.FC = () => {
     );
   }
 
+  // ── Shared type-select options (used in both list and single views) ────────
+
+  const typeSelectOptions = (
+    <>
+      <optgroup label="Text">
+        <option value={QuestionType.TEXT}>Short Text</option>
+        <option value={QuestionType.TEXTAREA}>Long Text</option>
+        <option value={QuestionType.NUMBER}>Number</option>
+        <option value={QuestionType.EMAIL}>Email</option>
+        <option value={QuestionType.PHONE}>Phone</option>
+        <option value={QuestionType.DATE}>Date</option>
+        <option value={QuestionType.CURRENCY}>Currency</option>
+      </optgroup>
+      <optgroup label="Choice">
+        <option value={QuestionType.MCQ_SINGLE}>Single Choice (MCQ)</option>
+        <option value={QuestionType.MCQ_MULTIPLE}>Multiple Choice</option>
+        <option value={QuestionType.RANKING}>Ranking</option>
+      </optgroup>
+      <optgroup label="Scale">
+        <option value={QuestionType.RATING}>Star Rating</option>
+        <option value={QuestionType.LIKERT_SCALE}>Likert Scale</option>
+        <option value={QuestionType.SCALE}>Slider Scale</option>
+        <option value={QuestionType.DOUBLE_SLIDER}>Double Slider</option>
+        <option value={QuestionType.MULTI_SLIDER}>Multi Slider</option>
+      </optgroup>
+      <optgroup label="Grid">
+        <option value={QuestionType.MATRIX}>Matrix</option>
+        <option value={QuestionType.MAX_DIFF}>Max Diff</option>
+        <option value={QuestionType.CONSTANT_SUM}>Constant Sum</option>
+        <option value={QuestionType.FILE}>File Upload</option>
+      </optgroup>
+      <optgroup label="Media">
+        <option value={QuestionType.VIDEO}>Video Response</option>
+        <option value={QuestionType.AUDIO}>Audio Response</option>
+      </optgroup>
+      <optgroup label="Display">
+        <option value={QuestionType.TEXT_DISPLAY}>Text / Graphic Display</option>
+      </optgroup>
+    </>
+  );
+
   // ── List view (editable) ─────────────────────────────────────────────────
 
   if (viewMode === 'list') {
@@ -546,99 +608,172 @@ const QuestionEditorPanel: React.FC = () => {
             question.config.showIfAny?.length
           );
           const hasSkipRules = !!(question.config.skipRules?.length);
+          const isMcqList =
+            question.questionType === QuestionType.MCQ_SINGLE ||
+            question.questionType === QuestionType.MCQ_MULTIPLE;
+          const isRankingList = question.questionType === QuestionType.RANKING;
+          const isNarrowList = isMcqList || isRankingList;
+
+          // Unified canvas card for all question types
           return (
             <div
               key={question.id}
               onClick={() => selectQuestion(qIdx)}
-              className={`bg-white rounded-xl border transition-colors cursor-pointer ${
-                isSelected ? 'border-primary ring-1 ring-primary/30' : 'border-gray-200 hover:border-gray-300'
+              className={`bg-white rounded-xl border overflow-hidden transition-colors cursor-pointer ${
+                isSelected ? 'border-primary ring-1 ring-primary/30' : 'border-rose-200'
               }`}
             >
-              {/* Single row: Q-number | textarea | pipe button | type selector */}
-              <div className="flex items-center gap-2 px-4 py-2.5" onClick={(e) => e.stopPropagation()}>
-                <div className="flex items-center gap-1.5 flex-shrink-0">
-                  <span className="text-xs font-semibold text-gray-400">Q{question.order}</span>
+              {/* IF / SKIP banners */}
+              {(hasCondition || hasSkipRules) && (
+                <div className="px-4 pt-3 space-y-1.5">
                   {hasCondition && (
-                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">IF</span>
+                    <div className="px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-2">
+                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">IF</span>
+                      <span className="text-xs text-amber-700">Has conditional logic</span>
+                    </div>
                   )}
                   {hasSkipRules && (
-                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">SKIP</span>
+                    <div className="px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
+                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">SKIP</span>
+                      <span className="text-xs text-blue-700">Has skip rules</span>
+                    </div>
                   )}
                 </div>
-                <textarea
-                  ref={(el) => { listTextareaRefs.current[qIdx] = el; }}
-                  value={t.text}
-                  onChange={(e) => {
-                    setQuestionTranslation(qIdx, activeLanguage, { text: e.target.value });
-                    if (activeLanguage === 'en') {
-                      setQuestionField(qIdx, 'text', e.target.value);
-                    }
-                  }}
-                  onFocus={() => selectQuestion(qIdx)}
-                  placeholder="Enter question text..."
-                  rows={1}
-                  className="flex-1 text-sm text-gray-800 placeholder-gray-400 resize-none focus:outline-none bg-transparent leading-snug py-0.5"
-                />
-                <PipeTokenButton
-                  questions={questions}
-                  currentQuestionIndex={qIdx}
-                  onInsert={(token) => {
-                    const el = listTextareaRefs.current[qIdx];
-                    if (el) {
-                      insertTokenAtCursor(el, token, t.text, (newVal) => {
-                        setQuestionTranslation(qIdx, activeLanguage, { text: newVal });
-                        if (activeLanguage === 'en') setQuestionField(qIdx, 'text', newVal);
-                      });
-                    }
-                  }}
-                />
+              )}
+
+              {/* Canvas content */}
+              <div className="px-8 py-8" onClick={(e) => e.stopPropagation()}>
+                <div className={`mx-auto w-full space-y-5 ${isNarrowList ? 'max-w-sm' : 'max-w-xl'}`}>
+                  <div className="flex items-start gap-3">
+                    <span className="flex-shrink-0 w-6 h-6 bg-primary text-white text-xs font-bold flex items-center justify-center rounded mt-1">
+                      {question.order}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start gap-1">
+                        <textarea
+                          ref={(el) => { listTextareaRefs.current[qIdx] = el; }}
+                          value={t.text}
+                          onChange={(e) => {
+                            setQuestionTranslation(qIdx, activeLanguage, { text: e.target.value });
+                            if (activeLanguage === 'en') setQuestionField(qIdx, 'text', e.target.value);
+                          }}
+                          onFocus={() => selectQuestion(qIdx)}
+                          placeholder="Type your question here..."
+                          rows={1}
+                          className="flex-1 min-w-0 bg-transparent resize-none text-xl font-semibold text-gray-900 focus:outline-none placeholder-gray-300 leading-snug"
+                          style={{ overflow: 'hidden' }}
+                          onInput={(e) => {
+                            const el = e.currentTarget;
+                            el.style.height = 'auto';
+                            el.style.height = el.scrollHeight + 'px';
+                          }}
+                        />
+                        {question.required && (
+                          <span className="text-rose-400 text-xl font-medium flex-shrink-0 leading-snug mt-0.5">*</span>
+                        )}
+                      </div>
+                      {/* Description/subtitle — hidden for text types as right panel owns the placeholder field */}
+                      {!TEXT_TYPES.has(question.questionType) && (
+                        <input
+                          type="text"
+                          value={t.placeholder ?? ''}
+                          onChange={(e) => setQuestionTranslation(qIdx, activeLanguage, { placeholder: e.target.value })}
+                          onFocus={() => selectQuestion(qIdx)}
+                          placeholder="Description (optional)"
+                          className="w-full bg-transparent text-sm text-gray-400 focus:outline-none placeholder-gray-300 mt-1"
+                        />
+                      )}
+                    </div>
+                  </div>
+                  {/* Rating media block */}
+                  {question.questionType === QuestionType.RATING && (() => {
+                    const cfg = question.config;
+                    return (
+                      <div>
+                        {cfg.questionMediaUrl ? (
+                          <div className="relative group">
+                            {cfg.questionMediaType === 'video'
+                              ? <video src={cfg.questionMediaUrl} controls className="w-full rounded-lg max-h-48 object-cover" />
+                              : <img src={cfg.questionMediaUrl} alt="" className="w-full rounded-lg max-h-48 object-cover" />
+                            }
+                            <button
+                              type="button"
+                              onClick={() => useSurveyBuilderStore.getState().setQuestionConfig(qIdx, { questionMediaUrl: undefined, questionMediaType: undefined })}
+                              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-white/80 rounded-full p-1 hover:bg-white transition-all"
+                            >
+                              <svg className="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                        ) : (
+                          <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl px-6 py-6 cursor-pointer hover:border-primary/50 transition-colors">
+                            <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span className="text-xs text-gray-400">Add image or video (optional)</span>
+                            <input
+                              type="file"
+                              accept="image/*,video/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                const url = URL.createObjectURL(file);
+                                const type: 'image' | 'video' = file.type.startsWith('video/') ? 'video' : 'image';
+                                useSurveyBuilderStore.getState().setQuestionConfig(qIdx, { questionMediaUrl: url, questionMediaType: type });
+                              }}
+                            />
+                          </label>
+                        )}
+                      </div>
+                    );
+                  })()}
+                  {isMcqList
+                    ? <McqCanvasEditor question={question} qIdx={qIdx} lang={activeLanguage} />
+                    : isRankingList
+                      ? <RankingCanvasEditor question={question} qIdx={qIdx} lang={activeLanguage} />
+                      : renderTypeConfig(qIdx)
+                  }
+                </div>
+              </div>
+
+              {/* Bottom bar: lang tabs + pipe token + type select */}
+              <div className="border-t border-gray-100 px-4 py-2 flex items-center justify-between bg-gray-50/40" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center gap-1.5">
+                  {(['en', 'ta'] as SupportedBuilderLanguage[]).map((l) => (
+                    <button
+                      key={l}
+                      onClick={() => { setActiveLanguage(l); setGlobalLanguage(l as 'en' | 'ta'); }}
+                      className={`px-2.5 py-1 rounded text-xs font-medium transition-colors ${
+                        activeLanguage === l ? 'bg-primary text-white' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                      }`}
+                    >
+                      {LANG_LABELS[l]}
+                    </button>
+                  ))}
+                  <PipeTokenButton
+                    questions={questions}
+                    currentQuestionIndex={qIdx}
+                    onInsert={(token) => {
+                      const el = listTextareaRefs.current[qIdx];
+                      if (el) {
+                        insertTokenAtCursor(el, token, t.text, (newVal) => {
+                          setQuestionTranslation(qIdx, activeLanguage, { text: newVal });
+                          if (activeLanguage === 'en') setQuestionField(qIdx, 'text', newVal);
+                        });
+                      }
+                    }}
+                  />
+                </div>
                 <select
                   value={question.questionType}
                   onChange={(e) => changeQuestionType(qIdx, e.target.value as QuestionType)}
-                  onClick={(e) => e.stopPropagation()}
-                  className="flex-shrink-0 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white text-gray-600"
+                  className="border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white text-gray-600"
                 >
-                  <optgroup label="Text">
-                    <option value={QuestionType.TEXT}>Short Text</option>
-                    <option value={QuestionType.TEXTAREA}>Long Text</option>
-                    <option value={QuestionType.NUMBER}>Number</option>
-                    <option value={QuestionType.EMAIL}>Email</option>
-                    <option value={QuestionType.PHONE}>Phone</option>
-                    <option value={QuestionType.DATE}>Date</option>
-                    <option value={QuestionType.CURRENCY}>Currency</option>
-                  </optgroup>
-                  <optgroup label="Choice">
-                    <option value={QuestionType.MCQ_SINGLE}>Single Choice (MCQ)</option>
-                    <option value={QuestionType.MCQ_MULTIPLE}>Multiple Choice</option>
-                    <option value={QuestionType.RANKING}>Ranking</option>
-                  </optgroup>
-                  <optgroup label="Scale">
-                    <option value={QuestionType.RATING}>Star Rating</option>
-                    <option value={QuestionType.LIKERT_SCALE}>Likert Scale</option>
-                    <option value={QuestionType.SCALE}>Slider Scale</option>
-                    <option value={QuestionType.DOUBLE_SLIDER}>Double Slider</option>
-                    <option value={QuestionType.MULTI_SLIDER}>Multi Slider</option>
-                  </optgroup>
-                  <optgroup label="Grid">
-                    <option value={QuestionType.MATRIX}>Matrix</option>
-                    <option value={QuestionType.MAX_DIFF}>Max Diff</option>
-                    <option value={QuestionType.CONSTANT_SUM}>Constant Sum</option>
-                    <option value={QuestionType.FILE}>File Upload</option>
-                  </optgroup>
-                  <optgroup label="Display">
-                    <option value={QuestionType.TEXT_DISPLAY}>Text / Graphic Display</option>
-                  </optgroup>
+                  {typeSelectOptions}
                 </select>
               </div>
-
-              {/* Type-specific config — shown inline when card is selected */}
-              {isSelected && (
-                <div className="px-4 pb-4 border-t border-gray-100" onClick={(e) => e.stopPropagation()}>
-                  <div className="pt-3">
-                    {renderTypeConfig(qIdx)}
-                  </div>
-                </div>
-              )}
             </div>
           );
         })}
@@ -691,37 +826,151 @@ const QuestionEditorPanel: React.FC = () => {
   );
   const hasSkipRulesSingle = !!(question.config.skipRules?.length);
 
+  const isMcqCanvas =
+    question.questionType === QuestionType.MCQ_SINGLE ||
+    question.questionType === QuestionType.MCQ_MULTIPLE;
+  const isRankingCanvas = question.questionType === QuestionType.RANKING;
+  const isNarrowCanvas = isMcqCanvas || isRankingCanvas;
+
+  // ── Unified canvas shell for ALL question types ──────────────────────────
   const editorContent = (
-    <div className="flex-1 overflow-y-auto p-4 space-y-4">
-      {/* Conditional logic indicator */}
-      {hasCondition && (
-        <div className="px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-2">
-          <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">IF</span>
-          <span className="text-xs text-amber-700">
-            This question has conditional logic — it may be hidden for some respondents.
-          </span>
-        </div>
-      )}
-      {hasSkipRulesSingle && (
-        <div className="px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
-          <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">SKIP</span>
-          <span className="text-xs text-blue-700">
-            This question has skip rules — respondents may be navigated to a different question.
-          </span>
+    <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+      {/* IF / SKIP banners */}
+      {(hasCondition || hasSkipRulesSingle) && (
+        <div className="px-4 pt-3 space-y-2 flex-shrink-0">
+          {hasCondition && (
+            <div className="px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-2">
+              <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">IF</span>
+              <span className="text-xs text-amber-700">This question has conditional logic — it may be hidden for some respondents.</span>
+            </div>
+          )}
+          {hasSkipRulesSingle && (
+            <div className="px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
+              <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">SKIP</span>
+              <span className="text-xs text-blue-700">This question has skip rules — respondents may be navigated to a different question.</span>
+            </div>
+          )}
         </div>
       )}
 
-      {/* ── Editable question card ── */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        {/* Card header: Q-number + pipe button (left) | type select (right) */}
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-gray-50/50">
-          <div className="flex items-center gap-2">
-            <div>
-              <span className="text-xs font-semibold text-gray-400">Q{question.order}</span>
-              <span className="block text-[10px] text-gray-400 mt-0.5 leading-none">
-                {QUESTION_TYPE_LABEL[question.questionType] ?? question.questionType}
+      {/* Canvas frame */}
+      <div className="flex-1 mx-3 mb-3 mt-2 bg-white border border-rose-200 rounded-xl flex flex-col overflow-hidden">
+
+        {/* Scrollable body — all types centred; min-h-full keeps centering when content is short */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="min-h-full flex flex-col items-center justify-center px-8 py-10">
+            <div className={`w-full space-y-5 ${isNarrowCanvas ? 'max-w-sm' : 'max-w-xl'}`}>
+
+            {/* Badge + headless question text + description */}
+            <div className="flex items-start gap-3">
+              <span className="flex-shrink-0 w-6 h-6 bg-primary text-white text-xs font-bold flex items-center justify-center rounded mt-1">
+                {question.order}
               </span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start gap-1">
+                  <textarea
+                    ref={singleTextareaRef}
+                    value={t.text}
+                    onChange={(e) => {
+                      setQuestionTranslation(selectedQuestionIndex, lang, { text: e.target.value });
+                      if (lang === 'en') setQuestionField(selectedQuestionIndex, 'text', e.target.value);
+                    }}
+                    placeholder="Type your question here..."
+                    rows={1}
+                    className="flex-1 min-w-0 bg-transparent resize-none text-xl font-semibold text-gray-900 focus:outline-none placeholder-gray-300 leading-snug"
+                    style={{ overflow: 'hidden' }}
+                    onInput={(e) => {
+                      const el = e.currentTarget;
+                      el.style.height = 'auto';
+                      el.style.height = el.scrollHeight + 'px';
+                    }}
+                  />
+                  {question.required && (
+                    <span className="text-rose-400 text-xl font-medium flex-shrink-0 leading-snug mt-0.5">*</span>
+                  )}
+                </div>
+                {/* Description/subtitle — hidden for text types as right panel owns the placeholder field */}
+                {!TEXT_TYPES.has(question.questionType) && (
+                  <input
+                    type="text"
+                    value={t.placeholder ?? ''}
+                    onChange={(e) =>
+                      setQuestionTranslation(selectedQuestionIndex, lang, { placeholder: e.target.value })
+                    }
+                    placeholder="Description (optional)"
+                    className="w-full bg-transparent text-sm text-gray-400 focus:outline-none placeholder-gray-300 mt-1"
+                  />
+                )}
+              </div>
             </div>
+
+            {/* Rating media upload block */}
+            {question.questionType === QuestionType.RATING && (
+              <div>
+                {question.config.questionMediaUrl ? (
+                  <div className="relative group">
+                    {question.config.questionMediaType === 'video'
+                      ? <video src={question.config.questionMediaUrl} controls className="w-full rounded-lg max-h-48 object-cover" />
+                      : <img src={question.config.questionMediaUrl} alt="" className="w-full rounded-lg max-h-48 object-cover" />
+                    }
+                    <button
+                      type="button"
+                      onClick={() => setQuestionConfig(selectedQuestionIndex, { questionMediaUrl: undefined, questionMediaType: undefined })}
+                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-white/80 rounded-full p-1 hover:bg-white transition-all"
+                    >
+                      <svg className="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl px-6 py-6 cursor-pointer hover:border-primary/50 transition-colors">
+                    <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-xs text-gray-400">Add image or video (optional)</span>
+                    <input
+                      type="file"
+                      accept="image/*,video/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        const url = URL.createObjectURL(file);
+                        const type: 'image' | 'video' = file.type.startsWith('video/') ? 'video' : 'image';
+                        setQuestionConfig(selectedQuestionIndex, { questionMediaUrl: url, questionMediaType: type });
+                      }}
+                    />
+                  </label>
+                )}
+              </div>
+            )}
+
+            {/* Type-specific content */}
+            {isMcqCanvas
+              ? <McqCanvasEditor question={question} qIdx={selectedQuestionIndex} lang={lang} />
+              : isRankingCanvas
+                ? <RankingCanvasEditor question={question} qIdx={selectedQuestionIndex} lang={lang} />
+                : renderTypeConfig(selectedQuestionIndex)
+            }
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom toolbar — same for all types */}
+        <div className="flex-shrink-0 border-t border-gray-100 px-4 py-2 flex items-center justify-between bg-gray-50/40">
+          <div className="flex items-center gap-1.5">
+            {(['en', 'ta'] as SupportedBuilderLanguage[]).map((l) => (
+              <button
+                key={l}
+                onClick={() => { setActiveLanguage(l); setGlobalLanguage(l as 'en' | 'ta'); }}
+                className={`px-2.5 py-1 rounded text-xs font-medium transition-colors ${
+                  lang === l ? 'bg-primary text-white' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                }`}
+              >
+                {LANG_LABELS[l]}
+              </button>
+            ))}
             <PipeTokenButton
               questions={questions}
               currentQuestionIndex={selectedQuestionIndex}
@@ -734,95 +983,15 @@ const QuestionEditorPanel: React.FC = () => {
                   });
                 }
               }}
-              title="Insert answer from a previous question into this text"
             />
           </div>
-
-          {/* Question type select */}
           <select
             value={question.questionType}
             onChange={(e) => changeQuestionType(selectedQuestionIndex, e.target.value as QuestionType)}
-            className="border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+            className="border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white text-gray-600"
           >
-            <optgroup label="Text">
-              <option value={QuestionType.TEXT}>Short Text</option>
-              <option value={QuestionType.TEXTAREA}>Long Text</option>
-              <option value={QuestionType.NUMBER}>Number</option>
-              <option value={QuestionType.EMAIL}>Email</option>
-              <option value={QuestionType.PHONE}>Phone</option>
-              <option value={QuestionType.DATE}>Date</option>
-              <option value={QuestionType.CURRENCY}>Currency</option>
-            </optgroup>
-            <optgroup label="Choice">
-              <option value={QuestionType.MCQ_SINGLE}>Single Choice (MCQ)</option>
-              <option value={QuestionType.MCQ_MULTIPLE}>Multiple Choice</option>
-              <option value={QuestionType.RANKING}>Ranking</option>
-            </optgroup>
-            <optgroup label="Scale">
-              <option value={QuestionType.RATING}>Star Rating</option>
-              <option value={QuestionType.LIKERT_SCALE}>Likert Scale</option>
-              <option value={QuestionType.SCALE}>Slider Scale</option>
-              <option value={QuestionType.DOUBLE_SLIDER}>Double Slider</option>
-              <option value={QuestionType.MULTI_SLIDER}>Multi Slider</option>
-            </optgroup>
-            <optgroup label="Grid">
-              <option value={QuestionType.MATRIX}>Matrix</option>
-              <option value={QuestionType.MAX_DIFF}>Max Diff</option>
-              <option value={QuestionType.CONSTANT_SUM}>Constant Sum</option>
-              <option value={QuestionType.FILE}>File Upload</option>
-            </optgroup>
+            {typeSelectOptions}
           </select>
-        </div>
-
-        {/* Question text */}
-        <div className="p-4 space-y-4">
-          {/* Language tabs */}
-          <div className="flex gap-1">
-            {(['en', 'ta'] as SupportedBuilderLanguage[]).map((l) => (
-              <button
-                key={l}
-                onClick={() => { setActiveLanguage(l); setGlobalLanguage(l as 'en' | 'ta'); }}
-                className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
-                  lang === l ? 'bg-primary text-white' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                }`}
-              >
-                {LANG_LABELS[l]}
-              </button>
-            ))}
-          </div>
-
-          <textarea
-            ref={singleTextareaRef}
-            value={t.text}
-            onChange={(e) => {
-              setQuestionTranslation(selectedQuestionIndex, lang, { text: e.target.value });
-              if (lang === 'en') {
-                setQuestionField(selectedQuestionIndex, 'text', e.target.value);
-              }
-            }}
-            placeholder="Enter question text..."
-            rows={2}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-          />
-
-          {/* Type-specific config */}
-          {renderTypeConfig(selectedQuestionIndex)}
-        </div>
-      </div>
-
-      {/* ── Answer preview ── */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="px-4 py-2 border-b border-gray-100 bg-gray-50/50">
-          <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">Answer Preview</span>
-        </div>
-        <div className="accent-primary caret-primary scheme-light [&_.common-component]:min-w-0 [&_.common-component]:w-full">
-          <BuilderQuestionPreview
-            question={question}
-            lang={activeLanguage}
-            questionNumber={question.order}
-            totalQuestions={questions.length}
-            previewLayout="paginated"
-          />
         </div>
       </div>
     </div>
