@@ -14,7 +14,6 @@ import {
   SelectAtom,
   TextInputAtom,
 } from '@ui/atoms/custom-input';
-import { ArrowRed } from '@/assets';
 import { useProfileQuery } from '@hooks/queries/use-profile.query';
 import { useUpdateProfileMutation } from '@hooks/mutations/use-update-profile.mutation';
 import { toast } from 'sonner';
@@ -382,12 +381,12 @@ const EditProfilePage: React.FC = () => {
 
   return (
     <>
-      <div className="common-component bg-white text-black h-full overflow-y-scroll overflow-x-hidden">
-        <div className="common-container px-6 py-8 md:px-24 md:py-12 justify-center block! flex-col max-w-(--breakpoint-2xl)!">
+      <div className="min-h-screen overflow-y-auto overflow-x-hidden" style={{ background: 'var(--surface)' }}>
+        <div className="tm-container py-8 md:py-12">
           {/* Header */}
           <div className="mb-8">
             <div className="flex justify-between items-start mb-4">
-              <h1 className="text-4xl font-medium tracking-tighter text-gray-900">
+              <h1 className="text-4xl font-medium tracking-tighter text-on-surface">
                 {translations.profile.editProfile}
               </h1>
               <LanguageToggle variant="inline" />
@@ -523,13 +522,13 @@ const EditProfilePage: React.FC = () => {
                 </>
               )}
               {/* Password Change */}
-              <div className="space-y-3 pt-2 border-t border-gray-200">
-                  <p className="text-sm font-medium text-gray-700">
+              <div className="space-y-3 pt-2 border-t" style={{ borderColor: 'var(--outline-variant)' }}>
+                  <p className="text-sm font-medium text-on-surface-variant">
                     Change Password{' '}
-                    <span className="font-normal text-gray-400">(optional)</span>
+                    <span className="font-normal opacity-50">(optional)</span>
                   </p>
                   {!isEmailProvider && (
-                    <p className="text-xs text-gray-400 bg-gray-50 border border-gray-200 rounded px-3 py-2">
+                    <p className="text-xs rounded px-3 py-2 border" style={{ color: 'var(--on-surface-variant)', background: 'var(--surface-container-low)', borderColor: 'var(--outline-variant)' }}>
                       Password change is not available for Google sign-in accounts.
                     </p>
                   )}
@@ -537,7 +536,7 @@ const EditProfilePage: React.FC = () => {
                     <>
                     {/* Current Password */}
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                    <label className="block text-xs font-medium text-on-surface-variant mb-1">
                       Current Password
                     </label>
                     <div className="relative">
@@ -546,12 +545,13 @@ const EditProfilePage: React.FC = () => {
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                         placeholder="Enter current password"
-                        className="w-full px-3 py-2 pr-10 border border-gray-300 focus:outline-none focus:border-primary text-black text-sm"
+                        className="w-full px-3 py-2 pr-10 text-sm rounded-lg outline-none transition-all"
+                        style={{ background: 'var(--surface-container)', border: '1px solid color-mix(in srgb, var(--outline-variant) 30%, transparent)', color: 'var(--on-surface)' }}
                       />
                       <button
                         type="button"
                         onClick={() => setShowCurrentPwd(!showCurrentPwd)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors"
                       >
                         {showCurrentPwd ? (
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -566,12 +566,12 @@ const EditProfilePage: React.FC = () => {
                       </button>
                     </div>
                     {errors.currentPassword && (
-                      <p className="text-xs text-red-500 mt-1">{errors.currentPassword}</p>
+                      <p className="text-xs mt-1" style={{ color: 'var(--error)' }}>{errors.currentPassword}</p>
                     )}
                   </div>
                   {/* New Password */}
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                    <label className="block text-xs font-medium text-on-surface-variant mb-1">
                       New Password
                     </label>
                     <div className="relative">
@@ -580,12 +580,13 @@ const EditProfilePage: React.FC = () => {
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         placeholder="Minimum 8 characters"
-                        className="w-full px-3 py-2 pr-10 border border-gray-300 focus:outline-none focus:border-primary text-black text-sm"
+                        className="w-full px-3 py-2 pr-10 text-sm rounded-lg outline-none transition-all"
+                        style={{ background: 'var(--surface-container)', border: '1px solid color-mix(in srgb, var(--outline-variant) 30%, transparent)', color: 'var(--on-surface)' }}
                       />
                       <button
                         type="button"
                         onClick={() => setShowNewPwd(!showNewPwd)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors"
                       >
                         {showNewPwd ? (
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -600,12 +601,12 @@ const EditProfilePage: React.FC = () => {
                       </button>
                     </div>
                     {errors.newPassword && (
-                      <p className="text-xs text-red-500 mt-1">{errors.newPassword}</p>
+                      <p className="text-xs mt-1" style={{ color: 'var(--error)' }}>{errors.newPassword}</p>
                     )}
                   </div>
                   {/* Confirm New Password */}
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                    <label className="block text-xs font-medium text-on-surface-variant mb-1">
                       Confirm New Password
                     </label>
                     <div className="relative">
@@ -614,12 +615,13 @@ const EditProfilePage: React.FC = () => {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Re-enter new password"
-                        className="w-full px-3 py-2 pr-10 border border-gray-300 focus:outline-none focus:border-primary text-black text-sm"
+                        className="w-full px-3 py-2 pr-10 text-sm rounded-lg outline-none transition-all"
+                        style={{ background: 'var(--surface-container)', border: '1px solid color-mix(in srgb, var(--outline-variant) 30%, transparent)', color: 'var(--on-surface)' }}
                       />
                       <button
                         type="button"
                         onClick={() => setShowConfirmPwd(!showConfirmPwd)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors"
                       >
                         {showConfirmPwd ? (
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -634,7 +636,7 @@ const EditProfilePage: React.FC = () => {
                       </button>
                     </div>
                     {errors.confirmPassword && (
-                      <p className="text-xs text-red-500 mt-1">{errors.confirmPassword}</p>
+                      <p className="text-xs mt-1" style={{ color: 'var(--error)' }}>{errors.confirmPassword}</p>
                     )}
                   </div>
                     </>
@@ -689,10 +691,10 @@ const EditProfilePage: React.FC = () => {
 
             {/* Participation Preferences */}
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl font-bold text-on-surface mb-4">
                 {translations.profile.participationPreferencesTitle}
               </h2>
-              <p className="text-gray-600 mb-6">{translations.profile.participationPreferencesDescription}</p>
+              <p className="text-on-surface-variant mb-6">{translations.profile.participationPreferencesDescription}</p>
 
               <CheckboxOutlineGroupAtom
                 label=""
@@ -705,10 +707,10 @@ const EditProfilePage: React.FC = () => {
 
             {/* Payment Information */}
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl font-bold text-on-surface mb-4">
                 {translations.auth.signup.payment.title}
               </h2>
-              <p className="text-gray-600 mb-6">
+              <p className="text-on-surface-variant mb-6">
                 {translations.auth.signup.payment.description}
               </p>
 
@@ -834,8 +836,8 @@ const EditProfilePage: React.FC = () => {
 
                 {/* Skip Message */}
                 {formData.paymentMethod === 'skip' && (
-                  <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                    <p className="text-gray-600">
+                  <div className="mt-4 p-4 rounded-lg" style={{ background: 'var(--surface-container-low)' }}>
+                    <p className="text-on-surface-variant">
                       {translations.auth.signup.payment.skipMessage}
                     </p>
                   </div>
@@ -846,15 +848,14 @@ const EditProfilePage: React.FC = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="bg-primary w-auto hover:bg-secondary transition-all duration-300 ease-in-out rounded px-6 py-2 flex items-center gap-4"
+              className="btn-primary flex items-center gap-2 px-8 py-3"
               disabled={updateProfileMutation.isPending}
             >
-              <label className="text-white text-nowrap font-medium cursor-pointer">
-                {updateProfileMutation.isPending
-                  ? translations.profile.saving
-                  : translations.profile.saveChanges}
-              </label>
-              <ArrowRed className="fill-current text-white" />
+              {updateProfileMutation.isPending ? (
+                <><span className="material-symbols-outlined text-lg animate-spin">progress_activity</span>{translations.profile.saving}</>
+              ) : (
+                <>{translations.profile.saveChanges}<span className="material-symbols-outlined text-lg">save</span></>
+              )}
             </button>
           </form>
         </div>

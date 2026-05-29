@@ -1,205 +1,158 @@
-import { cn } from '@/core/utils/cn';
-import { ourPanel } from '@/core/constants/page-constants/our-panel-constant';
-import './our-panel.css';
-import CustomImageAtom from '@/shared/ui/atoms/custom-image';
-import ServiceCard from '@/shared/ui/molecules/service-card';
-import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
-import { PageTitle } from '@/shared/components/page-title';
-import { useAuth } from '@/shared/providers/auth-provider';
+import React from 'react';
+import { ROUTES } from '@/routes/routeConfig';
 
-const OurPanel: React.FC = () => {
-  const { user } = useAuth();
-  // Derive isAuthenticated from user object
-  const isAuthenticated = !!user;
-  return (
-    <div className="text-black">
-      {/* Section 1 */}
-      <section className="common-component relative bg-[url('images/background_image_8_1_m.png')] md:bg-[url('images/background_image_8_1.png')] our-panel-container">
-        <div className="absolute top-0 right-0 md:min-h-[360px] xl:min-h-[480px] wide:min-h-[580px] w-[50%] flex justify-center md:items-center">
-          <div className="pr-32 xxl:pr-[8rem] wide:pr-[16rem]">
-            <CustomImageAtom
-              src={ourPanel.heroSection.illustration.img}
-              aspectRatio={ourPanel.heroSection.illustration.aspectRatio}
-              objectFit={ourPanel.heroSection.illustration.objectFit}
-              loading={ourPanel.heroSection.illustration.loading}
-              className="hidden md:block md:h-64! md:w-136! xl:h-78! xl:w-160! xxl:!h-[19.5rem] xxl:!w-[39em] wide:!h-[22rem] wide:!w-[44em]"
-            />
+const panelQualities = [
+  { icon: 'sentiment_very_satisfied', color: 'primary', t: 'Genuine & Engaged Participants', d: 'Our panel is made up of real people who are eager to share their honest opinions. They understand the value of research and take their role seriously.' },
+  { icon: 'public', color: 'secondary', t: 'Nationwide Reach', d: 'From major cities to rural towns, our panel covers every corner of India — ensuring diversity in perspectives and accessibility to hard-to-reach groups.' },
+  { icon: 'trending_up', color: 'tertiary', t: 'Continuously Growing', d: 'We prioritize secure handling of participant data and maintain rigorous protocols to ensure ethical, accurate, and high-integrity research as the panel scales.' },
+  { icon: 'verified_user', color: 'primary', t: 'Thoroughly Verified', d: 'Before anyone joins, they\'re checked for duplicates, inconsistencies, and suspicious patterns. Our multi-step verification process keeps quality high and fraud out.' },
+  { icon: 'schedule', color: 'secondary', t: 'Responsive & Reliable', d: 'Our panel doesn\'t ghost. With structured confirmation touchpoints and personal contact, we maintain one of the highest attendance and engagement rates in the industry.' },
+  { icon: 'groups', color: 'tertiary', t: 'Demographically Balanced', d: 'We maintain quotas to ensure representation across age, gender, ethnicity, and location — giving you more well-rounded, credible insights every time.' },
+];
+
+const industries = [
+  { icon: 'shopping_basket', t: 'FMCG', d: 'Everyday shoppers to loyal brand users — rapid, real-world feedback on products, packaging, and consumer behavior.' },
+  { icon: 'storefront', t: 'Retail & Merchandising', d: 'In-store and online shoppers, plus retail professionals offering insights on buying decisions and customer journeys.' },
+  { icon: 'local_hospital', t: 'Healthcare & Life Sciences', d: 'Patients, caregivers, HCPs, and wellness-focused individuals offering diverse perspectives on treatments and innovations.' },
+  { icon: 'campaign', t: 'Advertising & Marketing', d: 'Consumers reacting to campaigns and marketing professionals evaluating strategy across formats.' },
+  { icon: 'account_balance', t: 'Financial Services', d: 'Banking users, insurance policyholders, and financial advisors representing the full spectrum of financial decision-makers.' },
+  { icon: 'show_chart', t: 'Investors', d: 'Data-driven quality assurance and advanced analytics ensuring high-quality insights that drive real investment impact.' },
+  { icon: 'directions_car', t: 'Automotive', d: 'Everyday drivers, EV adopters, and fleet managers — people who live on the road and influence the automotive market.' },
+  { icon: 'school', t: 'Education', d: 'Students, parents, teachers, and administrators uncovering insights around learning, policy, and the future of education.' },
+  { icon: 'business_center', t: 'Human Resources', d: 'Hiring managers to L&D specialists and employees offering grounded perspectives on workplace culture and talent management.' },
+  { icon: 'play_circle', t: 'Media & Internet', d: 'Content creators and media consumers — for testing ideas, formats, and platforms with those shaping today\'s media.' },
+  { icon: 'devices', t: 'Technology', d: 'Early adopters, IT professionals, and digital natives — perfect for product testing, UX feedback, and trend tracking.' },
+];
+
+const benefits = [
+  { icon: 'monetization_on', t: 'Get Paid for Your Opinions', d: 'Earn incentives through gift vouchers, online prepaid solutions, or direct transfers for every project you complete.' },
+  { icon: 'schedule', t: 'Flexible Schedule', d: 'Participate in studies that fit your lifestyle — online, in-person, phone, or surveys on your own time.' },
+  { icon: 'shield', t: 'Privacy Protected', d: 'Your information is kept completely confidential. We never sell or share your data with any third party.' },
+  { icon: 'hub', t: 'Make a Real Impact', d: 'Your feedback directly influences the products, services, and experiences of tomorrow. Your voice shapes real decisions.' },
+];
+
+const OurPanel: React.FC = () => (
+  <>
+    {/* Hero */}
+    <section className="tm-section relative">
+      <div className="tm-container grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="z-10">
+          <nav className="flex items-center gap-2 mb-6 text-xs text-on-surface-variant" aria-label="Breadcrumb">
+            <a href="/" className="hover:text-on-surface transition-colors">Home</a>
+            <span className="opacity-40">/</span>
+            <span className="text-primary font-medium">Our Panel</span>
+          </nav>
+          <span className="chip mb-6 inline-flex">PARTICIPANT PANEL</span>
+          <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-[1.08]">
+            We Don't Have to <span className="text-primary italic">Search Far.</span>
+          </h1>
+          <p className="text-lg text-on-surface-variant max-w-xl mb-10 leading-relaxed">
+            Great participants find their way to us. With unmatched capabilities, seamless processes, and a commitment to quality, we're the ideal research partner to bring your study to life.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+            <a href="/start-your-research" className="btn-primary">Start Your Research</a>
+            <a href={ROUTES.SIGN_UP} className="btn-ghost">Join Our Panel</a>
           </div>
         </div>
-        <div className="common-container p-5 md:p-10 xxl:p-0 max-w-(--breakpoint-2xl)! flex-col pb-28">
-          <div className="md:w-[28%] xl:w-[37%] wide:w-[40%] h-full flex flex-col gap-3 justify-center md:min-h-[360px] xl:min-h-[480px] wide:min-h-[580px]">
-            <PageTitle className="w-fit md:w-24 xl:w-32 wide:w-48" />
-            <h2 className="w-full text-xl md:text-2xl xl:text-3xl xxl:text-4xl md:leading-8 xl:leading-11">
-              <span>{ourPanel.heroSection.title}</span>
-            </h2>
-            <CustomImageAtom
-              src={ourPanel.heroSection.illustration.img}
-              aspectRatio={ourPanel.heroSection.illustration.aspectRatio}
-              objectFit={ourPanel.heroSection.illustration.objectFit}
-              loading={ourPanel.heroSection.illustration.loading}
-              className="md:hidden h-42! w-full"
-            />
-            <p
-              className="xl:w-[90%] text-text-dark xl:text-lg xxl:text-xl *:pt-2"
-              dangerouslySetInnerHTML={{
-                __html: ourPanel.heroSection.description,
-              }}
-            />
-          </div>
-          <div className="grid grid-cols-1 grid-rows-1 md:grid-rows-2 md:grid-cols-3 md:pb-26 xl:pb-34 xxl:pb-38">
-            {ourPanel.serviceSection.items.map(
-              (service: any, index: number) => (
-                <div className="relative p-2 flex flex-col items-center justify-center">
-                  <ServiceCard
-                    service={service}
-                    index={index}
-                    className="px-4 py-12 gap-3 w-full h-full"
-                    iconClassName="w-12 h-12 p-0"
-                    contentClassName={
-                      service.isActive === true
-                        ? 'w-full h-[10rem] md:h-full justify-center items-center'
-                        : ''
-                    }
-                  />
-                  <div className="absolute top-0 w-full h-full">
-                    <div className="relative w-full h-full">
-                      {service.line1 && (
-                        <div className="absolute left-0 top-1/2 transform -translate-y-1/2 h-[90%] w-px bg-black"></div>
-                      )}
-                      {service.line2 && (
-                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[90%] h-px bg-black"></div>
-                      )}
-                      <div
-                        className={cn(
-                          'absolute right-0 top-1/2 transform -translate-y-1/2  h-[90%] w-px bg-black',
-                          !service.line3 && 'md:hidden'
-                        )}
-                      ></div>
-                      {index !== ourPanel.serviceSection.items.length - 1 && (
-                        <div
-                          className={cn(
-                            'absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[90%] h-px bg-black',
-                            !service.line4 && 'md:hidden'
-                          )}
-                        ></div>
-                      )}
-                      {index !== ourPanel.serviceSection.items.length - 1 && (
-                        <div
-                          className={cn(
-                            'absolute -bottom-1.5 -right-1.5 w-3 h-3 bg-primary rounded-full',
-                            !service.point && 'md:hidden'
-                          )}
-                        ></div>
-                      )}
-                    </div>
-                  </div>
+        <div className="relative">
+          <div className="rounded-[3rem] bg-surface-container-low border border-outline-variant/10 shadow-2xl p-8 flex flex-col gap-5 min-h-[360px]">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-semibold text-on-surface-variant uppercase tracking-widest">Panel Quality Metrics</span>
+              <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div><span className="text-xs text-on-surface-variant">Live</span></div>
+            </div>
+            <div className="space-y-3">
+              {[{label:'Engagement Rate',pct:94,color:'primary'},{label:'Verification Pass Rate',pct:99.2,color:'secondary'},{label:'Geographic Coverage',pct:100,color:'tertiary'},{label:'Industries Covered',pct:100,color:'primary'}].map(({label,pct,color})=>(
+                <div key={label} className="bg-surface-container rounded-xl p-3">
+                  <div className="flex justify-between mb-2"><span className="text-xs font-semibold text-on-surface">{label}</span><span className={`text-xs font-bold text-${color}`}>{pct === 94 ? '94%' : pct === 99.2 ? '99.2%' : pct === 100 && label === 'Geographic Coverage' ? 'All India' : '11 Sectors'}</span></div>
+                  <div className="h-2 bg-outline-variant/20 rounded-full"><div className={`h-full bg-${color} rounded-full`} style={{width:`${Math.min(pct,100)}%`}}></div></div>
                 </div>
-              )
-            )}
-          </div>
-        </div>
-      </section>
-      {/* Section 2 */}
-      <section className="common-component relative bg-[url('images/background_image_8_2_m.png')] md:bg-[url('images/background_image_8_2.png')] our-panel-container">
-        <div className="common-container p-5 md:p-10 xxl:p-0 max-w-(--breakpoint-2xl)! flex-col">
-          <div className="flex flex-col gap-6 items-center xxl:py-8">
-            <label className="font-semibold text-xl md:text-2xl xl:text-3xl wide:text-4xl">
-              Our Coverage
-            </label>
-            <p className="md:w-[50%] font-semibold text-sm md:text-lg xl:text-xl text-center">
-              We bring extensive experience in sourcing high-quality research
-              participants across a wide range of sectors.
-            </p>
-            <div className="h-px w-56 md:w-[20rem] bg-black my-4"></div>
-          </div>
-          <div className="shrink-0 grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-4 px-4 py-8 md:p-8">
-            {ourPanel.aboutUsSection.items.map((item: any, index: number) => {
-              return (
-                <div
-                  key={index + item.label}
-                  className="flex flex-col gap-3 w-full md:h-56"
-                >
-                  <div className="shrink-0 w-12 h-12 md:w-15 md:h-15 bg-primary/20 rounded-full flex items-center justify-center overflow-hidden p-2 md:p-3">
-                    <item.icon className="w-full h-full xl:h-11 xl:w-11 xxl:w-12 xxl:h-12 fill-current text-black" />
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <label className="font-semibold text-md md:text-base">
-                      {item.label}
-                    </label>
-                    <p className="text-sm md:text-md">{item.description}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-      {/* Section 3 */}
-      <section className="common-component relative z-1 bg-white px-6 pt-14 pb-8 md:p-0 text-black">
-        <div
-          className={cn(
-            'common-container max-w-[1336px]! grid! grid-cols-1 md:grid-cols-2 items-center justify-between'
-          )}
-        >
-          <div className="w-full flex flex-col gap-3 md:pl-10 md:py-14">
-            <h2 className="flex flex-col gap-2">
-              <span className="xl:text-lg xxl:text-xl font-medium leading-5 text-custom-grey-2">
-                {ourPanel.caseStudySection.head}
-              </span>
-              <div className="w-25 h-0.5 md:h-1 bg-primary rounded"></div>
-            </h2>
-            <h2 className="w-[70%] md:w-[45%] text-xl xl:text-2xl xxl:text-3xl font-semibold leading-tight">
-              <span>{ourPanel.caseStudySection.title}</span>
-            </h2>
-            <img
-              src={ourPanel.caseStudySection.illustration.img}
-              className="md:hidden w-full h-fit"
-            />
-            <ul className="md:w-[77.5%] md:text-lg space-y-2 py-6">
-              {ourPanel.caseStudySection.list.map((value: string) => {
-                return <p className="leading-7">{value}</p>;
-              })}
-            </ul>
-            <p
-              className="md:w-[83.5%] text-lg md:text-xl leading-6 md:leading-7"
-              dangerouslySetInnerHTML={{
-                __html: ourPanel.caseStudySection.description,
-              }}
-            />
-            <div className="py-4">
-              <CustomButtonAtom
-                path={
-                  isAuthenticated
-                    ? ourPanel.caseStudySection.actionButton.signedInPath
-                    : ourPanel.caseStudySection.actionButton.path
-                }
-                label={
-                  isAuthenticated
-                    ? ourPanel.caseStudySection.actionButton.signedInLabel
-                    : ourPanel.caseStudySection.actionButton.label
-                }
-                className="font-medium px-12 py-2 md:px-18 md:py-3 md:text-xl"
-              />
+              ))}
             </div>
           </div>
-        </div>
-        <div className="absolute h-full w-full grid! grid-cols-1 md:grid-cols-2 -z-1">
-          <div className="col-span-1"></div>
-          <div className="col-span-1 hidden md:block place-self-end self-center">
-            <CustomImageAtom
-              src={ourPanel.caseStudySection.illustration.img}
-              size={ourPanel.caseStudySection.illustration.size}
-              aspectRatio={ourPanel.caseStudySection.illustration.aspectRatio}
-              objectFit={ourPanel.caseStudySection.illustration.objectFit}
-              loading={ourPanel.caseStudySection.illustration.loading}
-              rounded="none"
-              className="h-112! w-240! wide:!h-[32rem] wide:!w-[50rem]"
-            />
+          <div className="absolute -top-4 -right-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+            <div className="text-primary text-2xl font-bold mb-0.5">11 Sectors</div>
+            <div className="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Industry Coverage</div>
+          </div>
+          <div className="absolute -bottom-4 -left-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+            <div className="text-secondary text-2xl font-bold mb-0.5">Pan-India</div>
+            <div className="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Geographic Reach</div>
           </div>
         </div>
-      </section>
-    </div>
-  );
-};
+      </div>
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{zIndex:-1}} aria-hidden="true">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/8 blur-[140px] rounded-full" />
+      </div>
+    </section>
+
+    {/* Panel Qualities */}
+    <section className="tm-section bg-surface-container-lowest">
+      <div className="tm-container">
+        <div className="text-center max-w-2xl mx-auto mb-14">
+          <p className="section-eyebrow">What Makes Our Panel Different</p>
+          <h2 className="text-4xl md:text-5xl font-bold mb-5">Built for Quality, <span className="text-primary">Designed for Research</span></h2>
+          <p className="text-lg text-on-surface-variant">Every aspect of our panel is engineered to deliver the accuracy, diversity, and engagement your research demands.</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {panelQualities.map(({icon,color,t,d})=>(
+            <div key={t} className="ds-card">
+              <div className={`w-12 h-12 rounded-xl bg-${color}/10 flex items-center justify-center mb-6`}><span className={`material-symbols-outlined text-${color} text-3xl`}>{icon}</span></div>
+              <h3 className="text-lg font-bold mb-3 text-on-surface">{t}</h3>
+              <p className="text-on-surface-variant text-sm leading-relaxed">{d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {/* Industry Coverage */}
+    <section className="tm-section bg-surface">
+      <div className="tm-container">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-14 gap-6">
+          <div className="max-w-2xl">
+            <p className="section-eyebrow">Industry Coverage</p>
+            <h2 className="text-4xl md:text-5xl font-bold mb-5">Our <span className="text-secondary">Coverage</span></h2>
+            <p className="text-lg text-on-surface-variant">We bring extensive experience in sourcing high-quality research participants across a wide range of sectors — from FMCG to Healthcare to Technology.</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {industries.map(({icon,t,d})=>(
+            <div key={t} className="ds-card flex flex-col gap-3">
+              <span className="material-symbols-outlined text-primary text-3xl">{icon}</span>
+              <h3 className="font-bold text-on-surface">{t}</h3>
+              <p className="text-sm text-on-surface-variant leading-relaxed">{d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {/* Join Panel CTA */}
+    <section className="tm-section bg-surface-container-lowest">
+      <div className="tm-container">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div>
+            <p className="section-eyebrow">Join Our Panel</p>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">Be Part of Something That <span className="text-primary">Shapes the Future.</span></h2>
+            <p className="text-lg text-on-surface-variant mb-6 leading-relaxed">Whether it's sharing your opinion on a new product, testing a service before it launches, or giving feedback that helps brands improve — your voice matters. By joining our panel, you'll get the opportunity to take part in paid research projects that fit your interests and schedule.</p>
+            <p className="text-lg text-on-surface-variant mb-10 leading-relaxed">It's flexible, and rewarding. We welcome people from all walks of life — because the best insights come from real, diverse experiences.</p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <a href={ROUTES.SIGN_UP} className="btn-primary">Sign Up Today</a>
+              <a href="/respondent-landing" className="btn-ghost">Read the FAQs</a>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {benefits.map(({icon,t,d})=>(
+              <div key={t} className="ds-card">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4"><span className="material-symbols-outlined text-primary text-3xl">{icon}</span></div>
+                <h3 className="font-bold text-on-surface mb-2">{t}</h3>
+                <p className="text-sm text-on-surface-variant">{d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  </>
+);
 
 export default OurPanel;

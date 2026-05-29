@@ -49,8 +49,7 @@ const HeroCarousel: React.FC = () => {
         {/* Right: Image carousel */}
         <div className="relative">
           <div
-            className="aspect-square rounded-[3rem] overflow-hidden bg-surface-container-low shadow-2xl isolate"
-            style={{ border: '1px solid rgba(65,71,84,0.10)' }}
+            className="aspect-square rounded-[3rem] overflow-hidden bg-surface-container-low border border-outline-variant/10 shadow-2xl isolate"
           >
             <div className="relative w-full h-full">
               {carouselData.map((slide, i) => (
@@ -73,10 +72,10 @@ const HeroCarousel: React.FC = () => {
           <div
             className="absolute -bottom-6 -left-6 p-6 rounded-2xl shadow-2xl"
             style={{
-              background: 'rgba(42,42,42,0.80)',
+              background: 'var(--glass-bg)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid rgba(65,71,84,0.20)',
+              border: '1px solid var(--glass-border-color)',
             }}
           >
             <div className="text-primary text-3xl font-bold mb-1">3 Days</div>
@@ -97,13 +96,7 @@ const HeroCarousel: React.FC = () => {
         aria-hidden="true"
       >
         <div
-          className="absolute top-0 right-0 rounded-full"
-          style={{
-            width: '600px',
-            height: '600px',
-            background: 'rgba(173,199,255,0.10)',
-            filter: 'blur(120px)',
-          }}
+          className="absolute top-0 right-0 rounded-full w-[600px] h-[600px] bg-primary/10 blur-[120px]"
         />
       </div>
     </section>

@@ -14,6 +14,7 @@ import { getStarterQuestions } from '@/core/constants/survey-methodology-templat
 
 interface Props {
   onClose: () => void;
+  redirectPath?: string;
 }
 
 function slugify(str: string): string {
@@ -23,7 +24,7 @@ function slugify(str: string): string {
     .replace(/(^-|-$)/g, '');
 }
 
-const MethodologyPickerModal: React.FC<Props> = ({ onClose }) => {
+const MethodologyPickerModal: React.FC<Props> = ({ onClose, redirectPath = '/admin/survey-builder/new' }) => {
   const [activeCategory, setActiveCategory] = useState<MethodologyCategory>('pricing_conjoint');
 
   const handleSelect = (methodology: SurveyMethodology) => {
@@ -42,11 +43,11 @@ const MethodologyPickerModal: React.FC<Props> = ({ onClose }) => {
     try {
       sessionStorage.setItem('tm-duplicate-prefill', JSON.stringify(prefill));
     } catch {}
-    window.location.href = '/admin/survey-builder/new';
+    window.location.href = redirectPath;
   };
 
   const handleScratch = () => {
-    window.location.href = '/admin/survey-builder/new';
+    window.location.href = redirectPath;
   };
 
   // Available methodologies for the active category

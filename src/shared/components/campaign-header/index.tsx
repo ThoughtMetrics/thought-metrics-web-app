@@ -3,15 +3,20 @@ import { Logo } from '@/assets';
 
 const CampaignHeader: React.FC = () => {
   return (
-    <header className="w-full bg-white shrink-0">
-      <div className="px-6 py-3 flex items-center">
-        <a href="/" aria-label="Thought Metrics Home">
-          <div className="w-40 pt-1">
+    <header
+      className="w-full shrink-0"
+      style={{
+        background: 'var(--surface-container-low)',
+        borderBottom: '1px solid var(--glass-border-color)',
+      }}
+    >
+      <div className="tm-container">
+        <div className="px-0 py-3 flex items-center">
+          <a href="/" aria-label="Thought Metrics Home" className="block w-40">
             <Logo className="w-full h-full" />
-          </div>
-        </a>
+          </a>
+        </div>
       </div>
-      <div className="w-full h-px bg-gray-100"></div>
     </header>
   );
 };

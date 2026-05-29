@@ -21,7 +21,7 @@ function getActivePage(path: string): string | null {
 }
 
 const HeaderContent: React.FC = () => {
-  const { isAdmin, isSuperAdmin, isFieldIncharge, user } = useAuth();
+  const { isAdmin, isSuperAdmin, isFieldIncharge, isClient, user } = useAuth();
   const { theme, toggle: toggleTheme } = useHeaderTheme();
   const dropdown = useDropdown();
   const mobile = useMobileMenu();
@@ -33,6 +33,7 @@ const HeaderContent: React.FC = () => {
     isAdminUser:      isAdmin || isSuperAdmin || isFieldIncharge,
     isAdminPage:      currentPath.startsWith('/admin'),
     isSurveyBoardsPage: currentPath.startsWith('/survey-boards'),
+    isClient,
   };
 
   return (

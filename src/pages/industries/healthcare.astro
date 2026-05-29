@@ -1,6 +1,5 @@
 ---
-import { industries } from '@/core/constants/page-constants/industries-constant';
-import IndustryTemplate from '@layouts/IndustryTemplate.astro';
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
 import { seoConfig } from '@/core/constants/seo.constants';
 import { buildStandardPageSchema } from '@/core/utils/schema-builder';
 import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
@@ -11,20 +10,138 @@ const seoContent = {
   keywords: 'healthcare research, life sciences insights, patient research, provider research, clinical development, healthcare market research, medical device testing, pharmaceutical research, HIPAA compliant research',
 };
 
-// Generate breadcrumbs and structured data for SEO
 const breadcrumbs = generateBreadcrumbsFromPath(Astro.url.pathname);
 const pageUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).href;
-const structuredData = buildStandardPageSchema(
-  seoConfig,
-  pageUrl,
-  'Healthcare & Life Sciences Research',
-  breadcrumbs
-);
+const structuredData = buildStandardPageSchema(seoConfig, pageUrl, 'Healthcare & Life Sciences Research', breadcrumbs);
 ---
 
-<IndustryTemplate
-  title={seoContent.title}
-  description={seoContent.description}
-  industry={industries.healthcare}
-  structuredData={structuredData}
-/>
+<PresentationLayout title={seoContent.title} description={seoContent.description} keywords={seoContent.keywords} structuredData={structuredData}>
+
+  <section class="tm-section relative">
+    <div class="tm-container grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div class="z-10">
+        <nav class="flex items-center gap-2 mb-6 text-xs text-on-surface-variant">
+          <a href="/" class="hover:text-on-surface transition-colors">Home</a><span class="opacity-40">/</span>
+          <a href="/industries" class="opacity-60 hover:text-on-surface transition-colors">Industries</a><span class="opacity-40">/</span>
+          <span class="text-primary font-medium">Healthcare &amp; Life Sciences</span>
+        </nav>
+        <span class="chip mb-6 inline-flex">HEALTHCARE &amp; LIFE SCIENCES</span>
+        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-[1.08]">
+          Bridge the Gap Between<br />Science and <span class="text-primary italic">Human Experience.</span>
+        </h1>
+        <p class="text-lg text-on-surface-variant max-w-xl mb-10 leading-relaxed">From clinical development to patient engagement, uncover insights that drive meaningful healthcare innovation. Compliant, precise, and built for the complexity of life sciences research.</p>
+        <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <a href="/start-your-research" class="btn-primary">Request a Bid</a>
+          <a href="#services" class="btn-ghost">Explore Solutions</a>
+        </div>
+      </div>
+      <div class="relative">
+        <div class="rounded-[3rem] bg-surface-container-low border border-outline-variant/10 shadow-2xl p-8 flex flex-col gap-3 min-h-[360px]">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-semibold text-on-surface-variant uppercase tracking-widest">Care Ecosystem</span>
+            <div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-secondary animate-pulse"></div><span class="text-xs text-on-surface-variant">Active</span></div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            {[{label:'Patients', sub:'Multi-condition', icon:'person', color:'primary'},
+              {label:'Providers', sub:'GP & Specialists', icon:'local_hospital', color:'secondary'},
+              {label:'Pharmacists', sub:'Formulary leads', icon:'medication', color:'tertiary'},
+              {label:'Payers', sub:'Health insurers', icon:'account_balance', color:'primary'},
+              {label:'Clinical Researchers', sub:'Protocol leads', icon:'biotech', color:'secondary'},
+              {label:'Caregivers', sub:'Support network', icon:'family_restroom', color:'tertiary'}
+            ].map(({label, sub, icon, color}) => (
+              <div class={`flex items-center gap-2 p-3 rounded-xl bg-surface-container border border-outline-variant/10`}>
+                <span class={`material-symbols-outlined text-${color} text-lg`}>{icon}</span>
+                <div><div class="text-xs font-semibold text-on-surface">{label}</div><div class="text-[10px] text-on-surface-variant">{sub}</div></div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div class="absolute -top-4 -right-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+          <div class="text-primary text-2xl font-bold mb-0.5">14 Roles</div>
+          <div class="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Audiences Reached</div>
+        </div>
+        <div class="absolute -bottom-4 -left-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+          <div class="text-secondary text-2xl font-bold mb-0.5">GDPR</div>
+          <div class="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Compliant Research</div>
+        </div>
+      </div>
+    </div>
+    <div class="absolute inset-0 pointer-events-none overflow-hidden" style="z-index:-1" aria-hidden="true">
+      <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-tertiary/8 blur-[140px] rounded-full"></div>
+    </div>
+  </section>
+
+  <section class="bg-surface-container-lowest py-14 border-y border-outline-variant/5">
+    <div class="tm-container flex flex-wrap justify-between gap-10 items-center">
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-primary">health_and_safety</span><div><div class="text-2xl font-bold text-on-surface">Patient Insights</div><div class="text-on-surface-variant text-sm">Across Conditions &amp; Geographies</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-secondary">biotech</span><div><div class="text-2xl font-bold text-on-surface">Clinical Research</div><div class="text-on-surface-variant text-sm">Protocol &amp; Concept Testing</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-tertiary">gpp_good</span><div><div class="text-2xl font-bold text-on-surface">Compliant Methods</div><div class="text-on-surface-variant text-sm">HIPAA &amp; GDPR-Ready</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-primary-container">rocket_launch</span><div><div class="text-2xl font-bold text-on-surface">Launch Tracking</div><div class="text-on-surface-variant text-sm">Molecule to Market</div></div></div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface" id="services">
+    <div class="tm-container">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-14 gap-6">
+        <div class="max-w-2xl"><p class="section-eyebrow">How We Help</p><h2 class="text-4xl md:text-5xl font-bold mb-5">Research Built for the <span class="text-secondary">Complexity of Care</span></h2><p class="text-lg text-on-surface-variant">Healthcare research demands a different kind of precision — ethically sound, methodologically rigorous, and deeply respectful of the patients and professionals at its centre.</p></div>
+        <a href="/start-your-research" class="btn-ghost flex-shrink-0">Get a Quote</a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-primary text-3xl">groups</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Engage Hard-to-Reach Audiences With Precision</h3><p class="text-on-surface-variant mb-5">Access rare disease patients, specialist clinicians, payers, and caregivers across geographies. Our healthcare-verified panel and specialist recruitment networks deliver the right participants, on time.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">RARE DISEASE</span><span class="chip">SPECIALIST PANELS</span></div></div>
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-secondary text-3xl">gpp_good</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Research Built for Regulated Environments</h3><p class="text-on-surface-variant mb-5">All healthcare research is designed with compliance built in — HIPAA, GDPR, DPDP, and MRS standards. Consent management, data security, and anonymization protocols are standard on every project.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">HIPAA COMPLIANT</span><span class="chip">GDPR READY</span></div></div>
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-tertiary text-3xl">rocket_launch</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">From Molecule to Market With a Single Partner</h3><p class="text-on-surface-variant mb-5">We support the full life sciences research lifecycle — from early concept testing and protocol development through clinical recruitment, launch tracking, and post-market experience research.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">CONCEPT TESTING</span><span class="chip">LAUNCH TRACKING</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface-container-lowest">
+    <div class="tm-container">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        <div>
+          <p class="section-eyebrow">Healthcare Research Questions</p>
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">Insights That Improve <span class="text-primary">Patient Outcomes</span></h2>
+          <p class="text-lg text-on-surface-variant mb-8 leading-relaxed">Healthcare decisions affect lives — so research precision is non-negotiable. These are the questions driving smarter strategy across the care ecosystem.</p>
+          <div class="bg-surface-container rounded-2xl p-6 border border-outline-variant/10">
+            <div class="flex items-center gap-3 mb-4"><span class="material-symbols-outlined text-secondary text-xl">health_and_safety</span><span class="font-semibold text-on-surface">Common Research Areas</span></div>
+            <ul class="space-y-2">
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Patient needs, pain points & care journeys</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>HCP prescribing behavior & education needs</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Product concept & market opportunity sizing</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Brand perception & competitive benchmarking</li>
+            </ul>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">What do care providers and patients want?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What are the unmet needs and pain points in the patient's care journey?</li><li>Which product or service attributes do HCPs value most in prescribing decisions?</li><li>How do patient needs and HCP priorities differ — and where do they align?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">What products and services should we develop?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What is the market growth potential for your therapeutic area or device category?</li><li>Does your product concept address a felt need or a created one?</li><li>What pricing model and reimbursement structure would payers accept?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">How is your brand or organization perceived?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What is your brand's awareness and reputation among HCPs and patients?</li><li>How does your brand compare to competitors on key trust attributes?</li><li>How are regulatory actions or clinical trial outcomes affecting brand equity?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">How do we hire and retain healthcare talent?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What skills and capabilities are hardest to find in your region?</li><li>How do clinical professionals perceive your organization as an employer?</li><li>What factors are driving turnover in your nursing or clinical teams?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">What new technologies can transform healthcare?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>How ready are HCPs and patients to adopt AI-powered diagnostic or care tools?</li><li>What barriers exist to digital health adoption in your therapeutic area?</li><li>Which tech investments would most meaningfully improve patient outcomes?</li></ul></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface" id="cta">
+    <div class="tm-container"><div class="cta-card"><div class="cta-content">
+      <p class="cta-eyebrow">Get Started Today</p>
+      <h2 class="cta-heading">Research That Puts Patients and Precision First.</h2>
+      <p class="cta-body">From clinical concept testing to post-launch experience research, our compliant healthcare research helps you make better decisions — from molecule to market.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/start-your-research" class="btn-surface">Request a Bid</a>
+        <a href="/contact-us" class="btn-cta-frosted">Talk to Our Team</a>
+      </div>
+    </div><div class="cta-orb cta-orb--tl"></div><div class="cta-orb cta-orb--br"></div></div></div>
+  </section>
+
+</PresentationLayout>
+
+<script>
+  document.querySelectorAll('.faq-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const isOpen = card.classList.contains('open');
+      document.querySelectorAll('.faq-card').forEach(c => c.classList.remove('open'));
+      if (!isOpen) card.classList.add('open');
+    });
+  });
+</script>

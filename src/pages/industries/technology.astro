@@ -1,6 +1,5 @@
 ---
-import { industries } from '@/core/constants/page-constants/industries-constant';
-import IndustryTemplate from '@layouts/IndustryTemplate.astro';
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
 import { seoConfig } from '@/core/constants/seo.constants';
 import { buildStandardPageSchema } from '@/core/utils/schema-builder';
 import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
@@ -11,20 +10,132 @@ const seoContent = {
   keywords: 'technology research, tech market insights, UX research, product research, digital transformation, technology adoption, innovation strategy, SaaS research, IT decision makers, AI insights',
 };
 
-// Generate breadcrumbs and structured data for SEO
 const breadcrumbs = generateBreadcrumbsFromPath(Astro.url.pathname);
 const pageUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).href;
-const structuredData = buildStandardPageSchema(
-  seoConfig,
-  pageUrl,
-  'Technology Market Research',
-  breadcrumbs
-);
+const structuredData = buildStandardPageSchema(seoConfig, pageUrl, 'Technology Market Research', breadcrumbs);
 ---
 
-<IndustryTemplate
-  title={seoContent.title}
-  description={seoContent.description}
-  industry={industries.technology}
-  structuredData={structuredData}
-/>
+<PresentationLayout title={seoContent.title} description={seoContent.description} keywords={seoContent.keywords} structuredData={structuredData}>
+
+  <section class="tm-section relative">
+    <div class="tm-container grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div class="z-10">
+        <nav class="flex items-center gap-2 mb-6 text-xs text-on-surface-variant">
+          <a href="/" class="hover:text-on-surface transition-colors">Home</a><span class="opacity-40">/</span>
+          <a href="/industries" class="opacity-60 hover:text-on-surface transition-colors">Industries</a><span class="opacity-40">/</span>
+          <span class="text-primary font-medium">Technology</span>
+        </nav>
+        <span class="chip mb-6 inline-flex">TECHNOLOGY</span>
+        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-[1.08]">
+          Build Products People<br /><span class="text-primary italic">Actually Want.</span>
+        </h1>
+        <p class="text-lg text-on-surface-variant max-w-xl mb-10 leading-relaxed">From product strategy to user experience, we help technology companies understand what truly drives adoption, innovation, and transformation. Turn user insights into competitive advantage.</p>
+        <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <a href="/start-your-research" class="btn-primary">Request a Bid</a>
+          <a href="#services" class="btn-ghost">Explore Solutions</a>
+        </div>
+      </div>
+      <div class="relative">
+        <div class="rounded-[3rem] bg-surface-container-low border border-outline-variant/10 shadow-2xl p-8 flex flex-col gap-4 min-h-[360px]">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-semibold text-on-surface-variant uppercase tracking-widest">Product Feedback Loop</span>
+            <div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div><span class="text-xs text-on-surface-variant">Active</span></div>
+          </div>
+          <div class="flex flex-col gap-3">
+            {[{stage:'Discover', sub:'User needs & pain points', icon:'search', color:'primary'},{stage:'Test', sub:'Concept & prototype feedback', icon:'science', color:'secondary'},{stage:'Validate', sub:'Product-market fit signals', icon:'check_circle', color:'tertiary'},{stage:'Launch', sub:'Adoption tracking & NPS', icon:'rocket_launch', color:'primary'}].map(({stage, sub, icon, color}) => (
+              <div class={`flex items-center gap-4 p-3 rounded-xl bg-surface-container border border-outline-variant/10`}>
+                <div class={`w-9 h-9 rounded-lg bg-${color}/15 flex items-center justify-center flex-shrink-0`}><span class={`material-symbols-outlined text-${color} text-lg`}>{icon}</span></div>
+                <div class="flex-1"><div class="text-sm font-semibold text-on-surface">{stage}</div><div class="text-xs text-on-surface-variant">{sub}</div></div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div class="absolute -top-4 -right-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+          <div class="text-primary text-2xl font-bold mb-0.5">UX Research</div>
+          <div class="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Usability &amp; Flows</div>
+        </div>
+        <div class="absolute -bottom-4 -left-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+          <div class="text-secondary text-2xl font-bold mb-0.5">PMF</div>
+          <div class="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Validation Research</div>
+        </div>
+      </div>
+    </div>
+    <div class="absolute inset-0 pointer-events-none overflow-hidden" style="z-index:-1" aria-hidden="true">
+      <div class="absolute top-0 left-0 w-[500px] h-[500px] bg-secondary/8 blur-[140px] rounded-full"></div>
+    </div>
+  </section>
+
+  <section class="bg-surface-container-lowest py-14 border-y border-outline-variant/5">
+    <div class="tm-container flex flex-wrap justify-between gap-10 items-center">
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-primary">phone_iphone</span><div><div class="text-2xl font-bold text-on-surface">UX Research</div><div class="text-on-surface-variant text-sm">Usability &amp; Experience Testing</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-secondary">rocket_launch</span><div><div class="text-2xl font-bold text-on-surface">Product-Market Fit</div><div class="text-on-surface-variant text-sm">Validation &amp; Prioritization</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-tertiary">trending_up</span><div><div class="text-2xl font-bold text-on-surface">Adoption Research</div><div class="text-on-surface-variant text-sm">Barriers &amp; Activation Drivers</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-primary-container">radar</span><div><div class="text-2xl font-bold text-on-surface">Competitive Intel</div><div class="text-on-surface-variant text-sm">Tech Landscape &amp; Switching</div></div></div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface" id="services">
+    <div class="tm-container">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-14 gap-6">
+        <div class="max-w-2xl"><p class="section-eyebrow">How We Help</p><h2 class="text-4xl md:text-5xl font-bold mb-5">Research That Drives Better <span class="text-secondary">Product Decisions</span></h2><p class="text-lg text-on-surface-variant">Technology moves fast — but building without understanding users leads to wasted investment. We give tech teams the signal they need to ship confidently.</p></div>
+        <a href="/start-your-research" class="btn-ghost flex-shrink-0">Get a Quote</a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-primary text-3xl">touch_app</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">UX Research &amp; Usability Testing</h3><p class="text-on-surface-variant mb-5">Discover where users struggle, drop off, or succeed. From prototype testing to post-launch UX audits — we identify friction points and validate design decisions with real user behavior.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">USABILITY TESTING</span><span class="chip">USER FLOWS</span></div></div>
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-secondary text-3xl">join_inner</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Product-Market Fit &amp; Feature Validation</h3><p class="text-on-surface-variant mb-5">Before you build, validate. Test product concepts, feature priorities, and positioning with your target users. Reduce development risk and launch products that solve real problems.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">CONCEPT TESTING</span><span class="chip">FEATURE PRIORITY</span></div></div>
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-tertiary text-3xl">trending_up</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Adoption &amp; Competitive Research</h3><p class="text-on-surface-variant mb-5">Understand what drives tech adoption — and what blocks it. Map the competitive landscape, identify switching triggers, and uncover unmet needs your product can uniquely address.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">ADOPTION BARRIERS</span><span class="chip">SWITCHING RESEARCH</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface-container-lowest">
+    <div class="tm-container">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        <div>
+          <p class="section-eyebrow">Technology Research Questions</p>
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">Answers for the Hardest <span class="text-primary">Product &amp; Tech Questions</span></h2>
+          <p class="text-lg text-on-surface-variant mb-8 leading-relaxed">Every technology decision has a human being at the other end of it. We make sure you understand them — before you build, before you launch, and after you ship.</p>
+          <div class="bg-surface-container rounded-2xl p-6 border border-outline-variant/10">
+            <div class="flex items-center gap-3 mb-4"><span class="material-symbols-outlined text-secondary text-xl">devices</span><span class="font-semibold text-on-surface">Common Research Areas</span></div>
+            <ul class="space-y-2">
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>UX testing & user journey mapping</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Product concept & feature validation</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Technology adoption barrier research</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>B2B buyer journey & procurement research</li>
+            </ul>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">Why aren't users adopting your product?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What is the primary barrier to activation or first meaningful use?</li><li>Is the blocker awareness, trust, pricing, or product complexity?</li><li>How does adoption friction vary across user segments and use cases?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">Does your product solve a real, urgent problem?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>Are users truly experiencing the pain point your product addresses?</li><li>Is the current solution they're using "good enough" to beat?</li><li>How willing are target users to pay for a better solution?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">Which features should you build next?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>Which requested features would drive the most retention vs. acquisition?</li><li>Are you building for vocal power users or your typical user?</li><li>What feature trade-offs would your users accept or reject?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">How is your UX performing in real use?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>Where do users get confused, frustrated, or abandon in your product?</li><li>How does your UX compare to competitors in perceived ease of use?</li><li>Which onboarding steps are creating early drop-off?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">How do B2B buyers evaluate and purchase tech?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>Who are the real decision-makers vs. influencers in the purchase process?</li><li>What evaluation criteria matter most at each stage of the buying journey?</li><li>What procurement barriers are slowing your sales cycles?</li></ul></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface" id="cta">
+    <div class="tm-container"><div class="cta-card"><div class="cta-content">
+      <p class="cta-eyebrow">Get Started Today</p>
+      <h2 class="cta-heading">Build Technology That People Choose, Use, and Recommend.</h2>
+      <p class="cta-body">From product discovery to post-launch NPS, our tech research helps you make faster, smarter decisions — backed by the users you're building for.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/start-your-research" class="btn-surface">Request a Bid</a>
+        <a href="/contact-us" class="btn-cta-frosted">Talk to Our Team</a>
+      </div>
+    </div><div class="cta-orb cta-orb--tl"></div><div class="cta-orb cta-orb--br"></div></div></div>
+  </section>
+
+</PresentationLayout>
+
+<script>
+  document.querySelectorAll('.faq-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const isOpen = card.classList.contains('open');
+      document.querySelectorAll('.faq-card').forEach(c => c.classList.remove('open'));
+      if (!isOpen) card.classList.add('open');
+    });
+  });
+</script>

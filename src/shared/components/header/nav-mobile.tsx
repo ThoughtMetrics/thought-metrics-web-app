@@ -44,7 +44,7 @@ export const NavMobile: React.FC<NavMobileProps> = ({
   theme,
   onToggleTheme,
 }) => {
-  const { isAuthenticated, isAdminUser, isAdminPage } = auth;
+  const { isAuthenticated, isAdminUser, isAdminPage, isClient } = auth;
 
   return (
     <>
@@ -104,9 +104,15 @@ export const NavMobile: React.FC<NavMobileProps> = ({
         <div className="mobile-actions">
           {!isAdminUser && (
             isAuthenticated ? (
-              <a href={ROUTES.SURVEY_BOARDS} className="mobile-btn-filled">
-                Take a Paid Survey
-              </a>
+              isClient ? (
+                <a href={ROUTES.CLIENT} className="mobile-btn-filled">
+                  Admin Panel
+                </a>
+              ) : (
+                <a href={ROUTES.SURVEY_BOARDS} className="mobile-btn-filled">
+                  Take a Paid Survey
+                </a>
+              )
             ) : (
               <>
                 <a href={`${ROUTES.LOGIN_IN}?userType=respondent`} className="mobile-btn-outline">

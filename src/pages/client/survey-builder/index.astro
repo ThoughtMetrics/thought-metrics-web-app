@@ -1,0 +1,8 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import ClientSurveys from '@/shared/screens/client/client-surveys';
+---
+
+<IntractionLayout title="Survey Builder | Client Portal" description="Build and manage your surveys">
+  <ClientSurveys client:only="react" />
+</IntractionLayout>

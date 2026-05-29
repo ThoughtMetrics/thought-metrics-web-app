@@ -167,6 +167,38 @@ class UserManagementService {
     await this.ensureAuth();
     return await ApiService.get<BulkJobStatus>(`/users/admin/bulk-jobs/${jobId}`);
   }
+
+  /**
+   * Get storage usage for the authenticated user (client portal)
+   */
+  async getStorageUsage(): Promise<ApiResponse<{ storageUsed: number; storageQuota: number | null; storageAvailable: number | null; usagePercent: number }>> {
+    await this.ensureAuth();
+    return await ApiService.get('/users/storage');
+  }
+
+  /**
+   * List team members for the authenticated client's company
+   */
+  async getTeamMembers(): Promise<ApiResponse<{ members: UserProfile[]; companyId: string }>> {
+    await this.ensureAuth();
+    return await ApiService.get('/users/team');
+  }
+
+  /**
+   * Create a team member (company owner only)
+   */
+  async createTeamMember(data: { email: string; firstName: string; lastName?: string }): Promise<ApiResponse<{ user: UserProfile }>> {
+    await this.ensureAuth();
+    return await ApiService.post('/users/team', data);
+  }
+
+  /**
+   * Remove a team member (company owner only)
+   */
+  async removeTeamMember(memberId: string): Promise<ApiResponse<void>> {
+    await this.ensureAuth();
+    return await ApiService.delete(`/users/team/${memberId}`);
+  }
 }
 
 export default new UserManagementService();

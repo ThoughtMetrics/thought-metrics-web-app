@@ -463,3 +463,95 @@ body {
 .hero-slide:hover {
   mix-blend-mode: normal;
 }
+
+/* ════════════════════════════════════════════
+   ORGANISMS — FAQ ACCORDION (fieldwork grid style)
+════════════════════════════════════════════ */
+
+.faq-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 768px) { .faq-grid { grid-template-columns: 1fr; } }
+
+.faq-card {
+  background: var(--glass-bg);
+  border: var(--ghost-border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 0.2s, background 0.2s;
+  cursor: pointer;
+}
+.faq-card:hover { border-color: rgba(173,199,255,0.25); }
+[data-theme="light"] .faq-card { background: var(--surface-container-lowest); border: 1px solid var(--outline-variant); }
+[data-theme="light"] .faq-card:hover { border-color: rgba(0,91,192,0.2); }
+.faq-card.open { background: var(--surface-container); border-color: rgba(173,199,255,0.20); }
+[data-theme="light"] .faq-card.open { background: var(--surface-container-low); border-color: rgba(0,91,192,0.15); }
+
+.faq-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 22px 24px; user-select: none;
+}
+.faq-question { font-size: 15px; font-weight: 600; color: var(--on-surface); line-height: 1.4; }
+.faq-chevron {
+  flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface-container-high); color: var(--on-surface-variant);
+  font-size: 10px; transition: transform 0.25s ease, background 0.2s;
+}
+.faq-card.open .faq-chevron { transform: rotate(180deg); background: var(--primary-container); color: var(--on-primary-container); }
+[data-theme="light"] .faq-card.open .faq-chevron { background: var(--primary); color: #fff; }
+
+.faq-body {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.35s ease, padding 0.25s ease;
+  padding: 0 24px;
+}
+.faq-card.open .faq-body { max-height: 320px; padding: 0 24px 22px; }
+.faq-body ul { display: flex; flex-direction: column; gap: 10px; padding-top: 16px; border-top: 1px solid var(--glass-border-color); }
+[data-theme="light"] .faq-body ul { border-color: var(--outline-variant); }
+.faq-body li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; line-height: 1.6; color: var(--on-surface-variant); }
+
+/* ════════════════════════════════════════════
+   ORGANISMS — PROCESS STEPS (fieldwork)
+════════════════════════════════════════════ */
+
+.process-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+@media (max-width: 768px) { .process-grid { grid-template-columns: repeat(2, 1fr); gap: 1px; } }
+@media (max-width: 480px) { .process-grid { grid-template-columns: 1fr; } }
+
+.process-step { padding: 36px 28px; position: relative; border-right: 1px solid var(--glass-border-color); }
+.process-step:last-child { border-right: none; }
+@media (max-width: 768px) {
+  .process-step { border-right: 1px solid var(--glass-border-color); border-bottom: 1px solid var(--glass-border-color); }
+  .process-step:nth-child(2n) { border-right: none; }
+}
+[data-theme="light"] .process-step { border-color: var(--outline-variant); }
+
+.process-number { font-size: 3rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1; color: var(--primary); opacity: 0.18; margin-bottom: 16px; }
+.process-step:hover .process-number { opacity: 0.35; transition: opacity 0.2s; }
+.process-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--primary-container); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: var(--on-primary-container); }
+[data-theme="light"] .process-icon { background: rgba(0,91,192,0.1); color: var(--primary); }
+.process-title { font-size: 16px; font-weight: 700; color: var(--on-surface); margin-bottom: 8px; }
+.process-desc { font-size: 13px; color: var(--on-surface-variant); line-height: 1.6; }
+
+/* ════════════════════════════════════════════
+   MOLECULES — COVERAGE CARD & STATS (fieldwork / focus-group)
+════════════════════════════════════════════ */
+
+.coverage-card { background: var(--surface-container); border: var(--ghost-border); border-radius: 24px; padding: 36px; display: flex; flex-direction: column; gap: 20px; }
+[data-theme="light"] .coverage-card { background: var(--surface-container-low); border: 1px solid var(--outline-variant); }
+
+.coverage-stat { display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: var(--glass-bg); border: var(--ghost-border); border-radius: 12px; transition: background 0.2s; }
+.coverage-stat:hover { background: var(--surface-container-high); }
+[data-theme="light"] .coverage-stat { background: var(--surface-container-lowest); border: 1px solid var(--outline-variant); }
+
+.coverage-stat-icon { width: 40px; height: 40px; flex-shrink: 0; border-radius: 10px; background: var(--primary-container); display: flex; align-items: center; justify-content: center; color: var(--on-primary-container); }
+[data-theme="light"] .coverage-stat-icon { background: rgba(0,91,192,0.1); color: var(--primary); }
+
+/* ── Footer logo mark: dark/light theme switching ── */
+.footer-mark-dark  { display: block; }
+.footer-mark-light { display: none; }
+[data-theme="light"] .footer-mark-dark  { display: none; }
+[data-theme="light"] .footer-mark-light { display: block; }

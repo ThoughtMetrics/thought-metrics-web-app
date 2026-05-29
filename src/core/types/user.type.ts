@@ -119,6 +119,10 @@ export interface UserProfile {
     | 'field-incharge';
   zonal?: string;
   zonalInfo?: ZonalInfo[];
+  storageUsed?: number;
+  storageQuota?: number | null;
+  companyName?: string;
+  companyId?: string;
   createdAt: string;
   updatedAt: string;
 }

@@ -1,0 +1,8 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import ClientTeam from '@/shared/screens/client/client-team';
+---
+
+<IntractionLayout title="Team | Client Portal" description="Manage your company team members">
+  <ClientTeam client:only="react" />
+</IntractionLayout>

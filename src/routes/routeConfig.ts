@@ -55,6 +55,8 @@ export const ROUTES = {
   EDIT_PROFILE: '/edit-profile',
   SURVEY_BOARDS: '/survey-boards',
   SURVEY_CAMPAIGN: '/survey-campaign',
+  /* Client Portal Routes */
+  CLIENT: '/client',
   /* Admin Routes */
   ADMIN : '/admin',
   ADMIN_ANALYTICS: '/admin/analytics',

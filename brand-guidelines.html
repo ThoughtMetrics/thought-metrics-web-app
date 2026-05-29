@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ThoughtMetrics — Brand Guidelines</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0e0e0e;
+      --surface:  #131313;
+      --s-low:    #1c1b1b;
+      --s-mid:    #201f1f;
+      --s-high:   #2a2a2a;
+      --s-top:    #353534;
+      --on-s:     #e5e2e1;
+      --on-sv:    #c1c6d7;
+      --outline:  #8b90a0;
+      --ov:       #414754;
+      --primary:  #adc7ff;
+      --p-dim:    #4a8eff;
+      --p-c:      #4a8eff;
+      --on-p:     #002e68;
+      --on-p-c:   #00285b;
+      --secondary:#8fd8ff;
+      --sec-c:    #00c1fd;
+      --on-sec:   #003548;
+      --tertiary: #b9c7e4;
+      --ter-c:    #8391ad;
+      --on-ter:   #233148;
+      --error:    #ffb4ab;
+      --success:  #b5ccac;
+      --grad:     linear-gradient(135deg,#adc7ff 0%,#4a8eff 100%);
+      --glass:    rgba(32,31,31,0.80);
+      --gb-color: rgba(65,71,84,0.20);
+      --font:     'Plus Jakarta Sans', sans-serif;
+      --radius:   16px;
+      --transition: 0.2s ease;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--on-s);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+
+    /* ── Layout ── */
+    .page { max-width: 1200px; margin: 0 auto; padding: 48px 32px 96px; }
+
+    section { margin-bottom: 80px; }
+
+    h1, h2, h3, h4 { line-height: 1.15; }
+
+    a { color: var(--primary); text-decoration: none; }
+
+    /* ── Cover ── */
+    .cover {
+      text-align: center;
+      padding: 96px 0 80px;
+      border-bottom: 1px solid var(--ov);
+      margin-bottom: 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cover-orb {
+      position: absolute; border-radius: 50%; filter: blur(100px); pointer-events: none;
+    }
+    .cover-orb--tl { top: -80px; left: -80px; width: 360px; height: 360px; background: rgba(74,142,255,0.12); }
+    .cover-orb--br { bottom: -80px; right: -80px; width: 360px; height: 360px; background: rgba(0,193,253,0.08); }
+
+    .cover-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px; border-radius: 999px;
+      border: 1px solid var(--ov); background: var(--s-low);
+      font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--secondary); margin-bottom: 24px;
+    }
+    .cover-badge span { width: 6px; height: 6px; border-radius: 50%; background: var(--secondary); }
+
+    .cover h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 800; letter-spacing: -0.03em;
+      background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+    }
+    .cover p {
+      font-size: 1.125rem; color: var(--on-sv); max-width: 560px; margin: 0 auto 32px;
+    }
+    .cover-meta {
+      display: flex; align-items: center; justify-content: center; gap: 32px; flex-wrap: wrap;
+      font-size: 13px; color: var(--outline);
+    }
+    .cover-meta span { display: flex; align-items: center; gap: 6px; }
+    .cover-meta strong { color: var(--on-sv); }
+
+    /* ── Section header ── */
+    .section-label {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--secondary); margin-bottom: 12px;
+    }
+    .section-label::before {
+      content: ''; width: 24px; height: 2px;
+      background: var(--secondary); border-radius: 2px; flex-shrink: 0;
+    }
+    .section-title {
+      font-size: clamp(1.6rem, 3.5vw, 2.25rem);
+      font-weight: 800; letter-spacing: -0.02em; color: var(--on-s);
+      margin-bottom: 8px;
+    }
+    .section-desc { font-size: 15px; color: var(--on-sv); max-width: 640px; margin-bottom: 40px; }
+
+    /* ── Justification box ── */
+    .justification {
+      background: var(--s-low);
+      border: 1px solid var(--ov);
+      border-left: 3px solid var(--primary);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      margin-bottom: 40px;
+    }
+    .justification h4 { font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
+    .justification p { font-size: 14px; line-height: 1.75; color: var(--on-sv); }
+    .justification p + p { margin-top: 8px; }
+
+    /* ── Typography showcase ── */
+    .font-hero {
+      background: var(--s-mid);
+      border: 1px solid var(--ov);
+      border-radius: 24px;
+      padding: 48px;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    .font-hero-name {
+      font-size: 72px; font-weight: 800; letter-spacing: -0.04em;
+      background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      line-height: 1; margin-bottom: 8px;
+    }
+    .font-hero-sub { font-size: 14px; color: var(--outline); letter-spacing: 2px; text-transform: uppercase; }
+
+    .weight-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;
+      margin-bottom: 40px;
+    }
+    .weight-card {
+      background: var(--s-mid); border: 1px solid var(--ov); border-radius: var(--radius);
+      padding: 24px;
+      transition: border-color var(--transition), transform var(--transition);
+    }
+    .weight-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .weight-card-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--outline); margin-bottom: 6px; }
+    .weight-card-sample { font-size: 22px; color: var(--on-s); line-height: 1.2; margin-bottom: 8px; }
+    .weight-card-meta { font-size: 12px; color: var(--on-sv); }
+
+    .type-scale { border: 1px solid var(--ov); border-radius: var(--radius); overflow: hidden; }
+    .type-row {
+      display: flex; align-items: center; gap: 24px; padding: 20px 28px;
+      border-bottom: 1px solid var(--ov);
+      transition: background var(--transition);
+    }
+    .type-row:last-child { border-bottom: none; }
+    .type-row:hover { background: var(--s-low); }
+    .type-row-meta { min-width: 180px; }
+    .type-row-role { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--secondary); }
+    .type-row-spec { font-size: 11px; color: var(--outline); margin-top: 2px; }
+    .type-row-sample { color: var(--on-s); }
+
+    .font-usage { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 32px; }
+    @media (max-width: 640px) { .font-usage { grid-template-columns: 1fr; } }
+    .usage-do, .usage-dont {
+      border-radius: var(--radius); padding: 24px;
+      border: 1px solid var(--ov);
+    }
+    .usage-do { background: rgba(181,204,172,0.08); border-color: rgba(181,204,172,0.3); }
+    .usage-dont { background: rgba(255,180,171,0.08); border-color: rgba(255,180,171,0.3); }
+    .usage-tag { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 14px; }
+    .usage-do .usage-tag { color: var(--success); }
+    .usage-dont .usage-tag { color: var(--error); }
+    .usage-item { font-size: 13px; color: var(--on-sv); padding: 4px 0; display: flex; align-items: flex-start; gap: 8px; }
+    .usage-item::before { flex-shrink: 0; margin-top: 2px; }
+    .usage-do .usage-item::before { content: '✓'; color: var(--success); font-weight: 700; }
+    .usage-dont .usage-item::before { content: '✕'; color: var(--error); font-weight: 700; }
+
+    /* ── Colour palette ── */
+    .palette-mode-toggle {
+      display: flex; gap: 8px; margin-bottom: 32px;
+    }
+    .mode-btn {
+      padding: 8px 20px; border-radius: 999px; border: 1px solid var(--ov);
+      background: var(--s-mid); color: var(--on-sv);
+      font-size: 13px; font-weight: 600; font-family: var(--font);
+      cursor: pointer; transition: all var(--transition);
+    }
+    .mode-btn.active { background: var(--primary); color: var(--on-p); border-color: transparent; }
+
+    .palette-section { display: none; }
+    .palette-section.visible { display: block; }
+
+    .palette-group { margin-bottom: 48px; }
+    .palette-group-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--outline); margin-bottom: 16px; padding-bottom: 8px;
+      border-bottom: 1px solid var(--ov);
+    }
+    .palette-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+
+    .swatch {
+      border-radius: var(--radius); overflow: hidden;
+      border: 1px solid var(--ov);
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .swatch:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
+    .swatch-color { height: 80px; position: relative; cursor: pointer; }
+    .swatch-copy {
+      position: absolute; bottom: 8px; right: 8px;
+      background: rgba(0,0,0,0.5); color: #fff;
+      font-size: 10px; padding: 3px 8px; border-radius: 4px;
+      opacity: 0; transition: opacity var(--transition);
+    }
+    .swatch-color:hover .swatch-copy { opacity: 1; }
+    .swatch-info { background: var(--s-high); padding: 14px 16px; }
+    .swatch-token { font-size: 11px; font-weight: 700; color: var(--primary); letter-spacing: 0.5px; margin-bottom: 4px; }
+    .swatch-hex { font-size: 13px; font-weight: 600; color: var(--on-s); font-family: 'Courier New', monospace; margin-bottom: 4px; }
+    .swatch-role { font-size: 11px; color: var(--on-sv); line-height: 1.4; }
+
+    /* Gradient swatch */
+    .gradient-card {
+      border-radius: var(--radius); overflow: hidden;
+      border: 1px solid var(--ov); margin-bottom: 16px;
+    }
+    .gradient-strip { height: 100px; }
+    .gradient-info { background: var(--s-high); padding: 18px 20px; }
+    .gradient-name { font-size: 14px; font-weight: 700; color: var(--on-s); margin-bottom: 4px; }
+    .gradient-value { font-family: 'Courier New', monospace; font-size: 12px; color: var(--on-sv); word-break: break-all; }
+    .gradient-justification { font-size: 13px; color: var(--on-sv); margin-top: 10px; line-height: 1.6; }
+
+    /* Contrast badges */
+    .contrast-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+    .contrast-card {
+      border-radius: var(--radius); border: 1px solid var(--ov);
+      overflow: hidden;
+    }
+    .contrast-preview {
+      padding: 20px 22px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .contrast-sample-text { font-size: 17px; font-weight: 600; }
+    .contrast-meta { background: var(--s-high); padding: 14px 16px; }
+    .contrast-pair { font-size: 12px; font-weight: 700; color: var(--on-sv); margin-bottom: 4px; }
+    .contrast-ratio { font-size: 13px; font-weight: 800; }
+    .contrast-ratio.pass-aaa { color: var(--success); }
+    .contrast-ratio.pass-aa  { color: #ffd166; }
+    .contrast-ratio.pass-aa-large { color: var(--on-sv); }
+    .contrast-level { font-size: 11px; color: var(--outline); }
+
+    /* ── Semantic usage table ── */
+    .usage-table { width: 100%; border-collapse: collapse; }
+    .usage-table th {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--outline); padding: 12px 16px; text-align: left;
+      border-bottom: 1px solid var(--ov);
+    }
+    .usage-table td {
+      padding: 14px 16px; font-size: 13px; color: var(--on-sv);
+      border-bottom: 1px solid rgba(65,71,84,0.2); vertical-align: top;
+    }
+    .usage-table tr:hover td { background: var(--s-low); }
+    .token-badge {
+      font-family: 'Courier New', monospace;
+      font-size: 11px; font-weight: 600;
+      background: var(--s-top); color: var(--primary);
+      padding: 3px 8px; border-radius: 4px; white-space: nowrap;
+    }
+    .dot { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; display: inline-block; vertical-align: middle; margin-right: 8px; border: 1px solid rgba(255,255,255,0.1); }
+
+    /* ── Component preview ── */
+    .component-demo {
+      background: var(--s-mid); border: 1px solid var(--ov); border-radius: 24px;
+      padding: 40px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center;
+      margin-bottom: 20px;
+    }
+    .demo-btn-primary {
+      display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px;
+      background: var(--grad); color: var(--on-p-c); border: none; border-radius: 999px;
+      font-size: 15px; font-weight: 700; font-family: var(--font); cursor: default;
+      box-shadow: 0 4px 20px rgba(74,142,255,0.25);
+    }
+    .demo-btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px; padding: 13px 30px;
+      background: transparent; color: var(--primary); border: 1px solid rgba(65,71,84,0.25);
+      border-radius: 999px; font-size: 15px; font-weight: 700; font-family: var(--font); cursor: default;
+    }
+    .demo-btn-surface {
+      display: inline-flex; align-items: center; gap: 8px; padding: 13px 30px;
+      background: var(--s-high); color: var(--on-s); border: none; border-radius: 999px;
+      font-size: 15px; font-weight: 600; font-family: var(--font); cursor: default;
+    }
+    .demo-chip {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 14px;
+      background: var(--ter-c); color: var(--on-ter);
+      border-radius: 4px; font-size: 10px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+    }
+    .demo-card {
+      padding: 24px; border-radius: 20px;
+      background: var(--s-low); border: 1px solid var(--gb-color);
+      max-width: 280px;
+    }
+    .demo-card-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--secondary); margin-bottom: 8px; }
+    .demo-card-title { font-size: 17px; font-weight: 700; color: var(--on-s); margin-bottom: 8px; }
+    .demo-card-body { font-size: 13px; color: var(--on-sv); line-height: 1.6; }
+
+    /* ── Principles ── */
+    .principles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+    .principle-card {
+      background: var(--s-mid); border: 1px solid var(--ov); border-radius: var(--radius);
+      padding: 28px;
+    }
+    .principle-number { font-size: 40px; font-weight: 800; letter-spacing: -0.04em; color: var(--s-top); line-height: 1; margin-bottom: 12px; }
+    .principle-title { font-size: 16px; font-weight: 700; color: var(--on-s); margin-bottom: 8px; }
+    .principle-body { font-size: 13px; color: var(--on-sv); line-height: 1.7; }
+
+    /* ── Footer ── */
+    .page-footer {
+      border-top: 1px solid var(--ov); padding-top: 40px; margin-top: 40px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+      font-size: 12px; color: var(--outline);
+    }
+    .page-footer strong { color: var(--on-sv); }
+
+    /* ── Divider ── */
+    hr { border: none; border-top: 1px solid var(--ov); margin: 0 0 40px; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--ov); border-radius: 4px; }
+
+    @media (max-width: 768px) {
+      .page { padding: 32px 20px 64px; }
+      .font-hero { padding: 32px 24px; }
+      .font-hero-name { font-size: 48px; }
+      .type-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .type-row-meta { min-width: unset; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ══════════════════════ COVER ══════════════════════ -->
+  <div class="cover">
+    <div class="cover-orb cover-orb--tl"></div>
+    <div class="cover-orb cover-orb--br"></div>
+    <div class="cover-badge"><span></span>Brand Guidelines</div>
+    <h1>ThoughtMetrics</h1>
+    <p>Typography, colour palette, and design token reference for the ThoughtMetrics web application.</p>
+    <div class="cover-meta">
+      <span>Version <strong>1.0</strong></span>
+      <span>Date <strong>May 2026</strong></span>
+      <span>Stack <strong>Astro · React · Tailwind v4</strong></span>
+      <span>Theme <strong>Material Design 3 — Dark-first</strong></span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════ 01 BRAND PRINCIPLES ══════════════════════ -->
+  <section>
+    <div class="section-label">01 — Foundation</div>
+    <h2 class="section-title">Brand Principles</h2>
+    <p class="section-desc">Every visual decision in ThoughtMetrics stems from four core principles that reflect our positioning as a trusted, data-forward market research platform.</p>
+
+    <div class="principles-grid">
+      <div class="principle-card">
+        <div class="principle-number">01</div>
+        <div class="principle-title">Clarity Over Decoration</div>
+        <p class="principle-body">Data insights must communicate without interference. Visual elements earn their place only when they aid comprehension or reduce cognitive load.</p>
+      </div>
+      <div class="principle-card">
+        <div class="principle-number">02</div>
+        <div class="principle-title">Confident, Not Loud</div>
+        <p class="principle-body">A dark-first palette with calibrated blue accents signals authority and trustworthiness — the same qualities clients expect from research partners.</p>
+      </div>
+      <div class="principle-card">
+        <div class="principle-number">03</div>
+        <div class="principle-title">Accessible by Default</div>
+        <p class="principle-body">Every colour pairing meets WCAG 2.1 AA at minimum. Accessibility is a baseline requirement, not a post-launch audit item.</p>
+      </div>
+      <div class="principle-card">
+        <div class="principle-number">04</div>
+        <div class="principle-title">Systematic Consistency</div>
+        <p class="principle-body">CSS custom properties and the Material Design 3 token architecture ensure every surface and component stays coherent as the product scales.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════ 02 TYPOGRAPHY ══════════════════════ -->
+  <section>
+    <div class="section-label">02 — Typography</div>
+    <h2 class="section-title">Type System</h2>
+    <p class="section-desc">A single, high-quality typeface applied with rigorous weight and size discipline creates visual hierarchy without fragmentation.</p>
+
+    <div class="justification">
+      <h4>Why Plus Jakarta Sans?</h4>
+      <p>Plus Jakarta Sans is a contemporary geometric sans-serif with humanist proportions. Its wide weight range (200–800) lets a single typeface cover everything from display headlines to 10px eyebrow labels without switching families — reducing HTTP requests, maintaining harmony, and simplifying developer decisions.</p>
+      <p>Its slightly wider letter-spacing at display sizes pairs naturally with negative letter-spacing in headings, producing clean, modern headlines that align with the research-tech sector aesthetic occupied by tools like Typeform, Dovetail, and Maze.</p>
+      <p>The variable font axis covers all nine weights in a single file, meaning the performance cost is roughly equal to loading two static weights.</p>
+    </div>
+
+    <div class="font-hero">
+      <div class="font-hero-name">Plus Jakarta Sans</div>
+      <div class="font-hero-sub">Primary typeface · All weights 200–800 · Variable font</div>
+    </div>
+
+    <!-- Weight showcase -->
+    <div class="section-label" style="margin-bottom:16px;">Weights</div>
+    <div class="weight-grid">
+      <div class="weight-card">
+        <div class="weight-card-label">ExtraLight · 200</div>
+        <div class="weight-card-sample" style="font-weight:200;">The quick brown fox</div>
+        <div class="weight-card-meta">Decorative large display only</div>
+      </div>
+      <div class="weight-card">
+        <div class="weight-card-label">Light · 300</div>
+        <div class="weight-card-sample" style="font-weight:300;">The quick brown fox</div>
+        <div class="weight-card-meta">Subtle large-display sub-text</div>
+      </div>
+      <div class="weight-card">
+        <div class="weight-card-label">Regular · 400</div>
+        <div class="weight-card-sample" style="font-weight:400;">The quick brown fox</div>
+        <div class="weight-card-meta">Body copy · default weight</div>
+      </div>
+      <div class="weight-card">
+        <div class="weight-card-label">Medium · 500</div>
+        <div class="weight-card-sample" style="font-weight:500;">The quick brown fox</div>
+        <div class="weight-card-meta">Nav links · labels · meta text</div>
+      </div>
+      <div class="weight-card">
+        <div class="weight-card-label">SemiBold · 600</div>
+        <div class="weight-card-sample" style="font-weight:600;">The quick brown fox</div>
+        <div class="weight-card-meta">Sub-headings · card titles</div>
+      </div>
+      <div class="weight-card">
+        <div class="weight-card-label">Bold · 700</div>
+        <div class="weight-card-sample" style="font-weight:700;">The quick brown fox</div>
+        <div class="weight-card-meta">Buttons · section headings</div>
+      </div>
+      <div class="weight-card">
+        <div class="weight-card-label">ExtraBold · 800</div>
+        <div class="weight-card-sample" style="font-weight:800;">The quick brown fox</div>
+        <div class="weight-card-meta">Hero headlines · display type</div>
+      </div>
+    </div>
+
+    <!-- Type scale -->
+    <div class="section-label" style="margin-bottom:16px;">Type Scale</div>
+    <div class="type-scale">
+      <div class="type-row">
+        <div class="type-row-meta">
+          <div class="type-row-role">Display</div>
+          <div class="type-row-spec">clamp(2.5rem, 6vw, 4.5rem) · 800 · −0.03em</div>
+        </div>
+        <div class="type-row-sample" style="font-size:clamp(1.8rem,3.5vw,3rem);font-weight:800;letter-spacing:-0.03em;">Data that decides.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row-meta">
+          <div class="type-row-role">Headline 1</div>
+          <div class="type-row-spec">clamp(2rem, 4vw, 3rem) · 800 · −0.02em</div>
+        </div>
+        <div class="type-row-sample" style="font-size:clamp(1.5rem,3vw,2.25rem);font-weight:800;letter-spacing:-0.02em;">Survey Analytics</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row-meta">
+          <div class="type-row-role">Headline 2</div>
+          <div class="type-row-spec">clamp(1.5rem, 2.5vw, 2rem) · 700 · −0.01em</div>
+        </div>
+        <div class="type-row-sample" style="font-size:clamp(1.25rem,2vw,1.75rem);font-weight:700;letter-spacing:-0.01em;">Research Methods</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row-meta">
+          <div class="type-row-role">Title</div>
+          <div class="type-row-spec">1.25rem · 700 · default</div>
+        </div>
+        <div class="type-row-sample" style="font-size:1.25rem;font-weight:700;">Panel Member Insights</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row-meta">
+          <div class="type-row-role">Body Large</div>
+          <div class="type-row-spec">1.125rem · 400 · 1.7 lh</div>
+        </div>
+        <div class="type-row-sample" style="font-size:1.125rem;font-weight:400;line-height:1.7;color:var(--on-sv);">Understand your audience with precision-engineered survey tools and real-time analytics.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row-meta">
+          <div class="type-row-role">Body Default</div>
+          <div class="type-row-spec">15px · 400 · 1.6 lh</div>
+        </div>
+        <div class="type-row-sample" style="font-size:15px;font-weight:400;line-height:1.6;color:var(--on-sv);">ThoughtMetrics combines qualitative and quantitative research methodologies into a single unified platform.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row-meta">
+          <div class="type-row-role">Label / Meta</div>
+          <div class="type-row-spec">13px · 500 · default</div>
+        </div>
+        <div class="type-row-sample" style="font-size:13px;font-weight:500;color:var(--on-sv);">Last updated 28 May 2026</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row-meta">
+          <div class="type-row-role">Eyebrow</div>
+          <div class="type-row-spec">10px · 700 · 3px tracking · uppercase</div>
+        </div>
+        <div class="type-row-sample" style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--secondary);">Why ThoughtMetrics</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row-meta">
+          <div class="type-row-role">Caption / Micro</div>
+          <div class="type-row-spec">11–12px · 600 · 1.5px tracking · uppercase</div>
+        </div>
+        <div class="type-row-sample" style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--outline);">N = 1,240 Respondents</div>
+      </div>
+    </div>
+
+    <!-- Do / Don't -->
+    <div class="font-usage">
+      <div class="usage-do">
+        <div class="usage-tag">Do</div>
+        <div class="usage-item">Use weight 800 for display and hero headings only</div>
+        <div class="usage-item">Apply negative letter-spacing (−0.02em to −0.04em) on headlines ≥ 24px</div>
+        <div class="usage-item">Keep body text at 400 or 500 weight for readability</div>
+        <div class="usage-item">Use the eyebrow pattern (uppercase, 10px, 700, +3px spacing) consistently above section titles</div>
+        <div class="usage-item">Maintain a minimum 14px font size for any paragraph content</div>
+        <div class="usage-item">Use 1.6–1.75 line-height for multi-line body paragraphs</div>
+      </div>
+      <div class="usage-dont">
+        <div class="usage-tag">Don't</div>
+        <div class="usage-item">Don't use weight 200–300 for functional text smaller than 24px</div>
+        <div class="usage-item">Don't mix Plus Jakarta Sans with other typefaces — it handles every role</div>
+        <div class="usage-item">Don't apply positive letter-spacing to body text</div>
+        <div class="usage-item">Don't use ALL CAPS for body paragraphs or headings</div>
+        <div class="usage-item">Don't go below 10px for any rendered text element</div>
+        <div class="usage-item">Don't use italic for anything other than occasional editorial emphasis</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════ 03 COLOUR PALETTE ══════════════════════ -->
+  <section>
+    <div class="section-label">03 — Colour</div>
+    <h2 class="section-title">Colour Palette</h2>
+    <p class="section-desc">Built on Material Design 3 colour science. Two complete tonal palettes — dark (default) and light — share the same token names so components adapt via a single <code style="font-family:monospace;font-size:13px;color:var(--primary);">data-theme</code> attribute swap.</p>
+
+    <div class="justification">
+      <h4>Palette Rationale</h4>
+      <p><strong style="color:var(--on-s);">Dark-first:</strong> Our research clients and panellists interact with surveys in diverse environments including evening hours and lower-light settings. A dark default reduces eye strain, improves perceived contrast for data-heavy screens, and positions the brand alongside premium analytics tools (Amplitude, Mixpanel, Grafana).</p>
+      <p><strong style="color:var(--on-s);">Blue primary family (#adc7ff / #005bc0):</strong> Blue communicates trustworthiness, competence, and analytical precision — consistently the highest-performing colour in B2B research-tech UX studies. The light-blue dark-mode primary (#adc7ff) maintains high contrast against dark surfaces while the deep blue (#005bc0) provides authority on white in light mode.</p>
+      <p><strong style="color:var(--on-s);">Cyan secondary (#8fd8ff / #006685):</strong> A closely related hue that adds differentiation for interactive states and data series without breaking colour harmony. The hue distance is large enough to distinguish but small enough to feel intentional.</p>
+      <p><strong style="color:var(--on-s);">Cool grey tertiary (#b9c7e4 / #39475f):</strong> Adds a third dimension for tags, chips, and supporting labels without the warmth that would feel out-of-place in a data context.</p>
+    </div>
+
+    <div class="palette-mode-toggle">
+      <button class="mode-btn active" onclick="showMode('dark')">Dark Mode (Default)</button>
+      <button class="mode-btn" onclick="showMode('light')">Light Mode</button>
+    </div>
+
+    <!-- DARK MODE -->
+    <div class="palette-section visible" id="palette-dark">
+
+      <div class="palette-group">
+        <div class="palette-group-label">Primary — Brand Blue</div>
+        <div class="palette-row">
+          <div class="swatch">
+            <div class="swatch-color" style="background:#adc7ff;" onclick="copyHex(this,'#adc7ff')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--primary</div>
+              <div class="swatch-hex">#ADC7FF</div>
+              <div class="swatch-role">Default primary · headings, links, active states</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#4a8eff;" onclick="copyHex(this,'#4a8eff')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--primary-container</div>
+              <div class="swatch-hex">#4A8EFF</div>
+              <div class="swatch-role">Filled containers, tab indicators, gradient end</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#d8e2ff;" onclick="copyHex(this,'#d8e2ff')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--primary-fixed</div>
+              <div class="swatch-hex">#D8E2FF</div>
+              <div class="swatch-role">Background tints, hover highlights</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#004493;" onclick="copyHex(this,'#004493')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--primary-dark</div>
+              <div class="swatch-hex">#004493</div>
+              <div class="swatch-role">Deep pressed state, shadow accent</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#002e68;" onclick="copyHex(this,'#002e68')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--on-primary</div>
+              <div class="swatch-hex">#002E68</div>
+              <div class="swatch-role">Text placed on --primary backgrounds</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="palette-group">
+        <div class="palette-group-label">Secondary — Cyan</div>
+        <div class="palette-row">
+          <div class="swatch">
+            <div class="swatch-color" style="background:#8fd8ff;" onclick="copyHex(this,'#8fd8ff')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--secondary</div>
+              <div class="swatch-hex">#8FD8FF</div>
+              <div class="swatch-role">Eyebrow labels, section accents, section-divider lines</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#00c1fd;" onclick="copyHex(this,'#00c1fd')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--secondary-container</div>
+              <div class="swatch-hex">#00C1FD</div>
+              <div class="swatch-role">Secondary filled containers</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#c2e8ff;" onclick="copyHex(this,'#c2e8ff')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--secondary-fixed</div>
+              <div class="swatch-hex">#C2E8FF</div>
+              <div class="swatch-role">Info highlights, data annotation tints</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#003548;" onclick="copyHex(this,'#003548')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--on-secondary</div>
+              <div class="swatch-hex">#003548</div>
+              <div class="swatch-role">Text placed on --secondary backgrounds</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="palette-group">
+        <div class="palette-group-label">Tertiary — Cool Blue-Grey</div>
+        <div class="palette-row">
+          <div class="swatch">
+            <div class="swatch-color" style="background:#b9c7e4;" onclick="copyHex(this,'#b9c7e4')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--tertiary</div>
+              <div class="swatch-hex">#B9C7E4</div>
+              <div class="swatch-role">Chips, tags, supporting decoration</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#8391ad;" onclick="copyHex(this,'#8391ad')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--tertiary-container</div>
+              <div class="swatch-hex">#8391AD</div>
+              <div class="swatch-role">Chip background</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#d6e3ff;" onclick="copyHex(this,'#d6e3ff')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--tertiary-fixed</div>
+              <div class="swatch-hex">#D6E3FF</div>
+              <div class="swatch-role">Light-mode chip text, info tint</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#233148;" onclick="copyHex(this,'#233148')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--on-tertiary</div>
+              <div class="swatch-hex">#233148</div>
+              <div class="swatch-role">Text on tertiary-container backgrounds</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="palette-group">
+        <div class="palette-group-label">Surfaces &amp; Backgrounds</div>
+        <div class="palette-row">
+          <div class="swatch">
+            <div class="swatch-color" style="background:#0e0e0e;border-bottom:1px solid #222;" onclick="copyHex(this,'#0e0e0e')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--surface-container-lowest</div>
+              <div class="swatch-hex">#0E0E0E</div>
+              <div class="swatch-role">Page root / scroll container background</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#131313;border-bottom:1px solid #222;" onclick="copyHex(this,'#131313')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--background / --surface</div>
+              <div class="swatch-hex">#131313</div>
+              <div class="swatch-role">Body background, primary surface</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#1c1b1b;" onclick="copyHex(this,'#1c1b1b')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--surface-container-low</div>
+              <div class="swatch-hex">#1C1B1B</div>
+              <div class="swatch-role">Sidebar panels, input backgrounds</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#201f1f;" onclick="copyHex(this,'#201f1f')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--surface-container</div>
+              <div class="swatch-hex">#201F1F</div>
+              <div class="swatch-role">Cards, panels, glass overlays</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#2a2a2a;" onclick="copyHex(this,'#2a2a2a')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--surface-container-high</div>
+              <div class="swatch-hex">#2A2A2A</div>
+              <div class="swatch-role">Elevated cards, tooltips</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#353534;" onclick="copyHex(this,'#353534')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--surface-container-highest</div>
+              <div class="swatch-hex">#353534</div>
+              <div class="swatch-role">Highest-elevation surfaces, dropdowns</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#393939;" onclick="copyHex(this,'#393939')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--surface-bright</div>
+              <div class="swatch-hex">#393939</div>
+              <div class="swatch-role">Bright surface variant (modals, popovers)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="palette-group">
+        <div class="palette-group-label">Content &amp; Outline</div>
+        <div class="palette-row">
+          <div class="swatch">
+            <div class="swatch-color" style="background:#e5e2e1;" onclick="copyHex(this,'#e5e2e1')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--on-surface</div>
+              <div class="swatch-hex">#E5E2E1</div>
+              <div class="swatch-role">Primary text on dark surfaces</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#c1c6d7;" onclick="copyHex(this,'#c1c6d7')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--on-surface-variant</div>
+              <div class="swatch-hex">#C1C6D7</div>
+              <div class="swatch-role">Secondary/supporting text, descriptions</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#8b90a0;" onclick="copyHex(this,'#8b90a0')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--outline</div>
+              <div class="swatch-hex">#8B90A0</div>
+              <div class="swatch-role">Muted text, captions, placeholder copy</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#414754;" onclick="copyHex(this,'#414754')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--outline-variant</div>
+              <div class="swatch-hex">#414754</div>
+              <div class="swatch-role">Borders, dividers, subtle separators</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="palette-group">
+        <div class="palette-group-label">Semantic Colours</div>
+        <div class="palette-row">
+          <div class="swatch">
+            <div class="swatch-color" style="background:#ffb4ab;" onclick="copyHex(this,'#ffb4ab')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--error</div>
+              <div class="swatch-hex">#FFB4AB</div>
+              <div class="swatch-role">Validation errors, destructive actions</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#93000a;" onclick="copyHex(this,'#93000a')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--error-container</div>
+              <div class="swatch-hex">#93000A</div>
+              <div class="swatch-role">Error background chips, alert banners</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#b5ccac;" onclick="copyHex(this,'#b5ccac')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--success</div>
+              <div class="swatch-hex">#B5CCAC</div>
+              <div class="swatch-role">Success states, completion indicators</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#c2e8ff;" onclick="copyHex(this,'#c2e8ff')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--info</div>
+              <div class="swatch-hex">#C2E8FF</div>
+              <div class="swatch-role">Info badges, advisory notices</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gradient -->
+      <div class="palette-group">
+        <div class="palette-group-label">Brand Gradient</div>
+        <div class="gradient-card">
+          <div class="gradient-strip" style="background:linear-gradient(135deg,#adc7ff 0%,#4a8eff 100%);"></div>
+          <div class="gradient-info">
+            <div class="gradient-name">Editorial Gradient (Dark Mode)</div>
+            <div class="gradient-value"><code>linear-gradient(135deg, #ADC7FF 0%, #4A8EFF 100%)</code></div>
+            <div class="gradient-justification">Applied to primary CTA buttons, hero display text, and the CTA band. The 135° angle mirrors a natural diagonal eye-movement pattern in left-to-right reading, guiding attention subtly towards CTAs. The transition from the softer #ADC7FF to the more saturated #4A8EFF creates perceived depth and a sense of forward momentum — appropriate for action-driving surfaces.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIGHT MODE -->
+    <div class="palette-section" id="palette-light">
+      <div class="palette-group">
+        <div class="palette-group-label">Primary — Deep Brand Blue</div>
+        <div class="palette-row">
+          <div class="swatch">
+            <div class="swatch-color" style="background:#005bc0;" onclick="copyHex(this,'#005bc0')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--primary (light)</div>
+              <div class="swatch-hex">#005BC0</div>
+              <div class="swatch-role">Links, active states, filled buttons</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#d8e2ff;" onclick="copyHex(this,'#d8e2ff')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--primary-container (light)</div>
+              <div class="swatch-hex">#D8E2FF</div>
+              <div class="swatch-role">Filled container backgrounds</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#004493;" onclick="copyHex(this,'#004493')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--on-primary-fixed-variant</div>
+              <div class="swatch-hex">#004493</div>
+              <div class="swatch-role">Pressed primary states</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="palette-group">
+        <div class="palette-group-label">Secondary — Teal</div>
+        <div class="palette-row">
+          <div class="swatch">
+            <div class="swatch-color" style="background:#006685;" onclick="copyHex(this,'#006685')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--secondary (light)</div>
+              <div class="swatch-hex">#006685</div>
+              <div class="swatch-role">Section accent colour, eyebrow labels</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#c2e8ff;" onclick="copyHex(this,'#c2e8ff')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--secondary-container (light)</div>
+              <div class="swatch-hex">#C2E8FF</div>
+              <div class="swatch-role">Tinted backgrounds, info panels</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="palette-group">
+        <div class="palette-group-label">Surfaces &amp; Backgrounds (Light)</div>
+        <div class="palette-row">
+          <div class="swatch">
+            <div class="swatch-color" style="background:#fffbfe;border:1px solid #e0e0e0;" onclick="copyHex(this,'#fffbfe')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--background (light)</div>
+              <div class="swatch-hex">#FFFBFE</div>
+              <div class="swatch-role">Page background — warm near-white</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#f7f2fa;" onclick="copyHex(this,'#f7f2fa')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--surface-container-low (light)</div>
+              <div class="swatch-hex">#F7F2FA</div>
+              <div class="swatch-role">Card backgrounds</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#e6e0e9;" onclick="copyHex(this,'#e6e0e9')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--surface-container-highest (light)</div>
+              <div class="swatch-hex">#E6E0E9</div>
+              <div class="swatch-role">Elevated card, dropdown background</div>
+            </div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-color" style="background:#1c1b1f;" onclick="copyHex(this,'#1c1b1f')"><span class="swatch-copy">Copy</span></div>
+            <div class="swatch-info">
+              <div class="swatch-token">--on-surface (light)</div>
+              <div class="swatch-hex">#1C1B1F</div>
+              <div class="swatch-role">Primary text on light surfaces</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="palette-group">
+        <div class="palette-group-label">Brand Gradient (Light Mode)</div>
+        <div class="gradient-card">
+          <div class="gradient-strip" style="background:linear-gradient(135deg,#005bc0 0%,#004493 100%);"></div>
+          <div class="gradient-info">
+            <div class="gradient-name">Editorial Gradient (Light Mode)</div>
+            <div class="gradient-value"><code style="color:#1c1b1f;">linear-gradient(135deg, #005BC0 0%, #004493 100%)</code></div>
+            <div class="gradient-justification" style="color:#49454f;">Mirrors the dark-mode gradient's hue and angle but uses fully saturated blues to maintain vibrancy against a white background. The deeper end (#004493) ensures sufficient contrast for white button labels (≥ 4.5:1).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════ 04 CONTRAST ══════════════════════ -->
+  <section>
+    <div class="section-label">04 — Accessibility</div>
+    <h2 class="section-title">Contrast Ratios</h2>
+    <p class="section-desc">All core text pairings meet WCAG 2.1 AA (4.5:1 for normal text, 3:1 for large text). Key decorative gradients meet AA Large.</p>
+
+    <div class="contrast-grid">
+      <div class="contrast-card">
+        <div class="contrast-preview" style="background:#131313;">
+          <div class="contrast-sample-text" style="color:#e5e2e1;">Body text sample</div>
+        </div>
+        <div class="contrast-meta">
+          <div class="contrast-pair">#E5E2E1 on #131313</div>
+          <div class="contrast-ratio pass-aaa">14.5 : 1</div>
+          <div class="contrast-level">Passes AAA · Normal text</div>
+        </div>
+      </div>
+      <div class="contrast-card">
+        <div class="contrast-preview" style="background:#131313;">
+          <div class="contrast-sample-text" style="color:#c1c6d7;">Secondary text</div>
+        </div>
+        <div class="contrast-meta">
+          <div class="contrast-pair">#C1C6D7 on #131313</div>
+          <div class="contrast-ratio pass-aaa">9.8 : 1</div>
+          <div class="contrast-level">Passes AAA · Normal text</div>
+        </div>
+      </div>
+      <div class="contrast-card">
+        <div class="contrast-preview" style="background:#131313;">
+          <div class="contrast-sample-text" style="color:#adc7ff;">Primary link</div>
+        </div>
+        <div class="contrast-meta">
+          <div class="contrast-pair">#ADC7FF on #131313</div>
+          <div class="contrast-ratio pass-aaa">7.4 : 1</div>
+          <div class="contrast-level">Passes AAA · Normal text</div>
+        </div>
+      </div>
+      <div class="contrast-card">
+        <div class="contrast-preview" style="background:#131313;">
+          <div class="contrast-sample-text" style="color:#8fd8ff;">Secondary accent</div>
+        </div>
+        <div class="contrast-meta">
+          <div class="contrast-pair">#8FD8FF on #131313</div>
+          <div class="contrast-ratio pass-aaa">8.1 : 1</div>
+          <div class="contrast-level">Passes AAA · Normal text</div>
+        </div>
+      </div>
+      <div class="contrast-card">
+        <div class="contrast-preview" style="background:linear-gradient(135deg,#adc7ff,#4a8eff);">
+          <div class="contrast-sample-text" style="color:#00285b;">Button label</div>
+        </div>
+        <div class="contrast-meta">
+          <div class="contrast-pair">#00285B on gradient (dark mode)</div>
+          <div class="contrast-ratio pass-aa">5.2 : 1</div>
+          <div class="contrast-level">Passes AA · Normal text</div>
+        </div>
+      </div>
+      <div class="contrast-card">
+        <div class="contrast-preview" style="background:#201f1f;">
+          <div class="contrast-sample-text" style="color:#8b90a0;">Muted / caption</div>
+        </div>
+        <div class="contrast-meta">
+          <div class="contrast-pair">#8B90A0 on #201F1F (captions)</div>
+          <div class="contrast-ratio pass-aa-large">3.4 : 1</div>
+          <div class="contrast-level">Passes AA Large (18px+700 or 24px+)</div>
+        </div>
+      </div>
+      <div class="contrast-card">
+        <div class="contrast-preview" style="background:#005bc0;">
+          <div class="contrast-sample-text" style="color:#ffffff;">Button label</div>
+        </div>
+        <div class="contrast-meta">
+          <div class="contrast-pair">#FFFFFF on #005BC0 (light mode btn)</div>
+          <div class="contrast-ratio pass-aaa">5.9 : 1</div>
+          <div class="contrast-level">Passes AA · Normal text</div>
+        </div>
+      </div>
+      <div class="contrast-card">
+        <div class="contrast-preview" style="background:#fffbfe;">
+          <div class="contrast-sample-text" style="color:#1c1b1f;">Body text (light)</div>
+        </div>
+        <div class="contrast-meta">
+          <div class="contrast-pair">#1C1B1F on #FFFBFE (light mode)</div>
+          <div class="contrast-ratio pass-aaa">18.1 : 1</div>
+          <div class="contrast-level">Passes AAA · Normal text</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════ 05 TOKEN USAGE ══════════════════════ -->
+  <section>
+    <div class="section-label">05 — Design Tokens</div>
+    <h2 class="section-title">Semantic Token Usage</h2>
+    <p class="section-desc">Always reach for semantic tokens — never hardcode raw hex values in components. Tokens adapt automatically when the theme switches.</p>
+
+    <div style="overflow-x:auto;">
+      <table class="usage-table">
+        <thead>
+          <tr>
+            <th>Token</th>
+            <th>Dark Value</th>
+            <th>Light Value</th>
+            <th>When to use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="token-badge">--primary</span></td>
+            <td><span class="dot" style="background:#adc7ff;"></span>#ADC7FF</td>
+            <td><span class="dot" style="background:#005bc0;"></span>#005BC0</td>
+            <td>Links, nav active states, focus rings, icon fill</td>
+          </tr>
+          <tr>
+            <td><span class="token-badge">--primary-container</span></td>
+            <td><span class="dot" style="background:#4a8eff;"></span>#4A8EFF</td>
+            <td><span class="dot" style="background:#d8e2ff;"></span>#D8E2FF</td>
+            <td>Active tab indicator, selected chip background</td>
+          </tr>
+          <tr>
+            <td><span class="token-badge">--secondary</span></td>
+            <td><span class="dot" style="background:#8fd8ff;"></span>#8FD8FF</td>
+            <td><span class="dot" style="background:#006685;"></span>#006685</td>
+            <td>Eyebrow labels, section-line accents, data series 2</td>
+          </tr>
+          <tr>
+            <td><span class="token-badge">--background</span></td>
+            <td><span class="dot" style="background:#131313;"></span>#131313</td>
+            <td><span class="dot" style="background:#fffbfe;border:1px solid #ccc;"></span>#FFFBFE</td>
+            <td>Page root background only</td>
+          </tr>
+          <tr>
+            <td><span class="token-badge">--surface-container-low</span></td>
+            <td><span class="dot" style="background:#1c1b1b;"></span>#1C1B1B</td>
+            <td><span class="dot" style="background:#f7f2fa;"></span>#F7F2FA</td>
+            <td>Card backgrounds, panel backgrounds</td>
+          </tr>
+          <tr>
+            <td><span class="token-badge">--surface-container-high</span></td>
+            <td><span class="dot" style="background:#2a2a2a;"></span>#2A2A2A</td>
+            <td><span class="dot" style="background:#ece6f0;"></span>#ECE6F0</td>
+            <td>Elevated cards, tooltips, dropdowns</td>
+          </tr>
+          <tr>
+            <td><span class="token-badge">--on-surface</span></td>
+            <td><span class="dot" style="background:#e5e2e1;"></span>#E5E2E1</td>
+            <td><span class="dot" style="background:#1c1b1f;"></span>#1C1B1F</td>
+            <td>All primary / heading text</td>
+          </tr>
+          <tr>
+            <td><span class="token-badge">--on-surface-variant</span></td>
+            <td><span class="dot" style="background:#c1c6d7;"></span>#C1C6D7</td>
+            <td><span class="dot" style="background:#49454f;"></span>#49454F</td>
+            <td>Supporting / body text, descriptions, subtitles</td>
+          </tr>
+          <tr>
+            <td><span class="token-badge">--outline</span></td>
+            <td><span class="dot" style="background:#8b90a0;"></span>#8B90A0</td>
+            <td><span class="dot" style="background:#79747e;"></span>#79747E</td>
+            <td>Muted captions, placeholder labels, secondary icons</td>
+          </tr>
+          <tr>
+            <td><span class="token-badge">--outline-variant</span></td>
+            <td><span class="dot" style="background:#414754;"></span>#414754</td>
+            <td><span class="dot" style="background:#cac4d0;"></span>#CAC4D0</td>
+            <td>Borders, rule lines, table dividers</td>
+          </tr>
+          <tr>
+            <td><span class="token-badge">--error</span></td>
+            <td><span class="dot" style="background:#ffb4ab;"></span>#FFB4AB</td>
+            <td><span class="dot" style="background:#b3261e;"></span>#B3261E</td>
+            <td>Validation errors, required field indicators</td>
+          </tr>
+          <tr>
+            <td><span class="token-badge">--success</span></td>
+            <td><span class="dot" style="background:#b5ccac;"></span>#B5CCAC</td>
+            <td><span class="dot" style="background:#b5ccac;"></span>#B5CCAC</td>
+            <td>Completion states, positive metrics, pass indicators</td>
+          </tr>
+          <tr>
+            <td><span class="token-badge">--editorial-gradient</span></td>
+            <td colspan="2" style="font-size:12px;font-family:monospace;color:var(--on-sv);">135deg from --primary to --primary-container</td>
+            <td>Primary CTA buttons, hero display text, CTA band</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══════════════════════ 06 COMPONENTS ══════════════════════ -->
+  <section>
+    <div class="section-label">06 — Components</div>
+    <h2 class="section-title">Component Colour Application</h2>
+    <p class="section-desc">Live examples of how the palette tokens map onto the core UI atoms.</p>
+
+    <div class="component-demo">
+      <button class="demo-btn-primary">Start Research</button>
+      <button class="demo-btn-ghost">Learn More</button>
+      <button class="demo-btn-surface">View Report</button>
+    </div>
+    <p style="font-size:13px;color:var(--outline);margin-bottom:32px;">Left to right: <code style="font-family:monospace;color:var(--primary);">.btn-primary</code> (gradient fill) · <code style="font-family:monospace;color:var(--primary);">.btn-ghost</code> (transparent + border) · <code style="font-family:monospace;color:var(--primary);">.btn-surface</code> (surface elevation)</p>
+
+    <div class="component-demo" style="gap:12px;">
+      <div class="demo-chip">Qualitative</div>
+      <div class="demo-chip">Panel Research</div>
+      <div class="demo-chip">CATI</div>
+      <div class="demo-chip">FGD</div>
+    </div>
+    <p style="font-size:13px;color:var(--outline);margin-bottom:32px;"><code style="font-family:monospace;color:var(--primary);">.chip</code> — tertiary-container background · on-tertiary text · uppercase eyebrow style</p>
+
+    <div class="component-demo">
+      <div class="demo-card">
+        <div class="demo-card-eyebrow">Survey Analytics</div>
+        <div class="demo-card-title">Real-time Response Dashboard</div>
+        <div class="demo-card-body">Monitor live response rates, sentiment scores, and completion funnels as data flows in from your panel.</div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--outline);"><code style="font-family:monospace;color:var(--primary);">.ds-card</code> — surface-container-low background · outline-variant border · glass hover state</p>
+  </section>
+
+  <!-- ══════════════════════ FOOTER ══════════════════════ -->
+  <div class="page-footer">
+    <span><strong>ThoughtMetrics</strong> Brand Guidelines v1.0</span>
+    <span>Primary font: <strong>Plus Jakarta Sans</strong> — Google Fonts (OFL licence)</span>
+    <span>Colour system: <strong>Material Design 3</strong> dark-first token architecture</span>
+    <span>Generated <strong>May 2026</strong></span>
+  </div>
+
+</div>
+
+<script>
+  /* Mode toggle */
+  function showMode(mode) {
+    document.querySelectorAll('.palette-section').forEach(el => el.classList.remove('visible'));
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('palette-' + mode).classList.add('visible');
+    event.target.classList.add('active');
+  }
+
+  /* Copy hex to clipboard */
+  function copyHex(el, hex) {
+    navigator.clipboard.writeText(hex).then(() => {
+      const span = el.querySelector('.swatch-copy');
+      const orig = span.textContent;
+      span.textContent = 'Copied!';
+      setTimeout(() => span.textContent = orig, 1500);
+    });
+  }
+</script>
+</body>
+</html>

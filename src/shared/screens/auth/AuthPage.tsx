@@ -2,13 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { ROUTES } from '@/routes/routeConfig';
-import { TextInputAtom, CheckboxAtom } from '@/shared/ui/atoms/custom-input';
 import { loginFormConstant } from '@constants/page-constants/auth-constant';
 import type {
   LoginFormData,
   LoginFormStore,
 } from '@/core/types/login-form.type';
-import { ArrowRight, Logo, GoogleOutlineIcon } from '@/assets';
+import { Logo } from '@/assets';
 import { useSignInMutation } from '@/core/hooks/mutations/use-sign-in.mutation';
 import { getSignInErrorDetails } from '@/core/utils/firebase-error-handler';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -21,7 +20,6 @@ import authService from '@/services/api/auth.service';
 const { initialFormData, storeName, validationMessages, formResetDelay, ui } =
   loginFormConstant;
 
-// Zustand store
 const useLoginFormStore = create<LoginFormStore>()(
   devtools(
     (set, get) => ({
@@ -58,40 +56,22 @@ const useLoginFormStore = create<LoginFormStore>()(
       validateForm: () => {
         const { formData } = get();
         const errors: Partial<LoginFormData> = {};
-
         if (!formData.thoughtMetricsId.trim())
           errors.thoughtMetricsId = validationMessages.thoughtMetricsId;
         if (!formData.password.trim())
           errors.password = validationMessages.password;
-
         set({ errors }, false, 'validateForm');
         return Object.keys(errors).length === 0;
       },
 
-      submitForm: async (
-        onSubmit: (email: string, password: string) => Promise<void>
-      ) => {
+      submitForm: async (onSubmit) => {
         const { formData, validateForm } = get();
-
         if (!validateForm()) return;
-
         set({ isSubmitting: true, loginError: '' }, false, 'submitForm_start');
-
         try {
           await onSubmit(formData.thoughtMetricsId, formData.password);
-
-          set(
-            {
-              isSubmitting: false,
-              isSubmitted: true,
-            },
-            false,
-            'submitForm_success'
-          );
-
-          setTimeout(() => {
-            get().resetForm();
-          }, formResetDelay);
+          set({ isSubmitting: false, isSubmitted: true }, false, 'submitForm_success');
+          setTimeout(() => { get().resetForm(); }, formResetDelay);
         } catch (error) {
           const errorTitle = getSignInErrorDetails(
             (error instanceof Error && error.message) as string
@@ -100,96 +80,68 @@ const useLoginFormStore = create<LoginFormStore>()(
             error instanceof Error
               ? `Authentication: ${errorTitle}`
               : validationMessages.submitError;
-          set(
-            {
-              isSubmitting: false,
-              loginError: errorMessage,
-            },
-            false,
-            'submitForm_error'
-          );
+          set({ isSubmitting: false, loginError: errorMessage }, false, 'submitForm_error');
         }
       },
     }),
-    {
-      name: storeName,
-    }
+    { name: storeName }
   )
 );
+
+const inputCls =
+  'w-full rounded-xl px-4 py-3 text-sm outline-none transition-all focus:ring-2 focus:ring-primary/20';
+const inputStyle = (err?: string) => ({
+  background: 'var(--surface-container)',
+  border: `1px solid ${err ? 'var(--error)' : 'color-mix(in srgb, var(--outline-variant) 30%, transparent)'}`,
+  color: 'var(--on-surface)',
+});
 
 const LoginPage: React.FC = () => {
   const signInMutation = useSignInMutation();
   const { user } = useAuth();
   const [isNavigating, setIsNavigating] = useState(false);
-
-  // Derive isAuthenticated from user object
+  const [showPassword, setShowPassword] = useState(false);
   const isAuthenticated = !!user;
-
-  // Translation hook
   const { translations } = useLanguage();
 
-  const {
-    formData,
-    isSubmitting,
-    isSubmitted,
-    errors,
-    loginError,
-    updateField,
-    submitForm,
-  } = useLoginFormStore();
+  const { formData, isSubmitting, isSubmitted, errors, loginError, updateField, submitForm } =
+    useLoginFormStore();
 
-  // Extract and store tracking parameters from URL on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const linkId = params.get('tm_link_id');
     const allocatedSurvey = params.get('allocated_survey');
     const redirectAfter = params.get('redirect_after');
-
-    // Store tracking parameters in localStorage for persistence
-    if (linkId) {
-      localStorage.setItem('tm_link_id', linkId);
-    }
-    if (allocatedSurvey) {
-      localStorage.setItem('tm_allocated_survey', allocatedSurvey);
-    }
-    if (redirectAfter) {
-      localStorage.setItem('tm_redirect_after_signup', redirectAfter);
-    }
+    if (linkId) localStorage.setItem('tm_link_id', linkId);
+    if (allocatedSurvey) localStorage.setItem('tm_allocated_survey', allocatedSurvey);
+    if (redirectAfter) localStorage.setItem('tm_redirect_after_signup', redirectAfter);
   }, []);
 
-  // Propagate userType to the sign-up link so new users land on the right signup path
   const signUpHref = (() => {
-    const userType = typeof window !== 'undefined'
-      ? new URLSearchParams(window.location.search).get('userType')
-      : null;
+    const userType =
+      typeof window !== 'undefined'
+        ? new URLSearchParams(window.location.search).get('userType')
+        : null;
     return userType ? `${ROUTES.SIGN_UP}?userType=${userType}` : ROUTES.SIGN_UP;
   })();
 
-  // Get redirect URL based on tracking parameters
   const getRedirectUrl = () => {
     const allocatedSurveyId = localStorage.getItem('tm_allocated_survey');
     if (allocatedSurveyId) {
       localStorage.removeItem('tm_allocated_survey');
       return `/survey-campaign/${allocatedSurveyId}`;
     }
-
     const redirectAfter = localStorage.getItem('tm_redirect_after_signup');
     if (redirectAfter) {
       localStorage.removeItem('tm_redirect_after_signup');
       return redirectAfter;
     }
-
-    // Honour ?redirect= param set by UserRouteGuard / AdminRouteGuard
     const params = new URLSearchParams(window.location.search);
     const redirectParam = params.get('redirect');
-    if (redirectParam) {
-      return redirectParam;
-    }
-
+    if (redirectParam) return redirectParam;
     return ROUTES.SURVEY_BOARDS;
   };
 
-  // Redirect authenticated users — check forcePasswordReset + signInProvider before normal redirect
   useEffect(() => {
     if (user) {
       void (async () => {
@@ -198,30 +150,25 @@ const LoginPage: React.FC = () => {
             authService.getUserProfile(),
             user.getIdTokenResult(),
           ]);
-          // Only intercept for email/password logins — Google users skip the reset screen
-          if (
-            profile?.metadata?.forcePasswordReset &&
-            tokenResult.signInProvider === 'password'
-          ) {
+          if (profile?.metadata?.forcePasswordReset && tokenResult.signInProvider === 'password') {
             window.location.href = ROUTES.FORCE_CHANGE_PASSWORD;
             return;
           }
-
-          // Role-based redirect for admin/super-admin/field-incharge
           const role = tokenResult.claims.role as string | undefined;
           const urlParams = new URLSearchParams(window.location.search);
           const hasExplicitRedirect =
             urlParams.get('redirect') ||
             localStorage.getItem('tm_allocated_survey') ||
             localStorage.getItem('tm_redirect_after_signup');
-
           if (!hasExplicitRedirect && (role === 'admin' || role === 'super-admin' || role === 'field-incharge')) {
             window.location.href = ROUTES.ADMIN;
             return;
           }
-        } catch {
-          // If checks fail, proceed with normal redirect
-        }
+          if (!hasExplicitRedirect && role === 'client') {
+            window.location.href = ROUTES.CLIENT;
+            return;
+          }
+        } catch { /* proceed with normal redirect */ }
         window.location.href = getRedirectUrl();
       })();
     }
@@ -230,283 +177,275 @@ const LoginPage: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
     if (type === 'checkbox') {
-      const { checked } = e.target;
-      updateField(name as keyof LoginFormData, checked);
+      updateField(name as keyof LoginFormData, e.target.checked);
     } else {
       updateField(name as keyof LoginFormData, value);
     }
   };
 
   const handleFirebaseSignIn = async (email: string, password: string) => {
-    await signInMutation.mutateAsync({
-      type: 'email',
-      email,
-      password,
-    });
-    // Redirect is handled by the useEffect watching `user`
+    await signInMutation.mutateAsync({ type: 'email', email, password });
   };
 
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInMutation.mutateAsync({ type: 'google' });
-
-      // If popup returned a result (localhost), show loading overlay
-      // Redirect is handled by the useEffect watching `user`
-      if (result) {
-        setIsNavigating(true);
-      }
-      // If redirect (production), page will redirect automatically
+      if (result) setIsNavigating(true);
     } catch (error) {
       console.error('Google sign-in failed:', error);
       setIsNavigating(false);
     }
   };
 
-  /* const handleFacebookSignIn = async () => {
-    setSocialAuthLoading('facebook');
-    try {
-      const result = await signInMutation.mutateAsync({ type: 'facebook' });
-      if (result) {
-        window.location.href = ROUTES.SURVEY_BOARDS;
-      }
-    } catch (error) {
-      let errorCode = '';
-      if (
-        typeof error === 'object' &&
-        error !== null &&
-        'code' in error &&
-        typeof (error as { code?: unknown }).code === 'string'
-      ) {
-        errorCode = (error as { code: string }).code;
-      }
-      console.error('Facebook sign-in failed:', error);
-      // Check if it's a user cancellation
-      if (
-        errorCode === 'auth/popup-closed-by-user' ||
-        errorCode === 'auth/cancelled-popup-request'
-      ) {
-        // Immediately re-enable button on cancellation
-        setSocialAuthLoading(null);
-      } else {
-        setSocialAuthLoading(null);
-      }
-    } finally {
-      // Ensure loading state is cleared
-      setSocialAuthLoading(null);
-    }
-  }; */
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     void submitForm(handleFirebaseSignIn);
   };
 
-  if (isAuthenticated) {
-    return null;
-  }
-
-  if (isSubmitted) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-        <div className="max-w-md text-center bg-white rounded-lg shadow-lg p-8">
-          <div className="mb-4">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-              <svg
-                className="w-8 h-8 text-green-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-          </div>
-          <h2 className="text-2xl font-bold text-black mb-2">
-            {translations.auth.login.welcomeBack}
-          </h2>
-          <p className="text-black">{translations.auth.login.successMessage}</p>
-        </div>
-      </div>
-    );
-  }
+  if (isAuthenticated) return null;
 
   return (
     <>
       {/* Loading Overlay */}
       {isNavigating && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-8 max-w-sm mx-4 text-center">
-            <div className="mb-4">
-              <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              {translations.auth.login.redirecting || 'Signing you in...'}
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.7)' }}
+        >
+          <div
+            className="rounded-2xl p-8 max-w-sm mx-4 text-center"
+            style={{ background: 'var(--surface-container-low)' }}
+          >
+            <div className="w-14 h-14 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <h2 className="text-lg font-semibold text-on-surface mb-1">
+              {translations.auth.login.redirecting ?? 'Signing you in…'}
             </h2>
-            <p className="text-gray-600">
-              {translations.auth.login.pleaseWait ||
-                'Please wait while we redirect you'}
+            <p className="text-sm text-on-surface-variant">
+              {translations.auth.login.pleaseWait ?? 'Please wait while we redirect you'}
             </p>
           </div>
         </div>
       )}
 
-      {/* ApiLoadingIndicator handles loading states automatically */}
-      <div className="common-component w-full relative bg-white text-black z-1 overflow-scroll flex-col items-center justify-start! hide-scrollbar">
-        <header className="common-container bg-white max-w-(--breakpoint-2xl)! h-14">
-          <nav className="px-6 py-3 xxl:px-0 flex items-center justify-between w-full">
-            <a href={ROUTES.HOME}>
-              <div className="w-45 pt-1">
-                <Logo className="w-full h-full" />
-              </div>
+      <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+
+        {/* ── Brand panel (left, desktop only) ── */}
+        <div
+          className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden"
+          style={{ background: 'linear-gradient(135deg,#001a41 0%,#002e68 50%,#004493 100%)' }}
+        >
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                'radial-gradient(ellipse at 30% 50%,rgba(173,199,255,.15) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(143,216,255,.1) 0%,transparent 50%)',
+            }}
+          />
+          <div className="relative z-10">
+            <a href={ROUTES.HOME} className="flex items-center gap-3 mb-12">
+              <Logo className="w-9 h-9" />
+              <span className="text-xl font-bold text-white">ThoughtMetrics</span>
             </a>
-            <LanguageToggle variant="compact" />
-          </nav>
-        </header>
-        <div className="relative md:h-[calc(100vh-3.5rem)] w-full">
-          <div className="lg:block md:absolute right-0 w-full md:w-[50%] h-8 md:h-full bg-[url('images/login_background_image.png')] bg-cover bg-center bg-no-repeat -z-1 text-black" />
-          <div className="common-container h-full grid! grid-cols-1 md:grid-cols-[50%_50%] inset-ring-custom-grey-1 inset-ring-1">
-            <div className="bg-white shadow-sm border border-gray-200 rounded-lg px-8 py-10 wide:py-28 flex flex-col items-center justify-center">
-              <div className="mb-8 w-full max-w-[380px]">
-                <h1 className="text-2xl font-medium text-black">
-                  {translations.auth.login.pageTitle}
-                </h1>
+            <h2 className="text-4xl font-extrabold text-white leading-tight mb-4">
+              India's Most<br />Transparent Research<br />
+              <span style={{ color: '#adc7ff' }}>Network.</span>
+            </h2>
+            <p className="text-white/70 text-lg leading-relaxed max-w-sm">
+              Join 50,000+ panel members. Earn rewards by sharing your opinions on products, services, and market trends.
+            </p>
+          </div>
+          <div className="relative z-10 space-y-4">
+            {[
+              { icon: 'groups',   color: 'primary',   title: '50,000+ Panel Members', sub: 'Verified across India' },
+              { icon: 'payments', color: 'secondary',  title: 'Real Rewards',          sub: 'Cash, vouchers & gift cards' },
+              { icon: 'shield',   color: 'tertiary',   title: 'Privacy Protected',     sub: 'GDPR & DPDP compliant' },
+            ].map(({ icon, color, title, sub }) => (
+              <div key={title} className="flex items-center gap-4 rounded-2xl p-4" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div className={`w-10 h-10 rounded-xl bg-${color}/20 flex items-center justify-center`}>
+                  <span className={`material-symbols-outlined text-${color} text-xl`}>{icon}</span>
+                </div>
+                <div>
+                  <div className="text-white font-semibold">{title}</div>
+                  <div className="text-white/60 text-sm">{sub}</div>
+                </div>
               </div>
+            ))}
+          </div>
+        </div>
 
-              {/* Social Login Buttons */}
-              <div className="mb-6 space-y-3 w-full max-w-[380px]">
-                <button
-                  type="button"
-                  onClick={() => void handleGoogleSignIn()}
-                  className="relative w-full flex items-center pl-4 pr-12 py-2 bg-[#DB4437] text-white rounded hover:bg-red-700 transition-colors"
-                >
-                  <GoogleOutlineIcon className="w-5 h-5 mr-8" />
-                  <div className="left-13 absolute w-px h-full bg-white"></div>
-                  {translations.auth.signup.continueWithGoogle}
-                </button>
-                {/* <button
-                  type="button"
-                  onClick={() => void handleFacebookSignIn()}
-                  disabled={socialAuthLoading !== null}
-                  className="relative w-full flex items-center pl-4 pr-12 py-2 bg-[#1877F2] text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <FacebookOutlineIcon className="w-5 h-5 mr-8" />
-                  <div className="left-13 absolute w-px h-full bg-white"></div>
-                  {socialAuthLoading === 'facebook'
-                    ? 'Signing in...'
-                    : 'Sign in with Facebook'}
-                </button> */}
-              </div>
+        {/* ── Form panel (right) ── */}
+        <div
+          className="flex flex-col"
+          style={{ background: 'var(--surface-container-low)' }}
+        >
+          {/* Mini header */}
+          <div className="flex items-center justify-between px-8 py-4 border-b border-outline-variant/10">
+            <a href={ROUTES.HOME} className="lg:hidden">
+              <Logo className="w-8 h-8" />
+            </a>
+            <div className="flex items-center gap-3 ml-auto">
+              <span className="text-sm text-on-surface-variant hidden sm:block">Don't have an account?</span>
+              <a href={signUpHref} className="btn-hdr-outline text-sm">Sign Up</a>
+              <LanguageToggle variant="compact" />
+            </div>
+          </div>
 
-              <div className="w-full max-w-[380px] flex items-center mb-6">
-                <div className="flex-1 border-t border-gray-300"></div>
-                <span className="px-4 text-sm text-gray-500">OR</span>
-                <div className="flex-1 border-t border-gray-300"></div>
-              </div>
+          {/* Form body */}
+          <div className="flex-1 flex items-center justify-center p-8 lg:p-12">
+            <div className="w-full max-w-md">
 
-              <form
-                onSubmit={handleSubmit}
-                className="space-y-6 border-y border-y-custom-grey py-4 max-w-[380px] shrink-0 w-full"
-              >
-                {/* Login Error Message */}
-                {loginError && (
-                  <div className="bg-red-50 border border-red-200 rounded-md p-3">
-                    <p className="text-sm text-red-800">{loginError}</p>
+              {isSubmitted ? (
+                <div className="text-center">
+                  <span className="material-symbols-outlined text-secondary text-5xl mb-4 block">check_circle</span>
+                  <h2 className="text-2xl font-bold text-on-surface mb-2">
+                    {translations.auth.login.welcomeBack}
+                  </h2>
+                  <p className="text-on-surface-variant">{translations.auth.login.successMessage}</p>
+                </div>
+              ) : (
+                <>
+                  <div className="mb-8">
+                    <h1 className="text-3xl font-extrabold text-on-surface mb-2">
+                      {translations.auth.login.pageTitle ?? 'Welcome Back'}
+                    </h1>
+                    <p className="text-on-surface-variant">Log in to access your surveys and rewards.</p>
                   </div>
-                )}
 
-                {/* Thought Metrics ID */}
-                <TextInputAtom
-                  id="thoughtMetricsId"
-                  name="thoughtMetricsId"
-                  label={translations.auth.login.thoughtMetricsId}
-                  value={formData.thoughtMetricsId}
-                  onChange={handleInputChange}
-                  error={errors.thoughtMetricsId}
-                  required
-                />
+                  <form onSubmit={handleSubmit} className="space-y-5" noValidate>
 
-                {/* Password */}
-                <TextInputAtom
-                  id="password"
-                  name="password"
-                  label={translations.auth.login.password}
-                  type="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  error={errors.password}
-                  required
-                />
+                    {/* Login error */}
+                    {loginError && (
+                      <div
+                        className="rounded-xl p-3 border flex items-center gap-2 text-sm"
+                        style={{ background: 'color-mix(in srgb,var(--error) 10%,transparent)', borderColor: 'color-mix(in srgb,var(--error) 30%,transparent)', color: 'var(--error)' }}
+                      >
+                        <span className="material-symbols-outlined text-base flex-shrink-0">error</span>
+                        {loginError}
+                      </div>
+                    )}
 
-                {/* Continue Button */}
-                <button
-                  type="submit"
-                  disabled={isSubmitting || signInMutation.isPending}
-                  className="w-full bg-primary text-white text-nowrap hover:bg-secondary hover:text-white transition-all duration-300 ease-in-out font-medium px-6 py-2 flex items-center justify-between gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <label className="text-lg">
-                    {isSubmitting || signInMutation.isPending
-                      ? translations.auth.login.signingIn
-                      : translations.auth.login.continueButton}
-                  </label>
-                  <ArrowRight className="w-8 r-8 fill-current text-white" />
-                </button>
+                    {/* Email / ID */}
+                    <div>
+                      <label className="block text-xs font-semibold text-on-surface-variant mb-1.5">
+                        {translations.auth.login.thoughtMetricsId}
+                      </label>
+                      <input
+                        name="thoughtMetricsId"
+                        type="email"
+                        value={formData.thoughtMetricsId}
+                        onChange={handleInputChange}
+                        autoComplete="email"
+                        required
+                        className={inputCls}
+                        style={inputStyle(errors.thoughtMetricsId as string | undefined)}
+                        placeholder="you@email.com"
+                      />
+                      {errors.thoughtMetricsId && (
+                        <p className="text-xs mt-1" style={{ color: 'var(--error)' }}>{errors.thoughtMetricsId as string}</p>
+                      )}
+                    </div>
 
-                {/* Remember Me Checkbox */}
-                <div className="pt-2">
-                  <CheckboxAtom
-                    id="rememberMe"
-                    name="rememberMe"
-                    checked={formData.rememberMe}
-                    onChange={handleInputChange}
-                    label={translations.auth.login.rememberMe}
-                    className="font-medium *:text-base"
-                  />
-                </div>
-              </form>
+                    {/* Password */}
+                    <div>
+                      <div className="flex justify-between items-center mb-1.5">
+                        <label className="block text-xs font-semibold text-on-surface-variant">
+                          {translations.auth.login.password}
+                        </label>
+                        <a href={signUpHref} className="text-xs text-primary hover:underline">
+                          {ui.links.resetPassword}
+                        </a>
+                      </div>
+                      <div className="relative">
+                        <input
+                          name="password"
+                          type={showPassword ? 'text' : 'password'}
+                          value={formData.password}
+                          onChange={handleInputChange}
+                          autoComplete="current-password"
+                          required
+                          className={`${inputCls} pr-11`}
+                          style={inputStyle(errors.password as string | undefined)}
+                          placeholder="••••••••"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((p) => !p)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors"
+                          aria-label="Toggle password visibility"
+                        >
+                          <span className="material-symbols-outlined text-xl">
+                            {showPassword ? 'visibility_off' : 'visibility'}
+                          </span>
+                        </button>
+                      </div>
+                      {errors.password && (
+                        <p className="text-xs mt-1" style={{ color: 'var(--error)' }}>{errors.password as string}</p>
+                      )}
+                    </div>
 
-              {/* Account Links */}
-              <div className="space-y-4 max-w-[380px] shrink-0 w-full">
-                <div className="text-black my-4 font-medium">
-                  {translations.auth.login.noAccount}
-                </div>
+                    {/* Remember me */}
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        name="rememberMe"
+                        checked={formData.rememberMe}
+                        onChange={handleInputChange}
+                        className="h-4 w-4 rounded flex-shrink-0"
+                        style={{ accentColor: 'var(--primary)' }}
+                      />
+                      <span className="text-sm text-on-surface-variant">{translations.auth.login.rememberMe}</span>
+                    </label>
 
-                <a
-                  href={signUpHref}
-                  className="w-full inline-flex items-center justify-between px-4 py-2 border border-primary shadow-sm bg-transparent font-medium text-primary hover:bg-primary-50 transition-colors rounded-none"
-                >
-                  <label>{translations.auth.login.createAccount}</label>
-                  <ArrowRight className="w-8 r-8 fill-current text-primary" />
-                </a>
-                <p className="text-xs text-custom-grey-3 mt-2 max-w-[380px]">
-                  This takes a moment longer than Google sign-in — we&apos;re collecting optional details to tailor surveys to your profile. You can delete this info anytime.
-                </p>
-              </div>
-              <div className="flex items-center max-w-[380px] shrink-0 w-full mt-5">
-                <a
-                  href={signUpHref}
-                  //NOTE: Uncomment the line below to enable the reset password link
-                  // href={ROUTES.RESET_PASSWORD}
-                  className="border-t border-t-custom-grey w-full pt-3"
-                >
-                  <span className="text-blue-600 hover:text-blue-800 text-sm hover:underline w-full">
-                    {ui.links.resetPassword}
-                  </span>
-                  <span className="font-medium">{' to reset password.'}</span>
-                </a>
-              </div>
+                    {/* Submit */}
+                    <button
+                      type="submit"
+                      disabled={isSubmitting || signInMutation.isPending}
+                      className="btn-primary w-full flex items-center justify-center gap-2 py-3.5 text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isSubmitting || signInMutation.isPending ? (
+                        <><span className="material-symbols-outlined text-xl animate-spin">progress_activity</span>{translations.auth.login.signingIn}</>
+                      ) : (
+                        <>{translations.auth.login.continueButton ?? 'Sign In'}<span className="material-symbols-outlined text-xl">arrow_forward</span></>
+                      )}
+                    </button>
 
-              {/* Demo Credentials Helper
-            <div className="mt-6 bg-blue-50 border border-blue-200 rounded-md p-3">
-              <p className="text-xs text-blue-800">
-                <strong>Demo:</strong> Use ID "demo" and password "password" to
-                test login
-              </p>
-            </div> */}
+                    {/* Divider */}
+                    <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--outline)' }}>
+                      <div className="flex-1 h-px" style={{ background: 'var(--outline-variant)' }} />
+                      or
+                      <div className="flex-1 h-px" style={{ background: 'var(--outline-variant)' }} />
+                    </div>
+
+                    {/* Google */}
+                    <button
+                      type="button"
+                      onClick={() => void handleGoogleSignIn()}
+                      className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl text-sm font-medium text-on-surface transition-colors"
+                      style={{
+                        background: 'var(--surface-container)',
+                        border: '1px solid color-mix(in srgb, var(--outline-variant) 50%, transparent)',
+                      }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--surface-container-high)'; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--surface-container)'; }}
+                    >
+                      <svg viewBox="0 0 24 24" width="18" height="18">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                      </svg>
+                      {translations.auth.signup.continueWithGoogle}
+                    </button>
+
+                    <p className="text-center text-sm text-on-surface-variant">
+                      Don't have an account?{' '}
+                      <a href={signUpHref} className="text-primary font-semibold hover:underline">
+                        {translations.auth.login.createAccount ?? 'Sign up'}
+                      </a>
+                    </p>
+                  </form>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -515,12 +454,6 @@ const LoginPage: React.FC = () => {
   );
 };
 
-/**
- * LoginWrapper - Separate Astro Island with its own providers
- *
- * IMPORTANT: Has its own AuthProvider because it's rendered as client:only="react"
- * in login.astro, making it a separate island that cannot share context.
- */
 const LoginWrapper: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>

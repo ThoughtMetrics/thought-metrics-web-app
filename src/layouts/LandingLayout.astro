@@ -38,10 +38,12 @@ const {
   nofollow={nofollow}
 >
   <div
-    class="w-full min-h-screen flex flex-col justify-between overflow-y-scroll overflow-x-hidden"
+    class="w-full min-h-screen flex flex-col justify-between bg-background overflow-y-scroll overflow-x-hidden"
   >
     <LandingHeader client:only="react" />
-    <slot />
-    <InteractionFooter />
+    <div class="flex-1">
+      <slot />
+    </div>
+    <InteractionFooter client:load />
   </div>
 </Layout>

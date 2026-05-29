@@ -2,26 +2,42 @@ import React from 'react';
 import '../../../../styles/markdown.css';
 import MarkDownOrganism from '../../organisms/markdown-organism';
 
-const PolicyHeroSection: React.FC<{ content: string; head: string }> = ({
-  content,
-  head,
-}) => {
+const PolicyHeroSection: React.FC<{ content: string; head: string }> = ({ content, head }) => {
   return (
-    <section className="common-component">
-      <div className="common-container flex-col items-center">
-        <div className="policies-component w-full min-h-60 md:min-h-[480px] xxl:p-0 flex items-center justify-center relative">
-          <div className="absolute inset-0 w-full h-full bg-primary/65 z-0" />
-          <div className="common-container px-6 py-8 md:px-24 md:py-24 max-w-[1336px]! relative z-10">
-            <h2 className="text-xl md:text-4xl font-semibold text-white">
-              {head}
-            </h2>
-          </div>
+    <div style={{ background: 'var(--surface)' }}>
+
+      {/* Hero banner */}
+      <div
+        className="relative overflow-hidden flex items-center"
+        style={{
+          background: 'linear-gradient(135deg, var(--primary) 0%, color-mix(in srgb, var(--primary) 70%, var(--secondary)) 100%)',
+          minHeight: 220,
+          padding: '56px 0',
+        }}
+      >
+        <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }} aria-hidden="true">
+          <div
+            className="absolute -top-24 -right-24 rounded-full"
+            style={{ width: 480, height: 480, background: 'rgba(255,255,255,0.07)', filter: 'blur(80px)' }}
+          />
         </div>
-        <div className="common-container px-6 py-8 md:px-24 md:py-24 max-w-[1336px]! text-black">
-          <MarkDownOrganism content={content} showTOC={false} />
+        <div className="tm-container relative" style={{ zIndex: 1 }}>
+          <h1
+            className="text-3xl md:text-5xl font-extrabold tracking-tight leading-[1.08]"
+            style={{ color: 'var(--on-primary)' }}
+          >
+            {head}
+          </h1>
         </div>
       </div>
-    </section>
+
+      {/* Content */}
+      <div className="tm-container py-12 md:py-16">
+        <MarkDownOrganism content={content} showTOC={false} />
+      </div>
+
+    </div>
   );
 };
+
 export default PolicyHeroSection;

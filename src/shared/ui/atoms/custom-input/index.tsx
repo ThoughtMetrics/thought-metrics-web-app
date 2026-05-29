@@ -10,6 +10,17 @@ import type {
 import { COUNTRY_CODES } from '@/core/constants/country-codes';
 import type React from 'react';
 
+const fieldCls =
+  'w-full rounded-xl px-4 py-3 text-sm outline-none transition-all focus:ring-2 focus:ring-primary/20';
+const fieldStyle = (err?: string): React.CSSProperties => ({
+  background: 'var(--surface-container)',
+  border: `1px solid ${err ? 'var(--error)' : 'color-mix(in srgb, var(--outline-variant) 30%, transparent)'}`,
+  color: 'var(--on-surface)',
+  fontFamily: 'inherit',
+});
+const labelCls = 'block text-xs font-semibold text-on-surface-variant mb-1.5 tracking-[0.01em]';
+const errCls = 'mt-1 text-xs';
+
 // Text Input Atom
 const TextInputAtom: React.FC<TextInputProps> = ({
   id,
@@ -26,10 +37,11 @@ const TextInputAtom: React.FC<TextInputProps> = ({
 }) => {
   return (
     <div className={className}>
-      <label htmlFor={id} className="block text-sm font-medium text-black mb-2">
-        {label}
-        {required && '*'}
-      </label>
+      {label && (
+        <label htmlFor={id} className={labelCls}>
+          {label}{required && <span style={{ color: 'var(--error)' }}> *</span>}
+        </label>
+      )}
       <input
         type={type}
         id={id}
@@ -37,12 +49,11 @@ const TextInputAtom: React.FC<TextInputProps> = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`w-full px-3 py-2 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors ${
-          error ? 'border-primary' : 'border-custom-grey-2 focus:border-primary'
-        }`}
+        className={fieldCls}
+        style={fieldStyle(error)}
       />
-      {error && <p className="mt-1 text-sm text-primary">{error}</p>}
-      {!error && helperText && <p className="mt-1 text-xs text-gray-500">{helperText}</p>}
+      {error && <p className={errCls} style={{ color: 'var(--error)' }}>{error}</p>}
+      {!error && helperText && <p className={errCls} style={{ color: 'var(--on-surface-variant)' }}>{helperText}</p>}
     </div>
   );
 };
@@ -62,10 +73,11 @@ const TextareaAtom: React.FC<TextareaProps> = ({
 }) => {
   return (
     <div className={className}>
-      <label htmlFor={id} className="block text-sm font-medium text-black mb-2">
-        {label}
-        {required && '*'}
-      </label>
+      {label && (
+        <label htmlFor={id} className={labelCls}>
+          {label}{required && <span style={{ color: 'var(--error)' }}> *</span>}
+        </label>
+      )}
       <textarea
         id={id}
         name={name}
@@ -73,11 +85,10 @@ const TextareaAtom: React.FC<TextareaProps> = ({
         onChange={onChange}
         rows={rows}
         placeholder={placeholder}
-        className={`w-full px-3 py-2 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors resize-vertical ${
-          error ? 'border-primary' : 'border-custom-grey-2 focus:border-primary'
-        }`}
+        className={`${fieldCls} resize-vertical`}
+        style={fieldStyle(error)}
       />
-      {error && <p className="mt-1 text-sm text-primary">{error}</p>}
+      {error && <p className={errCls} style={{ color: 'var(--error)' }}>{error}</p>}
     </div>
   );
 };
@@ -95,22 +106,23 @@ const CheckboxAtom: React.FC<CheckboxProps> = ({
   required = false,
 }) => {
   return (
-    <div className="">
-      <label className={`flex items-start space-x-3 ${className}`}>
+    <div>
+      <label className={`flex items-start gap-3 cursor-pointer ${className}`}>
         <input
           type="checkbox"
           id={id}
           name={name}
           checked={checked}
           onChange={onChange}
-          className="mt-1 h-4 w-4 text-primary focus:text-primary border-custom-grey-2 rounded"
+          className="mt-0.5 h-4 w-4 rounded flex-shrink-0"
+          style={{ accentColor: 'var(--primary)' }}
         />
-        <span className="text-sm text-black">
-          {required && '* '}
+        <span className="text-sm text-on-surface-variant leading-relaxed">
+          {required && <span style={{ color: 'var(--error)' }}>* </span>}
           {label ?? customLabelComponent}
         </span>
       </label>
-      {error && <p className="mt-1 text-sm text-primary">{error}</p>}
+      {error && <p className={errCls} style={{ color: 'var(--error)' }}>{error}</p>}
     </div>
   );
 };
@@ -133,30 +145,25 @@ const PhoneInputAtom: React.FC<PhoneInputProps> = ({
   required = false,
   className = '',
 }) => {
-  // Resolve max digit length from COUNTRY_CODES — same logic as PhoneInputField and mobile app
   const selectedCountry = COUNTRY_CODES.find((c) => c.code === countryCode);
   const maxLen = selectedCountry?.length ?? 15;
 
   return (
     <div className={className}>
-      <label htmlFor={id} className="block text-sm font-medium text-black mb-2">
-        {label}
-        {required && '*'}
-      </label>
-      <div className="flex">
+      {label && (
+        <label htmlFor={id} className={labelCls}>
+          {label}{required && <span style={{ color: 'var(--error)' }}> *</span>}
+        </label>
+      )}
+      <div className="flex gap-2">
         <select
-          className={`px-2 py-2 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none border-r-2 ${
-            error
-              ? 'border-primary'
-              : 'border-custom-grey-2 focus:border-primary'
-          }`}
           value={countryCode}
           onChange={onCountryCodeChange}
+          className="rounded-xl px-3 py-3 text-sm outline-none"
+          style={{ ...fieldStyle(error), maxWidth: '7rem' }}
         >
-          {countryCodes.map((country) => (
-            <option key={country.code} value={country.code}>
-              {country.code}
-            </option>
+          {countryCodes.map((c) => (
+            <option key={c.code} value={c.code}>{c.code}</option>
           ))}
         </select>
         <input
@@ -167,18 +174,14 @@ const PhoneInputAtom: React.FC<PhoneInputProps> = ({
           value={value}
           maxLength={maxLen}
           onChange={(e) => {
-            // Strip non-digits and enforce country-specific max length
             e.target.value = e.target.value.replace(/\D/g, '').slice(0, maxLen);
             onChange(e);
           }}
-          className={`flex-1 px-3 py-2 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors ${
-            error
-              ? 'border-primary'
-              : 'border-custom-grey-2 focus:border-primary'
-          }`}
+          className={`${fieldCls} flex-1`}
+          style={fieldStyle(error)}
         />
       </div>
-      {error && <p className="mt-1 text-sm text-primary">{error}</p>}
+      {error && <p className={errCls} style={{ color: 'var(--error)' }}>{error}</p>}
     </div>
   );
 };
@@ -198,18 +201,18 @@ const SelectAtom: React.FC<SelectProps> = ({
 }) => {
   return (
     <div className={className}>
-      <label htmlFor={id} className="block text-sm font-medium text-black mb-2">
-        {label}
-        {required && '*'}
-      </label>
+      {label && (
+        <label htmlFor={id} className={labelCls}>
+          {label}{required && <span style={{ color: 'var(--error)' }}> *</span>}
+        </label>
+      )}
       <select
         id={id}
         name={name}
         value={value}
         onChange={onChange}
-        className={`w-full px-3 py-2 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors ${
-          error ? 'border-primary' : 'border-custom-grey-2 focus:border-primary'
-        }`}
+        className={fieldCls}
+        style={fieldStyle(error)}
       >
         <option value="">{placeholder}</option>
         {options.map((option) => (
@@ -221,8 +224,8 @@ const SelectAtom: React.FC<SelectProps> = ({
           </option>
         ))}
       </select>
-      {error && <p className="mt-1 text-sm text-primary">{error}</p>}
-      {!error && helperText && <p className="mt-1 text-xs text-gray-500">{helperText}</p>}
+      {error && <p className={errCls} style={{ color: 'var(--error)' }}>{error}</p>}
+      {!error && helperText && <p className={errCls} style={{ color: 'var(--on-surface-variant)' }}>{helperText}</p>}
     </div>
   );
 };
@@ -236,38 +239,38 @@ const CheckboxGroupAtom: React.FC<CheckboxGroupProps> = ({
   className = '',
   columns = 2,
 }) => {
-  const addOption = (optionId: string) => {
-    onChange([...selectedValues, optionId]);
-  };
-
-  const removeOption = (optionId: string) => {
-    onChange(selectedValues.filter((value) => value !== optionId));
-  };
-
-  const gridClass =
-    columns === 2 ? 'md:grid-cols-2' : `md:grid-cols-${String(columns)}`;
+  const addOption = (optionId: string) => onChange([...selectedValues, optionId]);
+  const removeOption = (optionId: string) => onChange(selectedValues.filter((v) => v !== optionId));
+  const gridClass = columns === 2 ? 'md:grid-cols-2' : `md:grid-cols-${String(columns)}`;
 
   return (
     <div className={className}>
-      <label className="block text-sm font-medium text-black mb-3">
-        {label}
-      </label>
+      {label && <label className={`${labelCls} mb-3`}>{label}</label>}
       <div className={`grid grid-cols-1 ${gridClass} gap-2`}>
-        {options.map((option) => (
-          <label key={option.id} className="flex items-start space-x-3">
-            <input
-              type="checkbox"
-              checked={selectedValues.includes(option.id)}
-              onChange={(e) =>
-                e.target.checked
-                  ? addOption(option.id)
-                  : removeOption(option.id)
-              }
-              className="mt-1 h-4 w-4 text-primary focus:text-primary border-custom-grey-2 rounded"
-            />
-            <span className="text-sm text-black">{option.label}</span>
-          </label>
-        ))}
+        {options.map((option) => {
+          const checked = selectedValues.includes(option.id);
+          return (
+            <label
+              key={option.id}
+              className="flex items-start gap-2.5 p-2.5 px-3.5 rounded-xl cursor-pointer transition-all"
+              style={{
+                background: checked ? 'color-mix(in srgb, var(--primary) 8%, transparent)' : 'var(--surface-container)',
+                border: `1px solid ${checked ? 'var(--primary)' : 'color-mix(in srgb, var(--outline-variant) 30%, transparent)'}`,
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={(e) => e.target.checked ? addOption(option.id) : removeOption(option.id)}
+                className="mt-0.5 h-4 w-4 rounded flex-shrink-0"
+                style={{ accentColor: 'var(--primary)' }}
+              />
+              <span className="text-sm leading-snug select-none" style={{ color: checked ? 'var(--on-surface)' : 'var(--on-surface-variant)' }}>
+                {option.label}
+              </span>
+            </label>
+          );
+        })}
       </div>
     </div>
   );
@@ -281,42 +284,38 @@ const CheckboxOutlineGroupAtom: React.FC<CheckboxGroupProps> = ({
   className = '',
   columns = 2,
 }) => {
-  const addOption = (optionId: string) => {
-    onChange([...selectedValues, optionId]);
-  };
-
-  const removeOption = (optionId: string) => {
-    onChange(selectedValues.filter((value) => value !== optionId));
-  };
-
-  const gridClass =
-    columns === 2 ? 'md:grid-cols-2' : `md:grid-cols-${String(columns)}`;
+  const addOption = (optionId: string) => onChange([...selectedValues, optionId]);
+  const removeOption = (optionId: string) => onChange(selectedValues.filter((v) => v !== optionId));
+  const gridClass = columns === 2 ? 'md:grid-cols-2' : `md:grid-cols-${String(columns)}`;
 
   return (
     <div className={className}>
-      <label className="block text-sm font-medium text-black mb-3">
-        {label}
-      </label>
-      <div className={`grid grid-cols-1 w-fit ${gridClass} gap-4`}>
-        {options.map((option) => (
-          <label
-            key={option.id}
-            className="flex items-center space-x-8 border border-custom-grey-2 px-4 py-3 rounded relative"
-          >
-            <div className="absolute justify-center left-0 top-0 bg-custom-grey-1 h-full w-12 rounded-l border-r border-custom-grey-2"></div>
-            <input
-              type="checkbox"
-              checked={selectedValues.includes(option.id)}
-              onChange={(e) =>
-                e.target.checked
-                  ? addOption(option.id)
-                  : removeOption(option.id)
-              }
-              className="bg-white mt-0.5 h-4 w-4 text-primary focus:text-primary border-custom-grey-2 rounded"
-            />
-            <span className="text-sm text-black">{option.label}</span>
-          </label>
-        ))}
+      {label && <label className={`${labelCls} mb-3`}>{label}</label>}
+      <div className={`grid grid-cols-1 w-fit ${gridClass} gap-3`}>
+        {options.map((option) => {
+          const checked = selectedValues.includes(option.id);
+          return (
+            <label
+              key={option.id}
+              className="flex items-center gap-4 rounded-xl px-4 py-3 cursor-pointer transition-all"
+              style={{
+                background: checked ? 'color-mix(in srgb, var(--primary) 8%, transparent)' : 'var(--surface-container)',
+                border: `1px solid ${checked ? 'var(--primary)' : 'color-mix(in srgb, var(--outline-variant) 30%, transparent)'}`,
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={(e) => e.target.checked ? addOption(option.id) : removeOption(option.id)}
+                className="h-4 w-4 rounded flex-shrink-0"
+                style={{ accentColor: 'var(--primary)' }}
+              />
+              <span className="text-sm leading-snug select-none" style={{ color: checked ? 'var(--on-surface)' : 'var(--on-surface-variant)' }}>
+                {option.label}
+              </span>
+            </label>
+          );
+        })}
       </div>
     </div>
   );

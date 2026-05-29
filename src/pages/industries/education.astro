@@ -1,6 +1,5 @@
 ---
-import { industries } from '@/core/constants/page-constants/industries-constant';
-import IndustryTemplate from '@layouts/IndustryTemplate.astro';
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
 import { seoConfig } from '@/core/constants/seo.constants';
 import { buildStandardPageSchema } from '@/core/utils/schema-builder';
 import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
@@ -11,20 +10,140 @@ const seoContent = {
   keywords: 'education research, edtech insights, student research, higher education research, education market trends, learner behavior, curriculum development, education analytics, workforce alignment, employability research',
 };
 
-// Generate breadcrumbs and structured data for SEO
 const breadcrumbs = generateBreadcrumbsFromPath(Astro.url.pathname);
 const pageUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).href;
-const structuredData = buildStandardPageSchema(
-  seoConfig,
-  pageUrl,
-  'Education Market Research',
-  breadcrumbs
-);
+const structuredData = buildStandardPageSchema(seoConfig, pageUrl, 'Education Market Research', breadcrumbs);
 ---
 
-<IndustryTemplate
-  title={seoContent.title}
-  description={seoContent.description}
-  industry={industries.education}
-  structuredData={structuredData}
-/>
+<PresentationLayout title={seoContent.title} description={seoContent.description} keywords={seoContent.keywords} structuredData={structuredData}>
+
+  <section class="tm-section relative">
+    <div class="tm-container grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div class="z-10">
+        <nav class="flex items-center gap-2 mb-6 text-xs text-on-surface-variant">
+          <a href="/" class="hover:text-on-surface transition-colors">Home</a><span class="opacity-40">/</span>
+          <a href="/industries" class="opacity-60 hover:text-on-surface transition-colors">Industries</a><span class="opacity-40">/</span>
+          <span class="text-primary font-medium">Education</span>
+        </nav>
+        <span class="chip mb-6 inline-flex">EDUCATION</span>
+        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-[1.08]">
+          Future-Proof Education With<br /><span class="text-primary italic">Human-Centered Intelligence.</span>
+        </h1>
+        <p class="text-lg text-on-surface-variant max-w-xl mb-10 leading-relaxed">We empower institutions, ed-tech platforms, and education leaders to build with clarity — through insights that align with student needs, workforce demands, and future-ready learning models.</p>
+        <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <a href="/start-your-research" class="btn-primary">Request a Bid</a>
+          <a href="#services" class="btn-ghost">Explore Solutions</a>
+        </div>
+      </div>
+      <div class="relative">
+        <div class="rounded-[3rem] bg-surface-container-low border border-outline-variant/10 shadow-2xl p-8 flex flex-col gap-4 min-h-[360px]">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-semibold text-on-surface-variant uppercase tracking-widest">Stakeholder Compass</span>
+            <div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-secondary animate-pulse"></div><span class="text-xs text-on-surface-variant">Active</span></div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            {[{label:'Students', sub:'Learning experience & outcomes', icon:'school', color:'primary'},
+              {label:'Faculty', sub:'Teaching methods & tools', icon:'person_book', color:'secondary'},
+              {label:'Parents', sub:'Institution choice & satisfaction', icon:'family_restroom', color:'tertiary'},
+              {label:'Employers', sub:'Graduate readiness & skills', icon:'corporate_fare', color:'primary'}
+            ].map(({label, sub, icon, color}) => (
+              <div class={`flex flex-col gap-2 p-4 rounded-xl bg-surface-container border border-outline-variant/10`}>
+                <span class={`material-symbols-outlined text-${color} text-2xl`}>{icon}</span>
+                <div><div class="text-sm font-semibold text-on-surface">{label}</div><div class="text-xs text-on-surface-variant">{sub}</div></div>
+              </div>
+            ))}
+          </div>
+          <div class="bg-secondary/10 rounded-xl p-3 border border-secondary/20 mt-auto">
+            <div class="text-xs font-semibold text-on-surface mb-1">Ed-Tech Platform Research</div>
+            <div class="text-[10px] text-on-surface-variant">UX, adoption, and learning efficacy</div>
+          </div>
+        </div>
+        <div class="absolute -top-4 -right-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+          <div class="text-primary text-2xl font-bold mb-0.5">4 Roles</div>
+          <div class="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Full Ecosystem View</div>
+        </div>
+        <div class="absolute -bottom-4 -left-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+          <div class="text-secondary text-2xl font-bold mb-0.5">Workforce</div>
+          <div class="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Alignment Research</div>
+        </div>
+      </div>
+    </div>
+    <div class="absolute inset-0 pointer-events-none overflow-hidden" style="z-index:-1" aria-hidden="true">
+      <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-secondary/8 blur-[140px] rounded-full"></div>
+    </div>
+  </section>
+
+  <section class="bg-surface-container-lowest py-14 border-y border-outline-variant/5">
+    <div class="tm-container flex flex-wrap justify-between gap-10 items-center">
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-primary">school</span><div><div class="text-2xl font-bold text-on-surface">Student Insights</div><div class="text-on-surface-variant text-sm">Learning &amp; Experience Research</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-secondary">devices</span><div><div class="text-2xl font-bold text-on-surface">Ed-Tech Research</div><div class="text-on-surface-variant text-sm">UX &amp; Platform Adoption</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-tertiary">trending_up</span><div><div class="text-2xl font-bold text-on-surface">Enrollment Research</div><div class="text-on-surface-variant text-sm">Choice Factors &amp; Decision Drivers</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-primary-container">work</span><div><div class="text-2xl font-bold text-on-surface">Workforce Readiness</div><div class="text-on-surface-variant text-sm">Employer Expectations</div></div></div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface" id="services">
+    <div class="tm-container">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-14 gap-6">
+        <div class="max-w-2xl"><p class="section-eyebrow">How We Help</p><h2 class="text-4xl md:text-5xl font-bold mb-5">Build Education Products and <span class="text-secondary">Institutions That Work</span></h2><p class="text-lg text-on-surface-variant">Whether you're a university, ed-tech company, or corporate learning team — understanding your learners is the foundation of everything that works.</p></div>
+        <a href="/start-your-research" class="btn-ghost flex-shrink-0">Get a Quote</a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-primary text-3xl">psychology</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Student Experience &amp; Learning Research</h3><p class="text-on-surface-variant mb-5">Understand how students experience your institution or platform — from enrollment to outcomes. Identify what drives engagement, completion rates, and long-term satisfaction.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">LEARNER JOURNEYS</span><span class="chip">COMPLETION DRIVERS</span></div></div>
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-secondary text-3xl">app_registration</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Enrollment &amp; Admissions Research</h3><p class="text-on-surface-variant mb-5">Discover what drives prospective students to choose, shortlist, or reject your institution. Optimize your recruitment, marketing, and scholarship strategy with real decision-making data.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">CHOICE FACTORS</span><span class="chip">PARENT RESEARCH</span></div></div>
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-tertiary text-3xl">laptop</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Ed-Tech Platform &amp; UX Research</h3><p class="text-on-surface-variant mb-5">Test usability, measure learning effectiveness, and understand adoption barriers. Build platforms that students actually use — and keep using — by grounding decisions in real user data.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">UX TESTING</span><span class="chip">ADOPTION RESEARCH</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface-container-lowest">
+    <div class="tm-container">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        <div>
+          <p class="section-eyebrow">Education Research Questions</p>
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">Shape Learning Experiences With <span class="text-primary">Real Evidence</span></h2>
+          <p class="text-lg text-on-surface-variant mb-8 leading-relaxed">Education decisions have life-changing consequences. We help institutions and platforms build on data — not assumptions — so every investment genuinely improves outcomes.</p>
+          <div class="bg-surface-container rounded-2xl p-6 border border-outline-variant/10">
+            <div class="flex items-center gap-3 mb-4"><span class="material-symbols-outlined text-secondary text-xl">school</span><span class="font-semibold text-on-surface">Common Research Areas</span></div>
+            <ul class="space-y-2">
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Student satisfaction & NPS tracking</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Curriculum & program design research</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Enrollment decision-making studies</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Graduate outcomes & employer perception</li>
+            </ul>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">What do students really value in their education?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>Which aspects of your program drive the most student satisfaction?</li><li>What would make students recommend your institution to others?</li><li>How do expectations at enrollment compare to the experience delivered?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">Why do students choose or reject your institution?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What are the top factors in the final enrollment decision?</li><li>How do parents vs. students weigh different criteria differently?</li><li>What marketing or recruitment touchpoints have the most influence?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">Are your graduates meeting employer expectations?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What skills gaps are employers observing in recent graduates?</li><li>How does your institution's reputation compare in hiring circles?</li><li>Which program outcomes best predict graduate employment success?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">Is your ed-tech product actually driving learning?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>Where does your platform create friction or disengagement?</li><li>Which features correlate with higher completion and satisfaction?</li><li>What would make students prefer your platform over alternatives?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">What does future-ready learning actually look like?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What learning formats do students prefer for different content types?</li><li>How do AI and hybrid learning models affect student expectations?</li><li>Which skills do employers believe education systems under-deliver on?</li></ul></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface" id="cta">
+    <div class="tm-container"><div class="cta-card"><div class="cta-content">
+      <p class="cta-eyebrow">Get Started Today</p>
+      <h2 class="cta-heading">Build Education Experiences That Students, Families, and Employers Trust.</h2>
+      <p class="cta-body">From enrollment research to ed-tech UX studies, we help education institutions and platforms make evidence-based decisions that improve outcomes for everyone.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/start-your-research" class="btn-surface">Request a Bid</a>
+        <a href="/contact-us" class="btn-cta-frosted">Talk to Our Team</a>
+      </div>
+    </div><div class="cta-orb cta-orb--tl"></div><div class="cta-orb cta-orb--br"></div></div></div>
+  </section>
+
+</PresentationLayout>
+
+<script>
+  document.querySelectorAll('.faq-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const isOpen = card.classList.contains('open');
+      document.querySelectorAll('.faq-card').forEach(c => c.classList.remove('open'));
+      if (!isOpen) card.classList.add('open');
+    });
+  });
+</script>

@@ -8,34 +8,209 @@ const seoContent = {
 ---
 
 <PresentationLayout title={seoContent.title} description={seoContent.description}>
-  <div class="container mx-auto px-4 py-8">
-    <div class="max-w-6xl mx-auto">
-      <!-- Header Section -->
-      <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-gray-800 mb-4">
-          Research Methods We Serve
+
+  <!-- ── Hero / Methods Grid ── -->
+  <section class="tm-section relative overflow-hidden">
+    <div class="tm-container">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <nav class="flex items-center gap-2 mb-6 text-xs text-on-surface-variant justify-center">
+          <a href="/" class="hover:text-on-surface transition-colors">Home</a>
+          <span class="opacity-40">/</span>
+          <span class="text-primary font-medium">Research Methods</span>
+        </nav>
+        <span class="chip mb-6 inline-flex">RESEARCH METHODS</span>
+        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-[1.08]">
+          Every Method. Every Audience.<br />
+          <span class="text-primary italic">One Partner.</span>
         </h1>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-          Discover specialized research solutions tailored to your
-          research methods's unique challenges and opportunities. Our expert
-          insights help drive informed decisions across diverse sectors.
+        <p class="text-lg text-on-surface-variant max-w-2xl mx-auto mb-10 leading-relaxed">
+          From large-scale quantitative surveys to intimate qualitative conversations, we bring the right methodology to your research question — with quality controls that give you confidence in every insight.
         </p>
+        <a href="/start-your-research" class="btn-primary">Start Your Research</a>
       </div>
 
-      <!-- CTA Section -->
-      <div class="mt-16 text-center bg-blue-50 rounded-lg p-8">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">
-          Don't See Your Research Method?
-        </h2>
-        <p class="text-gray-600 mb-6 max-w-2xl mx-auto">
-          We work across many more research methods and can customize our research
-          approach to meet your specific sector needs. Contact us to discuss
-          your requirements.
-        </p>
-        <a href="/contact-us" class="inline-block bg-primary text-white px-8 py-3 rounded-md font-medium hover:bg-primary-dark transition-colors">
-          Contact Our Experts
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <a href="/research-methods/quantitative-research" class="ds-card group flex flex-col gap-4 hover:border-primary/30 transition-all hover:-translate-y-1 cursor-pointer">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-primary text-2xl">bar_chart</span>
+          </div>
+          <div>
+            <h3 class="font-bold text-on-surface text-lg mb-2 group-hover:text-primary transition-colors">Quantitative Research</h3>
+            <p class="text-sm text-on-surface-variant leading-relaxed">Large-scale surveys, statistical analysis, and representative data to measure, track, and quantify what matters.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="chip">SURVEYS</span><span class="chip">CATI</span><span class="chip">CAWI</span>
+          </div>
+          <div class="mt-auto flex items-center gap-1 text-primary text-sm font-medium">
+            <span>Learn More</span><span class="material-symbols-outlined text-base">arrow_forward</span>
+          </div>
+        </a>
+
+        <a href="/research-methods/qualitative-research" class="ds-card group flex flex-col gap-4 hover:border-secondary/30 transition-all hover:-translate-y-1 cursor-pointer">
+          <div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-secondary text-2xl">forum</span>
+          </div>
+          <div>
+            <h3 class="font-bold text-on-surface text-lg mb-2 group-hover:text-secondary transition-colors">Qualitative Research</h3>
+            <p class="text-sm text-on-surface-variant leading-relaxed">Depth interviews, ethnography, and exploratory methods to uncover the emotions, motivations, and stories behind the numbers.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="chip">IDIs</span><span class="chip">ETHNOGRAPHY</span><span class="chip">ONLINE QUAL</span>
+          </div>
+          <div class="mt-auto flex items-center gap-1 text-secondary text-sm font-medium">
+            <span>Learn More</span><span class="material-symbols-outlined text-base">arrow_forward</span>
+          </div>
+        </a>
+
+        <a href="/research-methods/fieldwork" class="ds-card group flex flex-col gap-4 hover:border-tertiary/30 transition-all hover:-translate-y-1 cursor-pointer">
+          <div class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-tertiary text-2xl">location_on</span>
+          </div>
+          <div>
+            <h3 class="font-bold text-on-surface text-lg mb-2 group-hover:text-tertiary transition-colors">Recruitment &amp; Fieldwork</h3>
+            <p class="text-sm text-on-surface-variant leading-relaxed">End-to-end participant recruitment across India — for in-home visits, CLTs, shop-alongs, and online studies. Verified, on-time, on-spec.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="chip">RECRUITMENT</span><span class="chip">IN-HOME</span><span class="chip">CLT</span>
+          </div>
+          <div class="mt-auto flex items-center gap-1 text-tertiary text-sm font-medium">
+            <span>Learn More</span><span class="material-symbols-outlined text-base">arrow_forward</span>
+          </div>
+        </a>
+
+        <a href="/research-methods/focus-group" class="ds-card group flex flex-col gap-4 hover:border-primary/30 transition-all hover:-translate-y-1 cursor-pointer">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-primary text-2xl">groups</span>
+          </div>
+          <div>
+            <h3 class="font-bold text-on-surface text-lg mb-2 group-hover:text-primary transition-colors">Focus Group Discussions</h3>
+            <p class="text-sm text-on-surface-variant leading-relaxed">Moderated group conversations that surface opinions, reactions, and consensus — in-person or online, B2C or B2B.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="chip">IN-PERSON FGD</span><span class="chip">ONLINE FGD</span><span class="chip">MINI GROUPS</span>
+          </div>
+          <div class="mt-auto flex items-center gap-1 text-primary text-sm font-medium">
+            <span>Learn More</span><span class="material-symbols-outlined text-base">arrow_forward</span>
+          </div>
+        </a>
+
+        <a href="/research-methods/surveys" class="ds-card group flex flex-col gap-4 hover:border-secondary/30 transition-all hover:-translate-y-1 cursor-pointer">
+          <div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-secondary text-2xl">assignment</span>
+          </div>
+          <div>
+            <h3 class="font-bold text-on-surface text-lg mb-2 group-hover:text-secondary transition-colors">Surveys</h3>
+            <p class="text-sm text-on-surface-variant leading-relaxed">Online, offline, telephonic, and hybrid surveys designed for accuracy and reach. From quick polls to longitudinal tracker studies.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="chip">ONLINE</span><span class="chip">OFFLINE</span><span class="chip">CATI</span>
+          </div>
+          <div class="mt-auto flex items-center gap-1 text-secondary text-sm font-medium">
+            <span>Learn More</span><span class="material-symbols-outlined text-base">arrow_forward</span>
+          </div>
+        </a>
+
+        <a href="/research-methods/quality" class="ds-card group flex flex-col gap-4 hover:border-tertiary/30 transition-all hover:-translate-y-1 cursor-pointer">
+          <div class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-tertiary text-2xl">verified_user</span>
+          </div>
+          <div>
+            <h3 class="font-bold text-on-surface text-lg mb-2 group-hover:text-tertiary transition-colors">Participant Quality &amp; Data Security</h3>
+            <p class="text-sm text-on-surface-variant leading-relaxed">Multi-layered verification, fraud detection, and compliance protocols that ensure every data point in your dataset is earned — not fabricated.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="chip">FRAUD DETECTION</span><span class="chip">VERIFICATION</span><span class="chip">GDPR</span>
+          </div>
+          <div class="mt-auto flex items-center gap-1 text-tertiary text-sm font-medium">
+            <span>Learn More</span><span class="material-symbols-outlined text-base">arrow_forward</span>
+          </div>
         </a>
       </div>
     </div>
-  </div>
+    <div class="absolute top-0 left-0 -z-10 w-[500px] h-[500px] bg-secondary/10 blur-[140px] rounded-full pointer-events-none"></div>
+  </section>
+
+  <!-- ── Why It Matters ── -->
+  <section class="tm-section bg-surface-container-lowest">
+    <div class="tm-container">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div>
+          <p class="section-eyebrow">Method Selection</p>
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">The Right Method Makes All the <span class="text-primary">Difference</span></h2>
+          <p class="text-lg text-on-surface-variant mb-8 leading-relaxed">Not every research question needs the same approach. Choosing the wrong method means wasted budget and misleading answers. Our experts guide you to the right methodology — every time.</p>
+          <div class="space-y-4">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span class="material-symbols-outlined text-primary text-xl">help</span>
+              </div>
+              <div>
+                <div class="font-semibold text-on-surface mb-1">What are you trying to understand?</div>
+                <div class="text-sm text-on-surface-variant">Measurement → Quantitative. Exploration → Qualitative. Both → Mixed methods.</div>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span class="material-symbols-outlined text-secondary text-xl">groups</span>
+              </div>
+              <div>
+                <div class="font-semibold text-on-surface mb-1">Who do you need to reach?</div>
+                <div class="text-sm text-on-surface-variant">We have panel access and fieldwork capability across tier 1–3 cities and rural India.</div>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-xl bg-tertiary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span class="material-symbols-outlined text-tertiary text-xl">schedule</span>
+              </div>
+              <div>
+                <div class="font-semibold text-on-surface mb-1">How fast do you need it?</div>
+                <div class="text-sm text-on-surface-variant">Standard online surveys close in 48–72 hours. Complex fieldwork in 1–2 weeks.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-surface-container rounded-2xl p-5 border border-outline-variant/10">
+            <div class="text-3xl font-extrabold text-primary mb-1">6</div>
+            <div class="text-sm font-semibold text-on-surface mb-1">Research Methods</div>
+            <div class="text-xs text-on-surface-variant">Quantitative to qualitative</div>
+          </div>
+          <div class="bg-surface-container rounded-2xl p-5 border border-outline-variant/10">
+            <div class="text-3xl font-extrabold text-secondary mb-1">50K+</div>
+            <div class="text-sm font-semibold text-on-surface mb-1">Verified Panelists</div>
+            <div class="text-xs text-on-surface-variant">Profiled &amp; ready to respond</div>
+          </div>
+          <div class="bg-surface-container rounded-2xl p-5 border border-outline-variant/10">
+            <div class="text-3xl font-extrabold text-tertiary mb-1">48 hrs</div>
+            <div class="text-sm font-semibold text-on-surface mb-1">Fastest Turnaround</div>
+            <div class="text-xs text-on-surface-variant">For online surveys</div>
+          </div>
+          <div class="bg-surface-container rounded-2xl p-5 border border-outline-variant/10">
+            <div class="text-3xl font-extrabold text-primary mb-1">100%</div>
+            <div class="text-sm font-semibold text-on-surface mb-1">Quality Checked</div>
+            <div class="text-xs text-on-surface-variant">Every response, every project</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ── -->
+  <section class="tm-section bg-surface">
+    <div class="tm-container">
+      <div class="cta-card">
+        <div class="cta-content">
+          <p class="cta-eyebrow">Get Started Today</p>
+          <h2 class="cta-heading">Not Sure Which Method Is Right? We'll Help You Decide.</h2>
+          <p class="cta-body">Our research experts work with you from brief to report — recommending the best combination of methods for your specific question, timeline, and budget.</p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/start-your-research" class="btn-surface">Request a Bid</a>
+            <a href="/contact-us" class="btn-cta-frosted">Talk to Our Team</a>
+          </div>
+        </div>
+        <div class="cta-orb cta-orb--tl"></div>
+        <div class="cta-orb cta-orb--br"></div>
+      </div>
+    </div>
+  </section>
+
 </PresentationLayout>

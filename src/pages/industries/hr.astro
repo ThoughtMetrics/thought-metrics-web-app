@@ -1,6 +1,5 @@
 ---
-import { industries } from '@/core/constants/page-constants/industries-constant';
-import IndustryTemplate from '@layouts/IndustryTemplate.astro';
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
 import { seoConfig } from '@/core/constants/seo.constants';
 import { buildStandardPageSchema } from '@/core/utils/schema-builder';
 import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
@@ -11,20 +10,133 @@ const seoContent = {
   keywords: 'human resources research, employee engagement, workforce insights, HR analytics, employee experience, DEI research, talent management, retention research, HR strategy, people analytics',
 };
 
-// Generate breadcrumbs and structured data for SEO
 const breadcrumbs = generateBreadcrumbsFromPath(Astro.url.pathname);
 const pageUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).href;
-const structuredData = buildStandardPageSchema(
-  seoConfig,
-  pageUrl,
-  'Human Resources Research',
-  breadcrumbs
-);
+const structuredData = buildStandardPageSchema(seoConfig, pageUrl, 'Human Resources Research', breadcrumbs);
 ---
 
-<IndustryTemplate
-  title={seoContent.title}
-  description={seoContent.description}
-  industry={industries.hr}
-  structuredData={structuredData}
-/>
+<PresentationLayout title={seoContent.title} description={seoContent.description} keywords={seoContent.keywords} structuredData={structuredData}>
+
+  <section class="tm-section relative">
+    <div class="tm-container grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div class="z-10">
+        <nav class="flex items-center gap-2 mb-6 text-xs text-on-surface-variant">
+          <a href="/" class="hover:text-on-surface transition-colors">Home</a><span class="opacity-40">/</span>
+          <a href="/industries" class="opacity-60 hover:text-on-surface transition-colors">Industries</a><span class="opacity-40">/</span>
+          <span class="text-primary font-medium">Human Resources</span>
+        </nav>
+        <span class="chip mb-6 inline-flex">HUMAN RESOURCES</span>
+        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-[1.08]">
+          Unlock People-Centered Growth<br /><span class="text-primary italic">With Research That Listens.</span>
+        </h1>
+        <p class="text-lg text-on-surface-variant max-w-xl mb-10 leading-relaxed">From recruitment to retention, discover what your workforce really needs. Build workplaces people choose to stay — with evidence that informs every people decision.</p>
+        <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <a href="/start-your-research" class="btn-primary">Request a Bid</a>
+          <a href="#services" class="btn-ghost">Explore Solutions</a>
+        </div>
+      </div>
+      <div class="relative">
+        <div class="rounded-[3rem] bg-surface-container-low border border-outline-variant/10 shadow-2xl p-8 flex flex-col gap-5 min-h-[360px]">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-semibold text-on-surface-variant uppercase tracking-widest">Employee Pulse Dashboard</span>
+            <div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-secondary animate-pulse"></div><span class="text-xs text-on-surface-variant">Live</span></div>
+          </div>
+          <div class="space-y-3">
+            <div class="bg-surface-container rounded-xl p-3"><div class="flex justify-between mb-2"><span class="text-xs font-semibold text-on-surface">Engagement Score</span><span class="text-xs font-bold text-primary">72%</span></div><div class="h-2 bg-outline-variant/20 rounded-full"><div class="h-full bg-primary rounded-full" style="width:72%"></div></div></div>
+            <div class="bg-surface-container rounded-xl p-3"><div class="flex justify-between mb-2"><span class="text-xs font-semibold text-on-surface">Job Satisfaction</span><span class="text-xs font-bold text-secondary">68%</span></div><div class="h-2 bg-outline-variant/20 rounded-full"><div class="h-full bg-secondary rounded-full" style="width:68%"></div></div></div>
+            <div class="bg-surface-container rounded-xl p-3"><div class="flex justify-between mb-2"><span class="text-xs font-semibold text-on-surface">Turnover Risk</span><span class="text-xs font-bold text-error">24%</span></div><div class="h-2 bg-outline-variant/20 rounded-full"><div class="h-full bg-error rounded-full" style="width:24%"></div></div></div>
+          </div>
+          <div class="grid grid-cols-2 gap-3 mt-auto">
+            <div class="bg-surface-container rounded-xl p-3 text-center"><div class="text-sm font-bold text-primary">Culture Diagnostic</div><div class="text-[10px] text-on-surface-variant">Research Capability</div></div>
+            <div class="bg-surface-container rounded-xl p-3 text-center"><div class="text-sm font-bold text-secondary">Talent Retention</div><div class="text-[10px] text-on-surface-variant">Insights Delivered</div></div>
+          </div>
+        </div>
+        <div class="absolute -top-4 -right-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+          <div class="text-primary text-2xl font-bold mb-0.5">Culture</div>
+          <div class="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Diagnostic Research</div>
+        </div>
+        <div class="absolute -bottom-4 -left-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+          <div class="text-secondary text-2xl font-bold mb-0.5">Talent</div>
+          <div class="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Retention Insights</div>
+        </div>
+      </div>
+    </div>
+    <div class="absolute inset-0 pointer-events-none overflow-hidden" style="z-index:-1" aria-hidden="true">
+      <div class="absolute top-0 left-0 w-[500px] h-[500px] bg-secondary/8 blur-[140px] rounded-full"></div>
+    </div>
+  </section>
+
+  <section class="bg-surface-container-lowest py-14 border-y border-outline-variant/5">
+    <div class="tm-container flex flex-wrap justify-between gap-10 items-center">
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-primary">sentiment_very_satisfied</span><div><div class="text-2xl font-bold text-on-surface">Employee Insights</div><div class="text-on-surface-variant text-sm">Engagement &amp; Satisfaction</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-secondary">business_center</span><div><div class="text-2xl font-bold text-on-surface">Employer Branding</div><div class="text-on-surface-variant text-sm">Talent Attraction Research</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-tertiary">person_off</span><div><div class="text-2xl font-bold text-on-surface">Turnover Analysis</div><div class="text-on-surface-variant text-sm">Churn Drivers &amp; Prevention</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-primary-container">diversity_3</span><div><div class="text-2xl font-bold text-on-surface">DEI Research</div><div class="text-on-surface-variant text-sm">Inclusion &amp; Belonging</div></div></div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface" id="services">
+    <div class="tm-container">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-14 gap-6">
+        <div class="max-w-2xl"><p class="section-eyebrow">How We Help</p><h2 class="text-4xl md:text-5xl font-bold mb-5">Research That Puts <span class="text-secondary">Your People First</span></h2><p class="text-lg text-on-surface-variant">HR leaders who use data-backed insights to understand their workforce make better decisions at every stage — from hiring to culture-building.</p></div>
+        <a href="/start-your-research" class="btn-ghost flex-shrink-0">Get a Quote</a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-primary text-3xl">favorite</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Employee Engagement &amp; Satisfaction</h3><p class="text-on-surface-variant mb-5">Measure engagement drivers, eNPS, and satisfaction across teams, geographies, and tenure. Identify what's working and where intervention is needed — before people start leaving.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">PULSE SURVEYS</span><span class="chip">eNPS TRACKING</span></div></div>
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-secondary text-3xl">badge</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Employer Brand &amp; Talent Attraction</h3><p class="text-on-surface-variant mb-5">Understand how your employer brand is perceived by job seekers, recent hires, and competitors' employees. Identify your EVP strengths and gaps with primary research.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">EVP RESEARCH</span><span class="chip">BRAND PERCEPTION</span></div></div>
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-tertiary text-3xl">balance</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">DEI &amp; Culture Diagnostics</h3><p class="text-on-surface-variant mb-5">Measure belonging and inclusion across demographic groups. Identify cultural gaps between stated values and lived experience. Build a culture your whole workforce believes in.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">INCLUSION INDEX</span><span class="chip">CULTURE AUDIT</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface-container-lowest">
+    <div class="tm-container">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        <div>
+          <p class="section-eyebrow">HR Research Questions</p>
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">Questions That Shape <span class="text-primary">People Strategy</span></h2>
+          <p class="text-lg text-on-surface-variant mb-8 leading-relaxed">The most effective HR leaders are the ones who listen — systematically and honestly. These are the research questions that drive smarter people decisions.</p>
+          <div class="bg-surface-container rounded-2xl p-6 border border-outline-variant/10">
+            <div class="flex items-center gap-3 mb-4"><span class="material-symbols-outlined text-secondary text-xl">groups</span><span class="font-semibold text-on-surface">Common Research Areas</span></div>
+            <ul class="space-y-2">
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Employee engagement & eNPS tracking</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Employer brand & EVP research</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Culture & DEI diagnostics</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Turnover drivers & retention factors</li>
+            </ul>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">What do your employees really think?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What are the top drivers of engagement in your organization today?</li><li>Where is the gap between leadership perception and employee experience?</li><li>Which teams or demographics have the lowest satisfaction — and why?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">Why are your best people leaving?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What are the primary push factors driving voluntary attrition?</li><li>Which retention factors matter most to high performers vs. average performers?</li><li>At what point in the employee journey is turnover risk highest?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">How does your EVP compare to competitors?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>How do job seekers in your target talent pool perceive your employer brand?</li><li>Which EVP attributes are most important to the talent you're trying to attract?</li><li>Where are your benefits and culture messaging falling flat?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">Is your culture truly inclusive?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>How does sense of belonging vary across gender, age, and background?</li><li>Are underrepresented groups experiencing your culture differently?</li><li>How do stated organizational values align with day-to-day employee experience?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">What skills will your workforce need tomorrow?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>Where are the critical skill gaps most likely to limit business growth?</li><li>How do employees perceive current L&D investment and effectiveness?</li><li>What future-readiness concerns do managers and employees share?</li></ul></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface" id="cta">
+    <div class="tm-container"><div class="cta-card"><div class="cta-content">
+      <p class="cta-eyebrow">Get Started Today</p>
+      <h2 class="cta-heading">Build Workplaces People Choose — and Choose to Stay.</h2>
+      <p class="cta-body">From pulse surveys to culture diagnostics, our HR research gives people leaders the evidence they need to make decisions that actually improve the employee experience.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/start-your-research" class="btn-surface">Request a Bid</a>
+        <a href="/contact-us" class="btn-cta-frosted">Talk to Our Team</a>
+      </div>
+    </div><div class="cta-orb cta-orb--tl"></div><div class="cta-orb cta-orb--br"></div></div></div>
+  </section>
+
+</PresentationLayout>
+
+<script>
+  document.querySelectorAll('.faq-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const isOpen = card.classList.contains('open');
+      document.querySelectorAll('.faq-card').forEach(c => c.classList.remove('open'));
+      if (!isOpen) card.classList.add('open');
+    });
+  });
+</script>

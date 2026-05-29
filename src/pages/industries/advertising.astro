@@ -1,32 +1,139 @@
 ---
-import { industries } from '@/core/constants/page-constants/industries-constant';
-import IndustryTemplate from '@layouts/IndustryTemplate.astro';
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
 import { seoConfig } from '@/core/constants/seo.constants';
 import { buildStandardPageSchema } from '@/core/utils/schema-builder';
 import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
 
 const seoContent = {
   title: 'Advertising & Marketing Research | Creative Insights',
-  description:
-    'Turn audience understanding into creative impact. Advertising and marketing research helping brands test ideas, refine campaigns, and measure effectiveness.',
-  keywords:
-    'advertising research, marketing research, campaign testing, ad effectiveness, audience insights, brand tracking, creative testing, media mix research, digital marketing analytics, ad optimization',
+  description: 'Turn audience understanding into creative impact. Advertising and marketing research helping brands test ideas, refine campaigns, and measure effectiveness.',
+  keywords: 'advertising research, marketing insights, campaign testing, creative research, brand awareness, ad effectiveness, message testing, media mix, audience segmentation',
 };
 
-// Generate breadcrumbs and structured data for SEO
 const breadcrumbs = generateBreadcrumbsFromPath(Astro.url.pathname);
 const pageUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).href;
-const structuredData = buildStandardPageSchema(
-  seoConfig,
-  pageUrl,
-  'Advertising & Marketing Research',
-  breadcrumbs
-);
+const structuredData = buildStandardPageSchema(seoConfig, pageUrl, 'Advertising & Marketing Research', breadcrumbs);
 ---
 
-<IndustryTemplate
-  title={seoContent.title}
-  description={seoContent.description}
-  industry={industries.advertising}
-  structuredData={structuredData}
-/>
+<PresentationLayout title={seoContent.title} description={seoContent.description} keywords={seoContent.keywords} structuredData={structuredData}>
+
+  <section class="tm-section relative">
+    <div class="tm-container grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div class="z-10">
+        <nav class="flex items-center gap-2 mb-6 text-xs text-on-surface-variant">
+          <a href="/" class="hover:text-on-surface transition-colors">Home</a><span class="opacity-40">/</span>
+          <a href="/industries" class="opacity-60 hover:text-on-surface transition-colors">Industries</a><span class="opacity-40">/</span>
+          <span class="text-primary font-medium">Advertising & Marketing</span>
+        </nav>
+        <span class="chip mb-6 inline-flex">ADVERTISING &amp; MARKETING</span>
+        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-[1.08]">
+          Turn Audience Understanding<br />Into <span class="text-primary italic">Creative Impact.</span>
+        </h1>
+        <p class="text-lg text-on-surface-variant max-w-xl mb-10 leading-relaxed">From campaign concepts to media mix decisions, we help unlock insights that inspire, resonate, and convert — before and after every campaign.</p>
+        <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <a href="/start-your-research" class="btn-primary">Request a Bid</a>
+          <a href="#services" class="btn-ghost">Explore Solutions</a>
+        </div>
+      </div>
+      <div class="relative">
+        <div class="rounded-[3rem] bg-surface-container-low border border-outline-variant/10 shadow-2xl p-8 flex flex-col gap-4 min-h-[360px]">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-semibold text-on-surface-variant uppercase tracking-widest">Campaign Performance</span>
+            <div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div><span class="text-xs text-on-surface-variant">Active</span></div>
+          </div>
+          <div class="space-y-3">
+            <div class="bg-surface-container rounded-xl p-3"><div class="flex justify-between mb-2"><span class="text-xs font-semibold text-on-surface">Brand Recall</span><span class="text-xs font-bold text-primary">78%</span></div><div class="h-2 bg-outline-variant/20 rounded-full"><div class="h-full bg-primary rounded-full" style="width:78%"></div></div></div>
+            <div class="bg-surface-container rounded-xl p-3"><div class="flex justify-between mb-2"><span class="text-xs font-semibold text-on-surface">Ad Awareness</span><span class="text-xs font-bold text-secondary">64%</span></div><div class="h-2 bg-outline-variant/20 rounded-full"><div class="h-full bg-secondary rounded-full" style="width:64%"></div></div></div>
+            <div class="bg-surface-container rounded-xl p-3"><div class="flex justify-between mb-2"><span class="text-xs font-semibold text-on-surface">Message Resonance</span><span class="text-xs font-bold text-tertiary">82%</span></div><div class="h-2 bg-outline-variant/20 rounded-full"><div class="h-full bg-tertiary rounded-full" style="width:82%"></div></div></div>
+            <div class="bg-surface-container rounded-xl p-3"><div class="flex justify-between mb-2"><span class="text-xs font-semibold text-on-surface">Purchase Intent</span><span class="text-xs font-bold text-primary">55%</span></div><div class="h-2 bg-outline-variant/20 rounded-full"><div class="h-full bg-primary rounded-full" style="width:55%"></div></div></div>
+          </div>
+        </div>
+        <div class="absolute -top-4 -right-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+          <div class="text-primary text-2xl font-bold mb-0.5">Pre-Launch</div>
+          <div class="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Concept Testing</div>
+        </div>
+        <div class="absolute -bottom-4 -left-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+          <div class="text-secondary text-2xl font-bold mb-0.5">Post-Campaign</div>
+          <div class="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Impact Analysis</div>
+        </div>
+      </div>
+    </div>
+    <div class="absolute inset-0 pointer-events-none overflow-hidden" style="z-index:-1" aria-hidden="true">
+      <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/8 blur-[140px] rounded-full"></div>
+    </div>
+  </section>
+
+  <section class="bg-surface-container-lowest py-14 border-y border-outline-variant/5">
+    <div class="tm-container flex flex-wrap justify-between gap-10 items-center">
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-primary">groups</span><div><div class="text-2xl font-bold text-on-surface">Diverse Audiences</div><div class="text-on-surface-variant text-sm">Consumers, B2B &amp; Niche Segments</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-secondary">speed</span><div><div class="text-2xl font-bold text-on-surface">Fast Turnaround</div><div class="text-on-surface-variant text-sm">48-Hour Campaign Feedback</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-tertiary">play_circle</span><div><div class="text-2xl font-bold text-on-surface">Multi-Format Testing</div><div class="text-on-surface-variant text-sm">Video, Display, OOH &amp; Audio</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-primary-container">monitoring</span><div><div class="text-2xl font-bold text-on-surface">Longitudinal Tracking</div><div class="text-on-surface-variant text-sm">Brand Health Over Time</div></div></div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface" id="services">
+    <div class="tm-container">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-14 gap-6">
+        <div class="max-w-2xl"><p class="section-eyebrow">How We Help</p><h2 class="text-4xl md:text-5xl font-bold mb-5">Research That Makes Every <span class="text-secondary">Campaign Work Harder</span></h2><p class="text-lg text-on-surface-variant">Understanding your audience and testing your creative before spend is committed is no longer optional — it's the difference between campaigns that break through and ones that disappear.</p></div>
+        <a href="/start-your-research" class="btn-ghost flex-shrink-0">Get a Quote</a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-primary text-3xl">person_search</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Audience Profiling &amp; Segmentation</h3><p class="text-on-surface-variant mb-5">Go beyond demographics. Understand psychographics, media habits, and purchase triggers for each audience segment — so your targeting and creative are built on real signals.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">PSYCHOGRAPHICS</span><span class="chip">MEDIA HABITS</span></div></div>
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-secondary text-3xl">rate_review</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Campaign Concept &amp; Creative Testing</h3><p class="text-on-surface-variant mb-5">Test multiple creative routes before production. Measure recall, relevance, and resonance. A/B test executions with real consumers to identify the strongest performing assets.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">A/B TESTING</span><span class="chip">RECALL METRICS</span></div></div>
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-tertiary text-3xl">bar_chart_4_bars</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Media Mix &amp; Channel Optimization</h3><p class="text-on-surface-variant mb-5">Understand where your audience spends time, how they engage with ads across formats, and which channels drive the most purchase intent for your brand and category.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">MEDIA MIX</span><span class="chip">CHANNEL ROI</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface-container-lowest">
+    <div class="tm-container">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        <div>
+          <p class="section-eyebrow">Advertising Research Questions</p>
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">The Questions Behind Every <span class="text-primary">Winning Campaign</span></h2>
+          <p class="text-lg text-on-surface-variant mb-8 leading-relaxed">Great advertising starts with knowing your audience deeply. These are the research questions that separate campaigns that break through from ones that disappear into the noise.</p>
+          <div class="bg-surface-container rounded-2xl p-6 border border-outline-variant/10">
+            <div class="flex items-center gap-3 mb-4"><span class="material-symbols-outlined text-secondary text-xl">campaign</span><span class="font-semibold text-on-surface">Common Research Areas</span></div>
+            <ul class="space-y-2">
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Campaign concept & creative testing</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Brand awareness & recall measurement</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Media channel effectiveness & ROI</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Post-campaign brand lift tracking</li>
+            </ul>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">What messages resonate with your audience?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>Which campaign routes drive the strongest emotional connection?</li><li>What language, imagery, and tone does your audience respond to most?</li><li>How does message resonance vary across your target segments?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">How is your brand perceived in the market?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What is your current unaided brand awareness vs. key competitors?</li><li>What brand associations do consumers hold — intended and unintended?</li><li>How has brand perception shifted since your last major campaign?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">Which media channels drive the most impact?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>Where does your target audience spend the most time consuming media?</li><li>Which platforms drive the highest purchase intent for your category?</li><li>What is the optimal media mix for reach, frequency, and conversion?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">How did your campaign actually perform?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>Did your campaign move brand awareness or purchase intent metrics?</li><li>Which creative elements drove the most recall and positive sentiment?</li><li>How does campaign ROI compare across different channels and formats?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">What makes your audience choose one brand over another?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What are the primary triggers that drive someone to try a new brand?</li><li>Which brand attributes most strongly predict purchase preference?</li><li>What barriers prevent switching from competitors to your brand?</li></ul></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface" id="cta">
+    <div class="tm-container"><div class="cta-card"><div class="cta-content">
+      <p class="cta-eyebrow">Get Started Today</p>
+      <h2 class="cta-heading">Build Campaigns That Connect, Convert, and Last.</h2>
+      <p class="cta-body">From audience profiling to post-campaign tracking, our advertising research ensures every creative decision is backed by real human insight — not guesswork.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/start-your-research" class="btn-surface">Request a Bid</a>
+        <a href="/contact-us" class="btn-cta-frosted">Talk to Our Team</a>
+      </div>
+    </div><div class="cta-orb cta-orb--tl"></div><div class="cta-orb cta-orb--br"></div></div></div>
+  </section>
+
+</PresentationLayout>
+
+<script>
+  document.querySelectorAll('.faq-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const isOpen = card.classList.contains('open');
+      document.querySelectorAll('.faq-card').forEach(c => c.classList.remove('open'));
+      if (!isOpen) card.classList.add('open');
+    });
+  });
+</script>

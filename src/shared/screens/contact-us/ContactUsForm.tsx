@@ -1,14 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { IllustrationSquares2 } from '@/assets';
 import { ROUTES } from '@/routes/routeConfig';
-import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
-import {
-  CheckboxAtom,
-  PhoneInputAtom,
-  TextareaAtom,
-  TextInputAtom,
-} from '@/shared/ui/atoms/custom-input';
 import { contactUsConstants } from '@/core/constants/page-constants/contact-us-constant';
 import { useContactFormStore } from '@/core/stores/contact-us.store';
 import { useContactFormValidation } from '@/core/hooks/validation/use-contact-us-form-validation';
@@ -16,14 +8,15 @@ import { useSubmitContactForm } from '@/core/hooks/queries/contact-us/index.quer
 
 const { countryCodes, defaultCountryCode, ui } = contactUsConstants;
 
+const inputCls =
+  'w-full rounded-xl px-4 py-3 text-sm outline-none transition-all focus:ring-2 focus:ring-primary/20';
+
 const ContactUs: React.FC = () => {
   const { formData, updateField, resetForm } = useContactFormStore();
-  const { errors, validate, clearError, clearAllErrors } =
-    useContactFormValidation();
+  const { errors, validate, clearError, clearAllErrors } = useContactFormValidation();
   const submitMutation = useSubmitContactForm();
   const [countryCode, setCountryCode] = React.useState(defaultCountryCode);
 
-  // Reset form on successful submission
   useEffect(() => {
     if (submitMutation.isSuccess) {
       const timer = setTimeout(() => {
@@ -33,260 +26,305 @@ const ContactUs: React.FC = () => {
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [
-    submitMutation.isSuccess,
-    resetForm,
-    clearAllErrors,
-    submitMutation.reset,
-    submitMutation,
-  ]);
+  }, [submitMutation.isSuccess, resetForm, clearAllErrors, submitMutation]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
-    const finalValue =
-      type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
-
+    const finalValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
     updateField(name as keyof typeof formData, finalValue);
     clearError(name);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validate(formData)) return;
-
-    // Prepare data for submission
-    const submitData = {
-      ...formData,
-      phone: countryCode + formData.phone,
-    };
-
-    submitMutation.mutate(submitData);
+    submitMutation.mutate({ ...formData, phone: countryCode + formData.phone });
   };
 
-  // Show success state
-  if (submitMutation.isSuccess) {
-    return (
-      <div className="max-w-4xl mx-auto p-6 bg-white">
-        <div className="text-center py-12">
-          <div className="mb-4">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-              <svg
-                className="w-8 h-8 text-green-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            {ui.successMessage.title}
-          </h2>
-          <p className="text-gray-600">{ui.successMessage.description}</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="common-component bg-white text-black flex-col items-center">
-      {/* Header Section */}
-      <div className="form-1-component w-full min-h-60 md:min-h-[480px] z-1 flex items-center relative justify-center">
-        <div className="flex absolute w-full h-[95%] justify-end top-1/2 transform -translate-y-1/2">
-          <IllustrationSquares2 className="h-full w-auto stroke-1" />
-        </div>
-        <div className="common-container px-6 py-8 md:px-24 md:py-24 max-w-[1336px]!">
-          <h2 className="text-xl md:text-4xl font-semibold text-white">
-            {ui.pageTitle}
-          </h2>
-        </div>
-        <div className="absolute top-0 w-full h-full bg-primary/65 -z-1" />
-      </div>
+    <section className="tm-section relative">
+      <div className="tm-container">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
 
-      {/* Form Section */}
-      <div className="common-container px-6 py-8 md:px-24 md:py-12 max-w-(--breakpoint-2xl)! flex-col">
-        <h1 className="text-3xl font-semibold text-gray-900 mb-4">
-          {ui.mainHeading}
-        </h1>
+          {/* ── Left info panel ── */}
+          <div className="lg:col-span-2">
+            <nav className="flex items-center gap-2 mb-6 text-xs text-on-surface-variant" aria-label="Breadcrumb">
+              <a href="/" className="hover:text-on-surface transition-colors">Home</a>
+              <span className="opacity-40">/</span>
+              <span className="text-primary font-medium">Contact Us</span>
+            </nav>
+            <span className="chip mb-6 inline-flex">GET IN TOUCH</span>
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 leading-[1.08] text-on-surface">
+              Get the Conversation<br />
+              <span className="text-primary italic">Started Today.</span>
+            </h1>
+            <p className="text-on-surface-variant mb-8 leading-relaxed text-base">
+              {ui.description}
+            </p>
 
-        <div className="flex flex-wrap md:flex-nowrap gap-12 md:gap-28">
-          <div className="lg:w-2/3">
-            <p className="text-gray-600 mb-8">{ui.description}</p>
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Name Fields */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <TextInputAtom
-                  id="firstName"
-                  name="firstName"
-                  label={ui.fieldLabels.firstName}
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  error={errors.firstName}
-                  required
-                />
-                <TextInputAtom
-                  id="lastName"
-                  name="lastName"
-                  label={ui.fieldLabels.lastName}
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  error={errors.lastName}
-                  required
-                />
-              </div>
-
-              {/* Email and Phone */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <TextInputAtom
-                  id="email"
-                  name="email"
-                  label={ui.fieldLabels.email}
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  error={errors.email}
-                  required
-                />
-                <PhoneInputAtom
-                  id="phone"
-                  name="phone"
-                  label={ui.fieldLabels.phone}
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  countryCode={countryCode}
-                  onCountryCodeChange={(e) => setCountryCode(e.target.value)}
-                  countryCodes={countryCodes}
-                />
-              </div>
-
-              {/* Reference Number */}
-              <TextInputAtom
-                id="caseStudyRefNumber"
-                name="caseStudyRefNumber"
-                label={ui.fieldLabels.caseStudyRefNumber}
-                value={formData.caseStudyRefNumber}
-                onChange={handleInputChange}
-              />
-
-              <p className="text-sm text-gray-600">{ui.referenceNumberNote}</p>
-
-              {/* Subject */}
-              <TextInputAtom
-                id="subject"
-                name="subject"
-                label={ui.fieldLabels.subject}
-                value={formData.subject}
-                onChange={handleInputChange}
-                error={errors.subject}
-                required
-              />
-
-              {/* Message */}
-              <TextareaAtom
-                id="message"
-                name="message"
-                label={ui.fieldLabels.message}
-                value={formData.message}
-                onChange={handleInputChange}
-                error={errors.message}
-                required
-                rows={6}
-              />
-
-              {/* Consent Section */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {ui.consentSection.title}
-                </h3>
-                <p className="text-sm text-gray-600">
-                  {ui.consentSection.description}
-                </p>
-
-                <div className="space-y-3">
-                  <CheckboxAtom
-                    id="consentCommunication"
-                    name="consentCommunication"
-                    checked={formData.consentCommunication}
-                    onChange={handleInputChange}
-                    label={ui.checkboxLabels.consentCommunication}
-                    required
-                    error={errors.consentCommunication}
-                  />
-                  <CheckboxAtom
-                    id="consentMarketing"
-                    name="consentMarketing"
-                    checked={formData.consentMarketing}
-                    onChange={handleInputChange}
-                    label={ui.checkboxLabels.consentMarketing}
-                  />
-                  <CheckboxAtom
-                    id="consentSubscribe"
-                    name="consentSubscribe"
-                    checked={formData.consentSubscribe}
-                    onChange={handleInputChange}
-                    label={ui.checkboxLabels.consentSubscribe}
-                  />
+            <div className="space-y-5 mb-8">
+              {[
+                { icon: 'mail', color: 'primary', title: 'Email Us', detail: 'hello@thoughtmetrics.com', href: 'mailto:hello@thoughtmetrics.com' },
+                { icon: 'work', color: 'secondary', title: 'Careers', detail: 'careers@thoughtmetrics.com', href: 'mailto:careers@thoughtmetrics.com' },
+                { icon: 'location_on', color: 'tertiary', title: 'Headquarters', detail: 'Mumbai, India', href: null },
+              ].map(({ icon, color, title, detail, href }) => (
+                <div key={title} className="flex items-start gap-4">
+                  <div className={`w-10 h-10 rounded-xl bg-${color}/10 flex items-center justify-center flex-shrink-0`}>
+                    <span className={`material-symbols-outlined text-${color} text-xl`}>{icon}</span>
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-on-surface mb-0.5">{title}</div>
+                    {href ? (
+                      <a href={href} className={`text-sm text-${color} hover:underline`}>{detail}</a>
+                    ) : (
+                      <div className="text-sm text-on-surface-variant">{detail}</div>
+                    )}
+                  </div>
                 </div>
+              ))}
+            </div>
 
-                <p className="text-xs">
-                  You may{' '}
-                  <a href={ROUTES.UNSUBSCRIBE} className="underline">
-                    {ui.buttons.unsubscribe}
-                  </a>{' '}
-                  from these communications anytime. For information on how to
-                  unsubscribe, as well as our privacy practices and commitment
-                  to protecting your privacy, check out our{' '}
-                  <a href={ROUTES.PRIVACY_POLICY} className="underline">
-                    {ui.buttons.privacyPolicy}
-                  </a>
-                  .
-                </p>
+            <div
+              className="rounded-2xl p-5 border border-outline-variant/10 text-sm text-on-surface-variant leading-relaxed"
+              style={{ background: 'var(--surface-container)' }}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span className="material-symbols-outlined text-primary text-base">info</span>
+                <span className="font-semibold text-on-surface text-sm">Reference Number</span>
               </div>
-
-              {/* Submit Button */}
-              <CustomButtonAtom
-                type="submit"
-                label={
-                  submitMutation.isPending
-                    ? ui.buttons.submitting
-                    : ui.buttons.submit
-                }
-                className="py-2 px-14"
-                disabled={submitMutation.isPending}
-                loading={submitMutation.isPending}
-              />
-            </form>
+              {ui.referenceNumberNote}
+            </div>
           </div>
 
-          {/* Contact Info Section */}
-          <div className="lg:w-1/3 text-end">
-            <div className="p-4 sticky top-4 border-y border-black w-full">
-              <h3 className="text-xl font-medium text-gray-900 mb-4">
-                {ui.contactInfo.title}
-              </h3>
-              <div className="space-y-3">
-                <div className="text-2xl md:text-3xl">
-                  {ui.contactInfo.phone}
+          {/* ── Right form card ── */}
+          <div className="lg:col-span-3">
+            <div
+              className="rounded-[2rem] border border-outline-variant/10 p-8 shadow-2xl"
+              style={{ background: 'var(--surface-container-low)' }}
+            >
+              <h2 className="text-xl font-bold text-on-surface mb-6">Send Us a Message</h2>
+
+              {submitMutation.isSuccess ? (
+                <div
+                  className="rounded-xl p-6 border border-primary/20 flex items-center gap-4"
+                  style={{ background: 'var(--surface-container)' }}
+                >
+                  <span className="material-symbols-outlined text-secondary text-3xl flex-shrink-0">check_circle</span>
+                  <div>
+                    <div className="font-semibold text-on-surface mb-1">{ui.successMessage.title}</div>
+                    <div className="text-sm text-on-surface-variant">{ui.successMessage.description}</div>
+                  </div>
                 </div>
-                <div className="text-xl md:text-2xl">
-                  {ui.contactInfo.email}
-                </div>
-              </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+
+                  {/* Name row */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {(['firstName', 'lastName'] as const).map((field) => (
+                      <div key={field}>
+                        <label
+                          htmlFor={field}
+                          className="block text-xs font-semibold text-on-surface-variant mb-1.5 tracking-[0.01em]"
+                        >
+                          {ui.fieldLabels[field]} <span style={{ color: 'var(--error)' }}>*</span>
+                        </label>
+                        <input
+                          id={field}
+                          name={field}
+                          type="text"
+                          value={formData[field]}
+                          onChange={handleInputChange}
+                          required
+                          className={inputCls}
+                          style={{
+                            background: 'var(--surface-container)',
+                            border: `1px solid ${errors[field] ? 'var(--error)' : 'color-mix(in srgb, var(--outline-variant) 30%, transparent)'}`,
+                            color: 'var(--on-surface)',
+                          }}
+                        />
+                        {errors[field] && <p className="text-xs mt-1" style={{ color: 'var(--error)' }}>{errors[field]}</p>}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <label htmlFor="email" className="block text-xs font-semibold text-on-surface-variant mb-1.5 tracking-[0.01em]">
+                      {ui.fieldLabels.email} <span style={{ color: 'var(--error)' }}>*</span>
+                    </label>
+                    <input
+                      id="email" name="email" type="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                      className={inputCls}
+                      style={{
+                        background: 'var(--surface-container)',
+                        border: `1px solid ${errors.email ? 'var(--error)' : 'color-mix(in srgb, var(--outline-variant) 30%, transparent)'}`,
+                        color: 'var(--on-surface)',
+                      }}
+                    />
+                    {errors.email && <p className="text-xs mt-1" style={{ color: 'var(--error)' }}>{errors.email}</p>}
+                  </div>
+
+                  {/* Phone */}
+                  <div>
+                    <label htmlFor="phone" className="block text-xs font-semibold text-on-surface-variant mb-1.5 tracking-[0.01em]">
+                      {ui.fieldLabels.phone}
+                    </label>
+                    <div className="flex gap-2">
+                      <select
+                        value={countryCode}
+                        onChange={(e) => setCountryCode(e.target.value)}
+                        className="rounded-xl px-3 py-3 text-sm outline-none"
+                        style={{
+                          background: 'var(--surface-container)',
+                          border: '1px solid color-mix(in srgb, var(--outline-variant) 30%, transparent)',
+                          color: 'var(--on-surface)',
+                          maxWidth: '7rem',
+                        }}
+                      >
+                        {countryCodes.map((c) => (
+                          <option key={c.code} value={c.code}>{c.code}</option>
+                        ))}
+                      </select>
+                      <input
+                        id="phone" name="phone" type="tel" inputMode="numeric"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        className={`${inputCls} flex-1`}
+                        style={{
+                          background: 'var(--surface-container)',
+                          border: '1px solid color-mix(in srgb, var(--outline-variant) 30%, transparent)',
+                          color: 'var(--on-surface)',
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Reference Number */}
+                  <div>
+                    <label htmlFor="caseStudyRefNumber" className="block text-xs font-semibold text-on-surface-variant mb-1.5 tracking-[0.01em]">
+                      {ui.fieldLabels.caseStudyRefNumber}
+                    </label>
+                    <input
+                      id="caseStudyRefNumber" name="caseStudyRefNumber" type="text"
+                      value={formData.caseStudyRefNumber}
+                      onChange={handleInputChange}
+                      className={inputCls}
+                      style={{
+                        background: 'var(--surface-container)',
+                        border: '1px solid color-mix(in srgb, var(--outline-variant) 30%, transparent)',
+                        color: 'var(--on-surface)',
+                      }}
+                    />
+                  </div>
+
+                  {/* Subject */}
+                  <div>
+                    <label htmlFor="subject" className="block text-xs font-semibold text-on-surface-variant mb-1.5 tracking-[0.01em]">
+                      {ui.fieldLabels.subject} <span style={{ color: 'var(--error)' }}>*</span>
+                    </label>
+                    <input
+                      id="subject" name="subject" type="text"
+                      value={formData.subject}
+                      onChange={handleInputChange}
+                      required
+                      className={inputCls}
+                      style={{
+                        background: 'var(--surface-container)',
+                        border: `1px solid ${errors.subject ? 'var(--error)' : 'color-mix(in srgb, var(--outline-variant) 30%, transparent)'}`,
+                        color: 'var(--on-surface)',
+                      }}
+                    />
+                    {errors.subject && <p className="text-xs mt-1" style={{ color: 'var(--error)' }}>{errors.subject}</p>}
+                  </div>
+
+                  {/* Message */}
+                  <div>
+                    <label htmlFor="message" className="block text-xs font-semibold text-on-surface-variant mb-1.5 tracking-[0.01em]">
+                      {ui.fieldLabels.message} <span style={{ color: 'var(--error)' }}>*</span>
+                    </label>
+                    <textarea
+                      id="message" name="message"
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      required rows={4}
+                      className={`${inputCls} resize-vertical`}
+                      style={{
+                        background: 'var(--surface-container)',
+                        border: `1px solid ${errors.message ? 'var(--error)' : 'color-mix(in srgb, var(--outline-variant) 30%, transparent)'}`,
+                        color: 'var(--on-surface)',
+                      }}
+                    />
+                    {errors.message && <p className="text-xs mt-1" style={{ color: 'var(--error)' }}>{errors.message}</p>}
+                  </div>
+
+                  {/* Consent block */}
+                  <div
+                    className="rounded-xl p-5 border border-outline-variant/10 space-y-4"
+                    style={{ background: 'var(--surface-container)' }}
+                  >
+                    <div className="text-sm font-semibold text-on-surface">{ui.consentSection.title}</div>
+                    <p className="text-xs text-on-surface-variant leading-relaxed">{ui.consentSection.description}</p>
+                    {(
+                      [
+                        { id: 'consentCommunication', label: ui.checkboxLabels.consentCommunication, required: true },
+                        { id: 'consentMarketing',     label: ui.checkboxLabels.consentMarketing,     required: false },
+                        { id: 'consentSubscribe',     label: ui.checkboxLabels.consentSubscribe,     required: false },
+                      ] as const
+                    ).map(({ id, label, required }) => (
+                      <label key={id} className="flex items-start gap-3 cursor-pointer">
+                        <input
+                          type="checkbox" id={id} name={id}
+                          checked={formData[id] as boolean}
+                          onChange={handleInputChange}
+                          required={required}
+                          className="mt-0.5 h-4 w-4 flex-shrink-0 rounded"
+                          style={{ accentColor: 'var(--primary)' }}
+                        />
+                        <span className="text-sm text-on-surface-variant leading-relaxed">
+                          {required && <span style={{ color: 'var(--error)' }}>* </span>}
+                          {label}
+                        </span>
+                      </label>
+                    ))}
+                    {errors.consentCommunication && (
+                      <p className="text-xs" style={{ color: 'var(--error)' }}>{errors.consentCommunication}</p>
+                    )}
+                    <p className="text-xs text-on-surface-variant">
+                      You may{' '}
+                      <a href={ROUTES.UNSUBSCRIBE} className="underline text-primary">{ui.buttons.unsubscribe}</a>
+                      {' '}from these communications anytime. For more information check our{' '}
+                      <a href={ROUTES.PRIVACY_POLICY} className="underline text-primary">{ui.buttons.privacyPolicy}</a>.
+                    </p>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="btn-primary w-full flex items-center justify-center gap-2 text-base py-3.5"
+                    disabled={submitMutation.isPending}
+                  >
+                    {submitMutation.isPending ? (
+                      <><span className="material-symbols-outlined text-xl animate-spin">progress_activity</span>{ui.buttons.submitting}</>
+                    ) : (
+                      <>{ui.buttons.submit}<span className="material-symbols-outlined text-xl">send</span></>
+                    )}
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Ambient orb */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: -1 }} aria-hidden="true">
+        <div className="absolute top-0 right-0 rounded-full" style={{ width: 400, height: 400, background: 'var(--primary)', opacity: 0.06, filter: 'blur(120px)' }} />
+      </div>
+    </section>
   );
 };
 
