@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from '@/shared/providers/auth-provider';
 import { Logo } from '@/assets';
 import { ROUTES } from '@/routes/routeConfig';
 import authService from '@/services/api/auth.service';
+import ApiService from '@/services/api/api.service';
 
 const THEME_KEY = 'tm-theme';
 
@@ -12,20 +13,27 @@ const linkCls = 'text-sm font-medium transition-colors hover:underline underline
 
 const InteractionHeaderContent: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [theme, setTheme] = useState<'dark' | 'light'>(
+    () => (localStorage.getItem(THEME_KEY) as 'dark' | 'light') || 'dark'
+  );
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { user, isAdmin } = useAuth();
   const isAuthenticated = !!user;
 
   useEffect(() => {
-    const saved = localStorage.getItem(THEME_KEY) as 'dark' | 'light' | null;
-    if (saved) setTheme(saved);
-  }, []);
-
-  useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem(THEME_KEY, theme);
   }, [theme]);
+
+  const handleToggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    if (user) {
+      ApiService.patch('/users/profile/patch', {
+        settings: { preferences: { theme: next } },
+      }).catch(() => {});
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -87,7 +95,7 @@ const InteractionHeaderContent: React.FC = () => {
 
               {/* Theme toggle */}
               <button
-                onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
+                onClick={handleToggleTheme}
                 className="theme-toggle-btn"
                 aria-label="Toggle theme"
               >
@@ -100,7 +108,7 @@ const InteractionHeaderContent: React.FC = () => {
             {/* Mobile */}
             <div className="md:hidden flex items-center gap-2">
               <button
-                onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
+                onClick={handleToggleTheme}
                 className="theme-toggle-btn"
                 aria-label="Toggle theme"
               >

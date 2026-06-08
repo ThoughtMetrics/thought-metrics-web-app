@@ -45,13 +45,17 @@ const config = getAPIConfig();
 <!doctype html>
 <html lang="en" data-theme="dark">
   <head>
-    <!-- Apply saved theme before paint to prevent flash -->
+    <!-- Apply saved theme before paint and after every View Transition swap -->
     <script is:inline>
       (function() {
-        var saved = localStorage.getItem('tm-theme');
-        if (saved === 'light' || saved === 'dark') {
-          document.documentElement.setAttribute('data-theme', saved);
+        function applyTheme() {
+          var saved = localStorage.getItem('tm-theme');
+          if (saved === 'light' || saved === 'dark') {
+            document.documentElement.setAttribute('data-theme', saved);
+          }
         }
+        applyTheme();
+        document.addEventListener('astro:after-swap', applyTheme);
       })();
     </script>
 
