@@ -24,6 +24,27 @@ export enum SurveyType {
   SAMPLE = 'sample',
 }
 
+export enum SurveyMethodology {
+  STANDARD = 'standard',
+  A_B_TEST = 'a_b_test',
+  MAX_DIFF = 'max_diff',
+  CONJOINT = 'conjoint',
+  VAN_WESTENDORP = 'van_westendorp',
+  GABOR_GRANGER = 'gabor_granger',
+  BRAND_PRICE_TRADEOFF = 'brand_price_tradeoff',
+  KANO_MODEL = 'kano_model',
+  TURF = 'turf',
+  CLAIMS_TEST = 'claims_test',
+  MONADIC_TEST = 'monadic_test',
+  PRODUCT_CONCEPT = 'product_concept',
+  PRICED_CONCEPT = 'priced_concept',
+  IDEA_SCREENER = 'idea_screener',
+  BRAND_NAME_TEST = 'brand_name_test',
+  AD_COPY_TEST = 'ad_copy_test',
+  BRAND_TRACKER = 'brand_tracker',
+  MULTILINGUAL = 'multilingual',
+}
+
 export type SurveyFormLayout = 'paginated' | 'list';
 
 export enum QuestionType {
@@ -45,6 +66,8 @@ export enum QuestionType {
   MAX_DIFF = 'max-diff',
   CONSTANT_SUM = 'constant-sum',
   FILE = 'file',
+  VIDEO = 'video',
+  AUDIO = 'audio',
   CURRENCY = 'currency',
   TEXT_DISPLAY = 'text-display',
   SMART_FOLLOWUP = 'smart-followup',
@@ -174,6 +197,7 @@ export interface ISurveyTemplate {
     allowAnonymous: boolean;
     defaultFormLayout?: SurveyFormLayout;
     defaultType?: 'respondent' | 'agent';
+    methodology?: SurveyMethodology;
     /**
      * Optional list of extra data points to capture for this survey
      * (beyond the standard questions). Defined once in the template so
@@ -282,6 +306,7 @@ export interface StarRatingProps extends BaseSurveyQuestionProps {
   selectedStars?: number;
   onRatingChange: (rating: number) => void;
   image?: string;
+  video?: string;
   ratingLabels?: Record<number, string>;
 }
 

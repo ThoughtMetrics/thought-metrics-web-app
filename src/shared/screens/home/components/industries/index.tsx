@@ -1,205 +1,151 @@
 import React, { useState } from 'react';
-import { industryData, type IndustryTabData } from '@/core/constants/page-constants/home-industries-constant';
-import { cn } from '@/core/utils/cn';
-import { ArrowRed } from '@/assets';
-import './industries.style.css';
-import { Navigation, Pagination } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
+
+interface IndustryPanel {
+  id: string;
+  tab: string;
+  label: string;
+  heading: string;
+  desc: string;
+  bullets: string[];
+  href: string;
+  ctaText: string;
+}
+
+const industries: IndustryPanel[] = [
+  {
+    id: 'fmcg', tab: 'FMCG',
+    label: 'FMCG', heading: 'Consumer goods insights at scale',
+    desc: "Understand purchase drivers, shelf behaviour, packaging preferences, and brand perception across India's diverse consumer landscape — from metro to tier-3 towns.",
+    bullets: ['Brand awareness & recall studies', 'Product concept testing', 'Pack & price sensitivity research', 'Retail audit & in-store observation'],
+    href: '/industries/fmcg', ctaText: 'Explore FMCG Research',
+  },
+  {
+    id: 'retail', tab: 'Retail and Merchandising',
+    label: 'Retail & Merchandising', heading: 'Shopper intelligence that drives sales',
+    desc: "Map the shopper journey from awareness to purchase. Our retail research connects you with real shoppers across modern trade, traditional trade, and e-commerce.",
+    bullets: ['Shopper journey mapping', 'In-store experience audits', 'Planogram & display effectiveness', 'Mystery shopping programmes'],
+    href: '/industries/retail', ctaText: 'Explore Retail Research',
+  },
+  {
+    id: 'financial', tab: 'Financial Services',
+    label: 'Financial Services', heading: 'Insights for a trust-driven sector',
+    desc: "Understand financial product adoption, digital banking behaviour, and the barriers to financial inclusion across India's complex, multi-tier market.",
+    bullets: ['Banking & fintech adoption studies', 'Credit & lending behaviour', 'Customer satisfaction & NPS', 'Financial literacy assessment'],
+    href: '/industries/finance', ctaText: 'Explore Financial Research',
+  },
+  {
+    id: 'insurance', tab: 'Insurance',
+    label: 'Insurance', heading: "Understanding India's insurance mindset",
+    desc: "Decode awareness, penetration, and product preference patterns across life, health, and general insurance categories in a rapidly evolving market.",
+    bullets: ['Insurance awareness & penetration', 'Claims experience research', 'Product concept testing', 'Agent & channel effectiveness'],
+    href: '/industries/finance', ctaText: 'Explore Insurance Research',
+  },
+  {
+    id: 'technology', tab: 'Technology',
+    label: 'Technology', heading: 'User research at the speed of product',
+    desc: "From UX studies and feature prioritisation to demand sensing for new categories — our panel delivers rapid, rigorous feedback for tech companies building for India.",
+    bullets: ['UX & usability testing', 'Feature & concept validation', 'Technology adoption studies', 'Pricing & willingness-to-pay research'],
+    href: '/industries/technology', ctaText: 'Explore Technology Research',
+  },
+  {
+    id: 'automotive', tab: 'Automotive',
+    label: 'Automotive', heading: 'Drive decisions with deep consumer data',
+    desc: "Understand vehicle purchase journeys, EV adoption attitudes, and dealer experience across India's vast and segmented automotive market.",
+    bullets: ['Vehicle purchase journey research', 'EV adoption & barriers study', 'Dealer & after-sales CX audits', 'Brand & feature preference mapping'],
+    href: '/industries/automotive', ctaText: 'Explore Automotive Research',
+  },
+  {
+    id: 'advertising', tab: 'Advertising & Marketing',
+    label: 'Advertising & Marketing', heading: 'Measure what your messaging really does',
+    desc: "Pre-test campaigns, track brand lift, and evaluate creative effectiveness with real consumers before you spend on media.",
+    bullets: ['Ad & creative pre-testing', 'Campaign recall & brand lift', 'Message resonance testing', 'Influencer & media effectiveness'],
+    href: '/industries/advertising', ctaText: 'Explore Advertising Research',
+  },
+  {
+    id: 'hr', tab: 'Human Resources',
+    label: 'Human Resources', heading: 'Employee & workforce intelligence',
+    desc: "Go beyond annual surveys to understand what drives engagement, retention, and productivity across diverse workforce segments in India.",
+    bullets: ['Employee engagement surveys', 'Exit interview analysis', 'Culture & DEI benchmarking', 'Benefits & compensation research'],
+    href: '/industries/hr', ctaText: 'Explore HR Research',
+  },
+  {
+    id: 'healthcare', tab: 'Healthcare & Life Sciences',
+    label: 'Healthcare & Life Sciences', heading: 'Patient, caregiver, and HCP insights',
+    desc: "Navigate India's complex healthcare landscape with research that spans patients, caregivers, doctors, and pharmacists across public and private healthcare settings.",
+    bullets: ['Patient journey & experience', 'HCP & prescriber studies', 'Health awareness & behaviour surveys', 'Treatment adherence research'],
+    href: '/industries/healthcare', ctaText: 'Explore Healthcare Research',
+  },
+];
 
 const Industries: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<IndustryTabData>(
-    industryData.industries[0]
-  );
-  const [activeIndex, setActiveIndex] = useState<number>(0);
-  const [swiperRef, setSwiperRef] = useState<any | null>(null);
-
-  const handleTabClick = (industry: IndustryTabData) => {
-    setActiveTab(industry);
-  };
-
-  const handleSlideChange = (swiper: any) => {
-    setActiveIndex(swiper.activeIndex);
-    setActiveTab(industryData.industries[swiper.activeIndex]);
-  };
-
-  const handlePrevClick = () => {
-    swiperRef?.slidePrev();
-  };
-
-  const handleNextClick = () => {
-    swiperRef?.slideNext();
-  };
+  const [activeId, setActiveId] = useState(industries[0].id);
+  const active = industries.find(i => i.id === activeId)!;
 
   return (
-    <section className="common-component bg-white text-black">
-      <div className="common-container px-4 py-8 md:px-24 md:py-24 flex-col max-w-[1336px]!">
-        <h2 className="md:text-3xl font-semibold leading-tight">
-          {industryData.mainTitle}
-        </h2>
+    <section className="industries-section" id="industries">
+      <div className="tm-container">
 
-        <div className="w-full pt-4 md:pt-8 flex gap-3">
-          {/* Desktop View - Original Layout */}
-          <div className="hidden md:flex w-full gap-3">
-            <div
-              key={activeTab.title}
-              className={cn(
-                'border border-black rounded-sm relative flex flex-col',
-                'w-[75%] px-12 pt-24 pb-12 gap-28'
-              )}
-            >
-              <div className="flex flex-col gap-6">
-                <h3 className={cn('w-[80%] text-xl font-bold animate-fadeIn')}>
-                  {activeTab.title}
-                </h3>
-
-                <div className="flex gap-6 animate-fadeIn">
-                  <div className="w-[40%]">
-                    <img
-                      src={activeTab.image}
-                      alt={activeTab.imageAlt}
-                      className="w-full h-full rounded-sm"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1 w-[40%] text-base">
-                    <h4 className="font-semibold">{activeTab.subtitle}</h4>
-                    <p className="leading-5">{activeTab.description}</p>
-                    <ul className="leading-[1.2em] list-disc pl-4 pt-1 space-y-2">
-                      {activeTab.bulletPoints.map((point, index) => (
-                        <li key={index + point}>{point}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-between text-base font-bold">
-                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-                  {activeTab.tabNumber}
-                </div>
-                <div className="w-fit h-full flex items-center justify-end">
-                  <CustomButtonAtom
-                    label="See More"
-                    path={activeTab.path}
-                    className="h-10 px-8 py-2 text-black text-base"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="w-[25%] flex flex-col justify-between font-semibold text-lg">
-              {industryData.industries.map((industry) => (
-                <button
-                  key={industry.id}
-                  className={`bg-neutral px-2 py-2 rounded hover:bg-primary hover:shadow-md hover:shadow-primary/50 ${
-                    activeTab.id === industry.id
-                      ? 'bg-primary shadow-md shadow-primary/50'
-                      : ''
-                  } ${industry.isMobile && 'hidden md:block'}`}
-                  onClick={() => handleTabClick(industry)}
-                >
-                  <span
-                    className={`${industry.shortTitle && 'hidden md:block'}`}
-                  >
-                    {industry.label}
-                  </span>
-                  {industry.shortTitle && (
-                    <span className="md:hidden">{industry.shortTitle}</span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Mobile View - Swiper Implementation */}
-          <div className="md:hidden w-full">
-            <Swiper
-              modules={[Navigation, Pagination]}
-              spaceBetween={0}
-              slidesPerView={1}
-              onSlideChange={handleSlideChange}
-              onSwiper={setSwiperRef}
-              className="w-full industries-swiper"
-            >
-              {industryData.industries.map((industry) => (
-                <SwiperSlide key={industry.id}>
-                  <div
-                    className={cn(
-                      'border border-black rounded-sm relative flex flex-col',
-                      'w-full px-2 py-4 gap-8'
-                    )}
-                  >
-                    <div className="flex flex-col gap-2">
-                      <h3 className={cn('w-[80%] text-sm font-semibold')}>
-                        {industry.title}
-                        <span>: {industry.subtitle}</span>
-                      </h3>
-
-                      <div className="flex flex-col gap-6">
-                        <div className="w-full">
-                          <img
-                            src={industry.image}
-                            alt={industry.imageAlt}
-                            className="w-full h-full aspect-video rounded-sm"
-                          />
-                        </div>
-                        <div className="flex flex-col gap-1 w-[90%] text-sm">
-                          <ul className="leading-[1.2em] list-disc pl-4 space-y-2">
-                            {industry.bulletPoints.map((point, index) => (
-                              <li key={index + point}>{point}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-between px-4 text-sm font-bold">
-                      <div className="w-7 h-8 rounded-full bg-primary flex items-center justify-center">
-                        {industry.tabNumber}
-                      </div>
-                      <div>
-                        <div className="w-fit h-full flex items-center justify-end">
-                          <CustomButtonAtom
-                            label="See More"
-                            path={industry.path}
-                            className="h-8 px-4 py-2 text-black text-xs"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
+        <div className="industries-header">
+          <p className="section-eyebrow">Industries</p>
+          <h2 className="industries-title">We Know Your Industry</h2>
         </div>
 
-        {/* Mobile Navigation Controls */}
-        <div className="md:hidden flex items-center justify-between py-4">
-          <button
-            onClick={handlePrevClick}
-            disabled={activeIndex === 0}
-            className={cn(
-              'w-7 h-8 bg-white border border-primary flex items-center justify-center text-primary transition-colors rounded',
-              activeIndex !== 0 && 'bg-primary text-white'
-            )}
-          >
-            <ArrowRed className="w-5 h-5 rotate-180 fill-current" />
-          </button>
-          <div className="text-[.85rem] font-semibold">
-            {activeTab.title}: {activeTab.tabNumber}/11
+        <div className="industries-layout">
+
+          {/* Tab rail */}
+          <div className="industries-tabs" role="tablist" aria-label="Industries">
+            {industries.map(ind => (
+              <button
+                key={ind.id}
+                role="tab"
+                aria-selected={activeId === ind.id}
+                tabIndex={activeId === ind.id ? 0 : -1}
+                className={`industry-tab${activeId === ind.id ? ' active' : ''}`}
+                onClick={() => setActiveId(ind.id)}
+                onKeyDown={e => {
+                  const idx = industries.findIndex(i => i.id === activeId);
+                  if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    setActiveId(industries[(idx + 1) % industries.length].id);
+                  } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    setActiveId(industries[(idx - 1 + industries.length) % industries.length].id);
+                  }
+                }}
+              >
+                {ind.tab}
+              </button>
+            ))}
           </div>
-          <button
-            onClick={handleNextClick}
-            disabled={activeIndex === industryData.industries.length - 1}
-            className={cn(
-              'w-7 h-8 bg-white border border-primary flex items-center justify-center text-primary transition-colors rounded',
-              activeIndex !== industryData.industries.length - 1 &&
-                'bg-primary text-white'
-            )}
+
+          {/* Panel */}
+          <div
+            key={active.id}
+            className="industry-panel active"
+            role="tabpanel"
           >
-            <ArrowRed className="w-5 h-5 fill-current" />
-          </button>
+            <p className="panel-label">{active.label}</p>
+            <h3>{active.heading}</h3>
+            <p className="panel-desc">{active.desc}</p>
+
+            <div className="panel-bullets">
+              {active.bullets.map(bullet => (
+                <div key={bullet} className="bullet-item">
+                  <span className="check-circle">
+                    <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <polyline points="2,6 5,9 10,3" />
+                    </svg>
+                  </span>
+                  {bullet}
+                </div>
+              ))}
+            </div>
+
+            <a href={active.href} className="btn-outline-blue">
+              {active.ctaText} →
+            </a>
+          </div>
+
         </div>
       </div>
     </section>

@@ -31,6 +31,8 @@ import {
   ConstantSum,
 } from '@/shared/ui/atoms/survey-questions';
 import { FileUpload } from '@/shared/ui/atoms/survey-questions/FileUpload';
+import { VideoUpload } from '@/shared/ui/atoms/survey-questions/VideoUpload';
+import { AudioUpload } from '@/shared/ui/atoms/survey-questions/AudioUpload';
 import { PhoneInputField } from '@/shared/ui/atoms/survey-questions/PhoneInputField';
 
 // ---------------------------------------------------------------------------
@@ -174,6 +176,8 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
           <StarRating
             {...commonProps}
             maxStars={config.ratingMax ?? 5}
+            image={config.questionMediaType === 'image' ? config.questionMediaUrl : undefined}
+            video={config.questionMediaType === 'video' ? config.questionMediaUrl : undefined}
             selectedStars={interactive ? selectedStars : undefined}
             onRatingChange={(r: number) => {
               if (!interactive) return;
@@ -583,6 +587,28 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
             questionId="PREVIEW"
             onFileChange={NOOP}
             maxSizeMB={config.maxFileSizeMb ?? 5}
+          />
+        );
+
+      case QuestionType.VIDEO:
+        return (
+          <VideoUpload
+            {...commonProps}
+            questionId="PREVIEW"
+            onFileChange={NOOP}
+            maxSizeMB={config.maxFileSizeMb ?? 100}
+            maxDurationSec={config.maxVideoDurationSec ?? 120}
+          />
+        );
+
+      case QuestionType.AUDIO:
+        return (
+          <AudioUpload
+            {...commonProps}
+            questionId="PREVIEW"
+            onFileChange={NOOP}
+            maxSizeMB={config.maxFileSizeMb ?? 50}
+            maxDurationSec={config.maxAudioDurationSec ?? 120}
           />
         );
 

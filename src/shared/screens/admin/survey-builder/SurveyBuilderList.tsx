@@ -8,12 +8,16 @@ import { useTemplatesQuery } from '@/core/hooks/queries/survey-templates/index.q
 import { toast } from 'sonner';
 import { useDeleteTemplate } from '@/core/hooks/mutations/survey-template.mutations';
 import surveyService from '@/services/survey/survey.service';
+import MethodologyPickerModal from './components/MethodologyPickerModal';
+import { SURVEY_METHODOLOGY_META, METHODOLOGY_BADGE_COLOR } from '@/core/constants/survey.constants';
+import type { SurveyMethodology } from '@/core/types/survey.type';
 
 const SurveyBuilderListContent: React.FC = () => {
   const { data, isLoading, isError } = useTemplatesQuery();
   const deleteTemplate = useDeleteTemplate();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
+  const [showPicker, setShowPicker] = useState(false);
 
   const templates = data?.data ?? [];
 
@@ -44,6 +48,7 @@ const SurveyBuilderListContent: React.FC = () => {
   return (
     <div className="h-full flex bg-gray-50 text-text-dark">
       <AdminSidebar />
+      {showPicker && <MethodologyPickerModal onClose={() => setShowPicker(false)} />}
 
       <main className="h-full overflow-y-scroll flex-1 p-8">
         <div className="max-w-7xl mx-auto">
@@ -52,12 +57,12 @@ const SurveyBuilderListContent: React.FC = () => {
               <h1 className="text-3xl font-bold text-gray-900 mb-1">Survey Builder</h1>
               <p className="text-gray-600">Manage survey templates</p>
             </div>
-            <a
-              href="/admin/survey-builder/new"
+            <button
+              onClick={() => setShowPicker(true)}
               className="px-5 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
             >
               + New Template
-            </a>
+            </button>
           </div>
 
           {isLoading && (
@@ -75,12 +80,12 @@ const SurveyBuilderListContent: React.FC = () => {
           {!isLoading && !isError && templates.length === 0 && (
             <div className="bg-white rounded-lg shadow-sm p-12 text-center">
               <p className="text-gray-500 mb-4">No templates yet.</p>
-              <a
-                href="/admin/survey-builder/new"
+              <button
+                onClick={() => setShowPicker(true)}
                 className="px-5 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
               >
                 Create your first template
-              </a>
+              </button>
             </div>
           )}
 
@@ -90,6 +95,7 @@ const SurveyBuilderListContent: React.FC = () => {
                 <thead>
                   <tr className="border-b border-gray-200 bg-gray-50">
                     <th className="text-left px-6 py-3 font-semibold text-gray-700">Template</th>
+                    <th className="text-left px-6 py-3 font-semibold text-gray-700">Methodology</th>
                     <th className="text-left px-6 py-3 font-semibold text-gray-700">Questions</th>
                     <th className="text-left px-6 py-3 font-semibold text-gray-700">Default Layout</th>
                     <th className="text-left px-6 py-3 font-semibold text-gray-700">Default Type</th>
@@ -97,52 +103,65 @@ const SurveyBuilderListContent: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {templates.map((t) => (
-                    <tr key={t._id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-gray-900">
-                          {t.translations?.en?.label ?? t.label ?? '—'}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-gray-600">{t.questions?.length ?? 0}</td>
-                      <td className="px-6 py-4">
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 capitalize">
-                          {t.settings?.defaultFormLayout ?? 'paginated'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${
-                          (t.settings?.defaultType ?? 'respondent') === 'agent'
-                            ? 'bg-blue-100 text-blue-700'
-                            : 'bg-gray-100 text-gray-700'
-                        }`}>
-                          {t.settings?.defaultType ?? 'respondent'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right space-x-3">
-                        <a
-                          href={`/admin/survey-builder/${t._id}`}
-                          className="text-primary hover:underline font-medium"
-                        >
-                          Edit
-                        </a>
-                        <button
-                          onClick={() => handleDuplicate(t._id)}
-                          disabled={duplicatingId === t._id}
-                          className="text-gray-600 hover:underline font-medium disabled:opacity-50"
-                        >
-                          {duplicatingId === t._id ? 'Copying…' : 'Duplicate'}
-                        </button>
-                        <button
-                          onClick={() => handleDelete(t._id, t.name)}
-                          disabled={deletingId === t._id}
-                          className="text-red-600 hover:underline font-medium disabled:opacity-50"
-                        >
-                          {deletingId === t._id ? 'Deleting…' : 'Delete'}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {templates.map((t) => {
+                    const methodology = (t.settings as any)?.methodology as SurveyMethodology | undefined;
+                    const methodMeta = methodology ? SURVEY_METHODOLOGY_META[methodology] : undefined;
+                    return (
+                      <tr key={t._id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="font-medium text-gray-900">
+                            {t.translations?.en?.label ?? t.label ?? '—'}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          {methodMeta ? (
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${METHODOLOGY_BADGE_COLOR[methodMeta.category]}`}>
+                              {methodMeta.label}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-gray-400">—</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-gray-600">{t.questions?.length ?? 0}</td>
+                        <td className="px-6 py-4">
+                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 capitalize">
+                            {t.settings?.defaultFormLayout ?? 'paginated'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${
+                            (t.settings?.defaultType ?? 'respondent') === 'agent'
+                              ? 'bg-blue-100 text-blue-700'
+                              : 'bg-gray-100 text-gray-700'
+                          }`}>
+                            {t.settings?.defaultType ?? 'respondent'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-right space-x-3">
+                          <a
+                            href={`/admin/survey-builder/${t._id}`}
+                            className="text-primary hover:underline font-medium"
+                          >
+                            Edit
+                          </a>
+                          <button
+                            onClick={() => handleDuplicate(t._id)}
+                            disabled={duplicatingId === t._id}
+                            className="text-gray-600 hover:underline font-medium disabled:opacity-50"
+                          >
+                            {duplicatingId === t._id ? 'Copying…' : 'Duplicate'}
+                          </button>
+                          <button
+                            onClick={() => handleDelete(t._id, t.name)}
+                            disabled={deletingId === t._id}
+                            className="text-red-600 hover:underline font-medium disabled:opacity-50"
+                          >
+                            {deletingId === t._id ? 'Deleting…' : 'Delete'}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -168,6 +187,7 @@ const SurveyBuilderListPanelContent: React.FC = () => {
   const deleteTemplate = useDeleteTemplate();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
+  const [showPicker, setShowPicker] = useState(false);
 
   const templates = data?.data ?? [];
 
@@ -213,81 +233,101 @@ const SurveyBuilderListPanelContent: React.FC = () => {
 
   if (templates.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-        <p className="text-gray-500 mb-4">No templates yet.</p>
-        <a
-          href="/admin/survey-builder/new"
-          className="px-5 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
-        >
-          Create your first template
-        </a>
-      </div>
+      <>
+        {showPicker && <MethodologyPickerModal onClose={() => setShowPicker(false)} />}
+        <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+          <p className="text-gray-500 mb-4">No templates yet.</p>
+          <button
+            onClick={() => setShowPicker(true)}
+            className="px-5 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
+          >
+            Create your first template
+          </button>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-gray-200 bg-gray-50">
-            <th className="text-left px-6 py-3 font-semibold text-gray-700">Template</th>
-            <th className="text-left px-6 py-3 font-semibold text-gray-700">Questions</th>
-            <th className="text-left px-6 py-3 font-semibold text-gray-700">Default Layout</th>
-            <th className="text-left px-6 py-3 font-semibold text-gray-700">Default Type</th>
-            <th className="text-right px-6 py-3 font-semibold text-gray-700">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {templates.map((t) => (
-            <tr key={t._id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-              <td className="px-6 py-4">
-                <div className="font-medium text-gray-900">
-                  {t.translations?.en?.label ?? t.label ?? '—'}
-                </div>
-                <div className="text-xs text-gray-400 mt-0.5">{t.name}</div>
-              </td>
-              <td className="px-6 py-4 text-gray-600">{t.questions?.length ?? 0}</td>
-              <td className="px-6 py-4">
-                <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 capitalize">
-                  {t.settings?.defaultFormLayout ?? 'paginated'}
-                </span>
-              </td>
-              <td className="px-6 py-4">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${
-                  (t.settings?.defaultType ?? 'respondent') === 'agent'
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'bg-gray-100 text-gray-700'
-                }`}>
-                  {t.settings?.defaultType ?? 'respondent'}
-                </span>
-              </td>
-              <td className="px-6 py-4 text-right space-x-3">
-                <a
-                  href={`/admin/survey-builder/${t._id}`}
-                  className="text-primary hover:underline font-medium"
-                >
-                  Edit
-                </a>
-                <button
-                  onClick={() => handleDuplicate(t._id)}
-                  disabled={duplicatingId === t._id}
-                  className="text-gray-600 hover:underline font-medium disabled:opacity-50"
-                >
-                  {duplicatingId === t._id ? 'Copying…' : 'Duplicate'}
-                </button>
-                <button
-                  onClick={() => handleDelete(t._id, t.name)}
-                  disabled={deletingId === t._id}
-                  className="text-red-600 hover:underline font-medium disabled:opacity-50"
-                >
-                  {deletingId === t._id ? 'Deleting…' : 'Delete'}
-                </button>
-              </td>
+    <>
+      {showPicker && <MethodologyPickerModal onClose={() => setShowPicker(false)} />}
+      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-gray-200 bg-gray-50">
+              <th className="text-left px-6 py-3 font-semibold text-gray-700">Template</th>
+              <th className="text-left px-6 py-3 font-semibold text-gray-700">Methodology</th>
+              <th className="text-left px-6 py-3 font-semibold text-gray-700">Questions</th>
+              <th className="text-left px-6 py-3 font-semibold text-gray-700">Default Layout</th>
+              <th className="text-left px-6 py-3 font-semibold text-gray-700">Default Type</th>
+              <th className="text-right px-6 py-3 font-semibold text-gray-700">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {templates.map((t) => {
+              const methodology = (t.settings as any)?.methodology as SurveyMethodology | undefined;
+              const methodMeta = methodology ? SURVEY_METHODOLOGY_META[methodology] : undefined;
+              return (
+                <tr key={t._id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-gray-900">
+                      {t.translations?.en?.label ?? t.label ?? '—'}
+                    </div>
+                    <div className="text-xs text-gray-400 mt-0.5">{t.name}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    {methodMeta ? (
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${METHODOLOGY_BADGE_COLOR[methodMeta.category]}`}>
+                        {methodMeta.label}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-gray-400">—</span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 text-gray-600">{t.questions?.length ?? 0}</td>
+                  <td className="px-6 py-4">
+                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 capitalize">
+                      {t.settings?.defaultFormLayout ?? 'paginated'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${
+                      (t.settings?.defaultType ?? 'respondent') === 'agent'
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'bg-gray-100 text-gray-700'
+                    }`}>
+                      {t.settings?.defaultType ?? 'respondent'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-right space-x-3">
+                    <a
+                      href={`/admin/survey-builder/${t._id}`}
+                      className="text-primary hover:underline font-medium"
+                    >
+                      Edit
+                    </a>
+                    <button
+                      onClick={() => handleDuplicate(t._id)}
+                      disabled={duplicatingId === t._id}
+                      className="text-gray-600 hover:underline font-medium disabled:opacity-50"
+                    >
+                      {duplicatingId === t._id ? 'Copying…' : 'Duplicate'}
+                    </button>
+                    <button
+                      onClick={() => handleDelete(t._id, t.name)}
+                      disabled={deletingId === t._id}
+                      className="text-red-600 hover:underline font-medium disabled:opacity-50"
+                    >
+                      {deletingId === t._id ? 'Deleting…' : 'Delete'}
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 };
 

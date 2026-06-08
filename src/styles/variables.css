@@ -1,133 +1,316 @@
 /* variables.css */
+/* Fonts loaded via <link> in Layout.astro for better performance */
 
-@import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 @import 'tailwindcss';
 
+/* ── Material Design 3 — Dark mode defaults ── */
 :root {
-  /* Semantic colors */
-  --primary: #e8505e;
-  --secondary: #2a2b8a;
-  --primary-dark: #cf464f;
-  --primary-light: #ff969f;
-  --primary-lighter: #fff7f5;
-  --accent: #d5fdad;
-  --neutral: #ececec;
-  --surface: #fbeeee;
-  --success: #eaffd6;
-  --info: #ebffd8;
-  --text-dark: #565656;
-  --black: #000000;
-  --white: #ffffff;
+  /* Surface tiers */
+  --background:                #131313;
+  --surface:                   #131313;
+  --surface-dim:               #131313;
+  --surface-bright:            #393939;
+  --surface-container-lowest:  #0e0e0e;
+  --surface-container-low:     #1c1b1b;
+  --surface-container:         #201f1f;
+  --surface-container-high:    #2a2a2a;
+  --surface-container-highest: #353534;
+  --surface-variant:           #353534;
 
-  /* Custom colors */
-  --custom-grey: #c1c1c1;
-  --custom-grey-1: #dddddd;
-  --custom-grey-2: #9e9d9d;
-  --custom-grey-3: #e8e2e2;
-  --custom-grey-4: #e5e6ea;
-  --custom-grey-5: #f4f4f4;
-  --custom-blue: #4c4fa9;
-  --custom-blue-light: #f5f5ff;
-  --custom-blue-lighter: #f0f0fa;
-  --custom-violet: #f2edff;
-  --custom-violet-light: #e3e9fb;
-  --custom-pink: #ffeaeb;
-  --custom-green-light: #f0fffd;
+  /* On-surface */
+  --on-surface:                #e5e2e1;
+  --on-surface-variant:        #c1c6d7;
+  --on-background:             #e5e2e1;
+  --outline:                   #8b90a0;
+  --outline-variant:           #414754;
+  --inverse-surface:           #e5e2e1;
+  --inverse-on-surface:        #313030;
+
+  /* Primary */
+  --primary:                   #adc7ff;
+  --primary-fixed:             #d8e2ff;
+  --primary-fixed-dim:         #adc7ff;
+  --on-primary:                #002e68;
+  --on-primary-fixed:          #001a41;
+  --on-primary-fixed-variant:  #004493;
+  --primary-container:         #4a8eff;
+  --on-primary-container:      #00285b;
+  --inverse-primary:           #005bc0;
+  --surface-tint:              #adc7ff;
+
+  /* Secondary */
+  --secondary:                 #8fd8ff;
+  --secondary-fixed:           #c2e8ff;
+  --secondary-fixed-dim:       #75d1ff;
+  --on-secondary:              #003548;
+  --on-secondary-fixed:        #001e2b;
+  --on-secondary-fixed-variant:#004d67;
+  --secondary-container:       #00c1fd;
+  --on-secondary-container:    #004b65;
+
+  /* Tertiary */
+  --tertiary:                  #b9c7e4;
+  --tertiary-fixed:            #d6e3ff;
+  --tertiary-fixed-dim:        #b9c7e4;
+  --on-tertiary:               #233148;
+  --on-tertiary-fixed:         #0d1c32;
+  --on-tertiary-fixed-variant: #39475f;
+  --tertiary-container:        #8391ad;
+  --on-tertiary-container:     #1c2a41;
+
+  /* Error */
+  --error:                     #ffb4ab;
+  --error-container:           #93000a;
+  --on-error:                  #690005;
+  --on-error-container:        #ffdad6;
+
+  /* Compound tokens */
+  --editorial-gradient: linear-gradient(135deg, #adc7ff 0%, #4a8eff 100%);
+  --ghost-border:        1px solid rgba(65,71,84,0.25);
+  --glass-bg:            rgba(32,31,31,0.80);
+  --glass-border-color:  rgba(65,71,84,0.20);
+
+  /* Legacy aliases — kept so existing components using these names don't break */
+  --primary-dark:    #004493;
+  --primary-light:   #d8e2ff;
+  --primary-lighter: #f0f4ff;
+  --accent:          #8fd8ff;
+  --neutral:         #353534;
+  --success:         #b5ccac;
+  --info:            #c2e8ff;
+  --text-dark:       #e5e2e1;
+  --black:           #000000;
+  --white:           #ffffff;
+
+  /* Custom greys (mapped to MD3 tones) */
+  --custom-grey:   #8b90a0;
+  --custom-grey-1: #414754;
+  --custom-grey-2: #c1c6d7;
+  --custom-grey-3: #353534;
+  --custom-grey-4: #2a2a2a;
+  --custom-grey-5: #1c1b1b;
+
+  /* Custom blues / violet / pink / green (mapped to MD3 tones) */
+  --custom-blue:          #4a8eff;
+  --custom-blue-light:    #1c2a41;
+  --custom-blue-lighter:  #0d1c32;
+  --custom-violet:        #b9c7e4;
+  --custom-violet-light:  #d6e3ff;
+  --custom-pink:          #ffb4ab;
+  --custom-green-light:   #b5ccac;
 
   /* Shadows */
-  --shadow-xl:
-    0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.25);
 
   /* Custom breakpoints */
-  --breakpoint-xs: 480px;
-  --breakpoint-sm: 640px;
-  --breakpoint-md: 768px;
-  --breakpoint-lg: 1024px;
-  --breakpoint-xl: 1280px;
-  --breakpoint-2xl: 1336px;
-  --breakpoint-xxl: 1536px;
+  --breakpoint-xs:   480px;
+  --breakpoint-sm:   640px;
+  --breakpoint-md:   768px;
+  --breakpoint-lg:   1024px;
+  --breakpoint-xl:   1280px;
+  --breakpoint-2xl:  1336px;
+  --breakpoint-xxl:  1536px;
   --breakpoint-wide: 1920px;
 
-  /* Fallback values for browsers that don't support safe areas */
-  --safe-area-inset-top: 0px;
-  --safe-area-inset-right: 0px;
+  /* Safe-area insets */
+  --safe-area-inset-top:    0px;
+  --safe-area-inset-right:  0px;
   --safe-area-inset-bottom: 0px;
-  --safe-area-inset-left: 0px;
+  --safe-area-inset-left:   0px;
+}
+
+/* ── Light mode overrides ── */
+[data-theme="light"] {
+  --background:                #fffbfe;
+  --surface:                   #fffbfe;
+  --surface-dim:               #ded8e1;
+  --surface-bright:            #fdf8ff;
+  --surface-container-lowest:  #ffffff;
+  --surface-container-low:     #f7f2fa;
+  --surface-container:         #f2ecf4;
+  --surface-container-high:    #ece6f0;
+  --surface-container-highest: #e6e0e9;
+  --surface-variant:           #e7e0eb;
+
+  --on-surface:                #1c1b1f;
+  --on-surface-variant:        #49454f;
+  --on-background:             #1c1b1f;
+  --outline:                   #79747e;
+  --outline-variant:           #cac4d0;
+  --inverse-surface:           #313033;
+  --inverse-on-surface:        #f4eff4;
+
+  --primary:                   #005bc0;
+  --primary-fixed:             #d8e2ff;
+  --primary-fixed-dim:         #adc7ff;
+  --on-primary:                #ffffff;
+  --on-primary-fixed:          #001a41;
+  --on-primary-fixed-variant:  #004493;
+  --primary-container:         #d8e2ff;
+  --on-primary-container:      #001a41;
+  --inverse-primary:           #adc7ff;
+  --surface-tint:              #005bc0;
+
+  --secondary:                 #006685;
+  --secondary-fixed:           #c2e8ff;
+  --secondary-fixed-dim:       #75d1ff;
+  --on-secondary:              #ffffff;
+  --on-secondary-fixed:        #001e2b;
+  --on-secondary-fixed-variant:#004d67;
+  --secondary-container:       #c2e8ff;
+  --on-secondary-container:    #001e2b;
+
+  --tertiary:                  #39475f;
+  --tertiary-fixed:            #d6e3ff;
+  --tertiary-fixed-dim:        #b9c7e4;
+  --on-tertiary:               #ffffff;
+  --on-tertiary-fixed:         #0d1c32;
+  --on-tertiary-fixed-variant: #233148;
+  --tertiary-container:        #d6e3ff;
+  --on-tertiary-container:     #0d1c32;
+
+  --error:                     #b3261e;
+  --error-container:           #f9dedc;
+  --on-error:                  #ffffff;
+  --on-error-container:        #410e0b;
+
+  --editorial-gradient: linear-gradient(135deg, #005bc0 0%, #004493 100%);
+  --ghost-border:        1px solid rgba(121,116,126,0.25);
+  --glass-bg:            rgba(255,255,255,0.80);
+  --glass-border-color:  rgba(202,196,208,0.50);
+
+  --primary-dark:    #004493;
+  --primary-light:   #adc7ff;
+  --primary-lighter: #d8e2ff;
+  --accent:          #006685;
+  --neutral:         #e6e0e9;
+  --text-dark:       #1c1b1f;
+
+  --custom-grey:          #79747e;
+  --custom-grey-1:        #cac4d0;
+  --custom-grey-2:        #49454f;
+  --custom-grey-3:        #e7e0eb;
+  --custom-grey-4:        #ece6f0;
+  --custom-grey-5:        #f7f2fa;
+  --custom-blue:          #005bc0;
+  --custom-blue-light:    #d8e2ff;
+  --custom-blue-lighter:  #f0f4ff;
+  --custom-violet:        #39475f;
+  --custom-violet-light:  #d6e3ff;
+  --custom-pink:          #f9dedc;
+  --custom-green-light:   #e8f5e0;
 }
 
 @theme {
-  /* Semantic colors */
-  --color-primary: var(--primary);
-  --color-secondary: var(--secondary);
-  --color-primary-dark: var(--primary-dark);
-  --color-primary-light: var(--primary-light);
-  --color-primary-lighter: var(--primary-lighter);
-  --color-accent: var(--accent);
-  --color-neutral: var(--neutral);
-  --color-surface: var(--surface);
-  --color-success: var(--success);
-  --color-info: var(--info);
-  --color-text-dark: var(--text-dark);
-  --color-black: var(--black);
-  --color-white: var(--white);
+  /* MD3 Primary */
+  --color-primary:                   var(--primary);
+  --color-on-primary:                var(--on-primary);
+  --color-primary-container:         var(--primary-container);
+  --color-on-primary-container:      var(--on-primary-container);
+  --color-primary-fixed:             var(--primary-fixed);
+  --color-inverse-primary:           var(--inverse-primary);
 
-  /* Custom colors */
-  --color-custom-blue: var(--custom-blue);
-  --color-custom-grey: var(--custom-grey);
-  --color-custom-grey-1: var(--custom-grey-1);
-  --color-custom-grey-2: var(--custom-grey-2);
-  --color-custom-grey-3: var(--custom-grey-3);
-  --color-custom-grey-4: var(--custom-grey-4);
-  --color-custom-grey-5: var(--custom-grey-5);
-  --color-custom-violet: var(--custom-violet);
-  --color-custom-violet-light: var(--custom-violet-light);
-  --color-custom-pink: var(--custom-pink);
-  --color-custom-blue-light: var(--custom-blue-light);
+  /* MD3 Secondary */
+  --color-secondary:                 var(--secondary);
+  --color-on-secondary:              var(--on-secondary);
+  --color-secondary-container:       var(--secondary-container);
+  --color-on-secondary-container:    var(--on-secondary-container);
+
+  /* MD3 Tertiary */
+  --color-tertiary:                  var(--tertiary);
+  --color-on-tertiary:               var(--on-tertiary);
+  --color-tertiary-container:        var(--tertiary-container);
+  --color-on-tertiary-container:     var(--on-tertiary-container);
+
+  /* MD3 Error */
+  --color-error:                     var(--error);
+  --color-error-container:           var(--error-container);
+  --color-on-error:                  var(--on-error);
+  --color-on-error-container:        var(--on-error-container);
+
+  /* MD3 Surfaces */
+  --color-background:                var(--background);
+  --color-surface:                   var(--surface);
+  --color-surface-dim:               var(--surface-dim);
+  --color-surface-bright:            var(--surface-bright);
+  --color-surface-container-lowest:  var(--surface-container-lowest);
+  --color-surface-container-low:     var(--surface-container-low);
+  --color-surface-container:         var(--surface-container);
+  --color-surface-container-high:    var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-surface-variant:           var(--surface-variant);
+  --color-on-surface:                var(--on-surface);
+  --color-on-surface-variant:        var(--on-surface-variant);
+  --color-outline:                   var(--outline);
+  --color-outline-variant:           var(--outline-variant);
+
+  /* Legacy aliases */
+  --color-primary-dark:        var(--primary-dark);
+  --color-primary-light:       var(--primary-light);
+  --color-primary-lighter:     var(--primary-lighter);
+  --color-accent:              var(--accent);
+  --color-neutral:             var(--neutral);
+  --color-success:             var(--success);
+  --color-info:                var(--info);
+  --color-text-dark:           var(--text-dark);
+  --color-black:               var(--black);
+  --color-white:               var(--white);
+
+  --color-custom-grey:         var(--custom-grey);
+  --color-custom-grey-1:       var(--custom-grey-1);
+  --color-custom-grey-2:       var(--custom-grey-2);
+  --color-custom-grey-3:       var(--custom-grey-3);
+  --color-custom-grey-4:       var(--custom-grey-4);
+  --color-custom-grey-5:       var(--custom-grey-5);
+  --color-custom-blue:         var(--custom-blue);
+  --color-custom-blue-light:   var(--custom-blue-light);
   --color-custom-blue-lighter: var(--custom-blue-lighter);
-  --color-custom-green-light: var(--custom-green-light);
+  --color-custom-violet:       var(--custom-violet);
+  --color-custom-violet-light: var(--custom-violet-light);
+  --color-custom-pink:         var(--custom-pink);
+  --color-custom-green-light:  var(--custom-green-light);
 
-  /* Custom breakpoints*/
-  --breakpoint-xs: 480px;
-  --breakpoint-sm: 640px;
-  --breakpoint-md: 768px;
-  --breakpoint-lg: 1024px;
-  --breakpoint-xl: 1280px;
-  --breakpoint-2xl: 1336px;
-  --breakpoint-xxl: 1536px;
+  /* Breakpoints */
+  --breakpoint-xs:   480px;
+  --breakpoint-sm:   640px;
+  --breakpoint-md:   768px;
+  --breakpoint-lg:   1024px;
+  --breakpoint-xl:   1280px;
+  --breakpoint-2xl:  1336px;
+  --breakpoint-xxl:  1536px;
   --breakpoint-wide: 1920px;
 
-  /* Font Weights */
-  --font-weight-thin: 100;
+  /* Font weights */
+  --font-weight-thin:       100;
   --font-weight-extralight: 200;
-  --font-weight-light: 300;
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-  --font-weight-extrabold: 800;
-  --font-weight-black: 900;
+  --font-weight-light:      300;
+  --font-weight-regular:    400;
+  --font-weight-medium:     500;
+  --font-weight-semibold:   600;
+  --font-weight-bold:       700;
+  --font-weight-extrabold:  800;
+  --font-weight-black:      900;
 
-  /* Animation keyframes */
-  --animate-fadeIn: fadeIn 0.3s ease;
+  /* Animations */
+  --animate-fadeIn:  fadeIn 0.3s ease;
   --animate-fadeOut: fadeOut 0.3s ease;
 
-  /* Fallback values for browsers that don't support safe areas */
-  --safe-area-inset-top: 0px;
-  --safe-area-inset-right: 0px;
+  /* Safe-area */
+  --safe-area-inset-top:    0px;
+  --safe-area-inset-right:  0px;
   --safe-area-inset-bottom: 0px;
-  --safe-area-inset-left: 0px;
+  --safe-area-inset-left:   0px;
 
-  /* Font Size values */
+  /* Font sizes */
   --text-xxs: 0.7rem;
-  --text-md: 15px;
+  --text-md:  15px;
 
   /* Shadows */
-  --shadow-xl:
-    0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg:
-    0 4px 6px -1px rgb(0 0 0 / 0.25), 0 2px 4px -2px rgb(0 0 0 / 0.25);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.25);
 }
 
 @layer utilities {
@@ -135,7 +318,6 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -143,9 +325,9 @@
 
 @supports (padding: max(0px)) {
   :root {
-    --safe-area-inset-top: var(--safe-area-inset-top);
-    --safe-area-inset-right: var(--safe-area-inset-right);
-    --safe-area-inset-bottom: var(--safe-area-inset-bottom);
-    --safe-area-inset-left: var(--safe-area-inset-left);
+    --safe-area-inset-top:    env(safe-area-inset-top, 0px);
+    --safe-area-inset-right:  env(safe-area-inset-right, 0px);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-inset-left:   env(safe-area-inset-left, 0px);
   }
 }

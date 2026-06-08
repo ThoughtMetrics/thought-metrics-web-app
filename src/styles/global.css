@@ -28,7 +28,7 @@ body {
 }
 
 :root {
-  font-family: 'Barlow', system-ui;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   line-height: 1.5;
   font-weight: 400;
   width: 100%;
@@ -93,6 +93,11 @@ select,
 textarea {
   color: #111827;
   color-scheme: light;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 .common-component {

@@ -1,6 +1,6 @@
 // src/core/types/survey-builder.type.ts
 
-import type { QuestionType, SurveyFormLayout, ISurveyCaptureField } from './survey.type';
+import type { QuestionType, SurveyFormLayout, ISurveyCaptureField, SurveyMethodology } from './survey.type';
 
 export type SupportedBuilderLanguage = 'en' | 'ta';
 
@@ -49,9 +49,14 @@ export interface IBuilderQuestionConfig {
   itemCount?: number;
   total?: number;
   ratingMax?: number;
+  /** URL (object-URL in editor) for an image or video to show above the rating stars */
+  questionMediaUrl?: string;
+  questionMediaType?: 'image' | 'video';
   currency?: string;
   acceptedFileTypes?: string[];
   maxFileSizeMb?: number;
+  maxVideoDurationSec?: number;
+  maxAudioDurationSec?: number;
   showIf?: IBuilderShowIfCondition;
   showIfAll?: IBuilderShowIfCondition[];
   showIfAny?: IBuilderShowIfCondition[];
@@ -70,11 +75,17 @@ export interface IBuilderQuestionConfig {
   // ── F1: MCQ enhancements ──────────────────────────────────────────────────
   /** For MCQ_SINGLE: display as radio buttons or dropdown select */
   mcqSubType?: 'radio' | 'dropdown';
+  /** MCQ: add an "All of the above" option pinned above exclusive/others */
+  hasAllOfAbove?: boolean;
   /** Add an exclusive "None of the above" option pinned to the bottom */
   hasExclusiveOption?: boolean;
   exclusiveOptionLabel?: string;
   /** Shuffle option order at runtime (exclusive + others always stay at bottom) */
   randomizeOptions?: boolean;
+  /** Strategy applied when randomizeOptions is true */
+  optionOrderStrategy?: 'random' | 'alphabetical' | 'numerical_high_to_low' | 'numerical_low_to_high' | 'flip' | 'rotate';
+  /** MCQ_MULTIPLE: show/hide the min/max selection inputs */
+  forceSelectionCount?: boolean;
   /** MCQ_MULTIPLE: minimum number of selections required */
   minSelections?: number;
   /** MCQ_MULTIPLE: maximum number of selections allowed */
@@ -197,6 +208,7 @@ export interface IBuilderSettings {
   allowAnonymous: boolean;
   captureFields: ISurveyCaptureField[];
   industry?: string;
+  methodology?: SurveyMethodology;
 }
 
 export interface IBuilderTemplate {

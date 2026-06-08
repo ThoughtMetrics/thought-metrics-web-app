@@ -87,7 +87,10 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
         sessionStorage.removeItem('tm-duplicate-prefill');
         const prefill = JSON.parse(prefillRaw);
         const originalLabel = prefill.translations?.en?.label ?? prefill.name ?? '';
-        const copiedLabel = `${originalLabel} (Copy)`;
+        // Only append "(Copy)" for actual duplicates; methodology templates set isDuplicate: false
+        const label = prefill.isDuplicate !== false
+          ? `${originalLabel} (Copy)`
+          : originalLabel;
         // Internal name: use original slug + numeric suffix (no "copy" wording)
         const baseName = slugify(originalLabel) || 'survey';
         const numericSuffix = Date.now().toString().slice(-4);
@@ -99,10 +102,14 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
           name: `${baseName}-${numericSuffix}`,
           translations: {
             ...prefill.translations,
-            en: { ...(prefill.translations?.en ?? {}), label: copiedLabel },
+            en: { ...(prefill.translations?.en ?? {}), label },
           },
         } as any);
         useSurveyBuilderStore.setState({ isDirty: true });
+        // If prefill includes starter questions, jump straight to the builder
+        if ((prefill.questions?.length ?? 0) > 0) {
+          setEditorSection('questions');
+        }
         return;
       }
     } catch {}

@@ -80,8 +80,23 @@ function getValueField(
 }
 
 const ConditionalLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
-  const { questions, setQuestionConfig } = useSurveyBuilderStore();
+  const { questions, setQuestionConfig, conditionalLogicHighlight } = useSurveyBuilderStore();
   const otherQuestions = questions.filter((_, i) => i !== qIdx);
+
+  const sectionRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (conditionalLogicHighlight === 0) return;
+    sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const el = sectionRef.current;
+    if (el) {
+      el.classList.add('ring-2', 'ring-primary', 'ring-offset-1');
+      const timer = setTimeout(() => {
+        el.classList.remove('ring-2', 'ring-primary', 'ring-offset-1');
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [conditionalLogicHighlight]);
 
   // Derive current mode from stored config
   const isOrMode =
@@ -131,7 +146,7 @@ const ConditionalLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
     : 'Show this question if:';
 
   return (
-    <div className="space-y-3 pt-3 border-t border-gray-200">
+    <div ref={sectionRef} className="space-y-3 pt-3 border-t border-gray-200 transition-all rounded">
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
           Conditional Logic

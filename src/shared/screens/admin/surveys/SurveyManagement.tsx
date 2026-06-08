@@ -12,6 +12,7 @@ import { useUpdateSurveyInstance, useDeleteSurveyInstance } from '@/core/hooks/m
 import surveyService from '@/services/survey/survey.service';
 import type { ISurvey } from '@/core/types/survey.type';
 import EditSurveyModal from './components/EditSurveyModal';
+import MethodologyPickerModal from '@/shared/screens/admin/survey-builder/components/MethodologyPickerModal';
 import {
   SurveyAnalyticsDetailPanel,
   SurveyDownloadModal,
@@ -64,6 +65,7 @@ const SurveyManagementContent: React.FC = () => {
   const [downloadSurvey, setDownloadSurvey] = useState<ISurvey | null>(null);
   const [editingSurvey, setEditingSurvey] = useState<ISurvey | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [showPicker, setShowPicker] = useState(false);
   const menuRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -163,6 +165,7 @@ const SurveyManagementContent: React.FC = () => {
   return (
     <div className="h-full flex bg-gray-50 text-text-dark">
       <AdminSidebar />
+      {showPicker && <MethodologyPickerModal onClose={() => setShowPicker(false)} />}
 
       <main className="h-full overflow-y-scroll flex-1 p-8">
         <div className="max-w-7xl mx-auto">
@@ -172,12 +175,12 @@ const SurveyManagementContent: React.FC = () => {
               <h1 className="text-3xl font-bold text-gray-900 mb-1">Surveys</h1>
               <p className="text-gray-600">Manage survey templates</p>
             </div>
-            <a
-              href="/admin/survey-builder/new"
+            <button
+              onClick={() => setShowPicker(true)}
               className="px-5 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
             >
               + New Survey
-            </a>
+            </button>
           </div>
 
           {/* ── Surveys — SQL Survey Instances ─────────────────────────────── */}

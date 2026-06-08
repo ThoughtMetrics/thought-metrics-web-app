@@ -2,7 +2,9 @@
 
 import React from 'react';
 import type { ISurveyCaptureField } from '@/core/types/survey.type';
+import type { SurveyMethodology } from '@/core/types/survey.type';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
+import { SURVEY_METHODOLOGY_META, METHODOLOGY_BADGE_COLOR } from '@/core/constants/survey.constants';
 
 const INDUSTRY_OPTIONS = [
   'All Industries', 'Advertising & Marketing', 'Automotive', 'Education',
@@ -60,12 +62,25 @@ const TemplateSettingsPanel: React.FC = () => {
     setSettings({ captureFields: captureFields.filter((_, idx) => idx !== i) });
   };
 
+  const methodology = settings.methodology as SurveyMethodology | undefined;
+  const methodMeta = methodology ? SURVEY_METHODOLOGY_META[methodology] : undefined;
+
   return (
     <div className="space-y-6 p-4">
       <div>
         <h3 className="text-sm font-semibold text-gray-800 mb-3">Form Settings</h3>
 
         <div className="space-y-4">
+          {methodMeta && (
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Methodology</label>
+              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${METHODOLOGY_BADGE_COLOR[methodMeta.category]}`}>
+                {methodMeta.label}
+              </span>
+              <p className="text-xs text-gray-400 mt-1">{methodMeta.description}</p>
+            </div>
+          )}
+
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-2">Layout</label>
             <div className="flex gap-3">
