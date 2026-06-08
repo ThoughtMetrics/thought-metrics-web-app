@@ -8,34 +8,161 @@ const seoContent = {
 ---
 
 <PresentationLayout title={seoContent.title} description={seoContent.description}>
-  <div class="container mx-auto px-4 py-8">
-    <div class="max-w-6xl mx-auto">
-      <!-- Header Section -->
-      <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-gray-800 mb-4">
-          Capabilities We Serve
+
+  <!-- Hero / Capabilities Grid -->
+  <section class="tm-section relative">
+    <div class="tm-container">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <nav class="flex items-center gap-2 mb-6 text-xs text-on-surface-variant justify-center">
+          <a href="/" class="hover:text-on-surface transition-colors">Home</a>
+          <span class="opacity-40">/</span>
+          <span class="text-primary font-medium">Capabilities</span>
+        </nav>
+        <span class="chip mb-6 inline-flex">CAPABILITIES</span>
+        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-[1.08]">
+          Research Capabilities <span class="text-primary italic">Engineered for Clarity.</span>
         </h1>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-          Discover specialized research solutions tailored to your
-          capabilities's unique challenges and opportunities. Our expert
-          insights help drive informed decisions across diverse sectors.
+        <p class="text-lg text-on-surface-variant max-w-2xl mx-auto mb-10 leading-relaxed">
+          From brand strategy to product development, our research capabilities give you the evidence base to make confident decisions at every stage of your business.
         </p>
+        <a href="/start-your-research" class="btn-primary">Start Your Research</a>
       </div>
 
-      <!-- CTA Section -->
-      <div class="mt-16 text-center bg-blue-50 rounded-lg p-8">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">
-          Don't See Your Capability?
-        </h2>
-        <p class="text-gray-600 mb-6 max-w-2xl mx-auto">
-          We work across many more capabilities and can customize our research
-          approach to meet your specific sector needs. Contact us to discuss
-          your requirements.
-        </p>
-        <a href="/contact-us" class="inline-block bg-primary text-white px-8 py-3 rounded-md font-medium hover:bg-primary-dark transition-colors">
-          Contact Our Experts
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <a href="/capabilities/branding-advertising" class="ds-card group flex flex-col gap-5 hover:border-primary/30 transition-all hover:-translate-y-1 cursor-pointer">
+          <div class="flex items-start gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-primary text-3xl">campaign</span>
+            </div>
+            <div class="flex-1">
+              <h3 class="text-xl font-bold text-on-surface mb-2 group-hover:text-primary transition-colors">Branding &amp; Advertising Communication</h3>
+              <p class="text-sm text-on-surface-variant leading-relaxed">Measure what moves your audience — before and after every campaign. Brand tracking, ad testing, and message research that reveals the story behind the stats.</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="chip">AD TESTING</span><span class="chip">BRAND TRACKING</span><span class="chip">MESSAGE TESTING</span>
+          </div>
+          <div class="mt-auto flex items-center gap-1 text-primary text-sm font-medium">
+            <span>Explore</span><span class="material-symbols-outlined text-base">arrow_forward</span>
+          </div>
+        </a>
+
+        <a href="/capabilities/market-opportunity" class="ds-card group flex flex-col gap-5 hover:border-secondary/30 transition-all hover:-translate-y-1 cursor-pointer">
+          <div class="flex items-start gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-secondary text-3xl">radar</span>
+            </div>
+            <div class="flex-1">
+              <h3 class="text-xl font-bold text-on-surface mb-2 group-hover:text-secondary transition-colors">Market Opportunity Research</h3>
+              <p class="text-sm text-on-surface-variant leading-relaxed">Identify white spaces, size real addressable markets, and map the competitive landscape with primary consumer and B2B intelligence before you commit resources.</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="chip">COMPETITIVE INTEL</span><span class="chip">GTM STRATEGY</span><span class="chip">GAP ANALYSIS</span>
+          </div>
+          <div class="mt-auto flex items-center gap-1 text-secondary text-sm font-medium">
+            <span>Explore</span><span class="material-symbols-outlined text-base">arrow_forward</span>
+          </div>
+        </a>
+
+        <a href="/capabilities/product-research" class="ds-card group flex flex-col gap-5 hover:border-tertiary/30 transition-all hover:-translate-y-1 cursor-pointer">
+          <div class="flex items-start gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-tertiary/10 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-tertiary text-3xl">science</span>
+            </div>
+            <div class="flex-1">
+              <h3 class="text-xl font-bold text-on-surface mb-2 group-hover:text-tertiary transition-colors">Product Research</h3>
+              <p class="text-sm text-on-surface-variant leading-relaxed">From concept validation to post-launch tracking — test ideas before you build, optimize pricing, and ensure your product solves the problem it was designed for.</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="chip">CONCEPT TESTING</span><span class="chip">PRICING RESEARCH</span><span class="chip">UX RESEARCH</span>
+          </div>
+          <div class="mt-auto flex items-center gap-1 text-tertiary text-sm font-medium">
+            <span>Explore</span><span class="material-symbols-outlined text-base">arrow_forward</span>
+          </div>
+        </a>
+
+        <a href="/capabilities/customer-research" class="ds-card group flex flex-col gap-5 hover:border-primary/30 transition-all hover:-translate-y-1 cursor-pointer">
+          <div class="flex items-start gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-primary text-3xl">person_search</span>
+            </div>
+            <div class="flex-1">
+              <h3 class="text-xl font-bold text-on-surface mb-2 group-hover:text-primary transition-colors">Customer Research &amp; Segmentation</h3>
+              <p class="text-sm text-on-surface-variant leading-relaxed">Understand who your customers are, how they decide, and what keeps them loyal. Journey mapping, persona research, and pricing studies that build real customer clarity.</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="chip">JOURNEY MAPPING</span><span class="chip">PERSONA RESEARCH</span><span class="chip">LOYALTY RESEARCH</span>
+          </div>
+          <div class="mt-auto flex items-center gap-1 text-primary text-sm font-medium">
+            <span>Explore</span><span class="material-symbols-outlined text-base">arrow_forward</span>
+          </div>
         </a>
       </div>
     </div>
-  </div>
+    <div class="absolute inset-0 pointer-events-none overflow-hidden" style="z-index:-1" aria-hidden="true">
+      <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/6 blur-[140px] rounded-full"></div>
+    </div>
+  </section>
+
+  <!-- How We Work -->
+  <section class="tm-section bg-surface-container-lowest">
+    <div class="tm-container">
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <p class="section-eyebrow">How We Work</p>
+        <h2 class="text-4xl md:text-5xl font-bold mb-5">From Brief to <span class="text-primary">Breakthrough</span></h2>
+        <p class="text-lg text-on-surface-variant">Every engagement follows a disciplined process that keeps quality, speed, and relevance at the centre — from your first brief to final delivery.</p>
+      </div>
+      <div class="border border-outline-variant/20 rounded-2xl overflow-hidden">
+        <div class="process-grid">
+          <div class="process-step">
+            <div class="process-number">01</div>
+            <div class="process-icon"><span class="material-symbols-outlined text-xl">edit_note</span></div>
+            <div class="process-title">Brief</div>
+            <div class="process-desc">You share your business question, objectives, and target audience. We ask the right follow-up questions.</div>
+          </div>
+          <div class="process-step">
+            <div class="process-number">02</div>
+            <div class="process-icon"><span class="material-symbols-outlined text-xl">architecture</span></div>
+            <div class="process-title">Design</div>
+            <div class="process-desc">We recommend the right methodology, sample design, and instrument — and align on outputs before fieldwork begins.</div>
+          </div>
+          <div class="process-step">
+            <div class="process-number">03</div>
+            <div class="process-icon"><span class="material-symbols-outlined text-xl">play_circle</span></div>
+            <div class="process-title">Field</div>
+            <div class="process-desc">We recruit, screen, and manage data collection — with real-time progress monitoring and quality checks at every stage.</div>
+          </div>
+          <div class="process-step">
+            <div class="process-number">04</div>
+            <div class="process-icon"><span class="material-symbols-outlined text-xl">insights</span></div>
+            <div class="process-title">Insight</div>
+            <div class="process-desc">You receive clean data, analysis, and actionable recommendations — delivered in a format your team can immediately use.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="tm-section bg-surface">
+    <div class="tm-container">
+      <div class="cta-card">
+        <div class="cta-content">
+          <p class="cta-eyebrow">Get Started Today</p>
+          <h2 class="cta-heading">Not Sure Which Capability Fits Your Brief?</h2>
+          <p class="cta-body">Our research experts work with you from the very first conversation — recommending the right capability mix, methodology, and timeline for your specific challenge.</p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/start-your-research" class="btn-surface">Request a Bid</a>
+            <a href="/contact-us" class="btn-cta-frosted">Talk to Our Team</a>
+          </div>
+        </div>
+        <div class="cta-orb cta-orb--tl"></div>
+        <div class="cta-orb cta-orb--br"></div>
+      </div>
+    </div>
+  </section>
+
 </PresentationLayout>

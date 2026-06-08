@@ -1,6 +1,5 @@
 ---
-import { industries } from '@/core/constants/page-constants/industries-constant';
-import IndustryTemplate from '@layouts/IndustryTemplate.astro';
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
 import { seoConfig } from '@/core/constants/seo.constants';
 import { buildStandardPageSchema } from '@/core/utils/schema-builder';
 import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
@@ -11,20 +10,134 @@ const seoContent = {
   keywords: 'investor research, private equity research, due diligence, venture capital insights, market validation, investment research, TAM analysis, portfolio optimization, growth strategy research, market intelligence',
 };
 
-// Generate breadcrumbs and structured data for SEO
 const breadcrumbs = generateBreadcrumbsFromPath(Astro.url.pathname);
 const pageUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).href;
-const structuredData = buildStandardPageSchema(
-  seoConfig,
-  pageUrl,
-  'Investor & Private Equity Research',
-  breadcrumbs
-);
+const structuredData = buildStandardPageSchema(seoConfig, pageUrl, 'Investor & Private Equity Research', breadcrumbs);
 ---
 
-<IndustryTemplate
-  title={seoContent.title}
-  description={seoContent.description}
-  industry={industries.investor}
-  structuredData={structuredData}
-/>
+<PresentationLayout title={seoContent.title} description={seoContent.description} keywords={seoContent.keywords} structuredData={structuredData}>
+
+  <section class="tm-section relative">
+    <div class="tm-container grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div class="z-10">
+        <nav class="flex items-center gap-2 mb-6 text-xs text-on-surface-variant">
+          <a href="/" class="hover:text-on-surface transition-colors">Home</a><span class="opacity-40">/</span>
+          <a href="/industries" class="opacity-60 hover:text-on-surface transition-colors">Industries</a><span class="opacity-40">/</span>
+          <span class="text-primary font-medium">Investor &amp; Private Equity</span>
+        </nav>
+        <span class="chip mb-6 inline-flex">INVESTOR &amp; PRIVATE EQUITY</span>
+        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-[1.08]">
+          Invest With Confidence:<br /><span class="text-primary italic">Intelligence at the Speed of Capital.</span>
+        </h1>
+        <p class="text-lg text-on-surface-variant max-w-xl mb-10 leading-relaxed">From early diligence to post-deal growth, discover the real drivers behind business performance and consumer momentum. Make investment decisions with the clarity that primary research provides.</p>
+        <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <a href="/start-your-research" class="btn-primary">Request a Bid</a>
+          <a href="#services" class="btn-ghost">Explore Solutions</a>
+        </div>
+      </div>
+      <div class="relative">
+        <div class="rounded-[3rem] bg-surface-container-low border border-outline-variant/10 shadow-2xl p-8 flex flex-col gap-4 min-h-[360px]">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-semibold text-on-surface-variant uppercase tracking-widest">Due Diligence Dashboard</span>
+            <div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div><span class="text-xs text-on-surface-variant">Research Active</span></div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-surface-container rounded-xl p-3"><div class="text-xs text-on-surface-variant mb-1">Market Size</div><div class="text-lg font-extrabold text-primary">₹12,400 Cr</div><div class="text-[10px] text-on-surface-variant">Addressable market est.</div></div>
+            <div class="bg-surface-container rounded-xl p-3"><div class="text-xs text-on-surface-variant mb-1">Growth Signal</div><div class="text-lg font-extrabold text-secondary">+34% YoY</div><div class="text-[10px] text-on-surface-variant">Consumer intent trend</div></div>
+            <div class="bg-surface-container rounded-xl p-3"><div class="text-xs text-on-surface-variant mb-1">Brand NPS</div><div class="text-lg font-extrabold text-tertiary">+61</div><div class="text-[10px] text-on-surface-variant">vs. +38 category avg</div></div>
+            <div class="bg-surface-container rounded-xl p-3"><div class="text-xs text-on-surface-variant mb-1">Competitive Gap</div><div class="text-lg font-extrabold text-primary">High</div><div class="text-[10px] text-on-surface-variant">Unmet need identified</div></div>
+          </div>
+          <div class="bg-primary/10 rounded-xl p-3 border border-primary/20 mt-auto">
+            <div class="text-xs font-semibold text-on-surface mb-1">Fast-Turn Diligence Research</div>
+            <div class="text-[10px] text-on-surface-variant">Consumer data in 5–10 business days</div>
+          </div>
+        </div>
+        <div class="absolute -top-4 -right-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+          <div class="text-primary text-2xl font-bold mb-0.5">Pre-Deal</div>
+          <div class="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Diligence Research</div>
+        </div>
+        <div class="absolute -bottom-4 -left-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+          <div class="text-secondary text-2xl font-bold mb-0.5">Post-Deal</div>
+          <div class="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Value Creation</div>
+        </div>
+      </div>
+    </div>
+    <div class="absolute inset-0 pointer-events-none overflow-hidden" style="z-index:-1" aria-hidden="true">
+      <div class="absolute top-0 left-0 w-[500px] h-[500px] bg-primary/8 blur-[140px] rounded-full"></div>
+    </div>
+  </section>
+
+  <section class="bg-surface-container-lowest py-14 border-y border-outline-variant/5">
+    <div class="tm-container flex flex-wrap justify-between gap-10 items-center">
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-primary">manage_search</span><div><div class="text-2xl font-bold text-on-surface">Due Diligence</div><div class="text-on-surface-variant text-sm">Consumer &amp; Market Validation</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-secondary">trending_up</span><div><div class="text-2xl font-bold text-on-surface">Market Sizing</div><div class="text-on-surface-variant text-sm">TAM, SAM &amp; Opportunity Research</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-tertiary">radar</span><div><div class="text-2xl font-bold text-on-surface">Competitive Intel</div><div class="text-on-surface-variant text-sm">Category Dynamics &amp; White Space</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-primary-container">monitoring</span><div><div class="text-2xl font-bold text-on-surface">Portfolio Tracking</div><div class="text-on-surface-variant text-sm">Post-Investment Performance</div></div></div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface" id="services">
+    <div class="tm-container">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-14 gap-6">
+        <div class="max-w-2xl"><p class="section-eyebrow">How We Help</p><h2 class="text-4xl md:text-5xl font-bold mb-5">Primary Research That Reduces <span class="text-secondary">Investment Risk</span></h2><p class="text-lg text-on-surface-variant">Investor decisions made on secondary data alone miss the human signal. We give PE firms, VCs, and strategic investors direct access to consumer truth — fast.</p></div>
+        <a href="/start-your-research" class="btn-ghost flex-shrink-0">Get a Quote</a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-primary text-3xl">search_insights</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Pre-Deal Consumer Diligence</h3><p class="text-on-surface-variant mb-5">Validate the consumer thesis before closing. Measure brand awareness, NPS, product satisfaction, switching intent, and category growth signals directly from target customers — in days, not weeks.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">BRAND NPS</span><span class="chip">CATEGORY SIZING</span></div></div>
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-secondary text-3xl">stacked_bar_chart</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Market Sizing &amp; Opportunity Research</h3><p class="text-on-surface-variant mb-5">Go beyond desk research. Quantify the addressable market with real consumer intent data, willingness-to-pay studies, and adoption curve analysis — segmented by geography, income, and behavior.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">TAM ANALYSIS</span><span class="chip">WTP RESEARCH</span></div></div>
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-tertiary text-3xl">monitoring</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Post-Investment Portfolio Tracking</h3><p class="text-on-surface-variant mb-5">After the deal closes, keep your finger on the pulse. Track brand health, customer satisfaction, competitive position, and growth signals across your portfolio with regular research cadences.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">BRAND TRACKING</span><span class="chip">GROWTH SIGNALS</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface-container-lowest">
+    <div class="tm-container">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        <div>
+          <p class="section-eyebrow">Investor Research Questions</p>
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">Validate the Investment Thesis With <span class="text-primary">Primary Consumer Data</span></h2>
+          <p class="text-lg text-on-surface-variant mb-8 leading-relaxed">Every investment thesis has a consumer assumption at its core. We help investors stress-test those assumptions with real market data before capital is deployed.</p>
+          <div class="bg-surface-container rounded-2xl p-6 border border-outline-variant/10">
+            <div class="flex items-center gap-3 mb-4"><span class="material-symbols-outlined text-secondary text-xl">trending_up</span><span class="font-semibold text-on-surface">Common Research Areas</span></div>
+            <ul class="space-y-2">
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Consumer brand awareness & NPS measurement</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Category market sizing with intent data</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Competitive positioning & share of preference</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Willingness-to-pay & pricing elasticity</li>
+            </ul>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">Is the consumer thesis actually validated?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>Do consumers actually use and love this product at scale — or just in early adopters?</li><li>Is growth driven by genuine demand or primarily marketing spend?</li><li>What is the churn rate and what do churned users say about why they left?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">How large is the real addressable market?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What is consumer awareness and penetration of this category today?</li><li>Which segments show the highest intent and willingness to pay?</li><li>How does the market size change across different price point assumptions?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">How defensible is the brand's position?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What is the brand's NPS relative to key competitors in the category?</li><li>How loyal are customers — and what would make them switch?</li><li>Which brand attributes are genuinely differentiated vs. table stakes?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">What are the risks to the growth thesis?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>Are there structural consumer barriers that could slow category adoption?</li><li>Are competitor gains driven by product superiority or pricing aggression?</li><li>How sensitive is consumer preference to regulatory or economic changes?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">How is portfolio performance tracking post-investment?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>Is brand health improving or declining since the investment was made?</li><li>Are growth initiatives resonating with target consumer segments?</li><li>What leading indicators predict revenue performance 2–3 quarters out?</li></ul></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface" id="cta">
+    <div class="tm-container"><div class="cta-card"><div class="cta-content">
+      <p class="cta-eyebrow">Get Started Today</p>
+      <h2 class="cta-heading">Get Consumer-Level Clarity Before You Close the Deal.</h2>
+      <p class="cta-body">From pre-deal diligence to portfolio health tracking, our investor research delivers primary consumer data that stress-tests your thesis — fast enough to fit your deal timeline.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/start-your-research" class="btn-surface">Request a Bid</a>
+        <a href="/contact-us" class="btn-cta-frosted">Talk to Our Team</a>
+      </div>
+    </div><div class="cta-orb cta-orb--tl"></div><div class="cta-orb cta-orb--br"></div></div></div>
+  </section>
+
+</PresentationLayout>
+
+<script>
+  document.querySelectorAll('.faq-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const isOpen = card.classList.contains('open');
+      document.querySelectorAll('.faq-card').forEach(c => c.classList.remove('open'));
+      if (!isOpen) card.classList.add('open');
+    });
+  });
+</script>

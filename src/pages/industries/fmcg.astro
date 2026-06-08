@@ -1,6 +1,5 @@
 ---
-import { industries } from '@/core/constants/page-constants/industries-constant';
-import IndustryTemplate from '@layouts/IndustryTemplate.astro';
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
 import { seoConfig } from '@/core/constants/seo.constants';
 import { buildStandardPageSchema } from '@/core/utils/schema-builder';
 import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
@@ -11,20 +10,156 @@ const seoContent = {
   keywords: 'FMCG research, consumer insights, brand growth, product testing, packaging research, campaign optimization, market research, shopper behavior, brand tracking, consumer journey',
 };
 
-// Generate breadcrumbs and structured data for SEO
 const breadcrumbs = generateBreadcrumbsFromPath(Astro.url.pathname);
 const pageUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).href;
-const structuredData = buildStandardPageSchema(
-  seoConfig,
-  pageUrl,
-  'FMCG Market Research',
-  breadcrumbs
-);
+const structuredData = buildStandardPageSchema(seoConfig, pageUrl, 'FMCG Market Research', breadcrumbs);
 ---
 
-<IndustryTemplate
-  title={seoContent.title}
-  description={seoContent.description}
-  industry={industries.fmcg}
-  structuredData={structuredData}
-/>
+<PresentationLayout title={seoContent.title} description={seoContent.description} keywords={seoContent.keywords} structuredData={structuredData}>
+
+  <!-- Hero -->
+  <section class="tm-section relative">
+    <div class="tm-container grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div class="z-10">
+        <nav class="flex items-center gap-2 mb-6 text-xs text-on-surface-variant">
+          <a href="/" class="hover:text-on-surface transition-colors">Home</a><span class="opacity-40">/</span>
+          <a href="/industries" class="opacity-60 hover:text-on-surface transition-colors">Industries</a><span class="opacity-40">/</span>
+          <span class="text-primary font-medium">FMCG</span>
+        </nav>
+        <span class="chip mb-6 inline-flex">FAST-MOVING CONSUMER GOODS</span>
+        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-[1.08]">
+          Explore What<br /><span class="text-primary italic">Moves Fast.</span>
+        </h1>
+        <p class="text-lg text-on-surface-variant max-w-xl mb-10 leading-relaxed">
+          From shelf to screen to shopping cart, uncover what truly drives today's consumer choices. Insights that power FMCG growth at the speed the market demands.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <a href="/start-your-research" class="btn-primary">Request a Bid</a>
+          <a href="#services" class="btn-ghost">Explore Solutions</a>
+        </div>
+      </div>
+      <div class="relative">
+        <div class="rounded-[3rem] bg-surface-container-low border border-outline-variant/10 shadow-2xl p-8 flex flex-col gap-4 min-h-[360px]">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-semibold text-on-surface-variant uppercase tracking-widest">Category Dashboard</span>
+            <div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div><span class="text-xs text-on-surface-variant">Live</span></div>
+          </div>
+          <div class="space-y-3">
+            <div class="bg-surface-container rounded-xl p-3"><div class="flex justify-between mb-2"><span class="text-xs font-semibold text-on-surface">Grocery</span><span class="text-xs font-bold text-primary">+14%</span></div><div class="h-2 bg-outline-variant/20 rounded-full"><div class="h-full bg-primary rounded-full" style="width:55%"></div></div></div>
+            <div class="bg-surface-container rounded-xl p-3"><div class="flex justify-between mb-2"><span class="text-xs font-semibold text-on-surface">Beauty & Personal Care</span><span class="text-xs font-bold text-secondary">+22%</span></div><div class="h-2 bg-outline-variant/20 rounded-full"><div class="h-full bg-secondary rounded-full" style="width:75%"></div></div></div>
+            <div class="bg-surface-container rounded-xl p-3"><div class="flex justify-between mb-2"><span class="text-xs font-semibold text-on-surface">Food & Beverage</span><span class="text-xs font-bold text-tertiary">+9%</span></div><div class="h-2 bg-outline-variant/20 rounded-full"><div class="h-full bg-tertiary rounded-full" style="width:38%"></div></div></div>
+            <div class="bg-surface-container rounded-xl p-3"><div class="flex justify-between mb-2"><span class="text-xs font-semibold text-on-surface">Sustainable Products</span><span class="text-xs font-bold text-primary">+31%</span></div><div class="h-2 bg-outline-variant/20 rounded-full"><div class="h-full bg-primary rounded-full" style="width:88%"></div></div></div>
+          </div>
+        </div>
+        <div class="absolute -top-4 -right-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+          <div class="text-primary text-2xl font-bold mb-0.5">48hrs</div>
+          <div class="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Insight Turnaround</div>
+        </div>
+        <div class="absolute -bottom-4 -left-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+          <div class="text-secondary text-2xl font-bold mb-0.5">15 Segments</div>
+          <div class="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Audience Reach</div>
+        </div>
+      </div>
+    </div>
+    <div class="absolute inset-0 pointer-events-none overflow-hidden" style="z-index:-1" aria-hidden="true">
+      <div class="absolute top-0 left-0 w-[500px] h-[500px] bg-primary/8 blur-[140px] rounded-full"></div>
+    </div>
+  </section>
+
+  <!-- Stats Ribbon -->
+  <section class="bg-surface-container-lowest py-14 border-y border-outline-variant/5">
+    <div class="tm-container flex flex-wrap justify-between gap-10 items-center">
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-primary">shopping_basket</span><div><div class="text-2xl font-bold text-on-surface">Shopper Behavior</div><div class="text-on-surface-variant text-sm">Path-to-Purchase Insights</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-secondary">science</span><div><div class="text-2xl font-bold text-on-surface">Pack & Concept Testing</div><div class="text-on-surface-variant text-sm">Pre-launch Validation</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-tertiary">show_chart</span><div><div class="text-2xl font-bold text-on-surface">Brand Health Tracking</div><div class="text-on-surface-variant text-sm">Equity & Recall Studies</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-primary-container">campaign</span><div><div class="text-2xl font-bold text-on-surface">Campaign Diagnostics</div><div class="text-on-surface-variant text-sm">Creative & ROI Testing</div></div></div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section class="tm-section bg-surface" id="services">
+    <div class="tm-container">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-14 gap-6">
+        <div class="max-w-2xl">
+          <p class="section-eyebrow">How We Help</p>
+          <h2 class="text-4xl md:text-5xl font-bold mb-5">Research Built for <span class="text-secondary">FMCG Speed</span></h2>
+          <p class="text-lg text-on-surface-variant">In a market where consumer preferences shift by the quarter, insights must arrive before the season ends — not after.</p>
+        </div>
+        <a href="/start-your-research" class="btn-ghost flex-shrink-0">Get a Quote</a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="ds-card">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-primary text-3xl">search_insights</span></div>
+          <h3 class="text-xl font-bold mb-3 text-on-surface">Uncover Unmet Needs in Real-Time</h3>
+          <p class="text-on-surface-variant mb-5">Identify what consumers actually want — today, not six months ago. Flavor preferences, pack design feedback, in-home usage diaries, and rapid concept validation.</p>
+          <div class="flex items-center gap-3 flex-wrap"><span class="chip">FLAVOR TESTING</span><span class="chip">PACK DESIGN</span></div>
+        </div>
+        <div class="ds-card">
+          <div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-secondary text-3xl">rocket_launch</span></div>
+          <h3 class="text-xl font-bold mb-3 text-on-surface">Measure, Learn, and Launch Smarter</h3>
+          <p class="text-on-surface-variant mb-5">Test concepts before committing to production. Optimize campaigns with pre/post testing. Track brand health across waves with consistent methodology.</p>
+          <div class="flex items-center gap-3 flex-wrap"><span class="chip">CONCEPT TESTING</span><span class="chip">CAMPAIGN ROI</span></div>
+        </div>
+        <div class="ds-card">
+          <div class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-tertiary text-3xl">zoom_out_map</span></div>
+          <h3 class="text-xl font-bold mb-3 text-on-surface">Scale Research Your Way</h3>
+          <p class="text-on-surface-variant mb-5">From quick 48-hour dipstick surveys to multi-city focus group programmes — we scale to your timeline, budget, and complexity without compromising on data quality.</p>
+          <div class="flex items-center gap-3 flex-wrap"><span class="chip">DIPSTICK SURVEYS</span><span class="chip">FOCUS GROUPS</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ / Key Questions -->
+  <section class="tm-section bg-surface-container-lowest">
+    <div class="tm-container">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        <div>
+          <p class="section-eyebrow">FMCG Research Questions</p>
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">The Questions That Drive <span class="text-primary">FMCG Strategy</span></h2>
+          <p class="text-lg text-on-surface-variant mb-8 leading-relaxed">Fast-moving brands need fast, reliable answers. These are the questions our FMCG clients bring to us — and the ones we're built to answer.</p>
+          <div class="bg-surface-container rounded-2xl p-6 border border-outline-variant/10">
+            <div class="flex items-center gap-3 mb-4"><span class="material-symbols-outlined text-secondary text-xl">search</span><span class="font-semibold text-on-surface">Common Research Areas</span></div>
+            <ul class="space-y-2">
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Shopper behavior & path-to-purchase</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Pack & concept testing pre-launch</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Brand health & equity tracking</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Campaign diagnostics & ROI testing</li>
+            </ul>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">What do consumers actually want now?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>How have consumer values and priorities shifted in the last 6 months?</li><li>What brand attributes drive purchase preference in your category today?</li><li>Which emerging segments are growing — and what do they value most?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">What will win on shelf and screen?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>How do shoppers evaluate your pack vs competitors in 3 seconds or less?</li><li>What pack design elements drive trial — and which create confusion?</li><li>How does in-store performance compare to e-commerce discoverability?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">Are our innovations meaningful?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>Does your new product solve a real, felt consumer problem?</li><li>Which concept attributes drive uniqueness vs familiarity in testing?</li><li>What is the optimal price point for your innovation to succeed?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">How do we drive growth across channels?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What friction points are losing you sales in e-commerce?</li><li>Which media channels drive the most incremental brand awareness?</li><li>How should your promotional calendar be structured for maximum ROI?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">What are the risks, gaps, and white spaces?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>Which consumer segments are churning — and why?</li><li>Where are your competitors gaining ground you don't yet know about?</li><li>What unmet needs in your category remain underserved?</li></ul></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="tm-section bg-surface" id="cta">
+    <div class="tm-container"><div class="cta-card"><div class="cta-content">
+      <p class="cta-eyebrow">Get Started Today</p>
+      <h2 class="cta-heading">Fuel Your Next Big Decision.</h2>
+      <p class="cta-body">Our FMCG research experts decode the full consumer journey — from shelf to screen — with clarity and confidence. Ready to move from instinct to insight?</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/start-your-research" class="btn-surface">Request a Bid</a>
+        <a href="/contact-us" class="btn-cta-frosted">Talk to Our Team</a>
+      </div>
+    </div><div class="cta-orb cta-orb--tl"></div><div class="cta-orb cta-orb--br"></div></div></div>
+  </section>
+
+</PresentationLayout>
+
+<script>
+  document.querySelectorAll('.faq-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const isOpen = card.classList.contains('open');
+      document.querySelectorAll('.faq-card').forEach(c => c.classList.remove('open'));
+      if (!isOpen) card.classList.add('open');
+    });
+  });
+</script>

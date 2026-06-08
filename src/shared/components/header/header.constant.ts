@@ -6,6 +6,7 @@ export interface AuthContext {
   isAdminUser: boolean;
   isAdminPage: boolean;
   isSurveyBoardsPage: boolean;
+  isClient: boolean;
 }
 
 export const navigationItems = [

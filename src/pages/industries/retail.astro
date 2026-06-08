@@ -1,6 +1,5 @@
 ---
-import { industries } from '@/core/constants/page-constants/industries-constant';
-import IndustryTemplate from '@layouts/IndustryTemplate.astro';
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
 import { seoConfig } from '@/core/constants/seo.constants';
 import { buildStandardPageSchema } from '@/core/utils/schema-builder';
 import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
@@ -11,20 +10,130 @@ const seoContent = {
   keywords: 'retail research, merchandising insights, shopper behavior, retail analytics, e-commerce research, in-store experience, shelf optimization, consumer insights, retail trends, customer journey',
 };
 
-// Generate breadcrumbs and structured data for SEO
 const breadcrumbs = generateBreadcrumbsFromPath(Astro.url.pathname);
 const pageUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).href;
-const structuredData = buildStandardPageSchema(
-  seoConfig,
-  pageUrl,
-  'Retail & Merchandising Research',
-  breadcrumbs
-);
+const structuredData = buildStandardPageSchema(seoConfig, pageUrl, 'Retail & Merchandising Research', breadcrumbs);
 ---
 
-<IndustryTemplate
-  title={seoContent.title}
-  description={seoContent.description}
-  industry={industries.retail}
-  structuredData={structuredData}
-/>
+<PresentationLayout title={seoContent.title} description={seoContent.description} keywords={seoContent.keywords} structuredData={structuredData}>
+
+  <section class="tm-section relative">
+    <div class="tm-container grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div class="z-10">
+        <nav class="flex items-center gap-2 mb-6 text-xs text-on-surface-variant">
+          <a href="/" class="hover:text-on-surface transition-colors">Home</a><span class="opacity-40">/</span>
+          <a href="/industries" class="opacity-60 hover:text-on-surface transition-colors">Industries</a><span class="opacity-40">/</span>
+          <span class="text-primary font-medium">Retail</span>
+        </nav>
+        <span class="chip mb-6 inline-flex">RETAIL &amp; MERCHANDISING</span>
+        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-[1.08]">
+          Turning Shopping Moments<br />into <span class="text-primary italic">Lasting Impressions.</span>
+        </h1>
+        <p class="text-lg text-on-surface-variant max-w-xl mb-10 leading-relaxed">From store shelves to mobile screens, discover what influences buying decisions and build retail experiences that truly resonate with your shoppers.</p>
+        <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <a href="/start-your-research" class="btn-primary">Request a Bid</a>
+          <a href="#services" class="btn-ghost">Explore Solutions</a>
+        </div>
+      </div>
+      <div class="relative">
+        <div class="rounded-[3rem] bg-surface-container-low border border-outline-variant/10 shadow-2xl p-8 flex flex-col gap-5 min-h-[360px]">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-semibold text-on-surface-variant uppercase tracking-widest">Shopper Path to Purchase</span>
+            <div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-secondary animate-pulse"></div><span class="text-xs text-on-surface-variant">Tracking</span></div>
+          </div>
+          <div class="space-y-3">
+            <div class="bg-surface-container rounded-xl p-3"><div class="flex justify-between mb-2"><span class="text-xs font-semibold text-on-surface">Discovery</span><span class="text-xs font-bold text-primary">95%</span></div><div class="h-2 bg-outline-variant/20 rounded-full"><div class="h-full bg-primary rounded-full" style="width:95%"></div></div></div>
+            <div class="bg-surface-container rounded-xl p-3"><div class="flex justify-between mb-2"><span class="text-xs font-semibold text-on-surface">Consideration</span><span class="text-xs font-bold text-secondary">72%</span></div><div class="h-2 bg-outline-variant/20 rounded-full"><div class="h-full bg-secondary rounded-full" style="width:72%"></div></div></div>
+            <div class="bg-surface-container rounded-xl p-3"><div class="flex justify-between mb-2"><span class="text-xs font-semibold text-on-surface">Purchase Intent</span><span class="text-xs font-bold text-tertiary">58%</span></div><div class="h-2 bg-outline-variant/20 rounded-full"><div class="h-full bg-tertiary rounded-full" style="width:58%"></div></div></div>
+            <div class="bg-surface-container rounded-xl p-3"><div class="flex justify-between mb-2"><span class="text-xs font-semibold text-on-surface">Loyalty</span><span class="text-xs font-bold text-primary">31%</span></div><div class="h-2 bg-outline-variant/20 rounded-full"><div class="h-full bg-primary rounded-full" style="width:31%"></div></div></div>
+          </div>
+        </div>
+        <div class="absolute -top-4 -right-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+          <div class="text-primary text-2xl font-bold mb-0.5">4.2x</div>
+          <div class="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Loyalty Uplift</div>
+        </div>
+        <div class="absolute -bottom-4 -left-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+          <div class="text-secondary text-2xl font-bold mb-0.5">12 Profiles</div>
+          <div class="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Shopper Segments</div>
+        </div>
+      </div>
+    </div>
+    <div class="absolute inset-0 pointer-events-none overflow-hidden" style="z-index:-1" aria-hidden="true">
+      <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-secondary/8 blur-[140px] rounded-full"></div>
+    </div>
+  </section>
+
+  <section class="bg-surface-container-lowest py-14 border-y border-outline-variant/5">
+    <div class="tm-container flex flex-wrap justify-between gap-10 items-center">
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-primary">directions_walk</span><div><div class="text-2xl font-bold text-on-surface">Shopper Behavior</div><div class="text-on-surface-variant text-sm">In-Store &amp; Online Insights</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-secondary">category</span><div><div class="text-2xl font-bold text-on-surface">Shelf Optimization</div><div class="text-on-surface-variant text-sm">Planogram &amp; Display Testing</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-tertiary">location_on</span><div><div class="text-2xl font-bold text-on-surface">Local Intelligence</div><div class="text-on-surface-variant text-sm">Geo-Targeted Research</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-primary-container">devices</span><div><div class="text-2xl font-bold text-on-surface">Omni-Channel</div><div class="text-on-surface-variant text-sm">Physical + Digital Fusion</div></div></div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface" id="services">
+    <div class="tm-container">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-14 gap-6">
+        <div class="max-w-2xl"><p class="section-eyebrow">How We Help</p><h2 class="text-4xl md:text-5xl font-bold mb-5">Make an Impact on <span class="text-secondary">Your Shoppers</span></h2><p class="text-lg text-on-surface-variant">High-quality retail insights are crucial for brands optimizing in-store engagement and e-commerce platforms refining UX.</p></div>
+        <a href="/start-your-research" class="btn-ghost flex-shrink-0">Get a Quote</a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-primary text-3xl">storefront</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Real-Time Shopper Behavior Insights</h3><p class="text-on-surface-variant mb-5">Track the full path to purchase — from first awareness to repeat buy. Understand impulse behavior, brand switching triggers, and what truly drives the final decision at shelf.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">PATH TO PURCHASE</span><span class="chip">IMPULSE BEHAVIOR</span></div></div>
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-secondary text-3xl">dashboard</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Optimize Every Shelf and Screen</h3><p class="text-on-surface-variant mb-5">Test planograms, product placement, and digital shelf positioning before costly rollouts. Find out which display configurations drive the most engagement and sales conversion.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">PLANOGRAM TESTING</span><span class="chip">DIGITAL PLACEMENT</span></div></div>
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-tertiary text-3xl">location_searching</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Localized Intelligence, Global Reach</h3><p class="text-on-surface-variant mb-5">Understand how shopper behavior varies across geographies, store formats, and demographics. Build strategies grounded in local market reality rather than national averages.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">GEO-TARGETING</span><span class="chip">CULTURAL CONTEXT</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface-container-lowest">
+    <div class="tm-container">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        <div>
+          <p class="section-eyebrow">Retail Research Questions</p>
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">Questions That Shape <span class="text-primary">Retail Strategy</span></h2>
+          <p class="text-lg text-on-surface-variant mb-8 leading-relaxed">Retail decisions have shelf lives — and so do bad data. These are the questions we help retail brands answer with speed and precision.</p>
+          <div class="bg-surface-container rounded-2xl p-6 border border-outline-variant/10">
+            <div class="flex items-center gap-3 mb-4"><span class="material-symbols-outlined text-secondary text-xl">storefront</span><span class="font-semibold text-on-surface">Common Research Areas</span></div>
+            <ul class="space-y-2">
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Shopper journey & decision triggers</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>In-store & online category dynamics</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Shelf optimization & planogram testing</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Loyalty drivers & churn research</li>
+            </ul>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">Who to target and what do they want?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What are the demographic and psychographic profiles of your most valuable shoppers?</li><li>What motivates purchase decisions — price, brand, convenience, or experience?</li><li>How do different shopper segments approach your category differently?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">How to reach your target effectively?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>Which channels (TV, social, in-store, digital) drive the most incremental purchase intent?</li><li>What is the optimal media mix for your shopper segment?</li><li>How does your promotional strategy compare to competitors' in effectiveness?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">What to offer and how to present it?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>Which product, format, or pack size drives the highest trial among your target?</li><li>What price point maximizes volume without eroding brand equity?</li><li>How should your product be positioned vs. private label and premium alternatives?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">How to measure effectiveness?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What is the ROI of your current merchandising spend across formats?</li><li>How is brand perception shifting over time among loyal vs. lapsed shoppers?</li><li>Which in-store activations drive measurable lift vs. which are wasted spend?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">What industry trends should we anticipate?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>How is the rise of quick commerce changing shopper expectations in your category?</li><li>What is the long-term trajectory of omnichannel behavior among your shoppers?</li><li>Which emerging retail formats represent the biggest opportunity or threat?</li></ul></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface" id="cta">
+    <div class="tm-container"><div class="cta-card"><div class="cta-content">
+      <p class="cta-eyebrow">Get Started Today</p>
+      <h2 class="cta-heading">See What Drives Shoppers — Before They Reach the Shelf.</h2>
+      <p class="cta-body">Unlock insights that help you design better in-store experiences, optimize digital channels, and build lasting customer loyalty across every retail touchpoint.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/start-your-research" class="btn-surface">Request a Bid</a>
+        <a href="/contact-us" class="btn-cta-frosted">Talk to Our Team</a>
+      </div>
+    </div><div class="cta-orb cta-orb--tl"></div><div class="cta-orb cta-orb--br"></div></div></div>
+  </section>
+
+</PresentationLayout>
+
+<script>
+  document.querySelectorAll('.faq-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const isOpen = card.classList.contains('open');
+      document.querySelectorAll('.faq-card').forEach(c => c.classList.remove('open'));
+      if (!isOpen) card.classList.add('open');
+    });
+  });
+</script>

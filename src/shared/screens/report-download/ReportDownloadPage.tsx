@@ -9,25 +9,18 @@ import {
   SelectAtom,
   TextInputAtom,
 } from '@/shared/ui/atoms/custom-input';
-import CustomButtonAtom from '@/shared/ui/atoms/custom-button';
-import { Logo } from '@/assets';
 import { useDownloadReportFormStore } from '@/core/stores/download-report.store';
 import { useDownloadReportFormValidation } from '@/core/hooks/validation/use-download-report-form-validation';
 import { useSubmitDownloadReport } from '@/core/hooks/queries/download-report/index.queries';
 
-import illustration_login from 'images/illustration-login.png';
-
-const { countries, countryCodes, defaultCountryCode, ui } =
-  reportDownloadConstant;
+const { countries, countryCodes, defaultCountryCode, ui } = reportDownloadConstant;
 
 const ReportDownloadPage: React.FC = () => {
   const { formData, updateField, resetForm } = useDownloadReportFormStore();
-  const { errors, validate, clearError, clearAllErrors } =
-    useDownloadReportFormValidation();
+  const { errors, validate, clearError, clearAllErrors } = useDownloadReportFormValidation();
   const submitMutation = useSubmitDownloadReport();
   const [countryCode, setCountryCode] = useState(defaultCountryCode);
 
-  // Reset form on successful submission
   useEffect(() => {
     if (submitMutation.isSuccess) {
       const timer = setTimeout(() => {
@@ -37,274 +30,147 @@ const ReportDownloadPage: React.FC = () => {
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [
-    submitMutation.isSuccess,
-    resetForm,
-    clearAllErrors,
-    submitMutation.reset,
-    submitMutation,
-  ]);
+  }, [submitMutation.isSuccess, resetForm, clearAllErrors, submitMutation]);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    const finalValue =
-      type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
-
-    updateField(name as keyof typeof formData, finalValue);
+    updateField(name as keyof typeof formData, type === 'checkbox' ? (e.target as HTMLInputElement).checked : value);
     clearError(name);
-  };
-
-  const handleCountryCodeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setCountryCode(e.target.value);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Add countryCode to formData before validation
-    const dataToValidate = {
-      ...formData,
-      countryCode,
-      phone: countryCode + formData.phone,
-    };
-
+    const dataToValidate = { ...formData, countryCode, phone: countryCode + formData.phone };
     if (!validate(dataToValidate)) return;
-
-    // Prepare data for submission - clean up empty strings
-    const submitData: any = {
-      ...formData,
-      countryCode,
-      phone: countryCode + formData.phone,
-    };
-
-    // Replace empty strings with null or remove them
-    Object.keys(submitData).forEach((key) => {
-      if (submitData[key] === '') {
-        delete submitData[key];
-      }
-    });
-
-    submitMutation.mutate(submitData);
+    const submitData: Record<string, unknown> = { ...formData, countryCode, phone: countryCode + formData.phone };
+    Object.keys(submitData).forEach((k) => { if (submitData[k] === '') delete submitData[k]; });
+    submitMutation.mutate(submitData as unknown as typeof formData);
   };
 
-  // Show success state
   if (submitMutation.isSuccess) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-        <div className="max-w-md text-center bg-white rounded-lg shadow-lg p-8">
-          <div className="mb-4">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-              <svg
-                className="w-8 h-8 text-green-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-            </div>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            {ui.successMessage.title}
-          </h2>
-          <p className="text-gray-600">{ui.successMessage.description}</p>
+      <section className="tm-section flex items-center justify-center min-h-[60vh]">
+        <div
+          className="max-w-md w-full text-center rounded-2xl p-10 border border-outline-variant/10"
+          style={{ background: 'var(--surface-container-low)' }}
+        >
+          <span className="material-symbols-outlined text-secondary text-5xl mb-4 block">check_circle</span>
+          <h2 className="text-2xl font-bold text-on-surface mb-2">{ui.successMessage.title}</h2>
+          <p className="text-on-surface-variant mb-6">{ui.successMessage.description}</p>
+          <a href={ROUTES.HOME} className="btn-primary inline-flex items-center gap-2">
+            <span className="material-symbols-outlined text-xl">home</span>Back to Home
+          </a>
         </div>
-      </div>
+      </section>
     );
   }
 
   return (
-    <div className="common-component w-full relative bg-white text-black z-1 overflow-scroll flex-col items-center justify-start! hide-scrollbar">
-      <header className="common-container bg-white max-w-(--breakpoint-2xl)! h-14">
-        <nav className="px-6 py-3 xxl:px-0 flex items-center justify-between w-full">
-          <a href={ROUTES.HOME}>
-            <div className="w-45 pt-1">
-              <Logo className="w-full h-full" />
-            </div>
-          </a>
-        </nav>
-      </header>
-      <div className="relative md:h-[calc(100vh-3.5rem)] w-full">
-        <div className="lg:block md:absolute left-0 w-[full%] md:w-[50%] h-full bg-[url('images/background_image_5.png')] bg-cover bg-center bg-no-repeat -z-1 text-black px-6 py-10 md:px-18 md:py-16">
-          <p className="flex flex-col">
-            <span className="text-xl font-medium">
-              Use of AI in User Experience Research
-            </span>
-            <span>
-              As user expectations evolve faster than ever, traditional research
-              methods struggle to keep up. This eBook uncovers how AI is
-              transforming the UX research process — automating data collection,
-              analyzing sentiment in real-time, and uncovering patterns that
-              were once invisible to human eyes. Whether you're a researcher,
-              designer, or product strategist, this guide will help you
-              understand the real-world power of AI in shaping better
-              experiences.
-            </span>
-            In this report, you'll learn:
-            <ul className="list-disc list-inside">
-              <li>
-                How AI is streamlining qualitative and quantitative data
-                analysis
-              </li>
-              <li>
-                Ways to use sentiment and intent detection to improve product
-                decisions
-              </li>
-              <li>What adaptive, AI-powered surveys look like in action</li>
-              <li>
-                How top teams are integrating AI into their UX research stack
-              </li>
-            </ul>
-          </p>
-        </div>
-        <img
-          src={illustration_login.src}
-          alt="Login illustration"
-          className="hidden lg:block absolute bottom-0 left-0 w-[50%] h-fit z-1"
-        />
-        <div className="common-container h-full grid! grid-cols-1 md:grid-cols-[50%_50%] inset-ring-custom-grey-1 inset-ring-1">
-          <div className=""></div>
-          <div className="h-full md:overflow-y-auto px-6 py-10 md:px-18 md:py-16">
-            <h1 className="text-2xl font-medium text-gray-900 mb-2">
-              {ui.mainHeading}
+    <section className="tm-section relative overflow-hidden">
+      <div className="tm-container">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start max-w-5xl mx-auto">
+
+          {/* ── Left: Report preview (sticky on desktop) ── */}
+          <div className="lg:sticky lg:top-28">
+            <nav className="flex items-center gap-2 mb-6 text-xs text-on-surface-variant" aria-label="Breadcrumb">
+              <a href="/" className="hover:text-on-surface transition-colors">Home</a>
+              <span className="opacity-40">/</span>
+              <span className="text-primary font-medium">Report Download</span>
+            </nav>
+            <span className="chip mb-6 inline-flex">FREE REPORT</span>
+            <h1 className="text-4xl font-extrabold tracking-tight mb-4 leading-tight text-on-surface">
+              India Consumer Insights<br />
+              <span className="text-primary italic">Report 2025.</span>
             </h1>
-            <p className="text-gray-600 mb-6">
+            <p className="text-on-surface-variant mb-8 leading-relaxed">
               {ui.loginPrompt}{' '}
-              <a
-                href={ROUTES.LOGIN_IN}
-                className="text-blue-600 hover:text-blue-800 hover:underline"
-              >
-                {ui.loginLink}
-              </a>
+              <a href={ROUTES.LOGIN_IN} className="text-primary hover:underline">{ui.loginLink}</a>
             </p>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Name Fields */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <TextInputAtom
-                  id="firstName"
-                  name="firstName"
-                  label={ui.fieldLabels.firstName}
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  error={errors.firstName}
-                  required
-                />
-                <TextInputAtom
-                  id="lastName"
-                  name="lastName"
-                  label={ui.fieldLabels.lastName}
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  error={errors.lastName}
-                  required
-                />
+            {/* Report preview card */}
+            <div className="relative rounded-2xl overflow-hidden border border-outline-variant/20 shadow-2xl mb-6">
+              <div
+                className="p-8 min-h-[200px] flex flex-col justify-between relative"
+                style={{ background: 'linear-gradient(135deg, color-mix(in srgb,var(--primary) 30%,transparent), color-mix(in srgb,var(--secondary) 20%,transparent))' }}
+              >
+                <div className="absolute inset-0" style={{ backdropFilter: 'blur(4px)', background: 'color-mix(in srgb,var(--surface-container-low) 60%,transparent)' }} />
+                <div className="relative z-10">
+                  <div className="text-xl font-extrabold text-on-surface mb-2">India Consumer Insights Report 2025</div>
+                  <div className="text-sm text-on-surface-variant mb-6">Trends, Behaviors &amp; Market Opportunities</div>
+                </div>
+                <div className="relative z-10 flex items-center gap-3">
+                  <span className="material-symbols-outlined text-primary text-3xl">lock</span>
+                  <div>
+                    <div className="text-sm font-bold text-on-surface">Full report locked</div>
+                    <div className="text-xs text-on-surface-variant">Complete the form to access</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* What's inside */}
+            <div className="space-y-3">
+              <div className="text-sm font-semibold text-on-surface mb-2">What's Inside</div>
+              {[
+                { color: 'primary', text: 'Consumer sentiment & confidence trends' },
+                { color: 'secondary', text: 'Category purchase intent across 8 sectors' },
+                { color: 'tertiary', text: 'Digital vs offline shopping behavior shifts' },
+                { color: 'primary', text: 'Brand trust & loyalty benchmarks' },
+                { color: 'secondary', text: 'Tier 1 vs Tier 2/3 city behavior comparison' },
+              ].map(({ color, text }) => (
+                <div key={text} className="flex items-center gap-2 text-sm text-on-surface-variant">
+                  <span className={`material-symbols-outlined text-${color} text-base`}>check_circle</span>
+                  {text}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Right: Download form ── */}
+          <div
+            className="rounded-[2rem] border border-outline-variant/10 p-8 shadow-2xl"
+            style={{ background: 'var(--surface-container-low)' }}
+          >
+            <h2 className="text-xl font-bold text-on-surface mb-6">Access the Full Report</h2>
+            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <TextInputAtom id="firstName" name="firstName" label={ui.fieldLabels.firstName} value={formData.firstName} onChange={handleInputChange} error={errors.firstName} required />
+                <TextInputAtom id="lastName" name="lastName" label={ui.fieldLabels.lastName} value={formData.lastName} onChange={handleInputChange} error={errors.lastName} required />
+              </div>
+              <TextInputAtom id="businessEmail" name="businessEmail" label={ui.fieldLabels.businessEmail} type="email" value={formData.businessEmail} onChange={handleInputChange} error={errors.businessEmail} required />
+              <PhoneInputAtom id="phone" name="phone" label={ui.fieldLabels.phone} value={formData.phone} onChange={handleInputChange} countryCode={countryCode} onCountryCodeChange={(e) => setCountryCode(e.target.value)} countryCodes={countryCodes} error={errors.phone} />
+              <TextInputAtom id="company" name="company" label={ui.fieldLabels.company} value={formData.company} onChange={handleInputChange} error={errors.company} required />
+              <TextInputAtom id="jobTitle" name="jobTitle" label={ui.fieldLabels.jobTitle} value={formData.jobTitle} onChange={handleInputChange} error={errors.jobTitle} />
+              <SelectAtom id="countryOrRegion" name="countryOrRegion" label={ui.fieldLabels.countryOrRegion} value={formData.countryOrRegion} onChange={handleInputChange} options={countries} error={errors.countryOrRegion} required />
+
+              <div className="rounded-xl p-4 border border-outline-variant/10 space-y-3" style={{ background: 'var(--surface-container)' }}>
+                <CheckboxAtom id="subscribeNewsletter" name="subscribeNewsletter" checked={formData.subscribeNewsletter} onChange={handleInputChange} label={ui.checkboxLabels.subscribeNewsletter} />
+                <CheckboxAtom id="dataUsageConsent" name="dataUsageConsent" checked={formData.dataUsageConsent} onChange={handleInputChange} label={ui.checkboxLabels.dataUsageConsent} required error={errors.dataUsageConsent} />
               </div>
 
-              {/* Email and Phone */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <TextInputAtom
-                  id="businessEmail"
-                  name="businessEmail"
-                  label={ui.fieldLabels.businessEmail}
-                  type="email"
-                  value={formData.businessEmail}
-                  onChange={handleInputChange}
-                  error={errors.businessEmail}
-                  required
-                />
-                <PhoneInputAtom
-                  id="phone"
-                  name="phone"
-                  label={ui.fieldLabels.phone}
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  countryCode={countryCode}
-                  onCountryCodeChange={handleCountryCodeChange}
-                  countryCodes={countryCodes}
-                  error={errors.phone}
-                  required
-                />
-              </div>
-
-              {/* Country and Company */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <SelectAtom
-                  id="countryOrRegion"
-                  name="countryOrRegion"
-                  label={ui.fieldLabels.countryOrRegion}
-                  value={formData.countryOrRegion}
-                  onChange={handleInputChange}
-                  options={countries}
-                  error={errors.countryOrRegion}
-                  required
-                />
-                <TextInputAtom
-                  id="company"
-                  name="company"
-                  label={ui.fieldLabels.company}
-                  value={formData.company}
-                  onChange={handleInputChange}
-                  error={errors.company}
-                  required
-                />
-              </div>
-
-              {/* Job Title */}
-              <TextInputAtom
-                id="jobTitle"
-                name="jobTitle"
-                label={ui.fieldLabels.jobTitle}
-                value={formData.jobTitle}
-                onChange={handleInputChange}
-                error={errors.jobTitle}
-              />
-
-              {/* Consent Checkboxes */}
-              <div className="space-y-4 pt-4">
-                <CheckboxAtom
-                  id="subscribeNewsletter"
-                  name="subscribeNewsletter"
-                  checked={formData.subscribeNewsletter}
-                  onChange={handleInputChange}
-                  label={ui.checkboxLabels.subscribeNewsletter}
-                />
-
-                <CheckboxAtom
-                  id="dataUsageConsent"
-                  name="dataUsageConsent"
-                  checked={formData.dataUsageConsent}
-                  onChange={handleInputChange}
-                  label={ui.checkboxLabels.dataUsageConsent}
-                />
-              </div>
-
-              {/* Submit Button */}
-              <div className="pt-6">
-                <CustomButtonAtom
-                  type="submit"
-                  label={
-                    submitMutation.isPending
-                      ? ui.buttons.downloading
-                      : ui.buttons.download
-                  }
-                  className="w-full md:w-fit py-4 md:py-6 md:px-24 rounded-none text-white font-semibold"
-                  disabled={submitMutation.isPending}
-                  loading={submitMutation.isPending}
-                />
-              </div>
+              <button
+                type="submit"
+                className="btn-primary w-full flex items-center justify-center gap-2 text-base py-3.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={submitMutation.isPending}
+              >
+                {submitMutation.isPending ? (
+                  <><span className="material-symbols-outlined text-xl animate-spin">progress_activity</span>{ui.buttons.downloading}</>
+                ) : (
+                  <><span className="material-symbols-outlined text-xl">download</span>{ui.buttons.download}</>
+                )}
+              </button>
             </form>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Ambient orb */}
+      <div
+        className="absolute top-0 right-0 pointer-events-none rounded-full"
+        style={{ zIndex: -1, width: 400, height: 400, background: 'var(--primary)', opacity: 0.05, filter: 'blur(120px)' }}
+        aria-hidden="true"
+      />
+    </section>
   );
 };
 

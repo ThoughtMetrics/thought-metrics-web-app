@@ -1,89 +1,80 @@
 ---
-import { RedTickIcon } from '@/assets';
-import { careers } from '@/core/constants/page-constants/careers-constant';
-import CustomImageAtom from '@/shared/ui/atoms/custom-image';
 import PresentationLayout from '@/layouts/PresentationLayout.astro';
 
 const seoContent = {
   title: 'Careers at Thought Metrics | Join Our Research Team',
   description: 'Join our team and shape the future of market research. Explore career opportunities where innovation meets insights in a dynamic growth environment.',
 };
+
+const benefits = [
+  { icon: 'lightbulb', color: 'primary', t: 'Meaningful Work', d: 'The research we do helps brands make better products, governments make better policies, and businesses make decisions that genuinely affect people\'s lives.' },
+  { icon: 'rocket_launch', color: 'secondary', t: 'Fast Growth', d: 'We move quickly, learn constantly, and give people real responsibility early. If you want ownership and impact, you\'ll find it here.' },
+  { icon: 'groups', color: 'tertiary', t: 'Great Team', d: 'We hire curious, collaborative people who care about quality and each other. No politics, no bureaucracy — just good people doing good work.' },
+  { icon: 'home_work', color: 'primary', t: 'Flexible Work', d: 'Remote-friendly culture with the option to come into our Mumbai office. We care about results, not where you do the work.' },
+  { icon: 'school', color: 'secondary', t: 'Learning Budget', d: 'Every team member gets an annual learning budget for courses, conferences, books, and certifications. We invest in your growth.' },
+  { icon: 'diversity_3', color: 'tertiary', t: 'Inclusive Culture', d: 'We actively build a diverse team and inclusive workplace. Everyone belongs here, and every voice matters in how we make decisions.' },
+];
 ---
 
-<PresentationLayout
-  title={seoContent.title}
-  description={seoContent.description}
->
-  <section class="common-component relative text-black">
-    <div
-      class="common-container max-w-(--breakpoint-2xl)! flex-col px-6 py-10 md:px-24 md:py-28"
-    >
-      <div class="h-full flex flex-col gap-3">
-        <h2 class="w-full text-2xl xl:text-3xl xxl:text-4xl font-semibold">
-          <span>{careers.heroSection.head}</span>
-        </h2>
-        <p class="tracking-tight md:w-[49%] lg:w-[51%] xl:w-[51%]">
-          {careers.heroSection.description}
-        </p>
-        <CustomImageAtom
-          client:load
-          src={careers.heroSection.illustration.img}
-          size="full"
-          objectFit={careers.heroSection.illustration.objectFit}
-          loading={careers.heroSection.illustration.loading}
-          rounded="none"
-          className="w-full! h-full!"
-        />
+<PresentationLayout title={seoContent.title} description={seoContent.description}>
+
+  <!-- Hero -->
+  <section class="tm-section relative">
+    <div class="tm-container text-center max-w-3xl mx-auto">
+      <nav class="flex items-center gap-2 mb-6 text-xs text-on-surface-variant justify-center">
+        <a href="/" class="hover:text-on-surface transition-colors">Home</a>
+        <span class="opacity-40">/</span>
+        <span class="text-primary font-medium">Careers</span>
+      </nav>
+      <span class="chip mb-6 inline-flex">CAREERS</span>
+      <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-[1.08]">
+        Help Build the Future of <span class="text-primary italic">Research in India.</span>
+      </h1>
+      <p class="text-lg text-on-surface-variant max-w-2xl mx-auto leading-relaxed">
+        At ThoughtMetrics, we're on a mission to make market research more transparent, agile, and human. We're looking for curious, driven people who want to do meaningful work.
+      </p>
+    </div>
+    <div class="absolute inset-0 pointer-events-none overflow-hidden" style="z-index:-1" aria-hidden="true">
+      <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/8 blur-[140px] rounded-full"></div>
+    </div>
+  </section>
+
+  <!-- Why Join Us -->
+  <section class="tm-section bg-surface-container-lowest">
+    <div class="tm-container">
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <p class="section-eyebrow">Why Join Us</p>
+        <h2 class="text-4xl md:text-5xl font-bold mb-5">A Place to Do Your <span class="text-primary">Best Work</span></h2>
+        <p class="text-lg text-on-surface-variant">We're a small, ambitious team building something we believe in. Every person here makes a real difference.</p>
       </div>
-      <div class="pt-8 flex flex-col gap-6">
-        <h2
-          class="w-full text-2xl xl:text-3xl xxl:text-4xl font-semibold text-end tracking-tighter"
-        >
-          <span>{careers.aboutUsSection.head}</span>
-        </h2>
-        <div
-          class="shrink-0 grid grid-cols-1 md:grid-cols-3 md:gap-x-28 gap-y-8 md:gap-y-18 md:py-8 pb-8"
-        >
-          {
-            careers.aboutUsSection.items.map((item: any) => (
-              <div class="flex flex-col gap-3 w-full">
-                <div class="flex flex-col gap-3">
-                  <div class="flex gap-2 items-center">
-                    <label class="font-semibold text-md md:text-base">
-                      {item.label}
-                    </label>
-                    <RedTickIcon client:load />
-                  </div>
-                  <p class="text-sm md:text-md">{item.description}</p>
-                </div>
-              </div>
-            ))
-          }
-        </div>
-      </div>
-      <div
-        class="absolute left-0 top-0 w-full h-full flex justify-center items-end"
-      >
-        <div class="max-w-(--breakpoint-2xl) w-full">
-          <div
-            class="ml-6 md:ml-24 mb-60 md:mb-78 h-1.5 md:h-2 w-[95%] lg:w-[97%] xxl:w-[110%] wide:w-[120%] bg-linear-to-r from-secondary to-primary"
-          >
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {benefits.map(({ icon, color, t, d }) => (
+          <div class="ds-card">
+            <div class={`w-12 h-12 rounded-xl bg-${color}/10 flex items-center justify-center mb-6`}>
+              <span class={`material-symbols-outlined text-${color} text-3xl`}>{icon}</span>
+            </div>
+            <h3 class="text-lg font-bold mb-3 text-on-surface">{t}</h3>
+            <p class="text-on-surface-variant text-sm leading-relaxed">{d}</p>
           </div>
-        </div>
-      </div>
-      <div class="flex flex-col gap-6 pt-8 md:pt-12">
-        <h2
-          class="w-full text-2xl xl:text-3xl xxl:text-4xl font-semibold text-start tracking-tighter"
-        >
-          <span>{careers.feedbackSection.head}</span>
-        </h2>
-        <p class="tracking-tight md:w-[49%] lg:w-[51%] xl:w-[51%] md:text-lg">
-          {careers.feedbackSection.description}
-        </p>
-        <label class="font-medium md:text-xl">
-          {careers.feedbackSection.email}
-        </label>
+        ))}
       </div>
     </div>
   </section>
+
+  <!-- Open Positions -->
+  <section class="tm-section bg-surface">
+    <div class="tm-container text-center max-w-2xl mx-auto">
+      <span class="material-symbols-outlined text-primary text-6xl mb-6 block">work</span>
+      <h2 class="text-4xl font-bold mb-5 text-on-surface">We Want to Hear From You.</h2>
+      <p class="text-lg text-on-surface-variant mb-10 leading-relaxed">
+        We don't always post every opening publicly. If you're passionate about research, data, technology, or operations — send us your CV and tell us what you're great at. We'll be in touch if there's a fit.
+      </p>
+      <a href="mailto:careers@thoughtmetrics.com" class="btn-primary inline-flex items-center gap-2">
+        <span class="material-symbols-outlined text-xl">email</span>
+        careers@thoughtmetrics.com
+      </a>
+      <p class="text-sm text-on-surface-variant mt-6">We review every application. Typical response time is 5–7 business days.</p>
+    </div>
+  </section>
+
 </PresentationLayout>

@@ -1,0 +1,8 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import ClientDashboard from '@/shared/screens/client/client-dashboard';
+---
+
+<IntractionLayout title="Dashboard | Client Portal" description="Your survey dashboard">
+  <ClientDashboard client:only="react" />
+</IntractionLayout>

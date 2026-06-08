@@ -5,6 +5,8 @@ import { RotateCcw, RotateCw, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
+import ClientRouteGuard from '@/shared/components/guards/ClientRouteGuard';
+import ClientSidebar from '@/shared/components/client/ClientSidebar';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 import { useTemplateQuery } from '@/core/hooks/queries/survey-templates/index.queries';
 import { useCreateTemplate, useUpdateTemplate, useSaveSurveyDraft, useSaveDraftContent, useDiscardDraftContent } from '@/core/hooks/mutations/survey-template.mutations';
@@ -18,6 +20,8 @@ import PublishSurveyModal from './components/PublishSurveyModal';
 
 interface Props {
   templateId?: string;
+  SidebarComponent?: React.ComponentType;
+  backHref?: string;
 }
 
 const LOCAL_KEY = (id: string | undefined) => `tm-builder-${id ?? 'new'}`;
@@ -26,7 +30,7 @@ const clearLocalDraft = (id: string | undefined) => {
   try { localStorage.removeItem(LOCAL_KEY(id)); } catch {}
 };
 
-const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
+const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId, SidebarComponent = AdminSidebar, backHref = '/admin/surveys' }) => {
   const { data, isLoading, isError } = useTemplateQuery(templateId);
 
   const { name, isDirty, questions, settings, translations, setName, setTranslation, loadTemplate, resetEditor, toCreateRequest, toUpdateRequest, undo, redo, _past, _future } =
@@ -50,9 +54,9 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
   // Auto-redirect 2 seconds after save-draft success overlay appears
   useEffect(() => {
     if (!showSaveSuccess) return;
-    const t = setTimeout(() => { window.location.href = '/admin/surveys'; }, 2000);
+    const t = setTimeout(() => { window.location.href = backHref; }, 2000);
     return () => clearTimeout(t);
-  }, [showSaveSuccess]);
+  }, [showSaveSuccess, backHref]);
 
   // Load template data into store when it arrives
   useEffect(() => {
@@ -272,7 +276,7 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
       <div className="h-full flex items-center justify-center bg-gray-50">
         <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-6 max-w-md text-center">
           <p className="font-medium mb-2">Failed to load template</p>
-          <a href="/admin/surveys" className="text-primary underline text-sm">
+          <a href={backHref} className="text-primary underline text-sm">
             Back to Surveys
           </a>
         </div>
@@ -329,7 +333,7 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
       )}
 
       <div className="h-full flex bg-gray-50 text-text-dark">
-        <AdminSidebar />
+        <SidebarComponent />
 
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           {/* Header bar */}
@@ -347,7 +351,7 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId }) => {
               </button>
             ) : (
               <a
-                href="/admin/surveys"
+                href={backHref}
                 className="flex items-center gap-1.5 text-secondary hover:text-secondary/80 transition-colors flex-shrink-0"
                 title="Back to Surveys"
               >
@@ -477,6 +481,16 @@ export const SurveyBuilderEditor: React.FC<Props> = (props) => (
   <AdminRouteGuard>
     <SurveyBuilderEditorContent {...props} />
   </AdminRouteGuard>
+);
+
+export const ClientSurveyBuilderEditor: React.FC<Pick<Props, 'templateId'>> = ({ templateId }) => (
+  <ClientRouteGuard>
+    <SurveyBuilderEditorContent
+      templateId={templateId}
+      SidebarComponent={ClientSidebar}
+      backHref="/client/surveys"
+    />
+  </ClientRouteGuard>
 );
 
 export default SurveyBuilderEditor;

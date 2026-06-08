@@ -40,15 +40,21 @@ interface DesktopActionsProps {
 }
 
 export const DesktopActions: React.FC<DesktopActionsProps> = ({ auth, theme, onToggleTheme }) => {
-  const { isAuthenticated, isAdminUser, isAdminPage, isSurveyBoardsPage } = auth;
+  const { isAuthenticated, isAdminUser, isAdminPage, isSurveyBoardsPage, isClient } = auth;
 
   return (
     <div className="hidden md:flex items-center gap-2 flex-shrink-0">
       {!isAdminUser && (
         isAuthenticated ? (
-          <a href={ROUTES.SURVEY_BOARDS} className="btn-hdr-filled">
-            Take a Paid Survey
-          </a>
+          isClient ? (
+            <a href={ROUTES.CLIENT} className="btn-hdr-filled">
+              Admin Panel
+            </a>
+          ) : (
+            <a href={ROUTES.SURVEY_BOARDS} className="btn-hdr-filled">
+              Take a Paid Survey
+            </a>
+          )
         ) : (
           <>
             <a href={`${ROUTES.LOGIN_IN}?userType=respondent`} className="btn-hdr-outline">

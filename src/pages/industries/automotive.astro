@@ -1,6 +1,5 @@
 ---
-import { industries } from '@/core/constants/page-constants/industries-constant';
-import IndustryTemplate from '@layouts/IndustryTemplate.astro';
+import PresentationLayout from '@/layouts/PresentationLayout.astro';
 import { seoConfig } from '@/core/constants/seo.constants';
 import { buildStandardPageSchema } from '@/core/utils/schema-builder';
 import { generateBreadcrumbsFromPath } from '@/routes/routeConfig';
@@ -11,20 +10,137 @@ const seoContent = {
   keywords: 'automotive research, mobility insights, EV market research, automotive innovation, vehicle concept testing, car buyer behavior, brand loyalty research, automotive UX, connected car research, mobility trends',
 };
 
-// Generate breadcrumbs and structured data for SEO
 const breadcrumbs = generateBreadcrumbsFromPath(Astro.url.pathname);
 const pageUrl = new URL(Astro.url.pathname, seoConfig.siteUrl).href;
-const structuredData = buildStandardPageSchema(
-  seoConfig,
-  pageUrl,
-  'Automotive Market Research',
-  breadcrumbs
-);
+const structuredData = buildStandardPageSchema(seoConfig, pageUrl, 'Automotive Market Research', breadcrumbs);
 ---
 
-<IndustryTemplate
-  title={seoContent.title}
-  description={seoContent.description}
-  industry={industries.automotive}
-  structuredData={structuredData}
-/>
+<PresentationLayout title={seoContent.title} description={seoContent.description} keywords={seoContent.keywords} structuredData={structuredData}>
+
+  <section class="tm-section relative">
+    <div class="tm-container grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div class="z-10">
+        <nav class="flex items-center gap-2 mb-6 text-xs text-on-surface-variant">
+          <a href="/" class="hover:text-on-surface transition-colors">Home</a><span class="opacity-40">/</span>
+          <a href="/industries" class="opacity-60 hover:text-on-surface transition-colors">Industries</a><span class="opacity-40">/</span>
+          <span class="text-primary font-medium">Automotive</span>
+        </nav>
+        <span class="chip mb-6 inline-flex">AUTOMOTIVE</span>
+        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-[1.08]">
+          Shift Gears With Precision:<br /><span class="text-primary italic">Insights That Accelerate Growth.</span>
+        </h1>
+        <p class="text-lg text-on-surface-variant max-w-xl mb-10 leading-relaxed">From combustion to connected, the automotive world is transforming at full throttle. We decode the why behind the drive — helping you navigate shifting behaviors and engineer what's next.</p>
+        <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <a href="/start-your-research" class="btn-primary">Request a Bid</a>
+          <a href="#services" class="btn-ghost">Explore Solutions</a>
+        </div>
+      </div>
+      <div class="relative">
+        <div class="rounded-[3rem] bg-surface-container-low border border-outline-variant/10 shadow-2xl p-8 flex flex-col gap-3 min-h-[360px]">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-semibold text-on-surface-variant uppercase tracking-widest">Buyer Journey Stages</span>
+            <div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div><span class="text-xs text-on-surface-variant">Research Active</span></div>
+          </div>
+          <div class="flex flex-col gap-2">
+            {[{stage:'Awareness', sub:'Brand discovery & consideration set', icon:'visibility'},
+              {stage:'Research & Compare', sub:'Feature evaluation & shortlisting', icon:'manage_search'},
+              {stage:'Test Drive', sub:'Experience & intent confirmation', icon:'directions_car'},
+              {stage:'Purchase', sub:'Financing, negotiation, close', icon:'shopping_cart'},
+              {stage:'EV Adoption', sub:'Barriers, range anxiety, charging', icon:'electric_bolt'}
+            ].map(({stage, sub, icon}) => (
+              <div class="flex items-center gap-3 p-3 rounded-xl bg-surface-container border border-outline-variant/10">
+                <span class="material-symbols-outlined text-primary text-lg">{icon}</span>
+                <div><div class="text-xs font-semibold text-on-surface">{stage}</div><div class="text-[10px] text-on-surface-variant">{sub}</div></div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div class="absolute -top-4 -right-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+          <div class="text-primary text-2xl font-bold mb-0.5">EV Ready</div>
+          <div class="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Adoption Research</div>
+        </div>
+        <div class="absolute -bottom-4 -left-4 bg-surface-container-high/90 backdrop-blur-xl p-5 rounded-2xl border border-outline-variant/20 shadow-2xl">
+          <div class="text-secondary text-2xl font-bold mb-0.5">360°</div>
+          <div class="text-on-surface-variant text-xs uppercase tracking-wider font-bold">Buyer Understanding</div>
+        </div>
+      </div>
+    </div>
+    <div class="absolute inset-0 pointer-events-none overflow-hidden" style="z-index:-1" aria-hidden="true">
+      <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/6 blur-[140px] rounded-full"></div>
+    </div>
+  </section>
+
+  <section class="bg-surface-container-lowest py-14 border-y border-outline-variant/5">
+    <div class="tm-container flex flex-wrap justify-between gap-10 items-center">
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-primary">route</span><div><div class="text-2xl font-bold text-on-surface">Buyer Journey</div><div class="text-on-surface-variant text-sm">Decision Research &amp; Triggers</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-secondary">electric_bolt</span><div><div class="text-2xl font-bold text-on-surface">EV Adoption</div><div class="text-on-surface-variant text-sm">Barriers, Intent &amp; Readiness</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-tertiary">tune</span><div><div class="text-2xl font-bold text-on-surface">Feature Research</div><div class="text-on-surface-variant text-sm">Connected Car &amp; ADAS</div></div></div>
+      <div class="flex items-center gap-4"><span class="material-symbols-outlined text-4xl text-primary-container">build</span><div><div class="text-2xl font-bold text-on-surface">After-Sales</div><div class="text-on-surface-variant text-sm">Service &amp; Ownership Experience</div></div></div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface" id="services">
+    <div class="tm-container">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-14 gap-6">
+        <div class="max-w-2xl"><p class="section-eyebrow">How We Help</p><h2 class="text-4xl md:text-5xl font-bold mb-5">Research for an Industry in <span class="text-secondary">Constant Motion</span></h2><p class="text-lg text-on-surface-variant">From ICE to EV, from showroom to subscription — we help OEMs, dealers, and mobility brands keep pace with a transforming industry.</p></div>
+        <a href="/start-your-research" class="btn-ghost flex-shrink-0">Get a Quote</a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-primary text-3xl">route</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Buyer Journey &amp; Decision Mapping</h3><p class="text-on-surface-variant mb-5">Track every touchpoint from first intent to purchase — online research, test drives, financing decisions, and the role of dealership experience. Identify where you're winning and losing buyers.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">FUNNEL ANALYSIS</span><span class="chip">CONSIDERATION SET</span></div></div>
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-secondary text-3xl">electric_bolt</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">EV Adoption &amp; Readiness Research</h3><p class="text-on-surface-variant mb-5">Understand the real barriers to EV adoption — range anxiety, charging infrastructure, total cost concerns, and brand trust. Segment buyers by readiness stage and design the right interventions.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">EV BARRIERS</span><span class="chip">CHARGING BEHAVIOR</span></div></div>
+        <div class="ds-card"><div class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center mb-6"><span class="material-symbols-outlined text-tertiary text-3xl">settings_input_component</span></div><h3 class="text-xl font-bold mb-3 text-on-surface">Feature &amp; Technology Research</h3><p class="text-on-surface-variant mb-5">Test which connected car features, safety tech, and interior innovations truly matter to buyers — and which are table stakes vs. premium differentiators. Prioritize your R&D roadmap with consumer data.</p><div class="flex items-center gap-3 flex-wrap"><span class="chip">ADAS RESEARCH</span><span class="chip">UX TESTING</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface-container-lowest">
+    <div class="tm-container">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        <div>
+          <p class="section-eyebrow">Automotive Research Questions</p>
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">Drive Smarter Decisions in a <span class="text-primary">Transforming Industry</span></h2>
+          <p class="text-lg text-on-surface-variant mb-8 leading-relaxed">The automotive industry faces a once-in-a-generation transition. Understanding consumers precisely — not approximately — is now a competitive necessity.</p>
+          <div class="bg-surface-container rounded-2xl p-6 border border-outline-variant/10">
+            <div class="flex items-center gap-3 mb-4"><span class="material-symbols-outlined text-secondary text-xl">directions_car</span><span class="font-semibold text-on-surface">Common Research Areas</span></div>
+            <ul class="space-y-2">
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>EV adoption barriers & readiness segmentation</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>New vehicle concept & feature testing</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>After-sales service satisfaction tracking</li>
+              <li class="flex items-center gap-2 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-base">arrow_right</span>Brand equity & competitive benchmarking</li>
+            </ul>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">What drives a consumer's final vehicle choice?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What are the top features driving purchase vs. features causing hesitation?</li><li>How much does after-sales reputation influence initial consideration?</li><li>Which channels (online, showroom, word-of-mouth) carry the most weight at each stage?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">What's blocking EV adoption in your market?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>How significant is range anxiety vs. cost vs. charging infrastructure access?</li><li>Which consumer segments are EV-ready vs. needing more education?</li><li>What interventions (incentives, test drives, education) would accelerate readiness?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">How does your dealer experience compare?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What moments in the dealership experience create positive or negative impressions?</li><li>How do online vs. in-person research preferences shape buyer expectations?</li><li>What would improve conversion at each stage of the showroom visit?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">How is your brand perceived vs. competitors?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>What brand attributes drive your consideration set vs. competitors?</li><li>How are new EV entrants changing your competitive position?</li><li>Where is your brand's perception strongest and most vulnerable?</li></ul></div></div>
+          <div class="faq-card"><div class="faq-header"><p class="faq-question">What does tomorrow's car buyer actually want?</p><span class="faq-chevron">&#9660;</span></div><div class="faq-body"><ul><li>How are mobility attitudes changing among Gen Z and millennial buyers?</li><li>What subscription vs. ownership preferences are emerging?</li><li>How do connected car features shape brand perception and loyalty?</li></ul></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tm-section bg-surface" id="cta">
+    <div class="tm-container"><div class="cta-card"><div class="cta-content">
+      <p class="cta-eyebrow">Get Started Today</p>
+      <h2 class="cta-heading">Navigate the Road Ahead With Real Consumer Intelligence.</h2>
+      <p class="cta-body">From EV adoption studies to buyer journey mapping, our automotive research helps you build vehicles, services, and experiences that win in a rapidly changing market.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/start-your-research" class="btn-surface">Request a Bid</a>
+        <a href="/contact-us" class="btn-cta-frosted">Talk to Our Team</a>
+      </div>
+    </div><div class="cta-orb cta-orb--tl"></div><div class="cta-orb cta-orb--br"></div></div></div>
+  </section>
+
+</PresentationLayout>
+
+<script>
+  document.querySelectorAll('.faq-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const isOpen = card.classList.contains('open');
+      document.querySelectorAll('.faq-card').forEach(c => c.classList.remove('open'));
+      if (!isOpen) card.classList.add('open');
+    });
+  });
+</script>

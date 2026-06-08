@@ -2,7 +2,7 @@
     font-size: 2rem;
     font-weight: 500;
     margin: 1.5rem 0 1rem;
-    color: #000000;
+    color: var(--on-surface);
     scroll-margin-top: 4rem;
 }
 
@@ -10,7 +10,7 @@
     font-size: 1.5rem;
     font-weight: 500;
     margin: 1.25rem 0 0.75rem;
-    color: #000000;
+    color: var(--on-surface);
     scroll-margin-top: 4rem;
 }
 
@@ -18,14 +18,14 @@
     font-size: 1.25rem;
     font-weight: 500;
     margin: 1rem 0 0.5rem;
-    color: #000000;
+    color: var(--on-surface);
     scroll-margin-top: 4rem;
 }
 
 .prose p {
     margin: 0.75rem 0;
     line-height: 1.6;
-    color: #000000;
+    color: var(--on-surface-variant);
 }
 
 .prose ul {
@@ -36,13 +36,13 @@
 
 .prose li {
     margin: 0.25rem 0;
-    color: #000000;
+    color: var(--on-surface-variant);
     list-style-position: outside;
 }
 
 .prose pre {
-    background: #1f2937;
-    color: #f9fafb;
+    background: var(--surface-container-high);
+    color: var(--on-surface);
     padding: 1rem;
     border-radius: 0.5rem;
     margin: 1rem 0;
@@ -50,8 +50,8 @@
 }
 
 .prose code {
-    background: #f3f4f6;
-    color: #1f2937;
+    background: var(--surface-container);
+    color: var(--on-surface);
     padding: 0.125rem 0.25rem;
     border-radius: 0.25rem;
     font-size: 0.875rem;
@@ -64,8 +64,8 @@
 }
 
 .prose strong {
-    font-weight: 500;
-    color: #000000;
+    font-weight: 600;
+    color: var(--on-surface);
 }
 
 .prose img {
@@ -77,38 +77,38 @@
 }
 
 .prose a {
-    color: #2563eb;
+    color: var(--primary);
     text-decoration: underline;
     transition: color 0.2s ease;
 }
 
 .prose a:hover {
-    color: #1d4ed8;
+    opacity: 0.8;
 }
 
 .prose em {
     font-style: italic;
-    color: #000000;
+    color: var(--on-surface-variant);
 }
 
 .prose del {
     text-decoration: line-through;
-    color: #6b7280;
+    color: var(--on-surface-variant);
+    opacity: 0.6;
 }
 
 .prose blockquote {
-    border-left: 4px solid #e5e7eb;
-    padding-left: 1rem;
-    margin: 1.5rem 0;
-    color: #4b5563;
-    font-style: italic;
-    background-color: #f9fafb;
+    border-left: 4px solid var(--outline-variant);
     padding: 1rem 1rem 1rem 1.5rem;
+    margin: 1.5rem 0;
+    color: var(--on-surface-variant);
+    font-style: italic;
+    background: var(--surface-container-low);
     border-radius: 0.25rem;
 }
 
 .prose blockquote blockquote {
     margin: 0.5rem 0;
-    border-left-color: #d1d5db;
-    background-color: #f3f4f6;
+    border-left-color: var(--outline-variant);
+    background: var(--surface-container);
 }

@@ -100,7 +100,7 @@ const BentoGridOrganism: React.FC<BentoGridOrganismProps> = ({
   const [firstItem, ...remainingBentoItems] = bentoItems;
 
   return (
-    <section className={`common-component text-black ${bgColor}`}>
+    <section className={`common-component text-on-surface ${bgColor}`}>
       <div
         className={cn(
           'common-container px-6 pt-8 pb-12 md:px-24 md:pt-18 md:pb-24 max-w-[1336px]! flex-col',
@@ -142,20 +142,21 @@ const BentoGridOrganism: React.FC<BentoGridOrganismProps> = ({
                 <a
                   key={blog.id}
                   href={blog.link}
-                  className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+                  className="rounded-xl p-6 border border-outline-variant/10 hover:border-outline-variant/30 transition-all duration-300 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+                  style={{ background: 'var(--surface-container-low)' }}
                 >
                   <div className="flex-1">
-                    <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2 hover:text-primary transition-colors">
+                    <h3 className="text-lg md:text-xl font-semibold text-on-surface mb-2 hover:text-primary transition-colors">
                       {blog.label}
                     </h3>
                     {blog.publishedDate && (
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-on-surface-variant">
                         {formatDate(blog.publishedDate)}
                       </p>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 text-sm font-medium text-gray-600">
-                    <span className="px-3 py-1 bg-gray-100 rounded-full">
+                  <div className="flex items-center gap-2 text-sm font-medium text-on-surface-variant">
+                    <span className="px-3 py-1 bg-surface-container-high rounded-full">
                       {blog.type}
                     </span>
                   </div>
@@ -181,14 +182,14 @@ const BentoGridOrganism: React.FC<BentoGridOrganismProps> = ({
 
         {/* End of content message */}
         {!hasMore && items.length > 0 && (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-on-surface-variant">
             No more articles to load
           </div>
         )}
 
         {/* Empty state */}
         {!isLoading && items.length === 0 && (
-          <div className="text-center py-12 text-gray-500">
+          <div className="text-center py-12 text-on-surface-variant">
             No articles found
           </div>
         )}

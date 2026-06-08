@@ -13,7 +13,7 @@ const ContentBentoGrid: React.FC = () => {
   return (
     <BentoGridOrganism
       items={allItems}
-      bgColor="bg-white"
+      bgColor="bg-surface"
       onLoadMore={() => void fetchNextPage()}
       hasMore={hasNextPage}
       isLoading={isLoading || isFetchingNextPage}

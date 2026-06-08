@@ -100,8 +100,11 @@ export const AudioUpload: React.FC<AudioUploadProps> = ({
       } else {
         setFileError(translations.surveyQuestions.fileReadError || 'Error uploading file');
       }
-    } catch {
-      setFileError(translations.surveyQuestions.fileReadError || 'Error uploading file');
+    } catch (err: any) {
+      const msg = err?.data?.error === 'storage_quota_exceeded'
+        ? 'Storage full: You have used all 20 MB of your storage. Remove existing files to upload more.'
+        : (translations.surveyQuestions.fileReadError || 'Error uploading file');
+      setFileError(msg);
     } finally {
       setIsUploading(false);
     }

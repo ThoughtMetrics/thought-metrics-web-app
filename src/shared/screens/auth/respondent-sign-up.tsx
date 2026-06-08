@@ -15,7 +15,6 @@ import {
   TextInputAtom,
 } from '@/shared/ui/atoms/custom-input';
 import { COUNTRY_CODES } from '@/core/constants/country-codes';
-import { ArrowRed, GoogleOutlineIcon } from '@/assets';
 import FaqOrganism from '@/shared/ui/organisms/faq-organism';
 import { useSignUpMutation } from '@/core/hooks/mutations/use-sign-up.mutation';
 import { ROUTES } from '@/routes/routeConfig';
@@ -519,29 +518,13 @@ const RespondentSignUpPage: React.FC = () => {
 
   if (isSubmitted) {
     return (
-      <div className="common-component bg-white text-black h-full overflow-y-scroll">
-        <div className="max-w-md text-center bg-white rounded-lg shadow-lg p-8">
-          <div className="mb-4">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-              <svg
-                className="w-8 h-8 text-green-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+      <div className="min-h-screen flex items-center justify-center p-8" style={{ background: 'var(--surface)' }}>
+        <div className="max-w-md w-full text-center rounded-2xl p-10 border border-outline-variant/10" style={{ background: 'var(--surface-container-low)' }}>
+          <span className="material-symbols-outlined text-secondary text-5xl mb-4 block">check_circle</span>
+          <h2 className="text-2xl font-bold text-on-surface mb-2">
             {translations.auth.signup.welcomeMessage}
           </h2>
-          <p className="text-gray-600">
+          <p className="text-on-surface-variant">
             {translations.auth.signup.accountCreatedSuccess}
           </p>
         </div>
@@ -553,75 +536,60 @@ const RespondentSignUpPage: React.FC = () => {
     <>
       {/* Loading Overlay */}
       {isNavigating && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-8 max-w-sm mx-4 text-center">
-            <div className="mb-4">
-              <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              {translations.auth.signup.redirecting || 'Signing you in...'}
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.7)' }}>
+          <div className="rounded-2xl p-8 max-w-sm mx-4 text-center" style={{ background: 'var(--surface-container-low)' }}>
+            <div className="w-14 h-14 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <h2 className="text-lg font-semibold text-on-surface mb-1">
+              {translations.auth.signup.redirecting ?? 'Signing you in…'}
             </h2>
-            <p className="text-gray-600">
-              {translations.auth.signup.pleaseWait ||
-                'Please wait while we redirect you'}
+            <p className="text-sm text-on-surface-variant">
+              {translations.auth.signup.pleaseWait ?? 'Please wait while we redirect you'}
             </p>
           </div>
         </div>
       )}
 
-      <div className="common-component bg-white text-black h-full overflow-y-scroll">
-        <div className="common-container px-6 py-8 md:px-24 md:py-12 block! justify-center flex-col max-w-(--breakpoint-2xl)!">
-          {/* Language Toggle */}
-          <div className="flex justify-end mb-6">
-            <LanguageToggle variant="inline" />
+      <div className="min-h-screen" style={{ background: 'var(--surface)' }}>
+        <div className="tm-container max-w-3xl mx-auto py-12 px-6">
+          {/* Header row */}
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-3xl font-extrabold text-on-surface mb-1">
+                {translations.auth.signup.pageTitle}
+              </h1>
+              <p className="text-on-surface-variant text-sm">
+                {translations.auth.signup.registerDescription}
+              </p>
+            </div>
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <a href={ROUTES.LOGIN_IN} className="btn-hdr-outline text-sm">Log In</a>
+              <LanguageToggle variant="compact" />
+            </div>
           </div>
 
-          {/* Header */}
+          {/* Google sign up */}
           <div className="mb-8">
-            <h1 className="text-4xl font-medium tracking-tighter text-gray-900 mb-2">
-              {translations.auth.signup.pageTitle}
-            </h1>
-            <a
-              href="#"
-              className="text-black font-medium hover:font-semibold underline text-sm"
-            >
-              {translations.auth.signup.whyRegister}
-            </a>
-            <p className="text-black mt-2 text-sm">
-              {translations.auth.signup.registerDescription}
-            </p>
-          </div>
-
-          {/* Social Login Buttons */}
-          <div className="mb-8 space-y-3 grid grid-cols-1 w-full md:w-fit">
-            {/* <button
-              type="button"
-              onClick={() => void handleFacebookSignUp()}
-              disabled={socialAuthLoading !== null}
-              className="relative col-span-1 flex items-center pl-4 pr-12 py-2 bg-[#1877F2] text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <FacebookOutlineIcon className="w-5 h-5 mr-8" />
-              <div className="left-13 absolute w-px h-full bg-white"></div>
-              {socialAuthLoading === 'facebook'
-                ? 'Signing in...'
-                : ui.socialButtons.facebook}
-            </button> */}
             <button
               type="button"
               onClick={() => void handleGoogleSignUp()}
-              className="relative col-span-1 flex items-center pl-4 pr-12 py-2 bg-[#DB4437] text-white rounded hover:bg-red-700 transition-colors"
+              className="flex items-center justify-center gap-3 py-3 px-5 rounded-xl text-sm font-medium text-on-surface transition-colors"
+              style={{ background: 'var(--surface-container)', border: '1px solid color-mix(in srgb, var(--outline-variant) 50%, transparent)' }}
             >
-              <GoogleOutlineIcon className="w-5 h-5 mr-8" />
-              <div className="left-13 absolute w-px h-full bg-white"></div>
+              <svg viewBox="0 0 24 24" width="18" height="18">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
               {translations.auth.signup.continueWithGoogle}
             </button>
           </div>
 
           {/* Step Indicator */}
-          <div className="mb-8 bg-gray-200 rounded-lg">
-            <div className="flex items-center gap-1.5 md:gap-6 overflow-x-scroll overflow-y-hidden md:overflow-auto p-4">
+          <div className="mb-8 rounded-xl p-4 border border-outline-variant/10" style={{ background: 'var(--surface-container-low)' }}>
+            <div className="flex items-center gap-1.5 md:gap-6 overflow-x-auto overflow-y-hidden">
               <div
-                className={`shrink-0 flex items-center ${currentStep >= 1 ? 'text-primary' : 'text-black'}`}
+                className={`shrink-0 flex items-center ${currentStep >= 1 ? 'text-primary' : 'text-on-surface-variant'}`}
               >
                 <div className="flex flex-col text-nowrap">
                   <span className="font-medium">
@@ -646,7 +614,7 @@ const RespondentSignUpPage: React.FC = () => {
                 )}
               </div>
               <svg
-                className="w-4 h-8 text-black"
+                className="w-4 h-8 text-on-surface-variant"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 12 38"
@@ -659,7 +627,7 @@ const RespondentSignUpPage: React.FC = () => {
                 />
               </svg>
               <div
-                className={`flex items-center ${currentStep >= 2 ? 'text-primary' : 'text-black'}`}
+                className={`flex items-center ${currentStep >= 2 ? 'text-primary' : 'text-on-surface-variant'}`}
               >
                 <div className="flex flex-col text-nowrap">
                   <span className="font-medium">
@@ -667,7 +635,7 @@ const RespondentSignUpPage: React.FC = () => {
                   </span>
                   <span className="text-sm">
                     {translations.auth.signup.preferences}{' '}
-                    <span className="text-xs text-gray-400">(Optional)</span>
+                    <span className="text-xs text-on-surface-variant/60">(Optional)</span>
                   </span>
                 </div>
 
@@ -686,7 +654,7 @@ const RespondentSignUpPage: React.FC = () => {
                 )}
               </div>
               <svg
-                className="w-4 h-8 text-black"
+                className="w-4 h-8 text-on-surface-variant"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 12 38"
@@ -699,7 +667,7 @@ const RespondentSignUpPage: React.FC = () => {
                 />
               </svg>
               <div
-                className={`flex items-center ${currentStep >= 3 ? 'text-primary' : 'text-black'}`}
+                className={`flex items-center ${currentStep >= 3 ? 'text-primary' : 'text-on-surface-variant'}`}
               >
                 <div className="flex flex-col text-nowrap">
                   <span className="font-medium">
@@ -707,7 +675,7 @@ const RespondentSignUpPage: React.FC = () => {
                   </span>
                   <span className="text-sm">
                     {translations.auth.signup.paymentInfo}{' '}
-                    <span className="text-xs text-gray-400">(Optional)</span>
+                    <span className="text-xs text-on-surface-variant/60">(Optional)</span>
                   </span>
                 </div>
                 {currentStep > 3 && (
@@ -725,7 +693,7 @@ const RespondentSignUpPage: React.FC = () => {
                 )}
               </div>
               <svg
-                className="w-4 h-8 text-black"
+                className="w-4 h-8 text-on-surface-variant"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 12 38"
@@ -738,7 +706,7 @@ const RespondentSignUpPage: React.FC = () => {
                 />
               </svg>
               <div
-                className={`flex items-center ${currentStep >= 4 ? 'text-primary' : 'text-black'}`}
+                className={`flex items-center ${currentStep >= 4 ? 'text-primary' : 'text-on-surface-variant'}`}
               >
                 <div className="flex flex-col text-nowrap">
                   <span className="font-medium">
@@ -996,10 +964,10 @@ const RespondentSignUpPage: React.FC = () => {
 
             {currentStep === 2 && (
               <>
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                <h2 className="text-2xl font-bold text-on-surface mb-4">
                   {translations.auth.signup.participationPreferences}
                 </h2>
-                <p className="text-gray-600 mb-6">
+                <p className="text-on-surface-variant mb-6">
                   {translations.auth.signup.participationDescription}
                 </p>
 
@@ -1014,11 +982,11 @@ const RespondentSignUpPage: React.FC = () => {
             )}
             {currentStep === 3 && (
               <>
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                <h2 className="text-2xl font-bold text-on-surface mb-4">
                   {translations.auth.signup.payment.title}
                 </h2>
 
-                <p className="text-gray-600 mb-6">
+                <p className="text-on-surface-variant mb-6">
                   {translations.auth.signup.payment.description}
                 </p>
 
@@ -1140,7 +1108,7 @@ const RespondentSignUpPage: React.FC = () => {
                 )}
 
                 {formData.paymentMethod === 'skip' && (
-                  <p className="text-gray-500 mt-4">
+                  <p className="text-on-surface-variant mt-4">
                     {translations.auth.signup.payment.skipMessage}
                   </p>
                 )}
@@ -1149,38 +1117,33 @@ const RespondentSignUpPage: React.FC = () => {
 
             {/* General Error Message */}
             {errors.general && (
-              <div className="bg-red-50 border border-red-200 rounded-md p-4">
-                <p className="text-red-600 text-sm font-medium">
-                  {errors.general}
-                </p>
+              <div className="rounded-xl p-4 flex items-center gap-2 text-sm" style={{ background: 'color-mix(in srgb,var(--error) 10%,transparent)', border: '1px solid color-mix(in srgb,var(--error) 30%,transparent)', color: 'var(--error)' }}>
+                <span className="material-symbols-outlined text-base flex-shrink-0">error</span>
+                {errors.general}
               </div>
             )}
 
             {/* Navigation Buttons */}
             <div className="flex items-center gap-4 flex-wrap">
               <button
-                className="bg-primary w-auto hover:bg-secondary transition-all duration-300 ease-in-out rounded px-6 py-2 flex items-center gap-4"
+                type="submit"
+                className="btn-primary flex items-center gap-2 py-3 px-6 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isSubmitting}
               >
-                <label className="text-white text-nowrap font-medium cursor-pointer">
-                  {isSubmitting
-                    ? translations.auth.signup.processing
-                    : currentStep === 3
-                      ? translations.auth.signup.registerButton
-                      : translations.auth.signup.nextButton}
-                </label>
-                <ArrowRed className="fill-current text-white" />
+                {isSubmitting ? (
+                  <><span className="material-symbols-outlined text-xl animate-spin">progress_activity</span>{translations.auth.signup.processing}</>
+                ) : (
+                  <>{currentStep === 3 ? translations.auth.signup.registerButton : translations.auth.signup.nextButton}<span className="material-symbols-outlined text-xl">arrow_forward</span></>
+                )}
               </button>
               {(currentStep === 2 || currentStep === 3) && (
                 <button
                   type="button"
                   onClick={handleSkip}
                   disabled={isSubmitting}
-                  className="text-sm text-gray-500 hover:text-primary underline underline-offset-2 transition-colors disabled:opacity-50"
+                  className="text-sm text-on-surface-variant hover:text-primary underline underline-offset-2 transition-colors disabled:opacity-50"
                 >
-                  {currentStep === 3
-                    ? 'Skip & Register'
-                    : 'Skip this step'}
+                  {currentStep === 3 ? 'Skip & Register' : 'Skip this step'}
                 </button>
               )}
             </div>

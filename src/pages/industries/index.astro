@@ -5,37 +5,150 @@ const seoContent = {
   title: 'Industries We Serve | Specialized Research Solutions',
   description: 'Specialized research across industries—automotive, healthcare, technology, FMCG. Expert insights driving informed decisions for your sector.',
 };
+
+const industries = [
+  { href: '/industries/fmcg', icon: 'shopping_basket', color: 'primary', title: 'FMCG', desc: 'Fast-moving consumer goods research on brand, pack, and price.' },
+  { href: '/industries/retail', icon: 'storefront', color: 'secondary', title: 'Retail & Merchandising', desc: 'Shopper behavior, category management, and retail experience research.' },
+  { href: '/industries/healthcare', icon: 'health_and_safety', color: 'tertiary', title: 'Healthcare & Life Sciences', desc: 'Patient, provider, and payer research across the full care journey.' },
+  { href: '/industries/finance', icon: 'account_balance', color: 'primary', title: 'Financial Services & Insurance', desc: 'Consumer trust, product adoption, and competitive intelligence in finance.' },
+  { href: '/industries/technology', icon: 'devices', color: 'secondary', title: 'Technology', desc: 'UX research, product-market fit, and tech adoption studies.' },
+  { href: '/industries/automotive', icon: 'directions_car', color: 'tertiary', title: 'Automotive', desc: 'Buyer journey, EV adoption, and vehicle feature research.' },
+  { href: '/industries/advertising', icon: 'campaign', color: 'primary', title: 'Advertising & Marketing', desc: 'Campaign testing, message resonance, and media mix optimization.' },
+  { href: '/industries/hr', icon: 'groups', color: 'secondary', title: 'Human Resources', desc: 'Employee engagement, talent research, and culture studies.' },
+  { href: '/industries/internet', icon: 'language', color: 'tertiary', title: 'Internet & Media', desc: 'Digital audience insights, content strategy, and platform behavior.' },
+  { href: '/industries/education', icon: 'school', color: 'primary', title: 'Education', desc: 'Student, faculty, and institutional research for future-ready learning.' },
+  { href: '/industries/investor', icon: 'trending_up', color: 'secondary', title: 'Investor & Private Equity', desc: 'Market intelligence and due diligence research for investment decisions.' },
+];
 ---
 
 <PresentationLayout title={seoContent.title} description={seoContent.description}>
-  <div class="container mx-auto px-4 py-8">
-    <div class="max-w-6xl mx-auto">
-      <!-- Header Section -->
-      <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-gray-800 mb-4">
-          Industries We Serve
+
+  <!-- Hero / Industries Grid -->
+  <section class="tm-section relative">
+    <div class="tm-container">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <nav class="flex items-center gap-2 mb-6 text-xs text-on-surface-variant justify-center">
+          <a href="/" class="hover:text-on-surface transition-colors">Home</a>
+          <span class="opacity-40">/</span>
+          <span class="text-primary font-medium">Industries</span>
+        </nav>
+        <span class="chip mb-6 inline-flex">INDUSTRIES WE SERVE</span>
+        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-[1.08]">
+          Research Built for <span class="text-primary italic">Every Industry.</span>
         </h1>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-          Discover specialized research solutions tailored to your
-          industries's unique challenges and opportunities. Our expert
-          insights help drive informed decisions across diverse sectors.
+        <p class="text-lg text-on-surface-variant max-w-2xl mx-auto mb-10 leading-relaxed">
+          Discover specialized research solutions tailored to your industry's unique challenges. Our expert insights help drive informed decisions across diverse sectors — fast, accurate, and actionable.
         </p>
+        <div class="flex flex-col sm:flex-row gap-4 items-center justify-center">
+          <a href="/start-your-research" class="btn-primary">Request a Bid</a>
+          <a href="/contact-us" class="btn-ghost">Talk to an Expert</a>
+        </div>
       </div>
 
-      <!-- CTA Section -->
-      <div class="mt-16 text-center bg-blue-50 rounded-lg p-8">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">
-          Don't See Your Industry?
-        </h2>
-        <p class="text-gray-600 mb-6 max-w-2xl mx-auto">
-          We work across many more industries and can customize our research
-          approach to meet your specific sector needs. Contact us to discuss
-          your requirements.
-        </p>
-        <a href="/contact-us" class="inline-block bg-primary text-white px-8 py-3 rounded-md font-medium hover:bg-primary-dark transition-colors">
-          Contact Our Experts
-        </a>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        {industries.map(({ href, icon, color, title, desc }) => (
+          <a href={href} class={`ds-card group flex flex-col gap-4 hover:border-${color}/30 transition-all hover:-translate-y-1 cursor-pointer`}>
+            <div class={`w-11 h-11 rounded-xl bg-${color}/10 flex items-center justify-center flex-shrink-0`}>
+              <span class={`material-symbols-outlined text-${color} text-2xl`}>{icon}</span>
+            </div>
+            <div>
+              <h3 class="font-bold text-on-surface mb-1 group-hover:text-primary transition-colors">{title}</h3>
+              <p class="text-sm text-on-surface-variant leading-relaxed">{desc}</p>
+            </div>
+            <div class={`mt-auto flex items-center gap-1 text-${color} text-sm font-medium`}>
+              <span>Explore</span><span class="material-symbols-outlined text-base">arrow_forward</span>
+            </div>
+          </a>
+        ))}
       </div>
     </div>
-  </div>
+    <div class="absolute inset-0 pointer-events-none overflow-hidden" style="z-index:-1" aria-hidden="true">
+      <div class="absolute top-0 left-0 w-[500px] h-[500px] bg-primary/6 blur-[140px] rounded-full"></div>
+      <div class="absolute bottom-0 right-0 w-[400px] h-[400px] bg-secondary/5 blur-[120px] rounded-full"></div>
+    </div>
+  </section>
+
+  <!-- Why Sector Research Matters -->
+  <section class="tm-section bg-surface-container-lowest">
+    <div class="tm-container">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div>
+          <p class="section-eyebrow">Why Sector Expertise Matters</p>
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">Generic Research Won't Cut It in <span class="text-primary">Specialized Markets</span></h2>
+          <p class="text-lg text-on-surface-variant mb-8 leading-relaxed">Every industry has its own language, regulations, buyer behavior, and competitive dynamics. Our sector-specialized teams bring deep knowledge of what questions to ask — and who to ask them to.</p>
+          <div class="space-y-4">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span class="material-symbols-outlined text-primary text-xl">verified_user</span>
+              </div>
+              <div>
+                <div class="font-semibold text-on-surface mb-1">Industry-Verified Panels</div>
+                <div class="text-sm text-on-surface-variant">Panelists recruited and profiled for sector-specific relevance — not just demographics.</div>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span class="material-symbols-outlined text-secondary text-xl">quiz</span>
+              </div>
+              <div>
+                <div class="font-semibold text-on-surface mb-1">Contextual Question Design</div>
+                <div class="text-sm text-on-surface-variant">Surveys built around industry-specific vocabulary, decision frameworks, and behavioral nuances.</div>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-xl bg-tertiary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span class="material-symbols-outlined text-tertiary text-xl">speed</span>
+              </div>
+              <div>
+                <div class="font-semibold text-on-surface mb-1">Faster Field Execution</div>
+                <div class="text-sm text-on-surface-variant">Our established sector panels mean faster recruitment, lower incidence, and shorter timelines.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-surface-container rounded-2xl p-5 border border-outline-variant/10">
+            <div class="text-3xl font-extrabold text-primary mb-1">11+</div>
+            <div class="text-sm font-semibold text-on-surface mb-1">Industries Covered</div>
+            <div class="text-xs text-on-surface-variant">From FMCG to Investor</div>
+          </div>
+          <div class="bg-surface-container rounded-2xl p-5 border border-outline-variant/10">
+            <div class="text-3xl font-extrabold text-secondary mb-1">500+</div>
+            <div class="text-sm font-semibold text-on-surface mb-1">Projects Delivered</div>
+            <div class="text-xs text-on-surface-variant">Across sectors & geographies</div>
+          </div>
+          <div class="bg-surface-container rounded-2xl p-5 border border-outline-variant/10">
+            <div class="text-3xl font-extrabold text-tertiary mb-1">48 hrs</div>
+            <div class="text-sm font-semibold text-on-surface mb-1">Avg Turnaround</div>
+            <div class="text-xs text-on-surface-variant">For standard online surveys</div>
+          </div>
+          <div class="bg-surface-container rounded-2xl p-5 border border-outline-variant/10">
+            <div class="text-3xl font-extrabold text-primary mb-1">50K+</div>
+            <div class="text-sm font-semibold text-on-surface mb-1">Panel Members</div>
+            <div class="text-xs text-on-surface-variant">Verified & sector-profiled</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="tm-section bg-surface">
+    <div class="tm-container">
+      <div class="cta-card">
+        <div class="cta-content">
+          <p class="cta-eyebrow">Don't See Your Industry?</p>
+          <h2 class="cta-heading">We Customize Research for Any Sector.</h2>
+          <p class="cta-body">Whether you're in logistics, real estate, energy, or an emerging category — we adapt our methods and panels to your specific market. Tell us what you need.</p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/contact-us" class="btn-surface">Contact Our Experts</a>
+            <a href="/start-your-research" class="btn-cta-frosted">Request a Bid</a>
+          </div>
+        </div>
+        <div class="cta-orb cta-orb--tl"></div>
+        <div class="cta-orb cta-orb--br"></div>
+      </div>
+    </div>
+  </section>
+
 </PresentationLayout>

@@ -1,40 +1,32 @@
-import { IllustrationSquares } from '@/assets';
-import { cn } from '@/core/utils/cn';
+import React from 'react';
 
-const ContentHeroSection: React.FC<any> = ({
-  heroSection,
-  contentClassName,
-  titleClassName,
-}: any) => {
+interface HeroSection {
+  title: string;
+  description: string;
+}
+
+const ContentHeroSection: React.FC<{ heroSection: HeroSection }> = ({ heroSection }) => {
+  const words = heroSection.title.split(' ');
+  const lastWord = words.pop();
+  const restOfTitle = words.join(' ');
+
   return (
-    <section className="common-component relative bg-[url('images/blog_background_image.png')] bg-cover bg-center">
-      {/* Opacity overlay */}
-      <div className="absolute inset-0 bg-white opacity-50"></div>
-
-      <div className="absolute w-full h-full flex justify-end pt-10 md:p-0 z-10">
-        <IllustrationSquares className="h-68 md:h-[98%] w-auto stroke-2 md:stroke-1 stroke-white" />
+    <section className="tm-section relative overflow-hidden text-center" style={{ background: 'var(--surface)' }}>
+      <div className="tm-container max-w-3xl mx-auto">
+        <span className="chip mb-6 inline-flex">RESOURCES</span>
+        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 leading-[1.08] text-on-surface">
+          {restOfTitle}{' '}
+          <span className="text-primary italic">{lastWord}</span>
+        </h1>
+        <p className="text-lg text-on-surface-variant max-w-xl mx-auto leading-relaxed">
+          {heroSection.description}
+        </p>
       </div>
-      <div className="hidden md:flex absolute w-full h-full justify-end pt-18 md:pt-0 md:items-center z-10"></div>
-      <div className="relative z-20 common-container w-full max-w-(--breakpoint-2xl)! md:min-h-[480px] xl:min-h-[580px] wide:min-h-[780px] items-center p-5 pb-8 md:py-10 md:px-24">
-        <div
-          className={cn(
-            'md:w-[43%] xxl:w-[43%] wide:w-[50%] h-full flex flex-col gap-3 justify-center',
-            contentClassName
-          )}
-        >
-          <h1
-            className={cn(
-              'w-[80%] text-white text-2xl xl:text-[2.5rem] wide:text-[3rem] font-semibold pt-8 md:pt-0',
-              titleClassName
-            )}
-          >
-            {heroSection.title}
-          </h1>
-          <p className="w-full text-white text-lg xl:text-[1.3rem] wide:text-[1.7rem]">
-            {heroSection.description}
-          </p>
-        </div>
-      </div>
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none rounded-full"
+        style={{ zIndex: -1, width: 600, height: 350, background: 'var(--primary)', opacity: 0.06, filter: 'blur(140px)' }}
+        aria-hidden="true"
+      />
     </section>
   );
 };
