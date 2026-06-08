@@ -1,5 +1,5 @@
 {
-  "buildCommand": "yarn build",
+  "buildCommand": "astro build",
   "installCommand": "yarn install",
   "framework": "astro"
 }
