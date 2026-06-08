@@ -1,5 +1,5 @@
 {
   "buildCommand": "astro build",
-  "installCommand": "yarn install",
+  "installCommand": "npm install --legacy-peer-deps",
   "framework": "astro"
 }
