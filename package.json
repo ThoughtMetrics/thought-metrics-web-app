@@ -18,8 +18,8 @@
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.7",
-    "@astrojs/node": "^9.5.0",
     "@astrojs/partytown": "^2.1.4",
+    "@astrojs/vercel": "^9.0.5",
     "@astrojs/react": "^4.4.0",
     "@astrojs/sitemap": "^3.6.0",
     "@tailwindcss/vite": "^4.1.14",

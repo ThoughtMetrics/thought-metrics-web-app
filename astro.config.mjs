@@ -5,7 +5,7 @@ import react from '@astrojs/react';
 import partytown from '@astrojs/partytown';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap, { ChangeFreqEnum } from '@astrojs/sitemap';
-import node from '@astrojs/node';
+import vercel from '@astrojs/vercel';
 import mdx from '@astrojs/mdx';
 import icon from 'astro-icon';
 import svgr from 'vite-plugin-svgr';
@@ -113,9 +113,7 @@ export default defineConfig({
     },
   },
 
-  adapter: node({
-    mode: 'standalone',
-  }),
+  adapter: vercel(),
 
   output: 'server',
 });
