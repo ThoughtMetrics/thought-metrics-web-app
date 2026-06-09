@@ -1,6 +1,9 @@
 import React from 'react';
 
-const ResearchMethodFocusGroup: React.FC = () => (
+interface BlogItem { id: number; type: string; category: string; label: string; description: string; link: string; src: string; }
+interface Props { blogData?: { title: string; items: BlogItem[] } | null; }
+
+const ResearchMethodFocusGroup: React.FC<Props> = () => (
   <>
     {/* ── Hero ── */}
     <section className="tm-section relative">

@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 
-const ResearchMethodQuantitativeResearch: React.FC = () => {
+interface BlogItem { id: number; type: string; category: string; label: string; description: string; link: string; src: string; }
+interface Props { blogData?: { title: string; items: BlogItem[] } | null; }
+
+const ResearchMethodQuantitativeResearch: React.FC<Props> = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const toggle = (i: number) => setOpenFaq(openFaq === i ? null : i);
 
