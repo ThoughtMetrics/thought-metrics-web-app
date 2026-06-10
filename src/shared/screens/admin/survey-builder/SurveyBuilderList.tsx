@@ -46,7 +46,7 @@ const SurveyBuilderListContent: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex bg-gray-50 text-text-dark">
+    <div className="h-full flex bg-surface-container-low text-text-dark">
       <AdminSidebar />
       {showPicker && <MethodologyPickerModal onClose={() => setShowPicker(false)} />}
 
@@ -54,8 +54,8 @@ const SurveyBuilderListContent: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-1">Survey Builder</h1>
-              <p className="text-gray-600">Manage survey templates</p>
+              <h1 className="text-3xl font-bold text-on-surface mb-1">Survey Builder</h1>
+              <p className="text-on-surface-variant">Manage survey templates</p>
             </div>
             <button
               onClick={() => setShowPicker(true)}
@@ -78,8 +78,8 @@ const SurveyBuilderListContent: React.FC = () => {
           )}
 
           {!isLoading && !isError && templates.length === 0 && (
-            <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-              <p className="text-gray-500 mb-4">No templates yet.</p>
+            <div className="bg-surface-container rounded-lg shadow-sm p-12 text-center">
+              <p className="text-outline mb-4">No templates yet.</p>
               <button
                 onClick={() => setShowPicker(true)}
                 className="px-5 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
@@ -90,16 +90,16 @@ const SurveyBuilderListContent: React.FC = () => {
           )}
 
           {!isLoading && !isError && templates.length > 0 && (
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="bg-surface-container rounded-lg shadow-sm overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-gray-200 bg-gray-50">
-                    <th className="text-left px-6 py-3 font-semibold text-gray-700">Template</th>
-                    <th className="text-left px-6 py-3 font-semibold text-gray-700">Methodology</th>
-                    <th className="text-left px-6 py-3 font-semibold text-gray-700">Questions</th>
-                    <th className="text-left px-6 py-3 font-semibold text-gray-700">Default Layout</th>
-                    <th className="text-left px-6 py-3 font-semibold text-gray-700">Default Type</th>
-                    <th className="text-right px-6 py-3 font-semibold text-gray-700">Actions</th>
+                  <tr className="border-b border-outline-variant bg-surface-container-low">
+                    <th className="text-left px-6 py-3 font-semibold text-on-surface-variant">Template</th>
+                    <th className="text-left px-6 py-3 font-semibold text-on-surface-variant">Methodology</th>
+                    <th className="text-left px-6 py-3 font-semibold text-on-surface-variant">Questions</th>
+                    <th className="text-left px-6 py-3 font-semibold text-on-surface-variant">Default Layout</th>
+                    <th className="text-left px-6 py-3 font-semibold text-on-surface-variant">Default Type</th>
+                    <th className="text-right px-6 py-3 font-semibold text-on-surface-variant">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -107,9 +107,9 @@ const SurveyBuilderListContent: React.FC = () => {
                     const methodology = (t.settings as any)?.methodology as SurveyMethodology | undefined;
                     const methodMeta = methodology ? SURVEY_METHODOLOGY_META[methodology] : undefined;
                     return (
-                      <tr key={t._id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                      <tr key={t._id} className="border-b border-outline-variant/50 hover:bg-surface-container-high transition-colors">
                         <td className="px-6 py-4">
-                          <div className="font-medium text-gray-900">
+                          <div className="font-medium text-on-surface">
                             {t.translations?.en?.label ?? t.label ?? '—'}
                           </div>
                         </td>
@@ -119,12 +119,12 @@ const SurveyBuilderListContent: React.FC = () => {
                               {methodMeta.label}
                             </span>
                           ) : (
-                            <span className="text-xs text-gray-400">—</span>
+                            <span className="text-xs text-outline">—</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-gray-600">{t.questions?.length ?? 0}</td>
+                        <td className="px-6 py-4 text-on-surface-variant">{t.questions?.length ?? 0}</td>
                         <td className="px-6 py-4">
-                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 capitalize">
+                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-surface-container-high text-on-surface-variant capitalize">
                             {t.settings?.defaultFormLayout ?? 'paginated'}
                           </span>
                         </td>
@@ -132,7 +132,7 @@ const SurveyBuilderListContent: React.FC = () => {
                           <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${
                             (t.settings?.defaultType ?? 'respondent') === 'agent'
                               ? 'bg-blue-100 text-blue-700'
-                              : 'bg-gray-100 text-gray-700'
+                              : 'bg-surface-container-high text-on-surface-variant'
                           }`}>
                             {t.settings?.defaultType ?? 'respondent'}
                           </span>
@@ -147,7 +147,7 @@ const SurveyBuilderListContent: React.FC = () => {
                           <button
                             onClick={() => handleDuplicate(t._id)}
                             disabled={duplicatingId === t._id}
-                            className="text-gray-600 hover:underline font-medium disabled:opacity-50"
+                            className="text-on-surface-variant hover:underline font-medium disabled:opacity-50"
                           >
                             {duplicatingId === t._id ? 'Copying…' : 'Duplicate'}
                           </button>
@@ -235,8 +235,8 @@ const SurveyBuilderListPanelContent: React.FC = () => {
     return (
       <>
         {showPicker && <MethodologyPickerModal onClose={() => setShowPicker(false)} />}
-        <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-          <p className="text-gray-500 mb-4">No templates yet.</p>
+        <div className="bg-surface-container rounded-lg shadow-sm p-12 text-center">
+          <p className="text-outline mb-4">No templates yet.</p>
           <button
             onClick={() => setShowPicker(true)}
             className="px-5 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
@@ -251,16 +251,16 @@ const SurveyBuilderListPanelContent: React.FC = () => {
   return (
     <>
       {showPicker && <MethodologyPickerModal onClose={() => setShowPicker(false)} />}
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div className="bg-surface-container rounded-lg shadow-sm overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-200 bg-gray-50">
-              <th className="text-left px-6 py-3 font-semibold text-gray-700">Template</th>
-              <th className="text-left px-6 py-3 font-semibold text-gray-700">Methodology</th>
-              <th className="text-left px-6 py-3 font-semibold text-gray-700">Questions</th>
-              <th className="text-left px-6 py-3 font-semibold text-gray-700">Default Layout</th>
-              <th className="text-left px-6 py-3 font-semibold text-gray-700">Default Type</th>
-              <th className="text-right px-6 py-3 font-semibold text-gray-700">Actions</th>
+            <tr className="border-b border-outline-variant bg-surface-container-low">
+              <th className="text-left px-6 py-3 font-semibold text-on-surface-variant">Template</th>
+              <th className="text-left px-6 py-3 font-semibold text-on-surface-variant">Methodology</th>
+              <th className="text-left px-6 py-3 font-semibold text-on-surface-variant">Questions</th>
+              <th className="text-left px-6 py-3 font-semibold text-on-surface-variant">Default Layout</th>
+              <th className="text-left px-6 py-3 font-semibold text-on-surface-variant">Default Type</th>
+              <th className="text-right px-6 py-3 font-semibold text-on-surface-variant">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -268,12 +268,12 @@ const SurveyBuilderListPanelContent: React.FC = () => {
               const methodology = (t.settings as any)?.methodology as SurveyMethodology | undefined;
               const methodMeta = methodology ? SURVEY_METHODOLOGY_META[methodology] : undefined;
               return (
-                <tr key={t._id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                <tr key={t._id} className="border-b border-outline-variant/50 hover:bg-surface-container-high transition-colors">
                   <td className="px-6 py-4">
-                    <div className="font-medium text-gray-900">
+                    <div className="font-medium text-on-surface">
                       {t.translations?.en?.label ?? t.label ?? '—'}
                     </div>
-                    <div className="text-xs text-gray-400 mt-0.5">{t.name}</div>
+                    <div className="text-xs text-outline mt-0.5">{t.name}</div>
                   </td>
                   <td className="px-6 py-4">
                     {methodMeta ? (
@@ -281,12 +281,12 @@ const SurveyBuilderListPanelContent: React.FC = () => {
                         {methodMeta.label}
                       </span>
                     ) : (
-                      <span className="text-xs text-gray-400">—</span>
+                      <span className="text-xs text-outline">—</span>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-gray-600">{t.questions?.length ?? 0}</td>
+                  <td className="px-6 py-4 text-on-surface-variant">{t.questions?.length ?? 0}</td>
                   <td className="px-6 py-4">
-                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 capitalize">
+                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-surface-container-high text-on-surface-variant capitalize">
                       {t.settings?.defaultFormLayout ?? 'paginated'}
                     </span>
                   </td>
@@ -294,7 +294,7 @@ const SurveyBuilderListPanelContent: React.FC = () => {
                     <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${
                       (t.settings?.defaultType ?? 'respondent') === 'agent'
                         ? 'bg-blue-100 text-blue-700'
-                        : 'bg-gray-100 text-gray-700'
+                        : 'bg-surface-container-high text-on-surface-variant'
                     }`}>
                       {t.settings?.defaultType ?? 'respondent'}
                     </span>
@@ -309,7 +309,7 @@ const SurveyBuilderListPanelContent: React.FC = () => {
                     <button
                       onClick={() => handleDuplicate(t._id)}
                       disabled={duplicatingId === t._id}
-                      className="text-gray-600 hover:underline font-medium disabled:opacity-50"
+                      className="text-on-surface-variant hover:underline font-medium disabled:opacity-50"
                     >
                       {duplicatingId === t._id ? 'Copying…' : 'Duplicate'}
                     </button>

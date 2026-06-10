@@ -91,18 +91,18 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col bg-surface-container-low">
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-2xl mx-auto px-6 py-8 space-y-3">
           {/* ── Metadata ── */}
           <div className="space-y-3">
-            <h2 className="text-base font-semibold text-gray-900">
+            <h2 className="text-base font-semibold text-on-surface">
               Survey Details ({activeLanguage.toUpperCase()})
             </h2>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
+              <label className="block text-xs font-medium text-on-surface-variant mb-1">
                 Label
               </label>
               <input
@@ -112,12 +112,12 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
                   setTranslation(activeLanguage, 'label', e.target.value)
                 }
                 placeholder="Survey display title"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                className="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
+              <label className="block text-xs font-medium text-on-surface-variant mb-1">
                 Description
               </label>
               <textarea
@@ -127,12 +127,12 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
                 }
                 placeholder="Brief description of the survey"
                 rows={3}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                className="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
+              <label className="block text-xs font-medium text-on-surface-variant mb-1">
                 Instructions
               </label>
               <textarea
@@ -142,7 +142,7 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
                 }
                 placeholder="Instructions shown before the survey starts"
                 rows={4}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                className="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none"
               />
             </div>
           </div>
@@ -151,7 +151,7 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
           <div className="space-y-3">
             {/* Layout */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-2">
+              <label className="block text-xs font-medium text-on-surface-variant mb-2">
                 Layout
               </label>
               <div className="flex gap-2">
@@ -167,7 +167,7 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
                     className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors text-left ${
                       settings.defaultFormLayout === value
                         ? 'bg-primary text-white border-primary'
-                        : 'bg-white text-gray-700 border-gray-300 hover:border-primary'
+                        : 'bg-surface-container text-on-surface-variant border-outline-variant hover:border-primary'
                     }`}
                   >
                     {label}
@@ -180,10 +180,10 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-on-surface-variant">
                     Capture Fields
                   </span>
-                  <p className="text-xs text-gray-400 mt-0.5">
+                  <p className="text-xs text-outline mt-0.5">
                     Extra data to collect alongside answers (photos, audio,
                     etc.)
                   </p>
@@ -197,7 +197,7 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
               </div>
 
               {captureFields.length === 0 && (
-                <p className="text-xs text-gray-400 border border-dashed border-gray-200 rounded-lg p-4 text-center">
+                <p className="text-xs text-outline border border-dashed border-outline-variant rounded-lg p-4 text-center">
                   No capture fields. Click "+ Add Field" to add photos, audio,
                   etc.
                 </p>
@@ -207,10 +207,10 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
                 {captureFields.map((field, i) => (
                   <div
                     key={i}
-                    className="border border-gray-200 rounded-lg p-3 space-y-2 bg-white"
+                    className="border border-outline-variant rounded-lg p-3 space-y-2 bg-surface-container"
                   >
                     <div className="flex justify-between items-center">
-                      <span className="text-xs font-medium text-gray-600">
+                      <span className="text-xs font-medium text-on-surface-variant">
                         Field {i + 1}
                       </span>
                       <button
@@ -222,7 +222,7 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block text-xs text-gray-500 mb-1">
+                        <label className="block text-xs text-outline mb-1">
                           Label
                         </label>
                         <input
@@ -232,16 +232,16 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
                             updateField(i, { label: e.target.value })
                           }
                           placeholder="Respondent Photo"
-                          className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                          className="w-full border border-outline-variant rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
                         />
                         {field.key && (
-                          <p className="text-xs text-gray-400 mt-0.5">
+                          <p className="text-xs text-outline mt-0.5">
                             Key: <span className="font-mono">{field.key}</span>
                           </p>
                         )}
                       </div>
                       <div>
-                        <label className="block text-xs text-gray-500 mb-1">
+                        <label className="block text-xs text-outline mb-1">
                           Type
                         </label>
                         <select
@@ -252,7 +252,7 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
                                 .value as ISurveyCaptureField['type'],
                             })
                           }
-                          className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                          className="w-full border border-outline-variant rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
                         >
                           {CAPTURE_TYPES.map((t) => (
                             <option key={t} value={t}>
@@ -271,7 +271,7 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
                         }
                         className="w-4 h-4 accent-primary"
                       />
-                      <span className="text-xs text-gray-700">Required</span>
+                      <span className="text-xs text-on-surface-variant">Required</span>
                     </label>
                   </div>
                 ))}
@@ -282,10 +282,10 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
               {/* Allow Anonymous */}
               <div className="flex items-center gap-2 py-1">
                 <div>
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-on-surface-variant">
                     Allow Anonymous Responses
                   </span>
-                  <p className="text-xs text-gray-400 mt-0.5">
+                  <p className="text-xs text-outline mt-0.5">
                     Allow users without accounts to respond
                   </p>
                 </div>
@@ -294,7 +294,7 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
                     setSettings({ allowAnonymous: !settings.allowAnonymous })
                   }
                   className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors shrink-0 ml-4 ${
-                    settings.allowAnonymous ? 'bg-primary' : 'bg-gray-200'
+                    settings.allowAnonymous ? 'bg-primary' : 'bg-outline-variant'
                   }`}
                 >
                   <span

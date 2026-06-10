@@ -259,7 +259,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
               <select
                 value={interactive ? selectedValue : ''}
                 onChange={interactive ? (e) => { setSelectedValue(e.target.value); onAnswerChange?.(e.target.value); } : undefined}
-                className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-base focus:outline-none focus:bg-white focus:border-primary transition-colors"
+                className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-base focus:outline-none focus:bg-surface-container focus:border-primary transition-colors"
               >
                 <option value="">Select an option...</option>
                 {mcqOptions.map((opt) => (
@@ -439,7 +439,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
               onChange={interactive ? (e) => { setTextVal(e.target.value); onAnswerChange?.(e.target.value); } : undefined}
               placeholder={placeholder || 'Enter your answer...'}
               style={config.inputWidthPx ? { width: `${config.inputWidthPx}px`, maxWidth: '100%' } : undefined}
-              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-base md:text-lg focus:outline-none focus:bg-white focus:border-primary transition-colors"
+              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-base md:text-lg focus:outline-none focus:bg-surface-container focus:border-primary transition-colors"
             />
             {(textMaxChars || textMinChars) && (
               <p className="mt-1 text-sm text-custom-grey-3 text-right">
@@ -466,7 +466,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
               onChange={interactive ? (e) => { setTextVal(e.target.value); onAnswerChange?.(e.target.value); } : undefined}
               placeholder={placeholder || 'Enter your answer...'}
               rows={taRows}
-              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-base md:text-lg resize-vertical focus:outline-none focus:bg-white focus:border-primary transition-colors"
+              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-base md:text-lg resize-vertical focus:outline-none focus:bg-surface-container focus:border-primary transition-colors"
             />
             {(taMaxChars || taMinChars) && (
               <p className="mt-1 text-sm text-custom-grey-3 text-right">
@@ -493,7 +493,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
               placeholder="0"
               min={config.min}
               max={config.max}
-              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-base md:text-lg focus:outline-none focus:bg-white focus:border-primary transition-colors"
+              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-base md:text-lg focus:outline-none focus:bg-surface-container focus:border-primary transition-colors"
             />
             {hasDK && (
               <button
@@ -510,7 +510,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
                 className={`mt-2 px-4 py-1.5 text-sm rounded border transition-colors ${
                   isDKSelected
                     ? 'bg-primary text-white border-primary'
-                    : 'bg-white text-custom-grey-3 border-custom-grey-2 hover:border-primary hover:text-primary'
+                    : 'bg-surface-container text-custom-grey-3 border-custom-grey-2 hover:border-primary hover:text-primary'
                 }`}
               >
                 {isDKSelected ? `✓ ${dkLabel}` : dkLabel}
@@ -529,7 +529,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
               readOnly={!interactive}
               onChange={interactive ? (e) => { setTextVal(e.target.value); onAnswerChange?.(e.target.value); } : undefined}
               placeholder="example@email.com"
-              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-base md:text-lg focus:outline-none focus:bg-white focus:border-primary transition-colors"
+              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-base md:text-lg focus:outline-none focus:bg-surface-container focus:border-primary transition-colors"
             />
           </SurveyQuestionWrapper>
         );
@@ -542,7 +542,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
               value={interactive ? textVal : undefined}
               readOnly={!interactive}
               onChange={interactive ? (e) => { setTextVal(e.target.value); onAnswerChange?.(e.target.value); } : undefined}
-              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-base md:text-lg focus:outline-none focus:bg-white focus:border-primary transition-colors"
+              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-base md:text-lg focus:outline-none focus:bg-surface-container focus:border-primary transition-colors"
             />
           </SurveyQuestionWrapper>
         );
@@ -551,7 +551,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
         const currencySymbol = config.currency ?? '₹';
         return (
           <SurveyQuestionWrapper {...commonProps}>
-            <div className="flex items-center border-b-2 bg-custom-grey-5 border-custom-grey-2 focus-within:bg-white focus-within:border-primary transition-colors">
+            <div className="flex items-center border-b-2 bg-custom-grey-5 border-custom-grey-2 focus-within:bg-surface-container focus-within:border-primary transition-colors">
               <span className="pl-4 pr-1 text-base md:text-lg font-medium text-text-dark select-none">
                 {currencySymbol}
               </span>
@@ -614,10 +614,10 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
 
       case QuestionType.TEXT_DISPLAY:
         return (
-          <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-2">
+          <div className="rounded-lg border border-outline-variant bg-surface-container p-4 space-y-2">
             {config.displayHtml && (
               <div
-                className="text-sm text-gray-800 prose prose-sm max-w-none"
+                className="text-sm text-on-surface prose prose-sm max-w-none"
                 dangerouslySetInnerHTML={{ __html: config.displayHtml }}
               />
             )}
@@ -631,7 +631,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
               />
             )}
             {!config.displayHtml && !config.displayImageUrl && (
-              <p className="text-xs text-gray-400 italic text-center py-2">
+              <p className="text-xs text-outline italic text-center py-2">
                 Text / Graphic Display — add HTML content or an image URL in the editor.
               </p>
             )}

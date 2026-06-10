@@ -79,7 +79,7 @@ const McqCanvasEditor: React.FC<Props> = ({ question, qIdx, lang }) => {
             {/* Drag handle — mousedown arms the drag; only this row may start dragging */}
             <button
               type="button"
-              className="text-gray-300 hover:text-gray-400 cursor-grab active:cursor-grabbing flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="text-outline/40 hover:text-outline cursor-grab active:cursor-grabbing flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
               tabIndex={-1}
               title="Drag to reorder"
               onMouseDown={() => { canDragRef.current = displayIdx; }}
@@ -95,8 +95,8 @@ const McqCanvasEditor: React.FC<Props> = ({ question, qIdx, lang }) => {
             </button>
 
             {/* Option card — fluid up to 240px */}
-            <div className={`flex-1 min-w-0 max-w-[240px] flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2 transition-colors ${
-              isDragOver ? 'border border-primary shadow-sm' : 'border border-slate-200 hover:border-slate-300'
+            <div className={`flex-1 min-w-0 max-w-[240px] flex items-center gap-2 bg-surface-container-low rounded-lg px-3 py-2 transition-colors ${
+              isDragOver ? 'border border-primary shadow-sm' : 'border border-outline-variant hover:border-outline-variant'
             }`}>
               {/* Letter label — plain text, no box */}
               <span className="flex-shrink-0 text-sm font-medium text-primary/70 w-4 text-center">
@@ -107,7 +107,7 @@ const McqCanvasEditor: React.FC<Props> = ({ question, qIdx, lang }) => {
                 value={label}
                 onChange={(e) => handleLabelChange(optIdx, e.target.value)}
                 placeholder={lang === 'en' ? `Option ${displayIdx + 1}` : 'Tamil label'}
-                className="flex-1 min-w-0 bg-transparent text-sm text-gray-700 placeholder-gray-300 focus:outline-none"
+                className="flex-1 min-w-0 bg-transparent text-sm text-on-surface placeholder-gray-300 focus:outline-none"
               />
             </div>
 
@@ -118,7 +118,7 @@ const McqCanvasEditor: React.FC<Props> = ({ question, qIdx, lang }) => {
                 onClick={() => removeOption(qIdx, optIdx)}
                 disabled={regularOptions.length <= 1}
                 title="Remove option"
-                className="text-gray-400 hover:text-red-500 p-0.5 rounded transition-colors disabled:opacity-20"
+                className="text-outline hover:text-red-500 p-0.5 rounded transition-colors disabled:opacity-20"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <circle cx="12" cy="12" r="9" strokeWidth={1.5} />
@@ -133,9 +133,9 @@ const McqCanvasEditor: React.FC<Props> = ({ question, qIdx, lang }) => {
       {/* Special options (All of above / Others) — read-only pinned rows */}
       {specialOptions.map((opt) => (
         <div key={opt.value} className="flex items-center gap-2 pl-[1.375rem]">
-          <div className="flex-1 min-w-0 max-w-[240px] flex items-center gap-2 bg-gray-50 border border-dashed border-gray-200 rounded-lg px-3 py-2 opacity-60">
-            <span className="flex-shrink-0 text-sm font-medium text-gray-300 w-4 text-center">—</span>
-            <span className="text-sm text-gray-400">{opt.label}</span>
+          <div className="flex-1 min-w-0 max-w-[240px] flex items-center gap-2 bg-surface-container-low border border-dashed border-outline-variant rounded-lg px-3 py-2 opacity-60">
+            <span className="flex-shrink-0 text-sm font-medium text-outline/50 w-4 text-center">—</span>
+            <span className="text-sm text-outline">{opt.label}</span>
           </div>
         </div>
       ))}
@@ -143,9 +143,9 @@ const McqCanvasEditor: React.FC<Props> = ({ question, qIdx, lang }) => {
       {/* Exclusive "None of the above" row */}
       {question.config.hasExclusiveOption && (
         <div className="flex items-center gap-2 pl-[1.375rem]">
-          <div className="flex-1 min-w-0 max-w-[240px] flex items-center gap-2 bg-gray-50 border border-dashed border-gray-200 rounded-lg px-3 py-2 opacity-60">
-            <span className="flex-shrink-0 text-sm font-medium text-gray-300 w-4 text-center">—</span>
-            <span className="text-sm text-gray-400">
+          <div className="flex-1 min-w-0 max-w-[240px] flex items-center gap-2 bg-surface-container-low border border-dashed border-outline-variant rounded-lg px-3 py-2 opacity-60">
+            <span className="flex-shrink-0 text-sm font-medium text-outline/50 w-4 text-center">—</span>
+            <span className="text-sm text-outline">
               {question.config.exclusiveOptionLabel || 'None of the above'}
             </span>
           </div>

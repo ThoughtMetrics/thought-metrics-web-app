@@ -28,7 +28,7 @@ function getValueField(
   onChange: (value: string) => void,
 ): React.ReactNode {
   const cls =
-    'w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white';
+    'w-full border border-outline-variant rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container';
 
   const isMcq =
     parentQ?.questionType === QuestionType.MCQ_SINGLE ||
@@ -146,9 +146,9 @@ const ConditionalLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
     : 'Show this question if:';
 
   return (
-    <div ref={sectionRef} className="space-y-3 pt-3 border-t border-gray-200 transition-all rounded">
+    <div ref={sectionRef} className="space-y-3 pt-3 border-t border-outline-variant transition-all rounded">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
+        <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">
           Conditional Logic
         </span>
         <button
@@ -156,7 +156,7 @@ const ConditionalLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
           disabled={!isEnabled && otherQuestions.length === 0}
           title={!isEnabled && otherQuestions.length === 0 ? 'Add more questions first' : ''}
           className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-40 ${
-            isEnabled ? 'bg-primary' : 'bg-gray-200'
+            isEnabled ? 'bg-primary' : 'bg-outline-variant'
           }`}
         >
           <span
@@ -168,18 +168,18 @@ const ConditionalLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
       </div>
 
       {isEnabled && (
-        <div className="space-y-2 bg-gray-50 rounded-lg p-3">
-          <p className="text-xs text-gray-500">{descriptionText}</p>
+        <div className="space-y-2 bg-surface-container-low rounded-lg p-3">
+          <p className="text-xs text-outline">{descriptionText}</p>
 
           {conditions.length >= 2 && (
             <div className="flex items-center gap-2 py-1">
-              <span className="text-xs text-gray-500">Match:</span>
+              <span className="text-xs text-outline">Match:</span>
               <button
                 onClick={() => saveConditions(conditions, 'and')}
                 className={`text-xs px-2 py-1 rounded font-medium transition-colors ${
                   !isOrMode
                     ? 'bg-primary text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    : 'bg-surface-container-high text-on-surface-variant hover:bg-outline-variant'
                 }`}
               >
                 ALL (AND)
@@ -189,7 +189,7 @@ const ConditionalLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
                 className={`text-xs px-2 py-1 rounded font-medium transition-colors ${
                   isOrMode
                     ? 'bg-primary text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    : 'bg-surface-container-high text-on-surface-variant hover:bg-outline-variant'
                 }`}
               >
                 ANY (OR)
@@ -202,11 +202,11 @@ const ConditionalLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
             return (
               <div
                 key={idx}
-                className="space-y-1.5 pb-2 border-b border-gray-200 last:border-0 last:pb-0"
+                className="space-y-1.5 pb-2 border-b border-outline-variant last:border-0 last:pb-0"
               >
                 {conditions.length > 1 && (
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-400 font-medium">Condition {idx + 1}</span>
+                    <span className="text-xs text-outline font-medium">Condition {idx + 1}</span>
                     <button
                       onClick={() => removeCondition(idx)}
                       className="text-xs text-red-500 hover:text-red-700"
@@ -217,11 +217,11 @@ const ConditionalLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
                 )}
 
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Question</label>
+                  <label className="block text-xs text-on-surface-variant mb-1">Question</label>
                   <select
                     value={cond.questionId}
                     onChange={(e) => updateCondition(idx, { questionId: e.target.value, value: '' })}
-                    className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                    className="w-full border border-outline-variant rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
                   >
                     <option value="">Select a question</option>
                     {otherQuestions.map((q) => (
@@ -233,7 +233,7 @@ const ConditionalLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
                 </div>
 
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Operator</label>
+                  <label className="block text-xs text-on-surface-variant mb-1">Operator</label>
                   <select
                     value={cond.operator}
                     onChange={(e) =>
@@ -241,7 +241,7 @@ const ConditionalLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
                         operator: e.target.value as IBuilderShowIfCondition['operator'],
                       })
                     }
-                    className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                    className="w-full border border-outline-variant rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
                   >
                     {OPERATORS.map((op) => (
                       <option key={op.value} value={op.value}>
@@ -252,7 +252,7 @@ const ConditionalLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
                 </div>
 
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Value</label>
+                  <label className="block text-xs text-on-surface-variant mb-1">Value</label>
                   {getValueField(cond, parentQ, (value) => updateCondition(idx, { value }))}
                 </div>
               </div>

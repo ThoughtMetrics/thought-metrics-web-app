@@ -50,9 +50,9 @@ const OptionFilterConfig: React.FC<Props> = ({ question, qIdx }) => {
   const parentOptions = parentQ?.config.options ?? [];
 
   return (
-    <div className="space-y-3 pt-3 border-t border-gray-200">
+    <div className="space-y-3 pt-3 border-t border-outline-variant">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
+        <span className="text-xs font-semibold text-on-surface uppercase tracking-wide">
           Option Filter
         </span>
         <button
@@ -60,11 +60,11 @@ const OptionFilterConfig: React.FC<Props> = ({ question, qIdx }) => {
           disabled={!isEnabled && parentCandidates.length === 0}
           title={parentCandidates.length === 0 ? 'No MCQ questions available as parent' : ''}
           className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-40 ${
-            isEnabled ? 'bg-primary' : 'bg-gray-200'
+            isEnabled ? 'bg-primary' : 'bg-outline-variant'
           }`}
         >
           <span
-            className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow ${
+            className={`inline-block h-3.5 w-3.5 transform rounded-full bg-surface-container transition-transform shadow ${
               isEnabled ? 'translate-x-4' : 'translate-x-1'
             }`}
           />
@@ -72,13 +72,13 @@ const OptionFilterConfig: React.FC<Props> = ({ question, qIdx }) => {
       </div>
 
       {isEnabled && (
-        <div className="space-y-3 bg-gray-50 rounded-lg p-3">
+        <div className="space-y-3 bg-surface-container-low rounded-lg p-3">
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Based on question</label>
+            <label className="block text-xs text-on-surface-variant mb-1">Based on question</label>
             <select
               value={filter.questionId}
               onChange={(e) => handleParentChange(e.target.value)}
-              className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+              className="w-full border border-outline-variant rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
             >
               {parentCandidates.map((q) => (
                 <option key={q.id} value={q.id}>
@@ -98,11 +98,11 @@ const OptionFilterConfig: React.FC<Props> = ({ question, qIdx }) => {
               return (
                 <div
                   key={parentOpt.value}
-                  className="space-y-1.5 pb-2 border-b border-gray-200 last:border-0 last:pb-0"
+                  className="space-y-1.5 pb-2 border-b border-outline-variant last:border-0 last:pb-0"
                 >
-                  <p className="text-xs font-medium text-gray-700">
+                  <p className="text-xs font-medium text-on-surface">
                     When &quot;{parentOpt.label}&quot;
-                    <span className="ml-1 text-gray-400 font-normal">({parentOpt.value})</span>
+                    <span className="ml-1 text-outline font-normal">({parentOpt.value})</span>
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {childOptions
@@ -115,17 +115,17 @@ const OptionFilterConfig: React.FC<Props> = ({ question, qIdx }) => {
                             onChange={() => toggleChildOption(parentOpt.value, childOpt.value)}
                             className="w-3.5 h-3.5 accent-primary"
                           />
-                          <span className="text-xs text-gray-700">{childOpt.label}</span>
+                          <span className="text-xs text-on-surface">{childOpt.label}</span>
                         </label>
                       ))}
                   </div>
                   {allowedValues.length === 0 && (
-                    <p className="text-[10px] text-gray-400 italic">No options selected → all shown</p>
+                    <p className="text-[10px] text-outline italic">No options selected → all shown</p>
                   )}
                 </div>
               );
             })}
-          <p className="text-[10px] text-gray-400">
+          <p className="text-[10px] text-outline">
             If parent answer has no mapping, all options are shown.
           </p>
         </div>

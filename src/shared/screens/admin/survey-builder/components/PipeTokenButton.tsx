@@ -119,10 +119,10 @@ const PipeTokenButton: React.FC<Props> = ({
         onClick={() => setOpen((v) => !v)}
         className={`flex items-center gap-0.5 text-xs px-1.5 py-1 rounded border transition-colors flex-shrink-0 ${
           isDisabled
-            ? 'border-gray-200 text-gray-300 cursor-not-allowed'
+            ? 'border-outline-variant text-outline/40 cursor-not-allowed'
             : open
             ? 'border-primary text-primary bg-primary/10'
-            : 'border-gray-300 text-gray-400 hover:border-primary hover:text-primary'
+            : 'border-outline-variant text-outline hover:border-primary hover:text-primary'
         }`}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -138,10 +138,10 @@ const PipeTokenButton: React.FC<Props> = ({
       {open && eligibleQuestions.length > 0 && (
         <div
           role="listbox"
-          className="absolute z-50 mt-1 right-0 w-64 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden"
+          className="absolute z-50 mt-1 right-0 w-64 bg-surface-container border border-outline-variant rounded-lg shadow-lg overflow-hidden"
         >
-          <div className="px-3 py-1.5 border-b border-gray-100 bg-gray-50/80">
-            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+          <div className="px-3 py-1.5 border-b border-outline-variant/50 bg-surface-container-low">
+            <p className="text-[10px] font-semibold text-outline uppercase tracking-wide">
               Insert answer from…
             </p>
           </div>
@@ -159,10 +159,10 @@ const PipeTokenButton: React.FC<Props> = ({
                   {`{{Q${q.order}}}`}
                 </span>
                 <span className="flex-1 min-w-0">
-                  <span className="block text-xs text-gray-700 truncate leading-snug">
+                  <span className="block text-xs text-on-surface-variant truncate leading-snug">
                     {q.text || q.translations.en.text || `Question ${q.order}`}
                   </span>
-                  <span className="block text-[10px] text-gray-400 leading-none mt-0.5">
+                  <span className="block text-[10px] text-outline leading-none mt-0.5">
                     {typeLabel(q)}
                   </span>
                 </span>

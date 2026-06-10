@@ -265,7 +265,7 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId, SidebarCompon
 
   if (isLoading && templateId) {
     return (
-      <div className="h-full flex items-center justify-center bg-gray-50">
+      <div className="h-full flex items-center justify-center bg-surface-container-low">
         <LoaderUI message="Loading template..." />
       </div>
     );
@@ -273,7 +273,7 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId, SidebarCompon
 
   if (isError && templateId) {
     return (
-      <div className="h-full flex items-center justify-center bg-gray-50">
+      <div className="h-full flex items-center justify-center bg-surface-container-low">
         <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-6 max-w-md text-center">
           <p className="font-medium mb-2">Failed to load template</p>
           <a href={backHref} className="text-primary underline text-sm">
@@ -293,9 +293,9 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId, SidebarCompon
     <>
       {showDraftPrompt && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl">
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Unsaved draft found</h2>
-            <p className="text-sm text-gray-600 mb-6">
+          <div className="bg-surface-container rounded-xl p-6 max-w-md w-full mx-4 shadow-xl">
+            <h2 className="text-lg font-semibold text-on-surface mb-2">Unsaved draft found</h2>
+            <p className="text-sm text-on-surface-variant mb-6">
               A saved draft exists for this survey. Do you want to continue editing the draft or
               discard it and start fresh from the published version?
             </p>
@@ -303,7 +303,7 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId, SidebarCompon
               <button
                 onClick={() => void handleDiscardDraft()}
                 disabled={discardDraftContent.isPending}
-                className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                className="px-4 py-2 text-sm text-on-surface-variant border border-outline-variant rounded-lg hover:bg-surface-container-high disabled:opacity-50"
               >
                 {discardDraftContent.isPending ? 'Discarding…' : 'Discard'}
               </button>
@@ -320,24 +320,24 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId, SidebarCompon
 
       {showSaveSuccess && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-8 max-w-sm w-full mx-4 shadow-xl flex flex-col items-center text-center gap-4">
+          <div className="bg-surface-container rounded-xl p-8 max-w-sm w-full mx-4 shadow-xl flex flex-col items-center text-center gap-4">
             <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
               <CheckCircle className="w-9 h-9 text-green-600" />
             </div>
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-1">Draft saved!</h3>
-              <p className="text-sm text-gray-500">Redirecting to surveys…</p>
+              <h3 className="text-xl font-semibold text-on-surface mb-1">Draft saved!</h3>
+              <p className="text-sm text-outline">Redirecting to surveys…</p>
             </div>
           </div>
         </div>
       )}
 
-      <div className="h-full flex bg-gray-50 text-text-dark">
+      <div className="h-full flex bg-surface-container-low text-text-dark">
         <SidebarComponent />
 
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           {/* Header bar */}
-          <div className="flex items-center gap-4 px-6 py-3 bg-white border-b border-gray-200 flex-shrink-0">
+          <div className="flex items-center gap-4 px-6 py-3 bg-surface-container border-b border-outline-variant flex-shrink-0">
             {editorSection === 'questions' ? (
               <button
                 onClick={() => setEditorSection('details')}
@@ -367,7 +367,7 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId, SidebarCompon
               value={translations?.en?.label ?? ''}
               onChange={(e) => handleLabelChange(e.target.value)}
               placeholder="Survey display title (e.g. Political Survey 2026)"
-              className="flex-1 min-w-0 border border-gray-200 rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary bg-gray-50"
+              className="flex-1 min-w-0 border border-outline-variant rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container-low text-on-surface"
             />
 
             <div className="flex items-center gap-2 flex-shrink-0">
@@ -378,7 +378,7 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId, SidebarCompon
                 <span className="text-xs text-amber-500 font-medium">Draft saved</span>
               )}
               {localSavedAt && (
-                <span className="text-xs text-gray-400" title={`Auto-saved at ${localSavedAt.toLocaleTimeString()}`}>
+                <span className="text-xs text-outline" title={`Auto-saved at ${localSavedAt.toLocaleTimeString()}`}>
                   ✓ Locally saved {localSavedAt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                 </span>
               )}
@@ -387,7 +387,7 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId, SidebarCompon
                 onClick={undo}
                 disabled={_past.length === 0}
                 title="Undo (Ctrl+Z)"
-                className="p-1.5 rounded-md text-gray-500 hover:text-black hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-md text-outline hover:text-on-surface hover:bg-surface-container-high disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 <RotateCcw size={16} />
               </button>
@@ -395,7 +395,7 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId, SidebarCompon
                 onClick={redo}
                 disabled={_future.length === 0}
                 title="Redo (Ctrl+Y)"
-                className="p-1.5 rounded-md text-gray-500 hover:text-black hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-md text-outline hover:text-on-surface hover:bg-surface-container-high disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 <RotateCw size={16} />
               </button>
@@ -452,7 +452,7 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId, SidebarCompon
                 </div>
 
                 {/* RIGHT: Question settings — 288px */}
-                <div className="w-72 flex-shrink-0 overflow-hidden border-l border-gray-200">
+                <div className="w-72 flex-shrink-0 overflow-hidden border-l border-outline-variant">
                   <QuestionConfigPanel />
                 </div>
               </>

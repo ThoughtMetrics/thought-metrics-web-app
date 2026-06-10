@@ -287,7 +287,7 @@ const PublishSurveyModal: React.FC<Props> = ({
     <form onSubmit={handleFormSubmit} className="flex flex-col">
       <div className="px-6 py-5 space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-on-surface-variant mb-1">
             Survey Label <span className="text-red-500">*</span>
           </label>
           <input
@@ -295,39 +295,39 @@ const PublishSurveyModal: React.FC<Props> = ({
             value={label}
             onChange={(e) => setLabel(e.target.value)}
             required
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
 
         {!existingSurveyId && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Survey ID</label>
+            <label className="block text-sm font-medium text-on-surface-variant mb-1">Survey ID</label>
             <input
               type="text"
               value={surveyId}
               onChange={(e) => setSurveyId(e.target.value)}
               placeholder="Auto-generated if left blank"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
         )}
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Industry</label>
+          <label className="block text-sm font-medium text-on-surface-variant mb-1">Industry</label>
           <select
             value={industry}
             onChange={(e) => setIndustry(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white"
+            className="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-surface-container"
           >
             {INDUSTRY_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
-          <p className="text-xs text-gray-400 mt-1">Determines the survey ID prefix (e.g. TM-POL001)</p>
+          <p className="text-xs text-outline mt-1">Determines the survey ID prefix (e.g. TM-POL001)</p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Mode</label>
+          <label className="block text-sm font-medium text-on-surface-variant mb-2">Mode</label>
           <div className="flex gap-2">
             {(['respondent', 'agent'] as const).map((t) => (
               <button
@@ -337,7 +337,7 @@ const PublishSurveyModal: React.FC<Props> = ({
                 className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
                   type === t
                     ? 'border-primary bg-primary/10 text-primary'
-                    : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                    : 'border-outline-variant text-on-surface-variant hover:border-outline'
                 }`}
               >
                 {t === 'respondent' ? 'Public' : 'Agent'}
@@ -347,7 +347,7 @@ const PublishSurveyModal: React.FC<Props> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Visibility</label>
+          <label className="block text-sm font-medium text-on-surface-variant mb-2">Visibility</label>
           <div className="flex gap-2">
             {(['public', 'private'] as const).map((v) => (
               <button
@@ -357,7 +357,7 @@ const PublishSurveyModal: React.FC<Props> = ({
                 className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium capitalize transition-colors ${
                   visibility === v
                     ? 'border-primary bg-primary/10 text-primary'
-                    : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                    : 'border-outline-variant text-on-surface-variant hover:border-outline'
                 }`}
               >
                 {v}
@@ -368,40 +368,40 @@ const PublishSurveyModal: React.FC<Props> = ({
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+            <label className="block text-sm font-medium text-on-surface-variant mb-1">Start Date</label>
+            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Expire Date</label>
-            <input type="date" value={expireDate} onChange={(e) => setExpireDate(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+            <label className="block text-sm font-medium text-on-surface-variant mb-1">Expire Date</label>
+            <input type="date" value={expireDate} onChange={(e) => setExpireDate(e.target.value)} className="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Max Responses</label>
+          <label className="block text-sm font-medium text-on-surface-variant mb-1">Max Responses</label>
           <input
             type="number"
             value={maxResponses}
             onChange={(e) => setMaxResponses(e.target.value)}
             min={1}
             placeholder="No limit"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
 
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium text-gray-700">Zonal Based Survey</label>
+          <label className="text-sm font-medium text-on-surface-variant">Zonal Based Survey</label>
           <button
             type="button"
             onClick={() => setZonalBasedSurvey((v) => !v)}
-            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${zonalBasedSurvey ? 'bg-primary' : 'bg-gray-200'}`}
+            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${zonalBasedSurvey ? 'bg-primary' : 'bg-outline-variant'}`}
           >
             <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow ${zonalBasedSurvey ? 'translate-x-4' : 'translate-x-1'}`} />
           </button>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Form Layout</label>
+          <label className="block text-sm font-medium text-on-surface-variant mb-2">Form Layout</label>
           <div className="flex gap-2">
             {(['paginated', 'list'] as const).map((l) => (
               <button
@@ -411,7 +411,7 @@ const PublishSurveyModal: React.FC<Props> = ({
                 className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium capitalize transition-colors ${
                   formLayout === l
                     ? 'border-primary bg-primary/10 text-primary'
-                    : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                    : 'border-outline-variant text-on-surface-variant hover:border-outline'
                 }`}
               >
                 {l}
@@ -422,8 +422,8 @@ const PublishSurveyModal: React.FC<Props> = ({
       </div>
 
       {/* Sticky footer */}
-      <div className="flex gap-3 px-6 py-4 border-t border-gray-200 bg-white sticky bottom-0 flex-shrink-0">
-        <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+      <div className="flex gap-3 px-6 py-4 border-t border-outline-variant/50 bg-surface-container sticky bottom-0 flex-shrink-0">
+        <button type="button" onClick={onClose} className="px-4 py-2 border border-outline-variant rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container-high transition-colors">
           Cancel
         </button>
         <button
@@ -440,7 +440,7 @@ const PublishSurveyModal: React.FC<Props> = ({
   const renderLangPrompt = () => (
     <div className="flex flex-col h-full">
       <div className="px-6 py-5 space-y-4 flex-1">
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-outline">
           Optionally add translations before publishing.
         </p>
 
@@ -452,7 +452,7 @@ const PublishSurveyModal: React.FC<Props> = ({
                 key={lang.code}
                 type="button"
                 onClick={() => handleOpenTranslation(lang.code)}
-                className="w-full flex items-center justify-between border border-gray-200 rounded-lg px-4 py-3 hover:border-primary/50 hover:bg-gray-50 transition-colors text-left"
+                className="w-full flex items-center justify-between border border-outline-variant rounded-lg px-4 py-3 hover:border-primary/50 hover:bg-surface-container-high transition-colors text-left"
               >
                 <div className="flex items-center gap-2">
                   {isSaved ? (
@@ -460,9 +460,9 @@ const PublishSurveyModal: React.FC<Props> = ({
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                     </svg>
                   ) : (
-                    <div className="w-4 h-4 rounded border border-gray-300 flex-shrink-0" />
+                    <div className="w-4 h-4 rounded border border-outline-variant flex-shrink-0" />
                   )}
-                  <span className="text-sm font-medium text-gray-800">{lang.label}</span>
+                  <span className="text-sm font-medium text-on-surface">{lang.label}</span>
                 </div>
                 <span className="text-sm text-primary font-medium">
                   {isSaved ? `Edit ${lang.label} translation` : `Add ${lang.label} translation`}
@@ -474,7 +474,7 @@ const PublishSurveyModal: React.FC<Props> = ({
       </div>
 
       {/* Sticky footer */}
-      <div className="flex flex-col gap-2 px-6 py-4 border-t border-gray-200 bg-white sticky bottom-0 flex-shrink-0">
+      <div className="flex flex-col gap-2 px-6 py-4 border-t border-outline-variant/50 bg-surface-container sticky bottom-0 flex-shrink-0">
         <button
           onClick={handlePublish}
           disabled={isBusy}
@@ -484,7 +484,7 @@ const PublishSurveyModal: React.FC<Props> = ({
         </button>
         <button
           onClick={() => setStep('form')}
-          className="text-xs text-gray-400 hover:text-gray-600 transition-colors pt-1 text-center"
+          className="text-xs text-outline hover:text-on-surface-variant transition-colors pt-1 text-center"
         >
           ← Back
         </button>
@@ -500,25 +500,25 @@ const PublishSurveyModal: React.FC<Props> = ({
     return (
       <div className="flex flex-col flex-1 min-h-0">
         {/* Translation editor header */}
-        <div className="px-6 py-3 border-b border-gray-100 flex items-center gap-3 flex-shrink-0">
-          <button onClick={() => setStep('lang-prompt')} className="text-gray-400 hover:text-gray-700 transition-colors">
+        <div className="px-6 py-3 border-b border-outline-variant/50 flex items-center gap-3 flex-shrink-0">
+          <button onClick={() => setStep('lang-prompt')} className="text-outline hover:text-on-surface-variant transition-colors">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <p className="text-sm text-gray-600">
-            {savedLangs.has(selectedLang) ? 'Editing' : 'Adding'} <span className="font-semibold text-gray-900">{selectedLangLabel}</span> translations — English shown for reference
+          <p className="text-sm text-on-surface-variant">
+            {savedLangs.has(selectedLang) ? 'Editing' : 'Adding'} <span className="font-semibold text-on-surface">{selectedLangLabel}</span> translations — English shown for reference
           </p>
         </div>
 
         {/* Column headers */}
-        <div className="grid grid-cols-2 gap-px bg-gray-200 flex-shrink-0">
-          <div className="bg-gray-50 px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">English</div>
-          <div className="bg-gray-50 px-4 py-2 text-xs font-semibold text-primary uppercase tracking-wide">{selectedLangLabel}</div>
+        <div className="grid grid-cols-2 gap-px bg-outline-variant/20 flex-shrink-0">
+          <div className="bg-surface-container-low px-4 py-2 text-xs font-semibold text-outline uppercase tracking-wide">English</div>
+          <div className="bg-surface-container-low px-4 py-2 text-xs font-semibold text-primary uppercase tracking-wide">{selectedLangLabel}</div>
         </div>
 
         {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto divide-y divide-gray-100">
+        <div className="flex-1 overflow-y-auto divide-y divide-outline-variant/20">
 
           {/* Template label / description / instructions */}
           {(enTemplateTranslations?.label || enTemplateTranslations?.description || enTemplateTranslations?.instructions) && (
@@ -528,57 +528,57 @@ const PublishSurveyModal: React.FC<Props> = ({
               </div>
 
               {enTemplateTranslations?.label && (
-                <div className="grid grid-cols-2 gap-px bg-gray-200">
-                  <div className="bg-white px-4 py-3">
-                    <p className="text-xs text-gray-400 mb-1">Label</p>
-                    <p className="text-sm text-gray-700">{enTemplateTranslations.label}</p>
+                <div className="grid grid-cols-2 gap-px bg-outline-variant/20">
+                  <div className="bg-surface-container px-4 py-3">
+                    <p className="text-xs text-outline mb-1">Label</p>
+                    <p className="text-sm text-on-surface-variant">{enTemplateTranslations.label}</p>
                   </div>
-                  <div className="bg-white px-4 py-3">
-                    <p className="text-xs text-gray-400 mb-1">Label</p>
+                  <div className="bg-surface-container px-4 py-3">
+                    <p className="text-xs text-outline mb-1">Label</p>
                     <input
                       type="text"
                       value={draft.templateLabel}
                       onChange={(e) => setDraft((p) => p ? { ...p, templateLabel: e.target.value } : p)}
                       placeholder={`${selectedLangLabel} label…`}
-                      className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                      className="w-full border border-outline-variant rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
                     />
                   </div>
                 </div>
               )}
 
               {enTemplateTranslations?.description && (
-                <div className="grid grid-cols-2 gap-px bg-gray-200">
-                  <div className="bg-white px-4 py-3">
-                    <p className="text-xs text-gray-400 mb-1">Description</p>
-                    <p className="text-sm text-gray-700">{enTemplateTranslations.description}</p>
+                <div className="grid grid-cols-2 gap-px bg-outline-variant/20">
+                  <div className="bg-surface-container px-4 py-3">
+                    <p className="text-xs text-outline mb-1">Description</p>
+                    <p className="text-sm text-on-surface-variant">{enTemplateTranslations.description}</p>
                   </div>
-                  <div className="bg-white px-4 py-3">
-                    <p className="text-xs text-gray-400 mb-1">Description</p>
+                  <div className="bg-surface-container px-4 py-3">
+                    <p className="text-xs text-outline mb-1">Description</p>
                     <input
                       type="text"
                       value={draft.templateDescription}
                       onChange={(e) => setDraft((p) => p ? { ...p, templateDescription: e.target.value } : p)}
                       placeholder={`${selectedLangLabel} description…`}
-                      className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                      className="w-full border border-outline-variant rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
                     />
                   </div>
                 </div>
               )}
 
               {enTemplateTranslations?.instructions && (
-                <div className="grid grid-cols-2 gap-px bg-gray-200">
-                  <div className="bg-white px-4 py-3">
-                    <p className="text-xs text-gray-400 mb-1">Instructions</p>
-                    <p className="text-sm text-gray-700">{enTemplateTranslations.instructions}</p>
+                <div className="grid grid-cols-2 gap-px bg-outline-variant/20">
+                  <div className="bg-surface-container px-4 py-3">
+                    <p className="text-xs text-outline mb-1">Instructions</p>
+                    <p className="text-sm text-on-surface-variant">{enTemplateTranslations.instructions}</p>
                   </div>
-                  <div className="bg-white px-4 py-3">
-                    <p className="text-xs text-gray-400 mb-1">Instructions</p>
+                  <div className="bg-surface-container px-4 py-3">
+                    <p className="text-xs text-outline mb-1">Instructions</p>
                     <input
                       type="text"
                       value={draft.templateInstructions}
                       onChange={(e) => setDraft((p) => p ? { ...p, templateInstructions: e.target.value } : p)}
                       placeholder={`${selectedLangLabel} instructions…`}
-                      className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                      className="w-full border border-outline-variant rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
                     />
                   </div>
                 </div>
@@ -595,51 +595,51 @@ const PublishSurveyModal: React.FC<Props> = ({
             return (
               <div key={q.id}>
                 {/* Question badge */}
-                <div className="px-4 py-2 bg-gray-50 border-b border-gray-100 flex items-center gap-2">
+                <div className="px-4 py-2 bg-surface-container-low border-b border-outline-variant/50 flex items-center gap-2">
                   <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-white text-xs font-bold flex-shrink-0">
                     {q.order}
                   </span>
-                  <span className="text-xs text-gray-500 truncate">{enText || '(no text)'}</span>
+                  <span className="text-xs text-outline truncate">{enText || '(no text)'}</span>
                 </div>
 
                 {/* Question text row */}
-                <div className="grid grid-cols-2 gap-px bg-gray-200">
-                  <div className="bg-white px-4 py-3">
-                    <p className="text-xs text-gray-400 mb-1">Question text</p>
-                    <p className="text-sm text-gray-700 leading-relaxed">{enText || <span className="text-gray-300 italic">empty</span>}</p>
+                <div className="grid grid-cols-2 gap-px bg-outline-variant/20">
+                  <div className="bg-surface-container px-4 py-3">
+                    <p className="text-xs text-outline mb-1">Question text</p>
+                    <p className="text-sm text-on-surface-variant leading-relaxed">{enText || <span className="text-outline/40 italic">empty</span>}</p>
                   </div>
-                  <div className="bg-white px-4 py-3">
-                    <p className="text-xs text-gray-400 mb-1">Question text</p>
+                  <div className="bg-surface-container px-4 py-3">
+                    <p className="text-xs text-outline mb-1">Question text</p>
                     <textarea
                       value={qDraft.text}
                       onChange={(e) => updateDraftQuestion(qIdx, { text: e.target.value })}
                       placeholder={`${selectedLangLabel} question text…`}
                       rows={2}
-                      className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                      className="w-full border border-outline-variant rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container resize-none"
                     />
                   </div>
                 </div>
 
                 {/* Options rows */}
                 {hasOptions && (
-                  <div className="bg-gray-50/60">
-                    <div className="px-4 py-1.5 border-y border-gray-100">
-                      <span className="text-xs text-gray-400 font-medium">Options</span>
+                  <div className="bg-surface-container-low/60">
+                    <div className="px-4 py-1.5 border-y border-outline-variant/50">
+                      <span className="text-xs text-outline font-medium">Options</span>
                     </div>
                     {qDraft.options.map((opt, optIdx) => {
                       const enOpt = (q.config.options ?? [])[optIdx];
                       return (
-                        <div key={opt.value} className="grid grid-cols-2 gap-px bg-gray-200">
-                          <div className="bg-white px-4 py-2 flex items-center">
-                            <span className="text-sm text-gray-600">{enOpt?.label || opt.value}</span>
+                        <div key={opt.value} className="grid grid-cols-2 gap-px bg-outline-variant/20">
+                          <div className="bg-surface-container px-4 py-2 flex items-center">
+                            <span className="text-sm text-on-surface-variant">{enOpt?.label || opt.value}</span>
                           </div>
-                          <div className="bg-white px-4 py-2">
+                          <div className="bg-surface-container px-4 py-2">
                             <input
                               type="text"
                               value={opt.label}
                               onChange={(e) => updateDraftOption(qIdx, optIdx, e.target.value)}
                               placeholder={`${selectedLangLabel}…`}
-                              className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                              className="w-full border border-outline-variant rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
                             />
                           </div>
                         </div>
@@ -653,10 +653,10 @@ const PublishSurveyModal: React.FC<Props> = ({
         </div>
 
         {/* Footer actions */}
-        <div className="flex gap-3 px-6 py-4 border-t border-gray-200 flex-shrink-0 bg-white">
+        <div className="flex gap-3 px-6 py-4 border-t border-outline-variant/50 flex-shrink-0 bg-surface-container">
           <button
             onClick={() => setStep('lang-prompt')}
-            className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            className="px-4 py-2 border border-outline-variant rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container-high transition-colors"
           >
             Back
           </button>
@@ -678,13 +678,13 @@ const PublishSurveyModal: React.FC<Props> = ({
         <CheckCircle className="w-9 h-9 text-green-600" />
       </div>
       <div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-1">Published successfully!</h3>
-        <p className="text-sm text-gray-500">{publishedLabel}</p>
+        <h3 className="text-xl font-semibold text-on-surface mb-1">Published successfully!</h3>
+        <p className="text-sm text-outline">{publishedLabel}</p>
         {publishedSurveyId && (
-          <p className="text-xs text-gray-400 mt-0.5 font-mono">{publishedSurveyId}</p>
+          <p className="text-xs text-outline mt-0.5 font-mono">{publishedSurveyId}</p>
         )}
       </div>
-      <p className="text-xs text-gray-400">Redirecting to surveys in a moment…</p>
+      <p className="text-xs text-outline">Redirecting to surveys in a moment…</p>
       <button
         onClick={() => { window.location.href = '/admin/surveys'; }}
         className="mt-2 px-6 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
@@ -704,31 +704,31 @@ const PublishSurveyModal: React.FC<Props> = ({
       onClick={handleBackdropClick}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
     >
-      <div className={`bg-white rounded-xl shadow-2xl mx-4 flex flex-col overflow-hidden transition-all ${
+      <div className={`bg-surface-container rounded-xl shadow-2xl mx-4 flex flex-col overflow-hidden transition-all ${
         isTranslationStep ? 'w-full max-w-2xl h-[90vh]' : 'w-full max-w-lg max-h-[90vh]'
       }`}>
         {/* Header — hidden on success step */}
         {step !== 'success' && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-outline-variant/50 flex-shrink-0">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-on-surface">
                 {step === 'form' && 'Publish Survey'}
                 {step === 'lang-prompt' && 'Before you publish…'}
                 {step === 'translation' && `${selectedLangLabel} Translations`}
               </h2>
               {step === 'form' && (
-                <p className="text-xs text-gray-400 mt-0.5">Step 1 of 2 — Survey details</p>
+                <p className="text-xs text-outline mt-0.5">Step 1 of 2 — Survey details</p>
               )}
               {step === 'lang-prompt' && (
-                <p className="text-xs text-gray-400 mt-0.5">Step 2 of 2 — Translations (optional)</p>
+                <p className="text-xs text-outline mt-0.5">Step 2 of 2 — Translations (optional)</p>
               )}
               {step === 'translation' && (
-                <p className="text-xs text-gray-400 mt-0.5">
+                <p className="text-xs text-outline mt-0.5">
                   {savedLangs.has(selectedLang) ? 'Editing' : 'Adding'} {selectedLangLabel} translations
                 </p>
               )}
             </div>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-700 transition-colors flex-shrink-0">
+            <button onClick={onClose} className="text-outline hover:text-on-surface-variant transition-colors flex-shrink-0">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>

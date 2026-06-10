@@ -81,7 +81,7 @@ const TYPE_BADGE_COLORS: Partial<Record<QuestionType, string>> = {
   [QuestionType.MAX_DIFF]: 'bg-pink-100 text-pink-700',
   [QuestionType.CONSTANT_SUM]: 'bg-pink-100 text-pink-700',
   [QuestionType.GABOR_GRANGER]: 'bg-violet-100 text-violet-700',
-  [QuestionType.FILE]: 'bg-gray-100 text-gray-700',
+  [QuestionType.FILE]: 'bg-surface-container-high text-on-surface-variant',
   [QuestionType.TEXT_DISPLAY]: 'bg-teal-100 text-teal-700',
 };
 
@@ -153,10 +153,10 @@ const QuestionListPanel: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-white border-r border-gray-200">
+    <div className="h-full flex flex-col bg-surface-container border-r border-outline-variant">
       {/* Question counter header */}
       <div className="px-4 py-4">
-        <div className="px-4 py-2 w-full h-full border-b border-gray-200 flex items-center justify-between bg-primary/10 rounded-lg">
+        <div className="px-4 py-2 w-full h-full border-b border-outline-variant flex items-center justify-between bg-primary/10 rounded-lg">
           <p className="text-sm font-semibold text-primary tracking-wide leading-tight">
             Add and edit questions
           </p>
@@ -173,7 +173,7 @@ const QuestionListPanel: React.FC = () => {
         onClick={() => setInsertMenuOpenAt(null)}
       >
         {questions.length === 0 && (
-          <p className="text-xs text-gray-400 text-center py-6 px-3">
+          <p className="text-xs text-outline text-center py-6 px-3">
             No questions yet. Add one below.
           </p>
         )}
@@ -184,7 +184,7 @@ const QuestionListPanel: React.FC = () => {
           const displayText =
             q.translations.en.text || q.text || `Question ${idx + 1}`;
           const badgeColor =
-            TYPE_BADGE_COLORS[q.questionType] ?? 'bg-gray-100 text-gray-600';
+            TYPE_BADGE_COLORS[q.questionType] ?? 'bg-surface-container-high text-on-surface-variant';
 
           return (
             <React.Fragment key={q.id}>
@@ -198,7 +198,7 @@ const QuestionListPanel: React.FC = () => {
                 className={`group relative px-3 py-2 rounded-lg cursor-pointer transition-colors ${
                   isSelected
                     ? 'border-l-4 border-primary bg-primary/5'
-                    : 'border-l-4 border-transparent hover:bg-gray-50'
+                    : 'border-l-4 border-transparent hover:bg-surface-container-high'
                 } ${isDragOver ? 'ring-2 ring-primary/40 bg-primary/5' : ''}`}
               >
                 <div className="flex items-start gap-2">
@@ -206,7 +206,7 @@ const QuestionListPanel: React.FC = () => {
                   <div className="flex flex-col items-center shrink-0 mt-0.5 gap-0.5">
                     {/* Grip handle — click-stop so dragging doesn't select */}
                     <div
-                      className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 transition-colors"
+                      className="cursor-grab active:cursor-grabbing text-outline/40 hover:text-outline transition-colors"
                       onMouseDown={(e) => e.stopPropagation()}
                       title="Drag to reorder"
                     >
@@ -218,7 +218,7 @@ const QuestionListPanel: React.FC = () => {
                         <path d="M7 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm6 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 10a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm6 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 16a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm6 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
                       </svg>
                     </div>
-                    <span className="text-xs font-bold text-gray-400">
+                    <span className="text-xs font-bold text-outline">
                       {q.order}
                     </span>
                     {(q.config.showIf ||
@@ -239,7 +239,7 @@ const QuestionListPanel: React.FC = () => {
                     >
                       {q.questionType}
                     </span>
-                    <p className="text-xs text-gray-700 truncate">
+                    <p className="text-xs text-on-surface-variant truncate">
                       {displayText || '(no text)'}
                     </p>
                   </div>
@@ -255,7 +255,7 @@ const QuestionListPanel: React.FC = () => {
                       duplicateQuestion(idx);
                     }}
                     title="Duplicate"
-                    className="p-1 text-gray-400 hover:text-gray-700"
+                    className="p-1 text-outline hover:text-on-surface-variant"
                   >
                     <svg
                       className="w-3.5 h-3.5"
@@ -277,7 +277,7 @@ const QuestionListPanel: React.FC = () => {
                       removeQuestion(idx);
                     }}
                     title="Delete"
-                    className="p-1 text-gray-400 hover:text-red-600"
+                    className="p-1 text-outline hover:text-red-600"
                   >
                     <svg
                       className="w-3.5 h-3.5"
@@ -311,17 +311,17 @@ const QuestionListPanel: React.FC = () => {
                       );
                     }}
                     title={`Insert question after Q${idx + 1}`}
-                    className="relative z-10 w-5 h-5 rounded-full bg-white border border-gray-300 text-gray-400 hover:border-primary hover:text-primary hover:bg-primary/5 transition-colors opacity-0 group-hover/insert:opacity-100 flex items-center justify-center text-sm font-bold leading-none shadow-sm"
+                    className="relative z-10 w-5 h-5 rounded-full bg-surface-container border border-outline-variant text-outline hover:border-primary hover:text-primary hover:bg-primary/5 transition-colors opacity-0 group-hover/insert:opacity-100 flex items-center justify-center text-sm font-bold leading-none shadow-sm"
                   >
                     +
                   </button>
 
                   {/* Insert type picker */}
                   {insertMenuOpenAt === idx && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 max-h-64 overflow-y-auto z-20">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-surface-container rounded-lg shadow-lg border border-outline-variant max-h-64 overflow-y-auto z-20">
                       {QUESTION_GROUPS.map((group) => (
                         <div key={group.label}>
-                          <div className="px-3 py-1.5 text-xs font-semibold text-gray-500 bg-gray-50 sticky top-0">
+                          <div className="px-3 py-1.5 text-xs font-semibold text-outline bg-surface-container-low sticky top-0">
                             {group.label}
                           </div>
                           {group.types.map(({ type, label }) => (
@@ -331,7 +331,7 @@ const QuestionListPanel: React.FC = () => {
                                 insertQuestion(type, idx);
                                 setInsertMenuOpenAt(null);
                               }}
-                              className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
+                              className="w-full text-left px-3 py-2 text-sm text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-colors"
                             >
                               {label}
                             </button>
@@ -348,22 +348,22 @@ const QuestionListPanel: React.FC = () => {
       </div>
 
       {/* Add question button */}
-      <div ref={addMenuRef} className="p-3 border-t border-gray-200 relative">
+      <div ref={addMenuRef} className="p-3 border-t border-outline-variant relative">
         <button
           onClick={() => {
             setAddMenuOpen((v) => !v);
             setInsertMenuOpenAt(null);
           }}
-          className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-sm text-gray-500 hover:border-primary hover:text-primary transition-colors font-medium"
+          className="w-full py-2 border-2 border-dashed border-outline-variant rounded-lg text-sm text-outline hover:border-primary hover:text-primary transition-colors font-medium"
         >
           + Add Question
         </button>
 
         {addMenuOpen && (
-          <div className="absolute bottom-full left-0 right-0 mb-1 bg-white rounded-lg shadow-lg border border-gray-200 max-h-72 overflow-y-auto z-10">
+          <div className="absolute bottom-full left-0 right-0 mb-1 bg-surface-container rounded-lg shadow-lg border border-outline-variant max-h-72 overflow-y-auto z-10">
             {QUESTION_GROUPS.map((group) => (
               <div key={group.label}>
-                <div className="px-3 py-1.5 text-xs font-semibold text-gray-500 bg-gray-50 sticky top-0">
+                <div className="px-3 py-1.5 text-xs font-semibold text-outline bg-surface-container-low sticky top-0">
                   {group.label}
                 </div>
                 {group.types.map(({ type, label }) => (
@@ -373,7 +373,7 @@ const QuestionListPanel: React.FC = () => {
                       addQuestion(type);
                       setAddMenuOpen(false);
                     }}
-                    className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
+                    className="w-full text-left px-3 py-2 text-sm text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-colors"
                   >
                     {label}
                   </button>

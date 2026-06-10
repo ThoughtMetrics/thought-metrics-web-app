@@ -21,7 +21,7 @@ export const RowColumnEditor: React.FC<{
         className={`flex items-center gap-1 text-xs px-2 py-1 rounded border transition-colors ${
           cols.length > 0
             ? 'border-primary text-primary bg-primary/5'
-            : 'border-gray-300 text-gray-400 hover:border-primary hover:text-primary'
+            : 'border-outline-variant text-outline hover:border-primary hover:text-primary'
         }`}
       >
         <span>{cols.length > 0 ? `${cols.length} option${cols.length > 1 ? 's' : ''}` : 'Add options'}</span>
@@ -30,7 +30,7 @@ export const RowColumnEditor: React.FC<{
 
       {open && (
         <div className="mt-1.5 border border-dashed border-primary/40 rounded-lg p-2.5 space-y-1.5 bg-primary/3">
-          <p className="text-xs font-medium text-gray-500 mb-1">
+          <p className="text-xs font-medium text-outline mb-1">
             Options for &quot;{rowLabel}&quot;
           </p>
           {cols.map((col, i) => (
@@ -44,7 +44,7 @@ export const RowColumnEditor: React.FC<{
                   onChange(next);
                 }}
                 placeholder="value"
-                className="w-20 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                className="w-20 border border-outline-variant rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
               />
               <input
                 type="text"
@@ -55,7 +55,7 @@ export const RowColumnEditor: React.FC<{
                   onChange(next);
                 }}
                 placeholder="Label"
-                className="flex-1 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                className="flex-1 border border-outline-variant rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
               />
               {showIntensePurchase && (
                 <button
@@ -68,7 +68,7 @@ export const RowColumnEditor: React.FC<{
                   className={`text-xs px-1.5 py-1 rounded border flex-shrink-0 transition-colors ${
                     col.isIntensePurchase
                       ? 'border-primary text-primary bg-primary/5'
-                      : 'border-gray-300 text-gray-300'
+                      : 'border-outline-variant text-outline/40'
                   }`}
                   title="Toggle intense purchase for this sub-option"
                 >

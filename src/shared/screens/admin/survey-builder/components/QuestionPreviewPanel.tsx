@@ -43,7 +43,7 @@ const LANG_LABELS: Record<SupportedBuilderLanguage, string> = {
 
 const SingleViewIcon: React.FC<{ active: boolean }> = ({ active }) => (
   <svg
-    className={`w-4 h-4 ${active ? 'text-black' : 'text-gray-400'}`}
+    className={`w-4 h-4 ${active ? 'text-on-surface' : 'text-outline'}`}
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -54,7 +54,7 @@ const SingleViewIcon: React.FC<{ active: boolean }> = ({ active }) => (
 
 const ListViewIcon: React.FC<{ active: boolean }> = ({ active }) => (
   <svg
-    className={`w-4 h-4 ${active ? 'text-black' : 'text-gray-400'}`}
+    className={`w-4 h-4 ${active ? 'text-on-surface' : 'text-outline'}`}
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -151,7 +151,7 @@ const QuestionPreviewPanel: React.FC = () => {
 
   // ── Toolbar ──────────────────────────────────────────────────────────────
   const toolbar = (
-    <div className="flex items-center justify-between p-3 border-b border-gray-200 bg-white shrink-0">
+    <div className="flex items-center justify-between p-3 border-b border-outline-variant bg-surface-container shrink-0">
       {/* Left: Language tabs + Device dropdown */}
       <div className="flex items-center gap-2">
         {/* Language tabs */}
@@ -163,7 +163,7 @@ const QuestionPreviewPanel: React.FC = () => {
               className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
                 activeLanguage === lang
                   ? 'bg-primary text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  : 'bg-surface-container-high text-on-surface-variant hover:bg-outline-variant'
               }`}
             >
               {LANG_LABELS[lang]}
@@ -176,15 +176,15 @@ const QuestionPreviewPanel: React.FC = () => {
           <select
             value={deviceView}
             onChange={(e) => setDeviceView(e.target.value as DeviceView)}
-            className="appearance-none pl-7 pr-6 py-1.5 rounded text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 border-none outline-none cursor-pointer transition-colors"
+            className="appearance-none pl-7 pr-6 py-1.5 rounded text-xs font-medium bg-surface-container-high text-on-surface-variant hover:bg-outline-variant border-none outline-none cursor-pointer transition-colors"
           >
             <option value="desktop">Desktop</option>
             <option value="mobile">Mobile</option>
           </select>
-          <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-gray-500">
+          <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-outline">
             {deviceView === 'desktop' ? <DesktopIcon /> : <MobileIcon />}
           </span>
-          <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-gray-400">
+          <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-outline">
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
             </svg>
@@ -199,7 +199,7 @@ const QuestionPreviewPanel: React.FC = () => {
           <button
             type="button"
             onClick={enterPreview}
-            className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+            className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded font-medium bg-surface-container-high text-on-surface-variant hover:bg-outline-variant transition-colors"
           >
             <Play size={11} />
             Show Preview
@@ -216,13 +216,13 @@ const QuestionPreviewPanel: React.FC = () => {
         )}
 
         {/* View-mode toggle */}
-        <div className="flex items-center bg-gray-100 rounded-lg p-0.5 gap-0.5">
+        <div className="flex items-center bg-surface-container-high rounded-lg p-0.5 gap-0.5">
           <button
             type="button"
             title="Single question view"
             onClick={() => { setViewMode('single'); exitPreview(); }}
             className={`p-1.5 rounded-md transition-all ${
-              viewMode === 'single' ? 'bg-white shadow-sm' : 'hover:text-black'
+              viewMode === 'single' ? 'bg-surface-container shadow-sm' : 'hover:text-on-surface'
             }`}
           >
             <SingleViewIcon active={viewMode === 'single'} />
@@ -232,7 +232,7 @@ const QuestionPreviewPanel: React.FC = () => {
             title="All questions list view"
             onClick={() => { setViewMode('list'); exitPreview(); }}
             className={`p-1.5 rounded-md transition-all ${
-              viewMode === 'list' ? 'bg-white shadow-sm' : 'hover:text-black'
+              viewMode === 'list' ? 'bg-surface-container shadow-sm' : 'hover:text-on-surface'
             }`}
           >
             <ListViewIcon active={viewMode === 'list'} />
@@ -248,7 +248,7 @@ const QuestionPreviewPanel: React.FC = () => {
       return <>{children}</>;
     }
     return (
-      <div className="flex-1 overflow-y-auto flex items-start justify-center bg-gray-100 py-6">
+      <div className="flex-1 overflow-y-auto flex items-start justify-center bg-surface-container-high py-6">
         <div
           className="relative bg-gray-900 rounded-[2.5rem] shadow-2xl flex flex-col"
           style={{ width: 390, minHeight: 720 }}
@@ -257,7 +257,7 @@ const QuestionPreviewPanel: React.FC = () => {
             <div className="w-24 h-5 bg-gray-800 rounded-full" />
           </div>
           <div
-            className="mx-2 mb-2 rounded-[1.75rem] bg-white overflow-hidden flex flex-col"
+            className="mx-2 mb-2 rounded-[1.75rem] bg-surface-container overflow-hidden flex flex-col"
             style={{ flex: 1 }}
           >
             {children}
@@ -277,7 +277,7 @@ const QuestionPreviewPanel: React.FC = () => {
       if (questions.length === 0) {
         return (
           <div className="flex items-center justify-center py-16">
-            <p className="text-sm text-gray-400">No questions added yet.</p>
+            <p className="text-sm text-outline">No questions added yet.</p>
           </div>
         );
       }
@@ -298,7 +298,7 @@ const QuestionPreviewPanel: React.FC = () => {
           {displayIndices.map((qIdx, displayIdx) => {
             const question = questions[qIdx];
             return (
-              <div key={question.id} className="p-4 md:p-6 border border-custom-grey-2 bg-white rounded-xl">
+              <div key={question.id} className="p-4 md:p-6 border border-custom-grey-2 bg-surface-container rounded-xl">
                 <BuilderQuestionPreview
                   question={question}
                   lang={activeLanguage}
@@ -316,7 +316,7 @@ const QuestionPreviewPanel: React.FC = () => {
     };
 
     return (
-      <div className="h-full flex flex-col bg-gray-50">
+      <div className="h-full flex flex-col bg-surface-container-low">
         {toolbar}
         {deviceView === 'desktop' ? (
           <div className="flex-1 overflow-y-auto">
@@ -344,7 +344,7 @@ const QuestionPreviewPanel: React.FC = () => {
       if (questions.length === 0) {
         return (
           <div className="flex items-center justify-center flex-1">
-            <p className="text-sm text-gray-400">No questions added yet.</p>
+            <p className="text-sm text-outline">No questions added yet.</p>
           </div>
         );
       }
@@ -359,8 +359,8 @@ const QuestionPreviewPanel: React.FC = () => {
                 </svg>
               </div>
               <div>
-                <p className="text-base font-semibold text-gray-900 mb-1">Preview complete!</p>
-                <p className="text-sm text-gray-500">This is how the survey would look to respondents.</p>
+                <p className="text-base font-semibold text-on-surface mb-1">Preview complete!</p>
+                <p className="text-sm text-outline">This is how the survey would look to respondents.</p>
               </div>
               <button
                 onClick={() => { setPreviewAnswers({}); setPreviewNavIdx(0); setPreviewDone(false); }}
@@ -376,7 +376,7 @@ const QuestionPreviewPanel: React.FC = () => {
       if (visiblePreviewIndices.length === 0) {
         return (
           <div className="flex-1 flex items-center justify-center">
-            <p className="text-sm text-gray-400">No visible questions based on current answers.</p>
+            <p className="text-sm text-outline">No visible questions based on current answers.</p>
           </div>
         );
       }
@@ -388,7 +388,7 @@ const QuestionPreviewPanel: React.FC = () => {
       const isLast = safeIdx === visiblePreviewIndices.length - 1;
 
       return (
-        <div className="flex-1 overflow-hidden flex bg-white accent-primary caret-primary scheme-light">
+        <div className="flex-1 overflow-hidden flex bg-surface-container accent-primary caret-primary scheme-light">
           <BuilderQuestionPreview
             question={question}
             lang={activeLanguage}
@@ -407,7 +407,7 @@ const QuestionPreviewPanel: React.FC = () => {
     };
 
     return (
-      <div className="h-full flex flex-col bg-gray-50">
+      <div className="h-full flex flex-col bg-surface-container-low">
         {toolbar}
         {deviceView === 'desktop' ? (
           <div className="flex-1 overflow-hidden flex flex-col">
@@ -428,7 +428,7 @@ const QuestionPreviewPanel: React.FC = () => {
 
   if (selectedQuestionIndex === null) {
     return (
-      <div className="h-full flex flex-col bg-gray-50">
+      <div className="h-full flex flex-col bg-surface-container-low">
         {toolbar}
         {deviceView === 'desktop' ? (
           <div className="flex-1 overflow-y-auto">
@@ -455,7 +455,7 @@ const QuestionPreviewPanel: React.FC = () => {
   );
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col bg-surface-container-low">
       {toolbar}
       {hasCondition && (
         <div className="shrink-0 px-4 py-2 bg-amber-50 border-b border-amber-200 flex items-center gap-2">
@@ -466,7 +466,7 @@ const QuestionPreviewPanel: React.FC = () => {
         </div>
       )}
       {deviceView === 'desktop' ? (
-        <div className="flex-1 overflow-hidden flex bg-white accent-primary caret-primary scheme-light">
+        <div className="flex-1 overflow-hidden flex bg-surface-container accent-primary caret-primary scheme-light">
           <BuilderQuestionPreview
             question={question}
             lang={activeLanguage}
@@ -477,7 +477,7 @@ const QuestionPreviewPanel: React.FC = () => {
         </div>
       ) : (
         withDeviceFrame(
-          <div className="flex-1 overflow-hidden flex bg-white accent-primary caret-primary scheme-light">
+          <div className="flex-1 overflow-hidden flex bg-surface-container accent-primary caret-primary scheme-light">
             <BuilderQuestionPreview
               question={question}
               lang={activeLanguage}

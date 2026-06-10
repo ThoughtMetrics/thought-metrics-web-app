@@ -17,16 +17,16 @@ const slugifyKey = (v: string) =>
   v.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '').slice(0, 30);
 
 const ToggleRow: React.FC<{ label: string; checked: boolean; onChange: (v: boolean) => void }> = ({ label, checked, onChange }) => (
-  <div className="flex items-center justify-between py-2 px-3 bg-gray-50 border border-gray-200 rounded-lg">
-    <span className="text-xs font-medium text-gray-600">{label}</span>
+  <div className="flex items-center justify-between py-2 px-3 bg-surface-container-low border border-outline-variant rounded-lg">
+    <span className="text-xs font-medium text-on-surface-variant">{label}</span>
     <button
       type="button"
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${checked ? 'bg-primary' : 'bg-gray-300'}`}
+      className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${checked ? 'bg-primary' : 'bg-outline-variant'}`}
     >
-      <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${checked ? 'translate-x-4' : 'translate-x-0'}`} />
+      <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-surface-container shadow transition duration-200 ${checked ? 'translate-x-4' : 'translate-x-0'}`} />
     </button>
   </div>
 );
@@ -154,19 +154,19 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
 
       {/* ── Per-option sub-options toggle ── */}
       {lang === 'en' && (
-        <div className="flex items-center justify-between py-2 px-3 bg-gray-50 border border-gray-200 rounded-lg">
-          <span className="text-xs font-medium text-gray-600">Different fields per choice</span>
+        <div className="flex items-center justify-between py-2 px-3 bg-surface-container-low border border-outline-variant rounded-lg">
+          <span className="text-xs font-medium text-on-surface-variant">Different fields per choice</span>
           <button
             type="button"
             role="switch"
             aria-checked={rowOptionsMode === 'per-row'}
             onClick={() => setRowOptionsMode(rowOptionsMode === 'shared' ? 'per-row' : 'shared')}
             className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
-              rowOptionsMode === 'per-row' ? 'bg-primary' : 'bg-gray-300'
+              rowOptionsMode === 'per-row' ? 'bg-primary' : 'bg-outline-variant'
             }`}
           >
             <span
-              className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${
+              className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-surface-container shadow transition duration-200 ${
                 rowOptionsMode === 'per-row' ? 'translate-x-4' : 'translate-x-0'
               }`}
             />
@@ -175,13 +175,13 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
       )}
 
       <div className="flex items-center justify-between">
-        <label className="text-xs font-medium text-gray-700">Options</label>
+        <label className="text-xs font-medium text-on-surface">Options</label>
         <div className="flex items-center gap-3">
           {lang === 'en' && (
             <button
               onClick={pasteFromClipboard}
               title="Paste options from clipboard — one per line"
-              className="text-xs text-gray-500 hover:text-primary font-medium flex items-center gap-1"
+              className="text-xs text-outline hover:text-primary font-medium flex items-center gap-1"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -217,7 +217,7 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
                     onChange={(e) => handleLabelChange(optIdx, e.target.value)}
                     placeholder={lang === 'en' ? `Option ${displayIdx + 1}` : 'Tamil label'}
                     className={`flex-1 border rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary ${
-                      duplicate ? 'border-red-400 bg-red-50' : 'border-gray-300'
+                      duplicate ? 'border-red-400 bg-red-50' : 'border-outline-variant'
                     }`}
                   />
                   {/* Pipe token button — appends {{N}} to this option's label */}
@@ -238,7 +238,7 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
                       className={`flex items-center gap-1 text-xs px-1.5 py-1 rounded border transition-colors flex-shrink-0 ${
                         attrs.length > 0
                           ? 'border-primary text-primary bg-primary/5'
-                          : 'border-gray-300 text-gray-400 hover:border-primary hover:text-primary'
+                          : 'border-outline-variant text-outline hover:border-primary hover:text-primary'
                       }`}
                     >
                       {attrs.length > 0 && (
@@ -262,7 +262,7 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
                       className={`text-xs px-1.5 py-1 rounded border flex-shrink-0 transition-colors ${
                         opt.isIntensePurchase
                           ? 'border-primary text-primary bg-primary/5'
-                          : 'border-gray-300 text-gray-300'
+                          : 'border-outline-variant text-outline/40'
                       }`}
                       aria-label="Intense purchase toggle"
                     >
@@ -288,7 +288,7 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
               {/* Per-option attribute editor — only in per-row mode */}
               {isAttrsExpanded && rowOptionsMode === 'per-row' && lang === 'en' && (
                 <div className="border border-dashed border-primary/40 rounded-lg p-2.5 space-y-1.5 bg-primary/3">
-                  <p className="text-xs font-medium text-gray-600 mb-1">
+                  <p className="text-xs font-medium text-on-surface-variant mb-1">
                     Additional fields for &quot;{opt.label || `Option ${displayIdx + 1}`}&quot;
                   </p>
                   {attrs.map((attr, aIdx) => (
@@ -302,7 +302,7 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
                           updateOptionAttrs(optIdx, next);
                         }}
                         placeholder="Field name"
-                        className="w-28 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                        className="w-28 border border-outline-variant rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
                       />
                       <input
                         type="text"
@@ -313,7 +313,7 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
                           updateOptionAttrs(optIdx, next);
                         }}
                         placeholder="Value"
-                        className="flex-1 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                        className="flex-1 border border-outline-variant rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
                       />
                       <button
                         type="button"
@@ -347,7 +347,7 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
               type="text"
               value="Others"
               readOnly
-              className="flex-1 border border-gray-200 rounded px-2 py-1.5 text-xs bg-gray-100 cursor-not-allowed"
+              className="flex-1 border border-outline-variant rounded px-2 py-1.5 text-xs bg-surface-container-high cursor-not-allowed"
             />
             <span className="w-4 flex-shrink-0" />
           </div>
@@ -360,7 +360,7 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
               type="text"
               value={cfg.exclusiveOptionLabel || 'None of the above'}
               readOnly
-              className="flex-1 border border-gray-200 rounded px-2 py-1.5 text-xs bg-blue-50 cursor-not-allowed text-blue-700"
+              className="flex-1 border border-outline-variant rounded px-2 py-1.5 text-xs bg-blue-50 cursor-not-allowed text-blue-700"
             />
             <span className="text-xs text-blue-500 flex-shrink-0">exclusive</span>
           </div>
@@ -371,7 +371,7 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
       {rowOptionsMode === 'shared' && lang === 'en' && (
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-500 flex-1">Additional fields (shared for all options)</span>
+            <span className="text-xs text-outline flex-1">Additional fields (shared for all options)</span>
             <button
               type="button"
               onClick={() => setSharedAttrsExpanded(!sharedAttrsExpanded)}
@@ -379,7 +379,7 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
               className={`flex items-center gap-1 text-xs px-1.5 py-1 rounded border transition-colors flex-shrink-0 ${
                 sharedAttrs.length > 0
                   ? 'border-primary text-primary bg-primary/5'
-                  : 'border-gray-300 text-gray-400 hover:border-primary hover:text-primary'
+                  : 'border-outline-variant text-outline hover:border-primary hover:text-primary'
               }`}
             >
               {sharedAttrs.length > 0 && (
@@ -392,7 +392,7 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
           </div>
           {sharedAttrsExpanded && (
             <div className="border border-dashed border-primary/40 rounded-lg p-2.5 space-y-1.5 bg-primary/3">
-              <p className="text-xs font-medium text-gray-600 mb-1">Additional fields (applied to all options)</p>
+              <p className="text-xs font-medium text-on-surface-variant mb-1">Additional fields (applied to all options)</p>
               {sharedAttrs.map((attr, aIdx) => (
                 <div key={aIdx} className="flex gap-1.5 items-center">
                   <input
@@ -404,7 +404,7 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
                       updateSharedAttrs(next);
                     }}
                     placeholder="Field name"
-                    className="w-28 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                    className="w-28 border border-outline-variant rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
                   />
                   <input
                     type="text"
@@ -415,7 +415,7 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
                       updateSharedAttrs(next);
                     }}
                     placeholder="Value"
-                    className="flex-1 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                    className="flex-1 border border-outline-variant rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
                   />
                   <button
                     type="button"
@@ -449,13 +449,13 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
           onChange={(e) => toggleOthers(e.target.checked)}
           className="w-3.5 h-3.5 accent-primary"
         />
-        <span className="text-xs text-gray-600">Include &quot;Others&quot; option</span>
+        <span className="text-xs text-on-surface-variant">Include &quot;Others&quot; option</span>
       </label>
 
       {/* Others text-input sub-config */}
       {hasOthers && (
-        <div className="border border-dashed border-gray-300 rounded-lg p-3 bg-gray-50 space-y-2">
-          <p className="text-xs font-medium text-gray-600">Others — text input shown to respondent</p>
+        <div className="border border-dashed border-outline-variant rounded-lg p-3 bg-surface-container-low space-y-2">
+          <p className="text-xs font-medium text-on-surface-variant">Others — text input shown to respondent</p>
           <input
             type="text"
             value={othersPlaceholder}
@@ -465,27 +465,27 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
               })
             }
             placeholder='Placeholder text (e.g. "Please specify…")'
-            className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+            className="w-full border border-outline-variant rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
           />
         </div>
       )}
 
       {/* ── Is intense purchase (MCQ_SINGLE only, EN only) ── */}
       {lang === 'en' && question.questionType === QuestionType.MCQ_SINGLE && (
-        <div className="space-y-3 pt-2 border-t border-gray-100">
-          <div className="flex items-center justify-between py-2 px-3 bg-gray-50 border border-gray-200 rounded-lg">
-            <span className="text-xs font-medium text-gray-600">Is there purchase intent</span>
+        <div className="space-y-3 pt-2 border-t border-outline-variant/50">
+          <div className="flex items-center justify-between py-2 px-3 bg-surface-container-low border border-outline-variant rounded-lg">
+            <span className="text-xs font-medium text-on-surface-variant">Is there purchase intent</span>
             <button
               type="button"
               role="switch"
               aria-checked={question.config.isIntensePurchase ?? false}
               onClick={() => setQuestionConfig(qIdx, { isIntensePurchase: !question.config.isIntensePurchase })}
               className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
-                question.config.isIntensePurchase ? 'bg-primary' : 'bg-gray-300'
+                question.config.isIntensePurchase ? 'bg-primary' : 'bg-outline-variant'
               }`}
             >
               <span
-                className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${
+                className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-surface-container shadow transition duration-200 ${
                   question.config.isIntensePurchase ? 'translate-x-4' : 'translate-x-0'
                 }`}
               />
@@ -494,13 +494,13 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
 
           {question.config.isIntensePurchase && (
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Question label</label>
+              <label className="block text-xs font-medium text-on-surface mb-1">Question label</label>
               <input
                 type="text"
                 value={question.config.intensePurchaseLabel ?? ''}
                 onChange={(e) => setQuestionConfig(qIdx, { intensePurchaseLabel: e.target.value })}
                 placeholder="Is there purchase intent?"
-                className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                className="w-full border border-outline-variant rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
               />
             </div>
           )}

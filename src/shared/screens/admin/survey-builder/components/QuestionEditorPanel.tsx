@@ -101,13 +101,13 @@ const QUESTION_TYPE_LABEL: Record<string, string> = {
 // ---------------------------------------------------------------------------
 
 const SingleViewIcon: React.FC<{ active: boolean }> = ({ active }) => (
-  <svg className={`w-4 h-4 ${active ? 'text-black' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <svg className={`w-4 h-4 ${active ? 'text-on-surface' : 'text-outline'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <rect x="3" y="5" width="18" height="14" rx="2" strokeWidth="2" strokeLinejoin="round" />
   </svg>
 );
 
 const ListViewIcon: React.FC<{ active: boolean }> = ({ active }) => (
-  <svg className={`w-4 h-4 ${active ? 'text-black' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <svg className={`w-4 h-4 ${active ? 'text-on-surface' : 'text-outline'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01" />
   </svg>
 );
@@ -347,7 +347,7 @@ const QuestionEditorPanel: React.FC = () => {
   const withDeviceFrame = (children: React.ReactNode) => {
     if (deviceView === 'desktop') return <>{children}</>;
     return (
-      <div className="flex-1 overflow-hidden flex justify-center bg-gray-50">
+      <div className="flex-1 overflow-hidden flex justify-center bg-surface-container-low">
         <div className="w-[390px] flex flex-col overflow-hidden">
           {children}
         </div>
@@ -358,16 +358,16 @@ const QuestionEditorPanel: React.FC = () => {
   // ── Toolbar ──────────────────────────────────────────────────────────────
 
   const toolbar = (
-    <div className="flex items-center justify-between p-3 border-b border-gray-200 bg-white shrink-0">
+    <div className="flex items-center justify-between p-3 border-b border-outline-variant bg-surface-container shrink-0">
       {/* Left: Device switch */}
       <div className="flex items-center gap-2">
         {/* Device switch — icon buttons */}
-        <div className="flex items-center bg-gray-100 rounded-lg p-0.5 gap-0.5">
+        <div className="flex items-center bg-surface-container-high rounded-lg p-0.5 gap-0.5">
           <button
             type="button"
             title="Desktop view"
             onClick={() => setDeviceView('desktop')}
-            className={`p-1.5 rounded-md transition-all ${deviceView === 'desktop' ? 'bg-white shadow-sm text-gray-700' : 'text-gray-400 hover:text-gray-600'}`}
+            className={`p-1.5 rounded-md transition-all ${deviceView === 'desktop' ? 'bg-surface-container shadow-sm text-on-surface' : 'text-outline hover:text-on-surface-variant'}`}
           >
             <DesktopIcon />
           </button>
@@ -375,7 +375,7 @@ const QuestionEditorPanel: React.FC = () => {
             type="button"
             title="Mobile view"
             onClick={() => setDeviceView('mobile')}
-            className={`p-1.5 rounded-md transition-all ${deviceView === 'mobile' ? 'bg-white shadow-sm text-gray-700' : 'text-gray-400 hover:text-gray-600'}`}
+            className={`p-1.5 rounded-md transition-all ${deviceView === 'mobile' ? 'bg-surface-container shadow-sm text-on-surface' : 'text-outline hover:text-on-surface-variant'}`}
           >
             <MobileIcon />
           </button>
@@ -385,12 +385,12 @@ const QuestionEditorPanel: React.FC = () => {
       {/* Right: View mode toggle + Preview Survey */}
       <div className="flex items-center gap-2">
         {/* View mode toggle — always visible */}
-        <div className="flex items-center bg-gray-100 rounded-lg p-0.5 gap-0.5">
+        <div className="flex items-center bg-surface-container-high rounded-lg p-0.5 gap-0.5">
           <button
             type="button"
             title="Single question view"
             onClick={() => setViewMode('single')}
-            className={`p-1.5 rounded-md transition-all ${viewMode === 'single' ? 'bg-white shadow-sm' : 'hover:text-black'}`}
+            className={`p-1.5 rounded-md transition-all ${viewMode === 'single' ? 'bg-surface-container shadow-sm' : 'hover:text-on-surface'}`}
           >
             <SingleViewIcon active={viewMode === 'single'} />
           </button>
@@ -398,7 +398,7 @@ const QuestionEditorPanel: React.FC = () => {
             type="button"
             title="All questions list view"
             onClick={() => setViewMode('list')}
-            className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-white shadow-sm' : 'hover:text-black'}`}
+            className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-surface-container shadow-sm' : 'hover:text-on-surface'}`}
           >
             <ListViewIcon active={viewMode === 'list'} />
           </button>
@@ -409,7 +409,7 @@ const QuestionEditorPanel: React.FC = () => {
           <button
             type="button"
             onClick={enterPreview}
-            className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+            className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded font-medium bg-surface-container-high text-on-surface-variant hover:bg-outline-variant/20 transition-colors"
           >
             <Play size={11} />
             Preview Survey
@@ -435,7 +435,7 @@ const QuestionEditorPanel: React.FC = () => {
       if (questions.length === 0) {
         return (
           <div className="flex items-center justify-center flex-1">
-            <p className="text-sm text-gray-400">No questions added yet.</p>
+            <p className="text-sm text-outline">No questions added yet.</p>
           </div>
         );
       }
@@ -457,7 +457,7 @@ const QuestionEditorPanel: React.FC = () => {
                   questions
                 );
                 return (
-                  <div key={question.id} className="p-4 md:p-6 border border-custom-grey-2 bg-white rounded-xl">
+                  <div key={question.id} className="p-4 md:p-6 border border-outline-variant bg-surface-container rounded-xl">
                     <BuilderQuestionPreview
                       question={question}
                       lang={activeLanguage}
@@ -486,8 +486,8 @@ const QuestionEditorPanel: React.FC = () => {
                 </svg>
               </div>
               <div>
-                <p className="text-base font-semibold text-gray-900 mb-1">Preview complete!</p>
-                <p className="text-sm text-gray-500">This is how the survey would look to respondents.</p>
+                <p className="text-base font-semibold text-on-surface mb-1">Preview complete!</p>
+                <p className="text-sm text-outline">This is how the survey would look to respondents.</p>
               </div>
               <button
                 onClick={() => { setPreviewAnswers({}); setPreviewNavIdx(0); setPreviewDone(false); }}
@@ -503,7 +503,7 @@ const QuestionEditorPanel: React.FC = () => {
       if (visiblePreviewIndices.length === 0) {
         return (
           <div className="flex-1 flex items-center justify-center">
-            <p className="text-sm text-gray-400">No visible questions based on current answers.</p>
+            <p className="text-sm text-outline">No visible questions based on current answers.</p>
           </div>
         );
       }
@@ -541,10 +541,10 @@ const QuestionEditorPanel: React.FC = () => {
     };
 
     return (
-      <div className="h-full flex flex-col bg-gray-50">
+      <div className="h-full flex flex-col bg-surface-container-low">
         {toolbar}
         {deviceView === 'desktop' ? (
-          <div className="flex-1 overflow-hidden flex flex-col bg-gray-100">{renderWalkthrough()}</div>
+          <div className="flex-1 overflow-hidden flex flex-col bg-surface-container">{renderWalkthrough()}</div>
         ) : (
           withDeviceFrame(<div className="flex-1 overflow-hidden flex flex-col">{renderWalkthrough()}</div>)
         )}
@@ -601,7 +601,7 @@ const QuestionEditorPanel: React.FC = () => {
   if (viewMode === 'list') {
     const content = questions.length === 0 ? (
       <div className="flex items-center justify-center py-16">
-        <p className="text-sm text-gray-400">No questions added yet.</p>
+        <p className="text-sm text-outline">No questions added yet.</p>
       </div>
     ) : (
       <div className="space-y-3">
@@ -627,7 +627,7 @@ const QuestionEditorPanel: React.FC = () => {
             <div
               key={question.id}
               onClick={() => selectQuestion(qIdx)}
-              className={`bg-white rounded-xl border overflow-hidden transition-colors cursor-pointer ${
+              className={`bg-surface-container rounded-xl border overflow-hidden transition-colors cursor-pointer ${
                 isSelected ? 'border-primary ring-1 ring-primary/30' : 'border-rose-200'
               }`}
             >
@@ -668,7 +668,7 @@ const QuestionEditorPanel: React.FC = () => {
                           onFocus={() => selectQuestion(qIdx)}
                           placeholder="Type your question here..."
                           rows={1}
-                          className="flex-1 min-w-0 bg-transparent resize-none text-xl font-semibold text-gray-900 focus:outline-none placeholder-gray-300 leading-snug"
+                          className="flex-1 min-w-0 bg-transparent resize-none text-xl font-semibold text-on-surface focus:outline-none placeholder-outline/40 leading-snug"
                           style={{ overflow: 'hidden' }}
                           onInput={(e) => {
                             const el = e.currentTarget;
@@ -688,7 +688,7 @@ const QuestionEditorPanel: React.FC = () => {
                           onChange={(e) => setQuestionTranslation(qIdx, activeLanguage, { placeholder: e.target.value })}
                           onFocus={() => selectQuestion(qIdx)}
                           placeholder="Description (optional)"
-                          className="w-full bg-transparent text-sm text-gray-400 focus:outline-none placeholder-gray-300 mt-1"
+                          className="w-full bg-transparent text-sm text-outline focus:outline-none placeholder-outline/40 mt-1"
                         />
                       )}
                     </div>
@@ -707,19 +707,19 @@ const QuestionEditorPanel: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => useSurveyBuilderStore.getState().setQuestionConfig(qIdx, { questionMediaUrl: undefined, questionMediaType: undefined })}
-                              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-white/80 rounded-full p-1 hover:bg-white transition-all"
+                              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-surface-container/80 rounded-full p-1 hover:bg-surface-container transition-all"
                             >
-                              <svg className="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-3.5 h-3.5 text-on-surface-variant" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                               </svg>
                             </button>
                           </div>
                         ) : (
-                          <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl px-6 py-6 cursor-pointer hover:border-primary/50 transition-colors">
-                            <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-outline-variant rounded-xl px-6 py-6 cursor-pointer hover:border-primary/50 transition-colors">
+                            <svg className="w-6 h-6 text-outline/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            <span className="text-xs text-gray-400">Add image or video (optional)</span>
+                            <span className="text-xs text-outline">Add image or video (optional)</span>
                             <input
                               type="file"
                               accept="image/*,video/*"
@@ -751,14 +751,14 @@ const QuestionEditorPanel: React.FC = () => {
               </div>
 
               {/* Bottom bar: lang tabs + pipe token + type select */}
-              <div className="border-t border-gray-100 px-4 py-2 flex items-center justify-between bg-gray-50/40" onClick={(e) => e.stopPropagation()}>
+              <div className="border-t border-outline-variant/50 px-4 py-2 flex items-center justify-between bg-surface-container-low/40" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center gap-1.5">
                   {(['en', 'ta'] as SupportedBuilderLanguage[]).map((l) => (
                     <button
                       key={l}
                       onClick={() => { setActiveLanguage(l); setGlobalLanguage(l as 'en' | 'ta'); }}
                       className={`px-2.5 py-1 rounded text-xs font-medium transition-colors ${
-                        activeLanguage === l ? 'bg-primary text-white' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                        activeLanguage === l ? 'bg-primary text-white' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high border border-outline-variant'
                       }`}
                     >
                       {LANG_LABELS[l]}
@@ -781,7 +781,7 @@ const QuestionEditorPanel: React.FC = () => {
                 <select
                   value={question.questionType}
                   onChange={(e) => changeQuestionType(qIdx, e.target.value as QuestionType)}
-                  className="border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white text-gray-600"
+                  className="border border-outline-variant rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container text-on-surface-variant"
                 >
                   {typeSelectOptions}
                 </select>
@@ -793,7 +793,7 @@ const QuestionEditorPanel: React.FC = () => {
     );
 
     return (
-      <div className="h-full flex flex-col bg-gray-50">
+      <div className="h-full flex flex-col bg-surface-container-low">
         {toolbar}
         {deviceView === 'desktop' ? (
           <div className="flex-1 overflow-y-auto"><div className="p-4">{content}</div></div>
@@ -808,17 +808,17 @@ const QuestionEditorPanel: React.FC = () => {
 
   if (selectedQuestionIndex === null) {
     return (
-      <div className="h-full flex flex-col bg-gray-50">
+      <div className="h-full flex flex-col bg-surface-container-low">
         {toolbar}
         <div className="flex-1 flex items-center justify-center p-8">
           <div className="text-center max-w-xs">
-            <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
-              <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center mx-auto mb-3">
+              <svg className="w-6 h-6 text-outline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
             </div>
-            <p className="text-sm font-medium text-gray-600 mb-1">No question selected</p>
-            <p className="text-xs text-gray-400">Select a question from the sidebar to edit it, or add a new question below.</p>
+            <p className="text-sm font-medium text-on-surface-variant mb-1">No question selected</p>
+            <p className="text-xs text-outline">Select a question from the sidebar to edit it, or add a new question below.</p>
           </div>
         </div>
       </div>
@@ -868,7 +868,7 @@ const QuestionEditorPanel: React.FC = () => {
       )}
 
       {/* Canvas frame */}
-      <div className="flex-1 mx-3 mb-3 mt-2 bg-white border border-rose-200 rounded-xl flex flex-col overflow-hidden">
+      <div className="flex-1 mx-3 mb-3 mt-2 bg-surface-container border border-rose-200 rounded-xl flex flex-col overflow-hidden">
 
         {/* Scrollable body — all types centred; min-h-full keeps centering when content is short */}
         <div className="flex-1 overflow-y-auto">
@@ -891,7 +891,7 @@ const QuestionEditorPanel: React.FC = () => {
                     }}
                     placeholder="Type your question here..."
                     rows={1}
-                    className="flex-1 min-w-0 bg-transparent resize-none text-xl font-semibold text-gray-900 focus:outline-none placeholder-gray-300 leading-snug"
+                    className="flex-1 min-w-0 bg-transparent resize-none text-xl font-semibold text-on-surface focus:outline-none placeholder-outline/40 leading-snug"
                     style={{ overflow: 'hidden' }}
                     onInput={(e) => {
                       const el = e.currentTarget;
@@ -912,7 +912,7 @@ const QuestionEditorPanel: React.FC = () => {
                       setQuestionTranslation(selectedQuestionIndex, lang, { placeholder: e.target.value })
                     }
                     placeholder="Description (optional)"
-                    className="w-full bg-transparent text-sm text-gray-400 focus:outline-none placeholder-gray-300 mt-1"
+                    className="w-full bg-transparent text-sm text-outline focus:outline-none placeholder-outline/40 mt-1"
                   />
                 )}
               </div>
@@ -930,19 +930,19 @@ const QuestionEditorPanel: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setQuestionConfig(selectedQuestionIndex, { questionMediaUrl: undefined, questionMediaType: undefined })}
-                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-white/80 rounded-full p-1 hover:bg-white transition-all"
+                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-surface-container/80 rounded-full p-1 hover:bg-surface-container transition-all"
                     >
-                      <svg className="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3.5 h-3.5 text-on-surface-variant" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </button>
                   </div>
                 ) : (
-                  <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl px-6 py-6 cursor-pointer hover:border-primary/50 transition-colors">
-                    <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-outline-variant rounded-xl px-6 py-6 cursor-pointer hover:border-primary/50 transition-colors">
+                    <svg className="w-6 h-6 text-outline/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <span className="text-xs text-gray-400">Add image or video (optional)</span>
+                    <span className="text-xs text-outline">Add image or video (optional)</span>
                     <input
                       type="file"
                       accept="image/*,video/*"
@@ -976,14 +976,14 @@ const QuestionEditorPanel: React.FC = () => {
         </div>
 
         {/* Bottom toolbar — same for all types */}
-        <div className="flex-shrink-0 border-t border-gray-100 px-4 py-2 flex items-center justify-between bg-gray-50/40">
+        <div className="flex-shrink-0 border-t border-outline-variant/50 px-4 py-2 flex items-center justify-between bg-surface-container-low/40">
           <div className="flex items-center gap-1.5">
             {(['en', 'ta'] as SupportedBuilderLanguage[]).map((l) => (
               <button
                 key={l}
                 onClick={() => { setActiveLanguage(l); setGlobalLanguage(l as 'en' | 'ta'); }}
                 className={`px-2.5 py-1 rounded text-xs font-medium transition-colors ${
-                  lang === l ? 'bg-primary text-white' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                  lang === l ? 'bg-primary text-white' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high border border-outline-variant'
                 }`}
               >
                 {LANG_LABELS[l]}
@@ -1006,7 +1006,7 @@ const QuestionEditorPanel: React.FC = () => {
           <select
             value={question.questionType}
             onChange={(e) => changeQuestionType(selectedQuestionIndex, e.target.value as QuestionType)}
-            className="border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white text-gray-600"
+            className="border border-outline-variant rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container text-on-surface-variant"
           >
             {typeSelectOptions}
           </select>
@@ -1016,7 +1016,7 @@ const QuestionEditorPanel: React.FC = () => {
   );
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col bg-surface-container-low">
       {toolbar}
       {deviceView === 'desktop' ? (
         <div className="flex-1 overflow-hidden flex flex-col">{editorContent}</div>

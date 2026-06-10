@@ -23,39 +23,39 @@ const DisplayConfig: React.FC<Props> = ({ question, qIdx }) => {
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-700 mb-1">Content (HTML)</label>
+        <label className="block text-xs font-medium text-on-surface mb-1">Content (HTML)</label>
         <textarea
           value={cfg.displayHtml ?? ''}
           onChange={(e) => setQuestionConfig(qIdx, { displayHtml: e.target.value })}
           rows={6}
           placeholder={'<p>Enter your content here. You can use basic HTML tags:</p>\n<ul><li><strong>Bold</strong></li><li><em>Italic</em></li><li><u>Underline</u></li></ul>'}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-primary resize-y"
+          className="w-full border border-outline-variant rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-primary resize-y"
         />
-        <p className="text-xs text-gray-400 mt-1">
+        <p className="text-xs text-outline mt-1">
           Supports HTML: &lt;strong&gt;, &lt;em&gt;, &lt;u&gt;, &lt;h2&gt;, &lt;p&gt;, &lt;ul&gt;/&lt;li&gt;, &lt;br&gt;
         </p>
       </div>
 
       <div className="space-y-1">
-        <label className="block text-xs font-medium text-gray-700">Image URL (optional)</label>
+        <label className="block text-xs font-medium text-on-surface">Image URL (optional)</label>
         <input
           type="url"
           value={cfg.displayImageUrl ?? ''}
           onChange={(e) => setQuestionConfig(qIdx, { displayImageUrl: e.target.value || undefined })}
           placeholder="https://example.com/image.png"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+          className="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
         />
       </div>
 
       {cfg.displayImageUrl && (
         <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">Image max width</label>
+          <label className="block text-xs font-medium text-on-surface mb-1">Image max width</label>
           <input
             type="text"
             value={cfg.displayImageMaxWidth ?? ''}
             onChange={(e) => setQuestionConfig(qIdx, { displayImageMaxWidth: e.target.value || undefined })}
             placeholder="e.g. 400px or 80%"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+            className="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
           />
         </div>
       )}
@@ -63,11 +63,11 @@ const DisplayConfig: React.FC<Props> = ({ question, qIdx }) => {
       {/* Live preview */}
       {(cfg.displayHtml || cfg.displayImageUrl) && (
         <div className="space-y-1">
-          <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Preview</span>
-          <div className="border border-gray-200 rounded-lg p-3 bg-white space-y-2">
+          <span className="text-xs font-medium text-outline uppercase tracking-wide">Preview</span>
+          <div className="border border-outline-variant rounded-lg p-3 bg-surface-container space-y-2">
             {cfg.displayHtml && (
               <div
-                className="text-sm text-gray-800 prose prose-sm max-w-none"
+                className="text-sm text-on-surface prose prose-sm max-w-none"
                 dangerouslySetInnerHTML={{ __html: cfg.displayHtml }}
               />
             )}

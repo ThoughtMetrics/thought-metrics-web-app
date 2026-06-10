@@ -62,17 +62,17 @@ const MethodologyPickerModal: React.FC<Props> = ({ onClose, redirectPath = '/adm
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div className="bg-surface-container rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-outline-variant/50">
           <div>
-            <h2 className="text-lg font-bold text-gray-900">Choose a Survey Methodology</h2>
-            <p className="text-xs text-gray-500 mt-0.5">Select a template to start with pre-built questions, or start from scratch.</p>
+            <h2 className="text-lg font-bold text-on-surface">Choose a Survey Methodology</h2>
+            <p className="text-xs text-outline mt-0.5">Select a template to start with pre-built questions, or start from scratch.</p>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-surface-container-high text-outline transition-colors"
             aria-label="Close"
           >
             <X size={18} />
@@ -80,7 +80,7 @@ const MethodologyPickerModal: React.FC<Props> = ({ onClose, redirectPath = '/adm
         </div>
 
         {/* Category tabs */}
-        <div className="flex border-b border-gray-100 px-6 gap-1 overflow-x-auto">
+        <div className="flex border-b border-outline-variant/50 px-6 gap-1 overflow-x-auto">
           {METHODOLOGY_CATEGORIES.map((cat) => (
             <button
               key={cat.id}
@@ -88,7 +88,7 @@ const MethodologyPickerModal: React.FC<Props> = ({ onClose, redirectPath = '/adm
               className={`px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                 activeCategory === cat.id
                   ? 'border-primary text-primary'
-                  : 'border-transparent text-gray-500 hover:text-gray-800'
+                  : 'border-transparent text-outline hover:text-on-surface'
               }`}
             >
               {cat.label}
@@ -103,12 +103,12 @@ const MethodologyPickerModal: React.FC<Props> = ({ onClose, redirectPath = '/adm
               <button
                 key={methodology}
                 onClick={() => handleSelect(methodology)}
-                className="text-left p-4 rounded-xl border border-gray-200 hover:border-primary hover:bg-primary/5 transition-colors group"
+                className="text-left p-4 rounded-xl border border-outline-variant hover:border-primary hover:bg-primary/5 transition-colors group"
               >
                 <div className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mb-2 ${METHODOLOGY_BADGE_COLOR[activeCategory]}`}>
                   {label}
                 </div>
-                <p className="text-xs text-gray-500 leading-relaxed">{description}</p>
+                <p className="text-xs text-outline leading-relaxed">{description}</p>
               </button>
             ))}
 
@@ -116,23 +116,23 @@ const MethodologyPickerModal: React.FC<Props> = ({ onClose, redirectPath = '/adm
               <div
                 key={label}
                 title="Coming soon"
-                className="text-left p-4 rounded-xl border border-gray-100 bg-gray-50 cursor-not-allowed opacity-50"
+                className="text-left p-4 rounded-xl border border-outline-variant/50 bg-surface-container-high cursor-not-allowed opacity-50"
               >
-                <div className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mb-2 bg-gray-200 text-gray-500">
+                <div className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mb-2 bg-surface-container-high text-outline">
                   {label}
                 </div>
-                <p className="text-xs text-gray-400">Coming soon</p>
+                <p className="text-xs text-outline">Coming soon</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
-          <p className="text-xs text-gray-400">Pre-built templates can be fully customised after selection.</p>
+        <div className="px-6 py-4 border-t border-outline-variant/50 flex items-center justify-between">
+          <p className="text-xs text-outline">Pre-built templates can be fully customised after selection.</p>
           <button
             onClick={handleScratch}
-            className="text-sm text-gray-600 hover:text-gray-900 font-medium hover:underline"
+            className="text-sm text-on-surface-variant hover:text-on-surface font-medium hover:underline"
           >
             Start from scratch →
           </button>

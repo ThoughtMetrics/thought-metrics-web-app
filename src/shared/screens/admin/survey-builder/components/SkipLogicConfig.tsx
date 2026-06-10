@@ -28,7 +28,7 @@ function getValueField(
   onChange: (value: string) => void,
 ): React.ReactNode {
   const cls =
-    'w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white';
+    'w-full border border-outline-variant rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container';
 
   const isMcq =
     parentQ?.questionType === QuestionType.MCQ_SINGLE ||
@@ -137,9 +137,9 @@ const SkipLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
   };
 
   return (
-    <div className="space-y-3 pt-3 border-t border-gray-200">
+    <div className="space-y-3 pt-3 border-t border-outline-variant">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
+        <span className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide">
           Skip Logic
         </span>
         <button
@@ -147,7 +147,7 @@ const SkipLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
           disabled={!isEnabled && otherQuestions.length === 0}
           title={!isEnabled && otherQuestions.length === 0 ? 'Add more questions first' : ''}
           className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-40 ${
-            isEnabled ? 'bg-primary' : 'bg-gray-200'
+            isEnabled ? 'bg-primary' : 'bg-outline-variant'
           }`}
         >
           <span
@@ -180,7 +180,7 @@ const SkipLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
 
                 {/* Timing */}
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Timing</label>
+                  <label className="block text-xs text-on-surface-variant mb-1">Timing</label>
                   <div className="flex gap-1">
                     {(['post', 'pre'] as const).map((t) => (
                       <button
@@ -189,7 +189,7 @@ const SkipLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
                         className={`flex-1 text-xs py-1 rounded font-medium border transition-colors ${
                           rule.timing === t
                             ? 'bg-primary text-white border-primary'
-                            : 'bg-white text-gray-600 border-gray-300 hover:border-primary/30'
+                            : 'bg-surface-container text-on-surface-variant border-outline-variant hover:border-primary/30'
                         }`}
                       >
                         {t === 'post' ? 'After answering' : 'Before showing'}
@@ -208,15 +208,15 @@ const SkipLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
                     }
                     className="accent-primary"
                   />
-                  <span className="text-xs text-gray-600">Unconditional (always jump)</span>
+                  <span className="text-xs text-on-surface-variant">Unconditional (always jump)</span>
                 </label>
 
                 {/* Conditions */}
                 {(rule.conditions?.length ?? 0) > 0 && (
-                  <div className="space-y-2 bg-white rounded-md border border-primary/10 p-2">
+                  <div className="space-y-2 bg-surface-container rounded-md border border-primary/10 p-2">
                     {(rule.conditions ?? []).length >= 2 && (
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500">Match:</span>
+                        <span className="text-xs text-outline">Match:</span>
                         {(['and', 'or'] as const).map((m) => (
                           <button
                             key={m}
@@ -224,7 +224,7 @@ const SkipLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
                             className={`text-xs px-2 py-0.5 rounded font-medium transition-colors ${
                               (rule.conditionMode ?? 'and') === m
                                 ? 'bg-primary text-white'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                : 'bg-surface-container-high text-on-surface-variant hover:bg-outline-variant'
                             }`}
                           >
                             {m === 'and' ? 'ALL (AND)' : 'ANY (OR)'}
@@ -238,11 +238,11 @@ const SkipLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
                       return (
                         <div
                           key={cIdx}
-                          className="space-y-1.5 pb-2 border-b border-gray-100 last:border-0 last:pb-0"
+                          className="space-y-1.5 pb-2 border-b border-outline-variant/50 last:border-0 last:pb-0"
                         >
                           {(rule.conditions ?? []).length > 1 && (
                             <div className="flex items-center justify-between">
-                              <span className="text-xs text-gray-400">Condition {cIdx + 1}</span>
+                              <span className="text-xs text-outline">Condition {cIdx + 1}</span>
                               <button
                                 onClick={() => removeCondition(rIdx, cIdx)}
                                 className="text-xs text-red-500 hover:text-red-700"
@@ -255,7 +255,7 @@ const SkipLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
                           <select
                             value={cond.questionId}
                             onChange={(e) => updateCondition(rIdx, cIdx, { questionId: e.target.value, value: '' })}
-                            className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                            className="w-full border border-outline-variant rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
                           >
                             <option value="">Select question</option>
                             {otherQuestions.map((q) => (
@@ -272,7 +272,7 @@ const SkipLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
                                 operator: e.target.value as IBuilderShowIfCondition['operator'],
                               })
                             }
-                            className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                            className="w-full border border-outline-variant rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
                           >
                             {OPERATORS.map((op) => (
                               <option key={op.value} value={op.value}>{op.label}</option>
@@ -297,11 +297,11 @@ const SkipLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
 
                 {/* Jump to */}
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Jump to</label>
+                  <label className="block text-xs text-on-surface-variant mb-1">Jump to</label>
                   <select
                     value={rule.jumpToQuestionId}
                     onChange={(e) => updateRule(rIdx, { jumpToQuestionId: e.target.value })}
-                    className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
+                    className="w-full border border-outline-variant rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
                   >
                     <option value="END">End of Survey</option>
                     {otherQuestions.map((q) => (

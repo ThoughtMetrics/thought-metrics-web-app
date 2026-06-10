@@ -53,7 +53,7 @@ export const BuilderLanguageCompact: React.FC = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 mt-2 py-2 bg-white rounded-lg shadow-lg border border-custom-grey-2 min-w-[160px] right-0">
+        <div className="absolute z-50 mt-2 py-2 bg-surface-container rounded-lg shadow-lg border border-custom-grey-2 min-w-[160px] right-0">
           {(Object.keys(LANG_LABELS) as SupportedBuilderLanguage[]).map((lang) => (
             <button
               key={lang}

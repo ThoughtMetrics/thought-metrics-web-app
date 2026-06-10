@@ -81,14 +81,14 @@ const ClientTeamContent: React.FC = () => {
   const formatDate = (d: string) => new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
   return (
-    <div className="flex h-full bg-gray-50">
+    <div className="flex h-full bg-surface-container-low">
       <ClientSidebar />
       <main className="flex-1 overflow-y-auto p-8">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Team</h1>
-              <p className="text-sm text-gray-500 mt-1">Manage your company's team members</p>
+              <h1 className="text-2xl font-bold text-on-surface">Team</h1>
+              <p className="text-sm text-outline mt-1">Manage your company's team members</p>
             </div>
             {isOwner && (
               <button
@@ -106,38 +106,38 @@ const ClientTeamContent: React.FC = () => {
             </div>
           )}
 
-          <div className="bg-white rounded-lg shadow-sm">
+          <div className="bg-surface-container rounded-lg shadow-sm">
             {loading ? (
               <div className="p-12 flex justify-center"><LoaderUI message="Loading team..." /></div>
             ) : members.length === 0 ? (
-              <div className="p-12 text-center text-gray-500">No team members yet. Add your first team member to collaborate.</div>
+              <div className="p-12 text-center text-outline">No team members yet. Add your first team member to collaborate.</div>
             ) : (
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-100">
-                    <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Member</th>
-                    <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Email</th>
-                    <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Role</th>
-                    <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Joined</th>
+                  <tr className="border-b border-outline-variant/50">
+                    <th className="text-left px-6 py-3 text-xs font-semibold text-outline uppercase tracking-wider">Member</th>
+                    <th className="text-left px-6 py-3 text-xs font-semibold text-outline uppercase tracking-wider">Email</th>
+                    <th className="text-left px-6 py-3 text-xs font-semibold text-outline uppercase tracking-wider">Role</th>
+                    <th className="text-left px-6 py-3 text-xs font-semibold text-outline uppercase tracking-wider">Joined</th>
                     {isOwner && <th className="px-6 py-3" />}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-outline-variant/20">
                   {members.map((member) => {
                     const memberIsOwner = member.firebaseUid === companyId || member.companyId === member.firebaseUid;
                     return (
-                      <tr key={member._id} className="hover:bg-gray-50 transition-colors">
+                      <tr key={member._id} className="hover:bg-surface-container-high transition-colors">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm flex-shrink-0">
                               {(member.profile?.firstName?.[0] || member.email?.[0] || '?').toUpperCase()}
                             </div>
-                            <span className="text-sm font-medium text-gray-900">
+                            <span className="text-sm font-medium text-on-surface">
                               {member.profile?.displayName || `${member.profile?.firstName || ''} ${member.profile?.lastName || ''}`.trim() || '—'}
                             </span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">{member.email || '—'}</td>
+                        <td className="px-6 py-4 text-sm text-on-surface-variant">{member.email || '—'}</td>
                         <td className="px-6 py-4">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                             memberIsOwner ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
@@ -145,7 +145,7 @@ const ClientTeamContent: React.FC = () => {
                             {memberIsOwner ? 'Owner' : 'Member'}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-500">{member.createdAt ? formatDate(member.createdAt) : '—'}</td>
+                        <td className="px-6 py-4 text-sm text-outline">{member.createdAt ? formatDate(member.createdAt) : '—'}</td>
                         {isOwner && (
                           <td className="px-6 py-4 relative">
                             {!memberIsOwner && (
@@ -155,14 +155,14 @@ const ClientTeamContent: React.FC = () => {
                                 )}
                                 <button
                                   onClick={() => setOpenMenuId(openMenuId === member._id ? null : member._id)}
-                                  className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-700"
+                                  className="p-1 rounded hover:bg-surface-container-high text-outline/40 hover:text-on-surface-variant"
                                 >
                                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                     <circle cx="12" cy="5" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="12" cy="19" r="1.5" />
                                   </svg>
                                 </button>
                                 {openMenuId === member._id && (
-                                  <div className="absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg z-20 w-36 py-1">
+                                  <div className="absolute right-0 top-8 bg-surface-container border border-outline-variant rounded-lg shadow-lg z-20 w-36 py-1">
                                     <button
                                       onClick={() => { setOpenMenuId(null); setRemoveConfirm(member._id); }}
                                       className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
@@ -188,47 +188,47 @@ const ClientTeamContent: React.FC = () => {
       {/* Add Member Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
+          <div className="bg-surface-container rounded-xl shadow-xl w-full max-w-md">
             <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-lg font-semibold text-gray-900">Add Team Member</h2>
-              <button onClick={() => { setShowAddModal(false); setAddError(''); }} className="text-gray-400 hover:text-gray-600">
+              <h2 className="text-lg font-semibold text-on-surface">Add Team Member</h2>
+              <button onClick={() => { setShowAddModal(false); setAddError(''); }} className="text-outline/40 hover:text-on-surface-variant">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
             <form onSubmit={handleAdd} className="p-6 space-y-4">
               {addError && <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">{addError}</div>}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+                <label className="block text-sm font-medium text-on-surface-variant mb-1">First Name *</label>
                 <input
                   type="text"
                   value={form.firstName}
                   onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                <label className="block text-sm font-medium text-on-surface-variant mb-1">Last Name</label>
                 <input
                   type="text"
                   value={form.lastName}
                   onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                <label className="block text-sm font-medium text-on-surface-variant mb-1">Email *</label>
                 <input
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                   required
                 />
               </div>
-              <p className="text-xs text-gray-500">Team member will receive the default password: <strong>Welcome@ThoughtMetrics</strong> and will be prompted to change it on first login.</p>
+              <p className="text-xs text-outline">Team member will receive the default password: <strong>Welcome@ThoughtMetrics</strong> and will be prompted to change it on first login.</p>
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => { setShowAddModal(false); setAddError(''); }} className="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg text-sm font-medium hover:bg-gray-50">Cancel</button>
+                <button type="button" onClick={() => { setShowAddModal(false); setAddError(''); }} className="flex-1 border border-outline-variant text-on-surface-variant py-2 rounded-lg text-sm font-medium hover:bg-surface-container-high">Cancel</button>
                 <button type="submit" disabled={addLoading} className="flex-1 bg-primary text-white py-2 rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50">
                   {addLoading ? 'Adding...' : 'Add Member'}
                 </button>
@@ -241,11 +241,11 @@ const ClientTeamContent: React.FC = () => {
       {/* Remove Confirm Dialog */}
       {removeConfirm && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Remove team member?</h3>
-            <p className="text-sm text-gray-600 mb-6">This will deactivate their account. They will no longer be able to access the portal.</p>
+          <div className="bg-surface-container rounded-xl shadow-xl w-full max-w-sm p-6">
+            <h3 className="text-lg font-semibold text-on-surface mb-2">Remove team member?</h3>
+            <p className="text-sm text-on-surface-variant mb-6">This will deactivate their account. They will no longer be able to access the portal.</p>
             <div className="flex gap-3">
-              <button onClick={() => setRemoveConfirm(null)} className="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg text-sm font-medium hover:bg-gray-50">Cancel</button>
+              <button onClick={() => setRemoveConfirm(null)} className="flex-1 border border-outline-variant text-on-surface-variant py-2 rounded-lg text-sm font-medium hover:bg-surface-container-high">Cancel</button>
               <button onClick={() => handleRemove(removeConfirm)} className="flex-1 bg-red-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-red-700">Remove</button>
             </div>
           </div>
