@@ -95,7 +95,7 @@ const ClientDashboardContent: React.FC = () => {
     <div className="h-full flex bg-gray-50 text-text-dark">
       <ClientSidebar />
 
-      <main className="h-full overflow-y-scroll flex-1 p-8">
+      <main className="h-full overflow-y-auto flex-1 p-8">
         <div className="max-w-5xl mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900">

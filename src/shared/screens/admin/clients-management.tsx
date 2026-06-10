@@ -129,7 +129,7 @@ const ClientsManagementContent: React.FC = () => {
     <div className="h-full flex bg-gray-50 text-text-dark">
       <AdminSidebar />
 
-      <main className="h-full overflow-y-scroll flex-1 p-8">
+      <main className="h-full overflow-y-auto flex-1 p-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>

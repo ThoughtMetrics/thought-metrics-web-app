@@ -40,7 +40,7 @@ const AdminDashboardContent: React.FC = () => {
     <div className="h-full flex bg-gray-50 text-text-dark">
       <AdminSidebar />
 
-      <main className="h-full overflow-y-scroll flex-1 p-8">
+      <main className="h-full overflow-y-auto flex-1 p-8">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>

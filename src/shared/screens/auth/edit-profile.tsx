@@ -381,7 +381,7 @@ const EditProfilePage: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-screen overflow-y-auto overflow-x-hidden" style={{ background: 'var(--surface)' }}>
+      <div className="h-full overflow-y-auto overflow-x-hidden" style={{ background: 'var(--surface)' }}>
         <div className="tm-container py-8 md:py-12">
           {/* Header */}
           <div className="mb-8">

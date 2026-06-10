@@ -81,6 +81,11 @@ body {
   }
 }
 
+/* Make Astro island wrappers layout-transparent so children's h-full resolves correctly */
+astro-island {
+  display: contents;
+}
+
 *,
 *::before,
 *::after {

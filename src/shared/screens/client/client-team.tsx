@@ -81,9 +81,9 @@ const ClientTeamContent: React.FC = () => {
   const formatDate = (d: string) => new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-full bg-gray-50">
       <ClientSidebar />
-      <main className="flex-1 p-8">
+      <main className="flex-1 overflow-y-auto p-8">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <div>

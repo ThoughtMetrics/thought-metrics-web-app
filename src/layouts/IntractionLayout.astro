@@ -39,10 +39,10 @@ const {
 >
   <div
     id="interaction-screen"
-    class="w-full min-h-screen flex flex-col bg-background overflow-x-hidden overflow-y-auto"
+    class="w-full h-screen flex flex-col bg-background overflow-hidden"
   >
     <InteractionHeader client:only="react" />
-    <div class="flex-1 w-full">
+    <div class="flex-1 min-h-0 w-full overflow-hidden">
       <slot />
     </div>
     <InteractionFooter client:load />

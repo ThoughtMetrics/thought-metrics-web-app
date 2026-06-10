@@ -549,7 +549,7 @@ const RespondentSignUpPage: React.FC = () => {
         </div>
       )}
 
-      <div className="min-h-screen" style={{ background: 'var(--surface)' }}>
+      <div className="h-full overflow-y-auto" style={{ background: 'var(--surface)' }}>
         <div className="tm-container max-w-3xl mx-auto py-12 px-6">
           {/* Header row */}
           <div className="flex items-center justify-between mb-8">

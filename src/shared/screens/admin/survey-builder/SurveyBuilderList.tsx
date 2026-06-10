@@ -50,7 +50,7 @@ const SurveyBuilderListContent: React.FC = () => {
       <AdminSidebar />
       {showPicker && <MethodologyPickerModal onClose={() => setShowPicker(false)} />}
 
-      <main className="h-full overflow-y-scroll flex-1 p-8">
+      <main className="h-full overflow-y-auto flex-1 p-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <div>

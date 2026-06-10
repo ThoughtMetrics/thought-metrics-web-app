@@ -84,7 +84,7 @@ const TrackingLinkForm: React.FC = () => {
   const links = linksResponse?.data || [];
 
   return (
-    <div className="h-full overflow-y-scroll bg-gray-50 py-12 px-4 text-text-dark">
+    <div className="h-full overflow-y-auto bg-gray-50 py-12 px-4 text-text-dark">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">
           Create Tracking Link

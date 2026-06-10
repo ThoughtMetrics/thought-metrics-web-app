@@ -452,7 +452,7 @@ const UserManagementContent: React.FC = () => {
     <div className="flex bg-gray-50 text-text-dark h-full">
       <AdminSidebar />
 
-      <main className="h-full flex-1 overflow-y-scroll p-8">
+      <main className="h-full flex-1 overflow-y-auto p-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8">
