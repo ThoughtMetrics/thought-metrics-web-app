@@ -4,7 +4,7 @@ import React from 'react';
 import { QuestionType } from '@/core/types/survey.type';
 import type { IBuilderQuestion, IBuilderQuestionOption } from '@/core/types/survey-builder.type';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, GripVertical } from 'lucide-react';
 import { RowColumnEditor } from './RowColumnEditor';
 import PipeTokenButton from '../PipeTokenButton';
 
@@ -160,6 +160,9 @@ const ItemList: React.FC<{
     </div>
   );
 };
+
+const slugifyKey = (v: string) =>
+  v.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '').slice(0, 30);
 
 const MatrixConfig: React.FC<Props> = ({ question, qIdx }) => {
   const { setQuestionConfig, questions } = useSurveyBuilderStore();
@@ -490,285 +493,67 @@ const MatrixConfig: React.FC<Props> = ({ question, qIdx }) => {
 
   if (questionType === QuestionType.MAX_DIFF) {
     const opts = config.options ?? [];
-    const mode = config.rowOptionsMode ?? 'per-row';
-    const rowColumns = config.rowColumns ?? {};
-    const sharedAttrs = config.sharedOptionAttributes ?? [];
-
-    const setMode = (next: 'shared' | 'per-row') => {
-      if (next === 'per-row') {
-        const sharedCols = config.columns ?? [];
-        const seeded: Record<string, IBuilderQuestionOption[]> = {};
-        opts.forEach((o) => {
-          seeded[o.value] = rowColumns[o.value]?.length ? rowColumns[o.value] : [...sharedCols];
-        });
-        setQuestionConfig(qIdx, { rowOptionsMode: 'per-row', rowColumns: seeded });
-      } else {
-        setQuestionConfig(qIdx, { rowOptionsMode: 'shared' });
-        setSharedAttrsExpanded(false);
-      }
-    };
+    const toAlpha = (i: number) => String.fromCharCode(65 + i);
 
     return (
-      <div className="space-y-4">
-        {/* ── Per-option sub-options toggle ── */}
-        <div className="flex items-center justify-between py-2 px-3 bg-gray-50 border border-gray-200 rounded-lg">
-          <span className="text-xs font-medium text-gray-600">Different fields per choice</span>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={mode === 'per-row'}
-            onClick={() => setMode(mode === 'shared' ? 'per-row' : 'shared')}
-            className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
-              mode === 'per-row' ? 'bg-primary' : 'bg-gray-300'
-            }`}
-          >
-            <span
-              className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${
-                mode === 'per-row' ? 'translate-x-4' : 'translate-x-0'
-              }`}
-            />
-          </button>
+      <div className="space-y-3">
+
+        <div className="flex items-center justify-between">
+          <label className="text-xs font-medium text-gray-700">Choices</label>
         </div>
 
-        <ItemList
-          label="Options"
-          items={opts}
-          onAdd={() => {
-            const n = opts.length + 1;
-            const newOpt = { value: `opt${n}`, label: `Option ${n}` };
-            const update: Partial<typeof config> = {
-              options: [...opts, newOpt],
-            };
-            if (mode === 'per-row') {
-              update.rowColumns = { ...rowColumns, [newOpt.value]: [] };
-            }
-            setQuestionConfig(qIdx, update);
-          }}
-          onRemove={(i) => {
-            const removed = opts[i];
-            const next = opts.filter((_, idx) => idx !== i);
-            const update: Partial<typeof config> = { options: next };
-            if (mode === 'per-row' && removed) {
-              const { [removed.value]: _, ...rest } = rowColumns;
-              update.rowColumns = rest;
-            }
-            setQuestionConfig(qIdx, update);
-          }}
-          onChange={(i, field, v) => {
-            const next = [...opts];
-            const oldVal = next[i].value;
-            next[i] = { ...next[i], [field]: v };
-            if (field === 'value' && mode === 'per-row' && rowColumns[oldVal]) {
-              const { [oldVal]: moved, ...rest } = rowColumns;
-              setQuestionConfig(qIdx, {
-                options: next,
-                rowColumns: { ...rest, [v]: moved },
-              });
-              return;
-            }
-            setQuestionConfig(qIdx, { options: next });
-          }}
-          onAttributeChange={mode === 'per-row' ? (i, attrs) => {
-            const next = [...opts];
-            next[i] = { ...next[i], attributes: attrs };
-            setQuestionConfig(qIdx, { options: next });
-          } : undefined}
-          pipeContext={{ questions, qIdx }}
-        />
-
-        {/* ── Shared additional fields (when mode === 'shared') ── */}
-        {mode === 'shared' && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500 flex-1">Additional fields (shared for all options)</span>
-              <button
-                type="button"
-                onClick={() => setSharedAttrsExpanded(!sharedAttrsExpanded)}
-                title="Shared option attributes"
-                className={`flex items-center gap-1 text-xs px-1.5 py-1 rounded border transition-colors flex-shrink-0 ${
-                  sharedAttrs.length > 0
-                    ? 'border-primary text-primary bg-primary/5'
-                    : 'border-gray-300 text-gray-400 hover:border-primary hover:text-primary'
-                }`}
-              >
-                {sharedAttrs.length > 0 && (
-                  <span className="font-medium">{sharedAttrs.length}</span>
-                )}
-                <ChevronDown
-                  className={`w-3 h-3 transition-transform duration-150 ${sharedAttrsExpanded ? 'rotate-180' : ''}`}
-                />
-              </button>
-            </div>
-            {sharedAttrsExpanded && (
-              <div className="border border-dashed border-primary/40 rounded-lg p-2.5 space-y-1.5 bg-primary/3">
-                <p className="text-xs font-medium text-gray-600 mb-1">Additional fields (applied to all options)</p>
-                {sharedAttrs.map((attr, aIdx) => (
-                  <div key={aIdx} className="flex gap-1.5 items-center">
-                    <input
-                      type="text"
-                      value={attr.key}
-                      onChange={(e) => {
-                        const next = [...sharedAttrs];
-                        next[aIdx] = { ...next[aIdx], key: e.target.value };
-                        setQuestionConfig(qIdx, { sharedOptionAttributes: next });
-                      }}
-                      placeholder="Field name"
-                      className="w-28 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
-                    />
-                    <input
-                      type="text"
-                      value={attr.value}
-                      onChange={(e) => {
-                        const next = [...sharedAttrs];
-                        next[aIdx] = { ...next[aIdx], value: e.target.value };
-                        setQuestionConfig(qIdx, { sharedOptionAttributes: next });
-                      }}
-                      placeholder="Value"
-                      className="flex-1 border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setQuestionConfig(qIdx, { sharedOptionAttributes: sharedAttrs.filter((_, i) => i !== aIdx) })}
-                      className="text-red-400 hover:text-red-600 flex-shrink-0"
-                      title="Remove field"
-                    >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => setQuestionConfig(qIdx, { sharedOptionAttributes: [...sharedAttrs, { key: '', value: '' }] })}
-                  className="text-xs text-primary hover:underline font-medium"
-                >
-                  + Add Field
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
-        <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">
-            Items per set
-            <span className={`ml-2 text-xs font-normal ${opts.length > 120 ? 'text-red-500' : 'text-gray-400'}`}>
-              {opts.length}/120
-            </span>
-          </label>
-          <input
-            type="number"
-            min={2}
-            value={config.itemCount ?? 3}
-            onChange={(e) => setQuestionConfig(qIdx, { itemCount: Number(e.target.value) })}
-            className="w-24 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-          />
-        </div>
-
-        {/* ── F9: MaxDiff advanced options ── */}
-        <div className="space-y-3 pt-2 border-t border-gray-100">
-          {/* Anchored MaxDiff */}
-          <div className="flex items-center justify-between py-2 px-3 bg-gray-50 border border-gray-200 rounded-lg">
-            <span className="text-xs font-medium text-gray-600">Anchored MaxDiff</span>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={config.anchoredMaxDiff ?? false}
-              onClick={() => setQuestionConfig(qIdx, { anchoredMaxDiff: !config.anchoredMaxDiff })}
-              className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${config.anchoredMaxDiff ? 'bg-primary' : 'bg-gray-300'}`}
-            >
-              <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${config.anchoredMaxDiff ? 'translate-x-4' : 'translate-x-0'}`} />
-            </button>
-          </div>
-          {config.anchoredMaxDiff && (
-            <div className="space-y-3 border border-dashed border-primary/30 rounded-lg p-3 bg-primary/3">
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Anchor question text</label>
-                <input
-                  type="text"
-                  value={config.anchorQuestionText ?? ''}
-                  onChange={(e) => setQuestionConfig(qIdx, { anchorQuestionText: e.target.value || undefined })}
-                  placeholder="Is this important to you?"
-                  className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
-                />
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Items/set</label>
-                  <input
-                    type="number"
-                    min={5}
-                    value={config.itemsPerSet ?? 7}
-                    onChange={(e) => setQuestionConfig(qIdx, { itemsPerSet: Number(e.target.value) })}
-                    className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Yes label</label>
+        <div className="space-y-2">
+          {opts.map((opt, i) => (
+            <div key={i} className="space-y-1">
+              <div className="space-y-0.5">
+                <div className="flex gap-2 items-center">
+                  <GripVertical className="w-3.5 h-3.5 text-gray-300 cursor-grab flex-shrink-0" />
+                  <span className="text-xs text-gray-400 min-w-[14px] text-center flex-shrink-0">
+                    {toAlpha(i)}
+                  </span>
                   <input
                     type="text"
-                    value={config.anchorPositiveLabel ?? ''}
-                    onChange={(e) => setQuestionConfig(qIdx, { anchorPositiveLabel: e.target.value || undefined })}
-                    placeholder="Important"
-                    className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                    value={opt.label}
+                    onChange={(e) => {
+                      const next = [...opts];
+                      next[i] = {
+                        ...next[i],
+                        label: e.target.value,
+                        value: slugifyKey(e.target.value) || `opt${i + 1}`,
+                      };
+                      setQuestionConfig(qIdx, { options: next });
+                    }}
+                    placeholder={`Choice ${toAlpha(i)}`}
+                    className={`flex-1 border rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary border-gray-300`}
                   />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">No label</label>
-                  <input
-                    type="text"
-                    value={config.anchorNegativeLabel ?? ''}
-                    onChange={(e) => setQuestionConfig(qIdx, { anchorNegativeLabel: e.target.value || undefined })}
-                    placeholder="Not important"
-                    className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
+                  <button
+                    type="button"
+                    onClick={() => setQuestionConfig(qIdx, { options: opts.filter((_, idx) => idx !== i) })}
+                    disabled={opts.length <= 1}
+                    className="text-red-400 hover:text-red-600 disabled:opacity-30 flex-shrink-0"
+                    title="Remove choice"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
                 </div>
               </div>
             </div>
-          )}
-
-          {/* Express / Sparse mode — mutually exclusive */}
-          <div className="flex items-center justify-between py-2 px-3 bg-gray-50 border border-gray-200 rounded-lg">
-            <span className="text-xs font-medium text-gray-600">Express mode (show random subset)</span>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={config.maxDiffExpressMode ?? false}
-              onClick={() => setQuestionConfig(qIdx, { maxDiffExpressMode: !config.maxDiffExpressMode, maxDiffSparseMode: false })}
-              className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${config.maxDiffExpressMode ? 'bg-primary' : 'bg-gray-300'}`}
-            >
-              <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${config.maxDiffExpressMode ? 'translate-x-4' : 'translate-x-0'}`} />
-            </button>
-          </div>
-          {config.maxDiffExpressMode && (
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Items shown per respondent</label>
-              <input
-                type="number"
-                min={2}
-                max={opts.length}
-                value={config.expressItemCount ?? ''}
-                onChange={(e) => setQuestionConfig(qIdx, { expressItemCount: e.target.value ? Number(e.target.value) : undefined })}
-                placeholder={String(Math.ceil(opts.length / 2))}
-                className="w-24 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-            </div>
-          )}
-
-          <div className="flex items-center justify-between py-2 px-3 bg-gray-50 border border-gray-200 rounded-lg">
-            <span className="text-xs font-medium text-gray-600">Sparse mode (each item shown once)</span>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={config.maxDiffSparseMode ?? false}
-              onClick={() => setQuestionConfig(qIdx, { maxDiffSparseMode: !config.maxDiffSparseMode, maxDiffExpressMode: false, expressItemCount: undefined })}
-              className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${config.maxDiffSparseMode ? 'bg-primary' : 'bg-gray-300'}`}
-            >
-              <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${config.maxDiffSparseMode ? 'translate-x-4' : 'translate-x-0'}`} />
-            </button>
-          </div>
+          ))}
         </div>
+
+        <button
+          type="button"
+          onClick={() =>
+            setQuestionConfig(qIdx, {
+              options: [...opts, { value: `opt${opts.length + 1}`, label: '' }],
+            })
+          }
+          className="w-full text-xs text-gray-500 hover:text-primary font-medium border border-dashed border-gray-300 hover:border-primary rounded-lg py-2 transition-colors"
+        >
+          + Add Choice
+        </button>
       </div>
     );
   }

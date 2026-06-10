@@ -32,6 +32,8 @@ import DisplayConfig from './configs/DisplayConfig';
 import PipeTokenButton from './PipeTokenButton';
 import McqCanvasEditor from './McqCanvasEditor';
 import RankingCanvasEditor from './RankingCanvasEditor';
+import MaxDiffCanvasEditor from './MaxDiffCanvasEditor';
+import GaborGrangerCanvasEditor from './GaborGrangerCanvasEditor';
 
 // ---------------------------------------------------------------------------
 // Type sets for config routing
@@ -84,8 +86,9 @@ const QUESTION_TYPE_LABEL: Record<string, string> = {
   [QuestionType.DOUBLE_SLIDER]: 'Double Slider',
   [QuestionType.MULTI_SLIDER]:  'Multi Slider',
   [QuestionType.MATRIX]:        'Matrix',
-  [QuestionType.MAX_DIFF]:      'Max Diff',
-  [QuestionType.CONSTANT_SUM]:  'Constant Sum',
+  [QuestionType.MAX_DIFF]:       'Max Diff',
+  [QuestionType.GABOR_GRANGER]:  'Gabor-Granger',
+  [QuestionType.CONSTANT_SUM]:   'Constant Sum',
   [QuestionType.FILE]:          'File Upload',
   [QuestionType.VIDEO]:         'Video Response',
   [QuestionType.AUDIO]:         'Audio Response',
@@ -580,6 +583,9 @@ const QuestionEditorPanel: React.FC = () => {
         <option value={QuestionType.CONSTANT_SUM}>Constant Sum</option>
         <option value={QuestionType.FILE}>File Upload</option>
       </optgroup>
+      <optgroup label="Pricing">
+        <option value={QuestionType.GABOR_GRANGER}>Gabor-Granger</option>
+      </optgroup>
       <optgroup label="Media">
         <option value={QuestionType.VIDEO}>Video Response</option>
         <option value={QuestionType.AUDIO}>Audio Response</option>
@@ -612,6 +618,8 @@ const QuestionEditorPanel: React.FC = () => {
             question.questionType === QuestionType.MCQ_SINGLE ||
             question.questionType === QuestionType.MCQ_MULTIPLE;
           const isRankingList = question.questionType === QuestionType.RANKING;
+          const isMaxDiffList = question.questionType === QuestionType.MAX_DIFF;
+          const isGaborGrangerList = question.questionType === QuestionType.GABOR_GRANGER;
           const isNarrowList = isMcqList || isRankingList;
 
           // Unified canvas card for all question types
@@ -733,7 +741,11 @@ const QuestionEditorPanel: React.FC = () => {
                     ? <McqCanvasEditor question={question} qIdx={qIdx} lang={activeLanguage} />
                     : isRankingList
                       ? <RankingCanvasEditor question={question} qIdx={qIdx} lang={activeLanguage} />
-                      : renderTypeConfig(qIdx)
+                      : isMaxDiffList
+                        ? <MaxDiffCanvasEditor question={question} qIdx={qIdx} lang={activeLanguage} />
+                        : isGaborGrangerList
+                          ? <GaborGrangerCanvasEditor question={question} qIdx={qIdx} lang={activeLanguage} />
+                          : renderTypeConfig(qIdx)
                   }
                 </div>
               </div>
@@ -830,6 +842,8 @@ const QuestionEditorPanel: React.FC = () => {
     question.questionType === QuestionType.MCQ_SINGLE ||
     question.questionType === QuestionType.MCQ_MULTIPLE;
   const isRankingCanvas = question.questionType === QuestionType.RANKING;
+  const isMaxDiffCanvas = question.questionType === QuestionType.MAX_DIFF;
+  const isGaborGrangerCanvas = question.questionType === QuestionType.GABOR_GRANGER;
   const isNarrowCanvas = isMcqCanvas || isRankingCanvas;
 
   // ── Unified canvas shell for ALL question types ──────────────────────────
@@ -951,7 +965,11 @@ const QuestionEditorPanel: React.FC = () => {
               ? <McqCanvasEditor question={question} qIdx={selectedQuestionIndex} lang={lang} />
               : isRankingCanvas
                 ? <RankingCanvasEditor question={question} qIdx={selectedQuestionIndex} lang={lang} />
-                : renderTypeConfig(selectedQuestionIndex)
+                : isMaxDiffCanvas
+                  ? <MaxDiffCanvasEditor question={question} qIdx={selectedQuestionIndex} lang={lang} />
+                  : isGaborGrangerCanvas
+                    ? <GaborGrangerCanvasEditor question={question} qIdx={selectedQuestionIndex} lang={lang} />
+                    : renderTypeConfig(selectedQuestionIndex)
             }
             </div>
           </div>

@@ -119,6 +119,8 @@ const QuestionConfigPanel: React.FC = () => {
     QuestionType.TEXT, QuestionType.TEXTAREA, QuestionType.NUMBER,
     QuestionType.EMAIL, QuestionType.PHONE, QuestionType.DATE, QuestionType.CURRENCY,
   ].includes(question.questionType);
+  const isMaxDiff = question.questionType === QuestionType.MAX_DIFF;
+  const isGaborGranger = question.questionType === QuestionType.GABOR_GRANGER;
 
   // Others option — derived from options array
   const opts = cfg.options ?? [];
@@ -639,6 +641,365 @@ const QuestionConfigPanel: React.FC = () => {
 
           </div>
         )}
+
+        {/* MaxDiff settings */}
+        {isMaxDiff && (() => {
+          const n = cfg.options?.length ?? 0;
+          const ips = cfg.itemCount ?? 4;
+          const sets = cfg.maxDiffNumSets ?? 10;
+          const anchored = cfg.anchoredMaxDiff ?? false;
+          const express = cfg.maxDiffExpressMode ?? false;
+          const sparse = cfg.maxDiffSparseMode ?? false;
+
+          type GuidanceVariant = 'ok' | 'warn' | 'info';
+          const guidance: Array<{ variant: GuidanceVariant; text: string }> = [];
+
+          if (n < 6) {
+            guidance.push({ variant: 'warn', text: `Only ${n} item${n !== 1 ? 's' : ''} — MaxDiff needs at least 8 for reliable scores. Add more items.` });
+          } else if (n < 8) {
+            guidance.push({ variant: 'warn', text: `${n} items is borderline. At least 8 items recommended for dependable results.` });
+          } else if (n <= 20) {
+            guidance.push({ variant: 'ok', text: `${n} items — good range. Results will be statistically reliable.` });
+          } else if (n <= 40) {
+            guidance.push({ variant: 'ok', text: `${n} items — larger set. Consider enabling Express mode to reduce respondent fatigue.` });
+          } else {
+            guidance.push({ variant: 'warn', text: `${n} items is a very large set. Enable Express or Sparse mode to keep it manageable.` });
+          }
+
+          if (ips < 3) {
+            guidance.push({ variant: 'warn', text: 'Items per set is too low. Respondents need at least 3–4 items to make a meaningful comparison.' });
+          } else if (ips > 6) {
+            guidance.push({ variant: 'warn', text: 'More than 6 items per set is hard for respondents. The sweet spot is 4–5.' });
+          } else {
+            guidance.push({ variant: 'ok', text: `${ips} items per set — good choice.` });
+          }
+
+          if (sets < 8) {
+            guidance.push({ variant: 'warn', text: `${sets} sets may not be enough. At least 8 sets per respondent gives stable preference scores.` });
+          } else if (sets <= 15) {
+            guidance.push({ variant: 'ok', text: `${sets} sets — solid. Respondents can finish without fatigue.` });
+          } else {
+            guidance.push({ variant: 'warn', text: `${sets} sets is high. Respondents may drop off after 15. Consider reducing.` });
+          }
+
+          if (anchored) guidance.push({ variant: 'info', text: 'Anchored MaxDiff adds a "none of these" option. Use when some items may genuinely not apply.' });
+          if (express) guidance.push({ variant: 'info', text: 'Express mode shows a subset of items per respondent. Best for 30+ items.' });
+          if (sparse) guidance.push({ variant: 'info', text: 'Sparse mode: each item shown once per respondent. Best for 50+ items.' });
+          if (express && sparse) guidance.push({ variant: 'warn', text: 'Both Express and Sparse are on. This is rarely needed — pick one unless your list is 50+ items.' });
+
+          const isOptimal = n >= 8 && ips >= 3 && ips <= 6 && sets >= 8 && sets <= 15;
+
+          const variantClass: Record<GuidanceVariant, string> = {
+            ok:   'bg-green-50 border-green-200 text-green-700',
+            warn: 'bg-amber-50 border-amber-200 text-amber-700',
+            info: 'bg-blue-50 border-blue-200 text-blue-700',
+          };
+
+          return (
+            <div className="space-y-4 pt-3 border-t border-gray-100">
+              <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">MaxDiff Settings</span>
+
+              {/* Items per set */}
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <span className="text-sm font-medium text-gray-700">Items per set</span>
+                  <p className="text-xs text-gray-400 mt-0.5">Items shown per choice set (4–5 recommended)</p>
+                </div>
+                <input
+                  type="number"
+                  min={2}
+                  max={8}
+                  value={ips}
+                  onChange={(e) => setQuestionConfig(selectedQuestionIndex, { itemCount: Number(e.target.value) })}
+                  className="w-16 border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-right focus:outline-none focus:ring-1 focus:ring-primary flex-shrink-0"
+                />
+              </div>
+
+              {/* Number of sets */}
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <span className="text-sm font-medium text-gray-700">Number of sets</span>
+                  <p className="text-xs text-gray-400 mt-0.5">Choice sets shown per respondent (min 8)</p>
+                </div>
+                <input
+                  type="number"
+                  min={1}
+                  max={30}
+                  value={sets}
+                  onChange={(e) => setQuestionConfig(selectedQuestionIndex, { maxDiffNumSets: Number(e.target.value) })}
+                  className="w-16 border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-right focus:outline-none focus:ring-1 focus:ring-primary flex-shrink-0"
+                />
+              </div>
+
+              {/* Modes */}
+              <div className="space-y-3">
+                <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Modes</span>
+
+                <RightPanelToggle
+                  label="Anchored MaxDiff"
+                  description='Adds a "none of these" anchor option per set'
+                  checked={anchored}
+                  onChange={() => setQuestionConfig(selectedQuestionIndex, { anchoredMaxDiff: !anchored })}
+                />
+                {anchored && (
+                  <div className="space-y-2 pl-1 pt-1 border-l-2 border-primary/20 ml-1">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Anchor question text</label>
+                      <input
+                        type="text"
+                        value={cfg.anchorQuestionText ?? ''}
+                        onChange={(e) => setQuestionConfig(selectedQuestionIndex, { anchorQuestionText: e.target.value || undefined })}
+                        placeholder="Is this important to you?"
+                        className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs text-gray-600">Items/set (min 5)</span>
+                      <Spinner
+                        value={cfg.itemsPerSet ?? 7}
+                        min={5}
+                        onChange={(v) => setQuestionConfig(selectedQuestionIndex, { itemsPerSet: v })}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Yes label</label>
+                        <input
+                          type="text"
+                          value={cfg.anchorPositiveLabel ?? ''}
+                          onChange={(e) => setQuestionConfig(selectedQuestionIndex, { anchorPositiveLabel: e.target.value || undefined })}
+                          placeholder="Important"
+                          className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">No label</label>
+                        <input
+                          type="text"
+                          value={cfg.anchorNegativeLabel ?? ''}
+                          onChange={(e) => setQuestionConfig(selectedQuestionIndex, { anchorNegativeLabel: e.target.value || undefined })}
+                          placeholder="Not important"
+                          className="w-full border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <RightPanelToggle
+                  label="Express mode"
+                  description="Show a random subset of items per respondent"
+                  checked={express}
+                  onChange={() => setQuestionConfig(selectedQuestionIndex, {
+                    maxDiffExpressMode: !express,
+                    maxDiffSparseMode: false,
+                  })}
+                />
+                {express && (
+                  <div className="flex items-center justify-between gap-2 pl-1">
+                    <span className="text-xs text-gray-600">Items shown per respondent</span>
+                    <Spinner
+                      value={cfg.expressItemCount}
+                      min={2}
+                      onChange={(v) => setQuestionConfig(selectedQuestionIndex, { expressItemCount: v })}
+                    />
+                  </div>
+                )}
+
+                <RightPanelToggle
+                  label="Sparse mode"
+                  description="Each item shown exactly once per respondent (50+ items)"
+                  checked={sparse}
+                  onChange={() => setQuestionConfig(selectedQuestionIndex, {
+                    maxDiffSparseMode: !sparse,
+                    maxDiffExpressMode: false,
+                    expressItemCount: undefined,
+                  })}
+                />
+              </div>
+
+              {/* Live Guidance */}
+              <div className="pt-3 border-t border-gray-100 space-y-2">
+                <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Live Guidance</span>
+                {guidance.map((g, i) => (
+                  <div key={i} className={`text-xs px-3 py-2 rounded-lg border ${variantClass[g.variant]} leading-relaxed`}>
+                    {g.text}
+                  </div>
+                ))}
+                {isOptimal && (
+                  <div className="inline-flex items-center gap-1 text-xs font-semibold bg-green-50 border border-green-300 text-green-700 px-3 py-1.5 rounded-full">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Recommended setup
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Gabor-Granger settings */}
+        {isGaborGranger && (() => {
+          const n = cfg.options?.length ?? 0;
+          const currency = cfg.gaborCurrency ?? '₹';
+          const minPrice = cfg.gaborMinPrice ?? 200;
+          const maxPrice = cfg.gaborMaxPrice ?? 1100;
+          const priceStep = cfg.gaborPriceStep ?? 100;
+          const mode = cfg.gaborPresentationMode ?? 'sequential';
+          const showQual = cfg.gaborShowQualifying ?? true;
+
+          type GuidanceVariant = 'ok' | 'warn' | 'info';
+          const guidance: Array<{ variant: GuidanceVariant; text: string }> = [];
+
+          if (n < 4) {
+            guidance.push({ variant: 'warn', text: `Only ${n} price point${n !== 1 ? 's' : ''} — need at least 4 to plot a demand curve.` });
+          } else if (n < 6) {
+            guidance.push({ variant: 'warn', text: `${n} price points is low. 6–10 gives a smoother demand curve.` });
+          } else if (n <= 12) {
+            guidance.push({ variant: 'ok', text: `${n} price points — good range for a reliable demand curve.` });
+          } else {
+            guidance.push({ variant: 'warn', text: `${n} prices may cause respondent fatigue in sequential mode. Consider reducing to 10–12.` });
+          }
+
+          if (minPrice >= maxPrice) {
+            guidance.push({ variant: 'warn', text: 'Min price must be lower than max price.' });
+          } else {
+            const spread = Math.round((maxPrice - minPrice) / minPrice * 100);
+            if (spread < 50) {
+              guidance.push({ variant: 'warn', text: `Range is narrow (${spread}% spread). Widen it to better capture willingness to pay.` });
+            } else {
+              guidance.push({ variant: 'ok', text: `Range: ${currency}${minPrice} – ${currency}${maxPrice}. Good spread for price sensitivity.` });
+            }
+          }
+
+          if (mode === 'sequential') {
+            guidance.push({ variant: 'info', text: 'Sequential: one price shown at a time — more accurate, respondents cannot compare.' });
+          } else {
+            guidance.push({ variant: 'warn', text: 'All at once: respondents see all prices simultaneously. Anchoring on the highest price may skew results.' });
+          }
+
+          if (showQual) {
+            guidance.push({ variant: 'info', text: 'Qualifying question on — non-buyers filtered before price questions.' });
+          }
+
+          const spread = minPrice < maxPrice ? Math.round((maxPrice - minPrice) / minPrice * 100) : 0;
+          const isOptimal = n >= 6 && n <= 12 && minPrice < maxPrice && spread >= 50 && mode === 'sequential' && showQual;
+
+          const variantClass: Record<GuidanceVariant, string> = {
+            ok:   'bg-green-50 border-green-200 text-green-700',
+            warn: 'bg-amber-50 border-amber-200 text-amber-700',
+            info: 'bg-blue-50 border-blue-200 text-blue-700',
+          };
+
+          return (
+            <div className="space-y-4 pt-3 border-t border-gray-100">
+              <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Gabor-Granger Settings</span>
+
+              {/* Currency */}
+              <div>
+                <span className="block text-xs font-medium text-gray-600 mb-1.5">Currency</span>
+                <select
+                  value={currency}
+                  onChange={(e) => setQuestionConfig(selectedQuestionIndex, { gaborCurrency: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                >
+                  <option value="₹">₹ — Indian Rupee (INR)</option>
+                  <option value="$">$ — US Dollar (USD)</option>
+                  <option value="€">€ — Euro (EUR)</option>
+                  <option value="£">£ — British Pound (GBP)</option>
+                  <option value="¥">¥ — Japanese Yen (JPY)</option>
+                  <option value="S$">S$ — Singapore Dollar (SGD)</option>
+                  <option value="AED">AED — UAE Dirham</option>
+                </select>
+              </div>
+
+              {/* Auto-generate range */}
+              <div>
+                <span className="block text-xs font-medium text-gray-600 mb-1.5">Auto-generate range</span>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <span className="block text-xs text-gray-400 mb-1">Min</span>
+                    <input
+                      type="number"
+                      value={minPrice}
+                      onChange={(e) => setQuestionConfig(selectedQuestionIndex, { gaborMinPrice: Number(e.target.value) })}
+                      className="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                  </div>
+                  <div>
+                    <span className="block text-xs text-gray-400 mb-1">Max</span>
+                    <input
+                      type="number"
+                      value={maxPrice}
+                      onChange={(e) => setQuestionConfig(selectedQuestionIndex, { gaborMaxPrice: Number(e.target.value) })}
+                      className="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Step interval */}
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <span className="text-sm font-medium text-gray-700">Step interval</span>
+                  <p className="text-xs text-gray-400 mt-0.5">Gap between each price point</p>
+                </div>
+                <input
+                  type="number"
+                  value={priceStep}
+                  onChange={(e) => setQuestionConfig(selectedQuestionIndex, { gaborPriceStep: Number(e.target.value) })}
+                  className="w-16 border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-right focus:outline-none focus:ring-1 focus:ring-primary flex-shrink-0"
+                />
+              </div>
+
+              {/* Presentation mode */}
+              <div>
+                <span className="block text-xs font-medium text-gray-600 mb-1.5">Presentation mode</span>
+                <div className="flex rounded-lg border border-gray-200 overflow-hidden">
+                  {(['sequential', 'allatonce'] as const).map((m, idx) => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => setQuestionConfig(selectedQuestionIndex, { gaborPresentationMode: m })}
+                      className={`flex-1 py-1.5 text-xs font-medium transition-colors ${idx === 0 ? 'border-r border-gray-200' : ''} ${
+                        mode === m ? 'bg-primary text-white' : 'text-gray-500 hover:bg-gray-50'
+                      }`}
+                    >
+                      {m === 'sequential' ? 'Sequential' : 'All at once'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Qualifying toggle */}
+              <RightPanelToggle
+                label="Qualifying question"
+                description="Filter out non-buyers before price questions"
+                checked={showQual}
+                onChange={() => setQuestionConfig(selectedQuestionIndex, { gaborShowQualifying: !showQual })}
+              />
+
+              {/* Live Guidance */}
+              <div className="pt-3 border-t border-gray-100 space-y-2">
+                <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Live Guidance</span>
+                {guidance.map((g, i) => (
+                  <div key={i} className={`text-xs px-3 py-2 rounded-lg border ${variantClass[g.variant]} leading-relaxed`}>
+                    {g.text}
+                  </div>
+                ))}
+                {isOptimal && (
+                  <div className="inline-flex items-center gap-1 text-xs font-semibold bg-green-50 border border-green-300 text-green-700 px-3 py-1.5 rounded-full">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Recommended setup
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
 
       </div>
     </div>

@@ -64,6 +64,7 @@ export enum QuestionType {
   MATRIX = 'matrix',
   RANKING = 'ranking',
   MAX_DIFF = 'max-diff',
+  GABOR_GRANGER = 'gabor-granger',
   CONSTANT_SUM = 'constant-sum',
   FILE = 'file',
   VIDEO = 'video',

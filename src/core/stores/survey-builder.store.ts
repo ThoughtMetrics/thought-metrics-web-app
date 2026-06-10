@@ -39,6 +39,24 @@ function defaultConfigFor(type: QuestionType): IBuilderQuestionConfig {
     case QuestionType.RANKING:
     case QuestionType.MAX_DIFF:
       return { options: [{ value: 'opt1', label: 'Option 1' }], rowOptionsMode: 'per-row' };
+    case QuestionType.GABOR_GRANGER: {
+      const prices: Array<{ value: string; label: string }> = [];
+      for (let p = 200; p <= 1100; p += 100) {
+        prices.push({ value: `price_${p}`, label: String(p) });
+      }
+      return {
+        gaborProductDescription: '',
+        gaborQualifyingQuestion: 'Please consider the following product. Would you consider buying it?',
+        gaborCurrency: '₹',
+        gaborMinPrice: 200,
+        gaborMaxPrice: 1100,
+        gaborPriceStep: 100,
+        gaborPresentationMode: 'sequential',
+        gaborShowQualifying: true,
+        options: prices,
+        rowOptionsMode: 'per-row',
+      };
+    }
     case QuestionType.CONSTANT_SUM:
       return { options: [{ value: 'opt1', label: 'Option 1' }], total: 100, constantSumMode: 'constant-sum', rowOptionsMode: 'per-row' };
     case QuestionType.FILE:

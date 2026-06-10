@@ -159,6 +159,19 @@ export interface IBuilderQuestionConfig {
   expressItemCount?: number;
   /** Show each item exactly once per respondent */
   maxDiffSparseMode?: boolean;
+  /** How many MaxDiff choice sets each respondent answers (default 10) */
+  maxDiffNumSets?: number;
+
+  // ── Gabor-Granger ─────────────────────────────────────────────────────────
+  gaborProductDescription?: string;
+  gaborQualifyingQuestion?: string;
+  gaborCurrency?: string;
+  gaborMinPrice?: number;
+  gaborMaxPrice?: number;
+  gaborPriceStep?: number;
+  /** 'sequential' (default) | 'allatonce' */
+  gaborPresentationMode?: 'sequential' | 'allatonce';
+  gaborShowQualifying?: boolean;
 
   // ── F8: Text/Graphic Display element ─────────────────────────────────────
   /** HTML/rich-text content for TEXT_DISPLAY questions */

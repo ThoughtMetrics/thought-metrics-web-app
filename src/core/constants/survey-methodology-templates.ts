@@ -145,6 +145,36 @@ function mkMaxDiff(order: number, text: string, items: string[], itemsPerSet = 4
   };
 }
 
+function mkGaborGranger(
+  order: number,
+  mainQuestion: string,
+  productDesc: string,
+  prices: number[],
+  currency = '₹',
+): IBuilderQuestion {
+  const options = prices.map((p) => ({ value: `price_${p}`, label: String(p) }));
+  return {
+    id: uid(),
+    order,
+    questionType: QuestionType.GABOR_GRANGER,
+    text: mainQuestion,
+    translations: { en: { text: mainQuestion, placeholder: productDesc, options }, ta: { text: '', placeholder: '', options: options.map((o) => ({ ...o })) } },
+    config: {
+      gaborProductDescription: productDesc,
+      gaborQualifyingQuestion: 'Please consider the following product. Would you consider buying it?',
+      gaborCurrency: currency,
+      gaborMinPrice: Math.min(...prices),
+      gaborMaxPrice: Math.max(...prices),
+      gaborPriceStep: prices.length > 1 ? prices[1] - prices[0] : 100,
+      gaborPresentationMode: 'sequential' as const,
+      gaborShowQualifying: true,
+      options,
+    },
+    required: true,
+    allowComment: false,
+  };
+}
+
 // ── Kano MCQ options ──────────────────────────────────────────────────────────
 const KANO_OPTIONS = ['I would be delighted', 'I would expect it', 'I am neutral', 'I can live with it', 'I would dislike it'];
 
@@ -166,14 +196,14 @@ const STARTERS: Partial<Record<SurveyMethodology, StarterBuilder>> = {
     mkMaxDiff(3,
       'From the items shown below, which is MOST important and which is LEAST important to you?',
       [
-        'Item 1 — [Replace with your first item]',
-        'Item 2 — [Replace with your second item]',
-        'Item 3 — [Replace with your third item]',
-        'Item 4 — [Replace with your fourth item]',
-        'Item 5 — [Replace with your fifth item]',
-        'Item 6 — [Replace with your sixth item]',
-        'Item 7 — [Replace with your seventh item]',
-        'Item 8 — [Replace with your eighth item]',
+        'Fast delivery',
+        'Low price',
+        'Easy returns',
+        'Wide product range',
+        'Trustworthy reviews',
+        'Loyalty rewards',
+        'Same-day support',
+        'Eco-friendly packaging',
       ],
       4,
     ),
@@ -198,11 +228,18 @@ const STARTERS: Partial<Record<SurveyMethodology, StarterBuilder>> = {
   ],
 
   [SurveyMethodology.GABOR_GRANGER]: () => [
-    mkDisplay(1, 'Please read the product description below and answer the purchase-intent questions at each price point.\n\n[Replace with your product description]'),
-    mkMatrix(2, 'At each price point below, how likely are you to purchase this product?',
-      ['₹199', '₹299', '₹399', '₹499', '₹599'],
-      ['Definitely would buy', 'Probably would buy', 'Probably would not buy', 'Definitely would not buy'],
+    mkDisplay(1,
+      '<p><strong>Price Sensitivity Study</strong></p>' +
+      '<p>You will be shown a product at different price points. Please answer honestly based on your own willingness to purchase.</p>',
     ),
+    mkMcqSingle(2, 'Which of the following best describes your shopping frequency for this category?',
+      ['Every week', 'A few times a month', 'Once a month', 'A few times a year', 'Rarely or never'],
+    ),
+    mkGaborGranger(3, 'Would you buy this product at the price of [Price]?',
+      'Sleek wireless earbuds with 30-hour battery life, active noise cancellation, and IPX5 water resistance. Compatible with all Bluetooth devices.',
+      [200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100],
+    ),
+    mkText(4, 'Is there anything else you would like to share about this product or its pricing?'),
   ],
 
   [SurveyMethodology.BRAND_PRICE_TRADEOFF]: () => [
