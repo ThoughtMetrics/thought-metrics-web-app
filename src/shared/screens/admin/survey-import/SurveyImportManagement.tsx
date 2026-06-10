@@ -120,8 +120,6 @@ function SurveyImportManagementContent() {
 
   // ── Open wizard to import more for an existing survey ───────────────────
   const openImportMore = async (survey: ImportSurvey) => {
-    // templateMongoId is returned by the survey list endpoint — use it directly.
-    // Fall back to fetching from jobs only if it's somehow missing.
     let templateMongoId = survey.templateMongoId ?? '';
     if (!templateMongoId) {
       try {
@@ -256,8 +254,7 @@ function SurveyImportManagementContent() {
         ctrl.signal
       )
       .catch((err: unknown) => {
-        if ((err as Error)?.name === 'AbortError') return; // wizard closed — expected
-        // SSE unavailable — fall back to 2-second polling
+        if ((err as Error)?.name === 'AbortError') return;
         startPolling(jobId);
       });
   };
@@ -279,15 +276,15 @@ function SurveyImportManagementContent() {
 
   // ── Render ──────────────────────────────────────────────────────────────
   return (
-    <div className="h-full flex bg-gray-50">
+    <div className="h-full flex bg-surface-container-low text-text-dark">
       <AdminSidebar />
 
       <div className="h-full overflow-y-auto flex-1 p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-xl font-bold text-gray-800">Survey Import</h1>
-            <p className="text-xs text-gray-500 mt-0.5">
+            <h1 className="text-xl font-bold text-on-surface">Survey Import</h1>
+            <p className="text-xs text-outline mt-0.5">
               Import survey responses from CSV or Excel files — supports sample, agent, and respondent survey types.
             </p>
           </div>
@@ -314,7 +311,7 @@ function SurveyImportManagementContent() {
               className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                 typeFilter === tab.value
                   ? 'bg-primary text-white'
-                  : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'
+                  : 'bg-surface-container text-outline border border-outline-variant hover:bg-surface-container-high'
               }`}
             >
               {tab.label}
@@ -323,7 +320,7 @@ function SurveyImportManagementContent() {
         </div>
 
         {/* Surveys table */}
-        <div className="bg-white rounded-xl border border-gray-200">
+        <div className="bg-surface-container rounded-xl border border-outline-variant">
           {loading ? (
             <div className="flex justify-center py-12">
               <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -332,13 +329,13 @@ function SurveyImportManagementContent() {
             <div className="text-center py-12 text-sm text-red-500">{error}</div>
           ) : surveys.length === 0 ? (
             <div className="text-center py-16">
-              <Upload className="w-8 h-8 mx-auto text-gray-300 mb-3" />
-              <p className="text-sm text-gray-400">No import surveys yet. Click "Import New Survey" to get started.</p>
+              <Upload className="w-8 h-8 mx-auto text-outline mb-3" />
+              <p className="text-sm text-outline">No import surveys yet. Click "Import New Survey" to get started.</p>
             </div>
           ) : (
             <div className="text-sm">
               {/* Header row */}
-              <div className="grid grid-cols-[1fr_180px_90px_90px_110px_210px] border-b border-gray-100 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wide">
+              <div className="grid grid-cols-[1fr_180px_90px_90px_110px_210px] border-b border-outline-variant/20 bg-surface-container-low text-xs font-medium text-outline uppercase tracking-wide">
                 <div className="px-4 py-3">Survey Name</div>
                 <div className="px-4 py-3">Survey ID</div>
                 <div className="px-4 py-3 text-right">Responses</div>
@@ -348,19 +345,19 @@ function SurveyImportManagementContent() {
               </div>
               {/* Survey rows — each row owns its own analytics panel so it expands inline */}
               {surveys.map((s) => {
-                const badgeCls = TYPE_BADGE[s.type ?? ''] ?? { bg: 'bg-gray-50', text: 'text-gray-500' };
+                const badgeCls = TYPE_BADGE[s.type ?? ''] ?? { bg: 'bg-surface-container-high', text: 'text-outline' };
                 return (
-                <div key={s.surveyId} className="border-b border-gray-50 last:border-0">
-                  <div className="grid grid-cols-[1fr_180px_90px_90px_110px_210px] hover:bg-gray-50 transition-colors">
-                    <div className="px-4 py-3 font-medium text-gray-800 truncate">{s.label}</div>
-                    <div className="px-4 py-3 font-mono text-xs text-gray-500 truncate">{s.surveyId}</div>
-                    <div className="px-4 py-3 text-right text-gray-700">{(s.currentResponses ?? 0).toLocaleString()}</div>
+                <div key={s.surveyId} className="border-b border-outline-variant/10 last:border-0">
+                  <div className="grid grid-cols-[1fr_180px_90px_90px_110px_210px] hover:bg-surface-container-high transition-colors">
+                    <div className="px-4 py-3 font-medium text-on-surface truncate">{s.label}</div>
+                    <div className="px-4 py-3 font-mono text-xs text-outline truncate">{s.surveyId}</div>
+                    <div className="px-4 py-3 text-right text-on-surface-variant">{(s.currentResponses ?? 0).toLocaleString()}</div>
                     <div className="px-4 py-3">
                       <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full capitalize ${badgeCls.bg} ${badgeCls.text}`}>
                         {s.type ?? '—'}
                       </span>
                     </div>
-                    <div className="px-4 py-3 text-gray-500">{formatDate(s.createdAt)}</div>
+                    <div className="px-4 py-3 text-outline">{formatDate(s.createdAt)}</div>
                     <div className="px-4 py-3">
                       <div className="flex items-center justify-end gap-2">
                         <button
@@ -376,7 +373,7 @@ function SurveyImportManagementContent() {
                         </button>
                         <button
                           onClick={() => void openImportMore(s)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-on-surface-variant border border-outline-variant rounded-lg hover:bg-surface-container-high transition-colors"
                         >
                           <RefreshCw className="w-3.5 h-3.5" />
                           Import More
@@ -385,14 +382,14 @@ function SurveyImportManagementContent() {
                     </div>
                   </div>
                   {selectedSurvey?.id === s.id && (
-                    <div className="border-t border-blue-100 bg-blue-50/30 px-6 py-6">
+                    <div className="border-t border-primary/20 bg-primary/5 px-6 py-6">
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-sm font-semibold text-gray-800">
+                        <h3 className="text-sm font-semibold text-on-surface">
                           {s.label} — Analytics
                         </h3>
                         <button
                           onClick={() => setSelectedSurvey(null)}
-                          className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                          className="p-1 rounded hover:bg-surface-container-high text-outline hover:text-on-surface-variant transition-colors"
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -413,24 +410,24 @@ function SurveyImportManagementContent() {
       {/* Wizard Modal */}
       {wizardOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+          <div className="bg-surface-container rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
             {/* Modal header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-outline-variant">
               <div className="flex items-center gap-2">
                 <Upload className="w-4 h-4 text-primary" />
-                <h2 className="text-sm font-semibold text-gray-800">
+                <h2 className="text-sm font-semibold text-on-surface">
                   {wizard.step === 'name' && 'New Import Survey'}
                   {wizard.step === 'upload' && `Import: ${wizard.surveyName || wizard.surveyId}`}
                   {wizard.step === 'progress' && 'Import Progress'}
                 </h2>
               </div>
-              <button onClick={closeWizard} className="text-gray-400 hover:text-gray-600 transition-colors">
+              <button onClick={closeWizard} className="text-outline hover:text-on-surface-variant transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Step indicator */}
-            <div className="flex items-center gap-1 px-6 py-3 border-b border-gray-100 text-xs text-gray-400">
+            <div className="flex items-center gap-1 px-6 py-3 border-b border-outline-variant text-xs text-outline">
               {(['name', 'upload', 'progress'] as WizardStep[]).map((s, i) => (
                 <React.Fragment key={s}>
                   <span className={wizard.step === s ? 'text-primary font-medium' : ''}>
@@ -445,27 +442,27 @@ function SurveyImportManagementContent() {
               {/* ── Step 1: Survey Name ────────────────────────────────── */}
               {wizard.step === 'name' && (
                 <div className="space-y-4">
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-on-surface-variant">
                     Give this import dataset a name and choose its survey type. You can import additional responses into the same survey later.
                   </p>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Survey Name</label>
+                    <label className="block text-xs font-medium text-on-surface-variant mb-1.5">Survey Name</label>
                     <input
                       type="text"
                       value={wizard.surveyName}
                       onChange={(e) => setWizard((w) => ({ ...w, surveyName: e.target.value }))}
                       placeholder="e.g. Tamil Nadu Field Survey 2024"
-                      className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                      className="w-full px-3 py-2 text-sm text-on-surface border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-surface-container-low"
                       onKeyDown={(e) => { if (e.key === 'Enter') void handleCreateSurvey(); }}
                       autoFocus
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Survey Type</label>
+                    <label className="block text-xs font-medium text-on-surface-variant mb-1.5">Survey Type</label>
                     <select
                       value={wizard.surveyType}
                       onChange={(e) => setWizard((w) => ({ ...w, surveyType: e.target.value }))}
-                      className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white"
+                      className="w-full px-3 py-2 text-sm text-on-surface border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-surface-container"
                     >
                       {SURVEY_TYPES.map((t) => (
                         <option key={t.value} value={t.value}>
@@ -507,26 +504,26 @@ function SurveyImportManagementContent() {
                         const f = e.dataTransfer.files[0];
                         if (f) void handleFileSelect(f);
                       }}
-                      className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-colors"
+                      className="border-2 border-dashed border-outline-variant rounded-xl p-8 text-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-colors"
                     >
                       {uploadLoading ? (
                         <div className="flex flex-col items-center gap-2">
                           <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                          <p className="text-sm text-gray-500">Reading file…</p>
+                          <p className="text-sm text-outline">Reading file…</p>
                         </div>
                       ) : wizard.preview ? (
                         <div className="flex flex-col items-center gap-2">
                           <CheckCircle className="w-6 h-6 text-green-500" />
-                          <p className="text-sm font-medium text-gray-700">
+                          <p className="text-sm font-medium text-on-surface-variant">
                             File loaded — {wizard.preview.totalRows.toLocaleString()} rows detected
                           </p>
-                          <p className="text-xs text-gray-400">{wizard.preview.headers.length} columns found. Click to change file.</p>
+                          <p className="text-xs text-outline">{wizard.preview.headers.length} columns found. Click to change file.</p>
                         </div>
                       ) : (
                         <div className="flex flex-col items-center gap-2">
-                          <FileText className="w-8 h-8 text-gray-300" />
-                          <p className="text-sm font-medium text-gray-600">Drop CSV or Excel file here</p>
-                          <p className="text-xs text-gray-400">or click to browse — max 200MB</p>
+                          <FileText className="w-8 h-8 text-outline" />
+                          <p className="text-sm font-medium text-on-surface-variant">Drop CSV or Excel file here</p>
+                          <p className="text-xs text-outline">or click to browse — max 200MB</p>
                         </div>
                       )}
                     </div>
@@ -535,16 +532,16 @@ function SurveyImportManagementContent() {
                   {/* Column mapping table */}
                   {wizard.preview && wizard.preview.headers.length > 0 && (
                     <div>
-                      <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">
+                      <h3 className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide mb-2">
                         Column Mapping
-                        <span className="ml-2 text-gray-400 normal-case font-normal">
+                        <span className="ml-2 text-outline normal-case font-normal">
                           — Review auto-detected fields and override if needed
                         </span>
                       </h3>
-                      <div className="border border-gray-100 rounded-xl overflow-hidden">
+                      <div className="border border-outline-variant/50 rounded-xl overflow-hidden">
                         <table className="w-full text-xs">
                           <thead>
-                            <tr className="bg-gray-50 border-b border-gray-100 text-gray-500 uppercase tracking-wide">
+                            <tr className="bg-surface-container-low border-b border-outline-variant/50 text-outline uppercase tracking-wide">
                               <th className="px-3 py-2 text-left font-medium">CSV Column</th>
                               <th className="px-3 py-2 text-left font-medium">Maps to</th>
                               <th className="px-3 py-2 text-left font-medium">Sample</th>
@@ -552,13 +549,13 @@ function SurveyImportManagementContent() {
                           </thead>
                           <tbody>
                             {wizard.preview.headers.map((header) => (
-                              <tr key={header} className="border-b border-gray-50 last:border-0">
-                                <td className="px-3 py-2 font-mono text-gray-700">{header}</td>
+                              <tr key={header} className="border-b border-outline-variant/10 last:border-0">
+                                <td className="px-3 py-2 font-mono text-on-surface-variant">{header}</td>
                                 <td className="px-3 py-2">
                                   <select
                                     value={wizard.columnMap[header] ?? `answer:${header.toLowerCase().replace(/[\s_-]/g, '')}`}
                                     onChange={(e) => handleColumnOverride(header, e.target.value)}
-                                    className="w-full text-xs border border-gray-200 rounded px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-primary/30"
+                                    className="w-full text-xs border border-outline-variant rounded px-2 py-1 bg-surface-container focus:outline-none focus:ring-1 focus:ring-primary/30 text-on-surface"
                                   >
                                     <optgroup label="Survey Answer (keep as question)">
                                       <option value={`answer:${header.toLowerCase().replace(/[\s_-]/g, '')}`}>
@@ -572,7 +569,7 @@ function SurveyImportManagementContent() {
                                     </optgroup>
                                   </select>
                                 </td>
-                                <td className="px-3 py-2 text-gray-400 max-w-[140px] truncate">
+                                <td className="px-3 py-2 text-outline max-w-[140px] truncate">
                                   {wizard.preview!.sampleRows[0]?.[header] ?? '—'}
                                 </td>
                               </tr>
@@ -593,7 +590,7 @@ function SurveyImportManagementContent() {
                   </div>
 
                   <div className="flex justify-end gap-2">
-                    <button onClick={closeWizard} className="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <button onClick={closeWizard} className="px-4 py-2 text-sm text-on-surface-variant border border-outline-variant rounded-lg hover:bg-surface-container-high transition-colors">
                       Cancel
                     </button>
                     <button
@@ -613,7 +610,7 @@ function SurveyImportManagementContent() {
               {wizard.step === 'progress' && (
                 <div className="space-y-5">
                   {!wizard.jobStatus ? (
-                    <div className="flex items-center justify-center py-8 gap-3 text-sm text-gray-500">
+                    <div className="flex items-center justify-center py-8 gap-3 text-sm text-outline">
                       <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                       Starting import…
                     </div>
@@ -628,16 +625,16 @@ function SurveyImportManagementContent() {
                         }`}>
                           {wizard.jobStatus.status.charAt(0).toUpperCase() + wizard.jobStatus.status.slice(1)}
                         </span>
-                        <span className="text-xs text-gray-400">{wizard.jobId}</span>
+                        <span className="text-xs text-outline">{wizard.jobId}</span>
                       </div>
 
                       {/* Progress bar */}
                       <div>
-                        <div className="flex justify-between text-xs text-gray-500 mb-1">
+                        <div className="flex justify-between text-xs text-outline mb-1">
                           <span>{wizard.jobStatus.processedRows.toLocaleString()} / {wizard.jobStatus.totalRows.toLocaleString()} rows</span>
                           <span>{progress}%</span>
                         </div>
-                        <div className="w-full bg-gray-100 rounded-full h-2.5">
+                        <div className="w-full bg-surface-container-high rounded-full h-2.5">
                           <div
                             className={`h-2.5 rounded-full transition-all duration-500 ${
                               wizard.jobStatus.status === 'failed' ? 'bg-red-400' : 'bg-primary'
@@ -653,11 +650,11 @@ function SurveyImportManagementContent() {
                           <p className="text-2xl font-bold text-green-600">{wizard.jobStatus.insertedCount.toLocaleString()}</p>
                           <p className="text-xs text-green-600 mt-0.5">Inserted</p>
                         </div>
-                        <div className={`rounded-xl p-4 text-center ${wizard.jobStatus.failedCount > 0 ? 'bg-red-50' : 'bg-gray-50'}`}>
-                          <p className={`text-2xl font-bold ${wizard.jobStatus.failedCount > 0 ? 'text-red-600' : 'text-gray-400'}`}>
+                        <div className={`rounded-xl p-4 text-center ${wizard.jobStatus.failedCount > 0 ? 'bg-red-50' : 'bg-surface-container-high'}`}>
+                          <p className={`text-2xl font-bold ${wizard.jobStatus.failedCount > 0 ? 'text-red-600' : 'text-outline'}`}>
                             {wizard.jobStatus.failedCount.toLocaleString()}
                           </p>
-                          <p className={`text-xs mt-0.5 ${wizard.jobStatus.failedCount > 0 ? 'text-red-600' : 'text-gray-400'}`}>Failed</p>
+                          <p className={`text-xs mt-0.5 ${wizard.jobStatus.failedCount > 0 ? 'text-red-600' : 'text-outline'}`}>Failed</p>
                         </div>
                       </div>
 
@@ -676,7 +673,7 @@ function SurveyImportManagementContent() {
                           {wizard.jobStatus.failedCount > 0 && wizard.jobStatus.failedRows?.length > 0 && (
                             <button
                               onClick={handleDownloadErrors}
-                              className="flex items-center gap-1.5 px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                              className="flex items-center gap-1.5 px-4 py-2 text-sm text-on-surface-variant border border-outline-variant rounded-lg hover:bg-surface-container-high transition-colors"
                             >
                               <FileText className="w-4 h-4" />
                               Download Error Log
@@ -684,7 +681,7 @@ function SurveyImportManagementContent() {
                           )}
                           <button
                             onClick={closeWizard}
-                            className="px-4 py-2 text-sm text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                            className="px-4 py-2 text-sm text-outline border border-outline-variant rounded-lg hover:bg-surface-container-high transition-colors"
                           >
                             Close
                           </button>
@@ -692,7 +689,7 @@ function SurveyImportManagementContent() {
                       )}
 
                       {(wizard.jobStatus.status === 'processing' || wizard.jobStatus.status === 'pending') && (
-                        <p className="text-xs text-gray-400 text-center">
+                        <p className="text-xs text-outline text-center">
                           Processing in background — you can close this window and check back later.
                         </p>
                       )}

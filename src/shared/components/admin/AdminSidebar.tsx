@@ -89,15 +89,15 @@ const AdminSidebar: React.FC = () => {
   };
 
   return (
-    <aside className={`${isCollapsed ? 'w-14' : 'w-64'} bg-white border-r border-gray-200 min-h-screen flex-shrink-0 transition-all duration-200`}>
+    <aside className={`${isCollapsed ? 'w-14' : 'w-64'} bg-surface-container border-r border-outline-variant min-h-screen flex-shrink-0 transition-all duration-200`}>
       <div className={`p-3 ${isCollapsed ? '' : 'px-6'}`}>
         <div className="flex items-center justify-between mb-6">
           {!isCollapsed && (
-            <h2 className="text-2xl font-bold text-gray-800">Admin Panel</h2>
+            <h2 className="text-2xl font-bold text-on-surface">Admin Panel</h2>
           )}
           <button
             onClick={() => setIsCollapsed((v) => !v)}
-            className={`p-1 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-800 transition-colors flex-shrink-0 ${isCollapsed ? 'mx-auto' : ''}`}
+            className={`p-1 rounded hover:bg-surface-container-high text-outline hover:text-on-surface transition-colors flex-shrink-0 ${isCollapsed ? 'mx-auto' : ''}`}
             title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,7 +119,7 @@ const AdminSidebar: React.FC = () => {
               className={`flex items-center gap-3 px-2 py-3 rounded-lg transition-colors ${
                 isActive(link.href)
                   ? 'bg-primary text-white font-medium'
-                  : 'text-gray-700 hover:bg-gray-100 font-medium'
+                  : 'text-on-surface-variant hover:bg-surface-container-high font-medium'
               } ${isCollapsed ? 'justify-center' : ''}`}
             >
               <span className="w-5 h-5 flex-shrink-0">{link.icon}</span>

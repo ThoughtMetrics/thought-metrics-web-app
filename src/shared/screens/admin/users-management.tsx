@@ -449,27 +449,27 @@ const UserManagementContent: React.FC = () => {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="flex bg-gray-50 text-text-dark h-full">
+    <div className="flex bg-surface-container-low text-text-dark h-full">
       <AdminSidebar />
 
       <main className="h-full flex-1 overflow-y-auto p-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-on-surface mb-2">
               User Management
             </h1>
-            <p className="text-gray-600">
+            <p className="text-on-surface-variant">
               Manage users, roles, and permissions
             </p>
           </div>
 
           {/* Users Table */}
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200">
+          <div className="bg-surface-container rounded-lg shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-outline-variant">
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-gray-900">Users ({total})</h2>
+                  <h2 className="text-xl font-semibold text-on-surface">Users ({total})</h2>
                   <div className="flex gap-2">
                     <button
                       onClick={() => {
@@ -495,7 +495,7 @@ const UserManagementContent: React.FC = () => {
                 <div className="flex flex-col sm:flex-row gap-3">
                   {/* Search */}
                   <div className="relative flex-1">
-                    <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                     <input
@@ -503,14 +503,14 @@ const UserManagementContent: React.FC = () => {
                       placeholder="Search by name or email..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary w-full"
+                      className="pl-9 pr-3 py-2 text-sm border border-outline-variant rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary w-full bg-surface-container-low text-on-surface"
                     />
                   </div>
                   {/* Role Filter */}
                   <select
                     value={filterRole}
                     onChange={(e) => { setFilterRole(e.target.value); setPage(1); }}
-                    className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white"
+                    className="px-3 py-2 text-sm border border-outline-variant rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-surface-container text-on-surface"
                   >
                     <option value="all">All Roles</option>
                     {isFieldIncharge ? (
@@ -536,7 +536,7 @@ const UserManagementContent: React.FC = () => {
                     value={filterZone}
                     disabled={isFieldIncharge}
                     onChange={(e) => { if (!isFieldIncharge) { setFilterZone(e.target.value); setFilterDistrict('all'); setPage(1); } }}
-                    className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="px-3 py-2 text-sm border border-outline-variant rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-surface-container text-on-surface disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {isFieldIncharge ? (
                       <option value={userZone || 'all'}>{userZone || 'All Zones'}</option>
@@ -553,7 +553,7 @@ const UserManagementContent: React.FC = () => {
                   <select
                     value={filterDistrict}
                     onChange={(e) => { setFilterDistrict(e.target.value); setPage(1); }}
-                    className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white"
+                    className="px-3 py-2 text-sm border border-outline-variant rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-surface-container text-on-surface"
                   >
                     <option value="all">All Districts</option>
                     {filterDistrictOptions.map(d => (
@@ -566,7 +566,7 @@ const UserManagementContent: React.FC = () => {
                       className={`px-3 py-2 text-sm font-medium rounded-md border transition-colors whitespace-nowrap ${
                         showDeleted
                           ? 'bg-red-600 text-white border-red-600'
-                          : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+                          : 'bg-surface-container text-on-surface-variant border-outline-variant hover:bg-surface-container-high'
                       }`}
                     >
                       Deleted
@@ -583,32 +583,32 @@ const UserManagementContent: React.FC = () => {
             ) : (
               <>
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                  <table className="min-w-full divide-y divide-outline-variant/20">
+                    <thead className="bg-surface-container-low">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-outline uppercase tracking-wider">
                           User
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-outline uppercase tracking-wider">
                           Email
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-outline uppercase tracking-wider">
                           Role
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-outline uppercase tracking-wider">
                           Zonal
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-outline uppercase tracking-wider">
                           Joined
                         </th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-right text-xs font-medium text-outline uppercase tracking-wider">
                           Actions
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-surface-container divide-y divide-outline-variant/20">
                       {users.map((userItem) => (
-                        <tr key={userItem._id} className="hover:bg-gray-50">
+                        <tr key={userItem._id} className="hover:bg-surface-container-high">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <div className="h-10 w-10 shrink-0">
@@ -621,7 +621,7 @@ const UserManagementContent: React.FC = () => {
                                 </div>
                               </div>
                               <div className="ml-4">
-                                <div className="text-sm font-medium text-gray-900">
+                                <div className="text-sm font-medium text-on-surface">
                                   {userItem.profile?.firstName}{' '}
                                   {userItem.profile?.lastName}
                                 </div>
@@ -629,7 +629,7 @@ const UserManagementContent: React.FC = () => {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">
+                            <div className="text-sm text-on-surface">
                               {userItem.email}
                             </div>
                           </td>
@@ -648,7 +648,7 @@ const UserManagementContent: React.FC = () => {
                                 >
                                   {userItem.zonalInfo[0].zone}
                                 </span>
-                                <div className="text-xs text-gray-500 mt-0.5">
+                                <div className="text-xs text-outline mt-0.5">
                                   {userItem.zonalInfo.length === 1
                                     ? `${userItem.zonalInfo[0].assemblyConstituency}, ${userItem.zonalInfo[0].district}`
                                     : `${userItem.zonalInfo.length} constituencies`}
@@ -659,19 +659,19 @@ const UserManagementContent: React.FC = () => {
                                 {userItem.zonal} (legacy)
                               </span>
                             ) : (
-                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-surface-container-high text-on-surface-variant">
                                 Not Assigned
                               </span>
                             )}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-outline">
                             {new Date(userItem.createdAt).toLocaleDateString()}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div className="relative inline-block text-left">
                               <button
                                 onClick={() => handleMenuToggle(userItem._id)}
-                                className="inline-flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 focus:outline-none"
+                                className="inline-flex items-center justify-center w-8 h-8 text-outline hover:text-on-surface-variant focus:outline-none"
                               >
                                 <svg
                                   className="w-5 h-5"
@@ -687,24 +687,24 @@ const UserManagementContent: React.FC = () => {
                                   ref={(el) => {
                                     menuRefs.current[userItem._id] = el;
                                   }}
-                                  className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10"
+                                  className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-surface-container border border-outline-variant z-10"
                                 >
                                   <div className="py-1">
                                     <button
                                       onClick={() => handleEditClick(userItem)}
-                                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                      className="block w-full text-left px-4 py-2 text-sm text-on-surface-variant hover:bg-surface-container-high"
                                     >
                                       Edit
                                     </button>
                                     <button
                                       onClick={() => handleRoleZonalClick(userItem)}
-                                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                      className="block w-full text-left px-4 py-2 text-sm text-on-surface-variant hover:bg-surface-container-high"
                                     >
                                       {isFieldIncharge ? 'Change AC' : 'Change Role \u0026 Zonal'}
                                     </button>
                                     <button
                                       onClick={() => void handleResetPassword(userItem)}
-                                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                      className="block w-full text-left px-4 py-2 text-sm text-on-surface-variant hover:bg-surface-container-high"
                                     >
                                       Reset Password
                                     </button>
@@ -731,20 +731,20 @@ const UserManagementContent: React.FC = () => {
 
                 {/* Pagination */}
                 {total > 0 && (
-                  <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                    <div className="flex items-center gap-3 text-sm text-gray-700">
+                  <div className="px-6 py-4 border-t border-outline-variant flex items-center justify-between">
+                    <div className="flex items-center gap-3 text-sm text-on-surface-variant">
                       <span>
                         {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total}
                       </span>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-gray-500">Rows:</span>
+                        <span className="text-outline">Rows:</span>
                         <select
                           value={limit}
                           onChange={(e) => {
                             setLimit(Number(e.target.value));
                             setPage(1);
                           }}
-                          className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                          className="text-sm border border-outline-variant bg-surface-container text-on-surface rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary/50"
                         >
                           {[10, 25, 50, 100].map((n) => (
                             <option key={n} value={n}>{n}</option>
@@ -756,14 +756,14 @@ const UserManagementContent: React.FC = () => {
                       <button
                         onClick={() => setPage((p) => Math.max(1, p - 1))}
                         disabled={page === 1}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container border border-outline-variant rounded-md hover:bg-surface-container-high disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Previous
                       </button>
                       <button
                         onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                         disabled={page === totalPages || totalPages === 0}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container border border-outline-variant rounded-md hover:bg-surface-container-high disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Next
                       </button>
@@ -779,12 +779,12 @@ const UserManagementContent: React.FC = () => {
       {/* Edit Modal */}
       {showEditModal && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Edit User</h3>
+          <div className="bg-surface-container rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-on-surface mb-4">Edit User</h3>
             <form onSubmit={handleEditSubmit}>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-on-surface-variant mb-1">
                     First Name
                   </label>
                   <input
@@ -796,11 +796,11 @@ const UserManagementContent: React.FC = () => {
                         firstName: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-3 py-2 border border-outline-variant bg-surface-container-low text-on-surface rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-on-surface-variant mb-1">
                     Last Name
                   </label>
                   <input
@@ -812,11 +812,11 @@ const UserManagementContent: React.FC = () => {
                         lastName: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-3 py-2 border border-outline-variant bg-surface-container-low text-on-surface rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-on-surface-variant mb-1">
                     Email
                   </label>
                   <input
@@ -828,11 +828,11 @@ const UserManagementContent: React.FC = () => {
                         email: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-3 py-2 border border-outline-variant bg-surface-container-low text-on-surface rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-on-surface-variant mb-1">
                     Phone
                   </label>
                   <input
@@ -844,7 +844,7 @@ const UserManagementContent: React.FC = () => {
                         phone: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-3 py-2 border border-outline-variant bg-surface-container-low text-on-surface rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
               </div>
@@ -852,7 +852,7 @@ const UserManagementContent: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container-high border border-outline-variant rounded-md hover:bg-outline-variant/20"
                 >
                   Cancel
                 </button>
@@ -871,9 +871,9 @@ const UserManagementContent: React.FC = () => {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Delete User</h3>
-            <p className="text-gray-600 mb-6">
+          <div className="bg-surface-container rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-on-surface mb-4">Delete User</h3>
+            <p className="text-on-surface-variant mb-6">
               Are you sure you want to delete{' '}
               <span className="font-medium">
                 {selectedUser.profile?.firstName}{' '}
@@ -884,7 +884,7 @@ const UserManagementContent: React.FC = () => {
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container-high border border-outline-variant rounded-md hover:bg-outline-variant/20"
               >
                 Cancel
               </button>
@@ -902,47 +902,47 @@ const UserManagementContent: React.FC = () => {
       {/* Create User Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-lg w-full mx-4 max-h-[90vh] flex flex-col">
-            <h3 className="text-lg font-semibold mb-4">Create User</h3>
+          <div className="bg-surface-container rounded-lg p-6 max-w-lg w-full mx-4 max-h-[90vh] flex flex-col">
+            <h3 className="text-lg font-semibold text-on-surface mb-4">Create User</h3>
             <form onSubmit={(e) => void handleCreateUserSubmit(e)} className="flex flex-col flex-1 min-h-0 gap-4 overflow-y-auto">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                <label className="block text-sm font-medium text-on-surface-variant mb-1">Email *</label>
                 <input
                   type="email"
                   value={createFormData.email}
                   onChange={(e) => setCreateFormData({ ...createFormData, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-3 py-2 border border-outline-variant bg-surface-container-low text-on-surface rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   required
                 />
               </div>
               <div className="flex gap-3">
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+                  <label className="block text-sm font-medium text-on-surface-variant mb-1">First Name *</label>
                   <input
                     type="text"
                     value={createFormData.firstName}
                     onChange={(e) => setCreateFormData({ ...createFormData, firstName: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-3 py-2 border border-outline-variant bg-surface-container-low text-on-surface rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                     required
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                  <label className="block text-sm font-medium text-on-surface-variant mb-1">Last Name</label>
                   <input
                     type="text"
                     value={createFormData.lastName}
                     onChange={(e) => setCreateFormData({ ...createFormData, lastName: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-3 py-2 border border-outline-variant bg-surface-container-low text-on-surface rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Role *</label>
+                <label className="block text-sm font-medium text-on-surface-variant mb-1">Role *</label>
                 <select
                   value={createFormData.role}
                   disabled={isFieldIncharge}
                   onChange={(e) => setCreateFormData({ ...createFormData, role: e.target.value as UserRole })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-full px-3 py-2 border border-outline-variant bg-surface-container-low text-on-surface rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {isFieldIncharge ? (
                     <option value="field-agent">Field Agent</option>
@@ -964,12 +964,12 @@ const UserManagementContent: React.FC = () => {
               {/* Zone picker for field-incharge */}
               {createFormData.role === 'field-incharge' && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Zone <span className="text-red-500">*</span></label>
+                  <label className="block text-sm font-medium text-on-surface-variant mb-1">Zone <span className="text-red-500">*</span></label>
                   <select
                     value={createFormData.zone}
                     onChange={(e) => setCreateFormData({ ...createFormData, zone: e.target.value })}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-3 py-2 border border-outline-variant bg-surface-container-low text-on-surface rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <option value="">Select zone…</option>
                     <option value="North">North</option>
@@ -984,7 +984,7 @@ const UserManagementContent: React.FC = () => {
               {/* AC Picker — only for non-field-incharge roles */}
               {createFormData.role !== 'field-incharge' && !zoneHierarchyLoading && allAcFlat.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Assembly Constituencies (optional)</label>
+                  <label className="block text-sm font-medium text-on-surface-variant mb-2">Assembly Constituencies (optional)</label>
                   {createFormData.acNos.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mb-2 p-2 bg-blue-50 rounded-md border border-blue-100">
                       {createFormData.acNos
@@ -1003,9 +1003,9 @@ const UserManagementContent: React.FC = () => {
                     placeholder="Search AC name or district…"
                     value={createAcSearchText}
                     onChange={(e) => setCreateAcSearchText(e.target.value)}
-                    className="w-full px-3 py-2 mb-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-3 py-2 mb-1 border border-outline-variant bg-surface-container-low text-on-surface rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                   />
-                  <div className="max-h-36 overflow-y-auto border border-gray-200 rounded-md divide-y divide-gray-100">
+                  <div className="max-h-36 overflow-y-auto border border-outline-variant rounded-md divide-y divide-outline-variant/10">
                     {(createAcSearchText.trim()
                       ? allAcFlat.filter(ac =>
                           ac.name.toLowerCase().includes(createAcSearchText.toLowerCase()) ||
@@ -1014,14 +1014,14 @@ const UserManagementContent: React.FC = () => {
                         )
                       : allAcFlat
                     ).map(ac => (
-                      <label key={ac.acNo} className={`flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-gray-50 ${createFormData.acNos.includes(ac.acNo) ? 'bg-blue-50' : ''}`}>
+                      <label key={ac.acNo} className={`flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-surface-container-high ${createFormData.acNos.includes(ac.acNo) ? 'bg-primary/10' : ''}`}>
                         <input
                           type="checkbox"
                           checked={createFormData.acNos.includes(ac.acNo)}
                           onChange={() => toggleCreateAcNo(ac.acNo)}
-                          className="h-4 w-4 rounded border-gray-300 text-primary"
+                          className="h-4 w-4 rounded border-outline-variant text-primary"
                         />
-                        <span className="text-sm">{ac.name} <span className="text-gray-400 text-xs">· {ac.district} · #{ac.acNo}</span></span>
+                        <span className="text-sm text-on-surface">{ac.name} <span className="text-outline text-xs">· {ac.district} · #{ac.acNo}</span></span>
                       </label>
                     ))}
                   </div>
@@ -1034,13 +1034,13 @@ const UserManagementContent: React.FC = () => {
                   id="sendWelcomeEmail"
                   checked={createFormData.sendWelcomeEmail}
                   onChange={(e) => setCreateFormData({ ...createFormData, sendWelcomeEmail: e.target.checked })}
-                  className="h-4 w-4 rounded border-gray-300 text-primary"
+                  className="h-4 w-4 rounded border-outline-variant text-primary"
                 />
-                <label htmlFor="sendWelcomeEmail" className="text-sm text-gray-700">Send welcome email with credentials</label>
+                <label htmlFor="sendWelcomeEmail" className="text-sm text-on-surface-variant">Send welcome email with credentials</label>
               </div>
 
-              <div className="flex gap-3 justify-end pt-2 border-t border-gray-100">
-                <button type="button" onClick={() => setShowCreateModal(false)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+              <div className="flex gap-3 justify-end pt-2 border-t border-outline-variant/50">
+                <button type="button" onClick={() => setShowCreateModal(false)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container-high border border-outline-variant rounded-md hover:bg-outline-variant/20">
                   Cancel
                 </button>
                 <button type="submit" disabled={createLoading} className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed">
@@ -1055,8 +1055,8 @@ const UserManagementContent: React.FC = () => {
       {/* Bulk Import Modal */}
       {showBulkModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-semibold mb-4">Bulk Import Users</h3>
+          <div className="bg-surface-container rounded-lg p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold text-on-surface mb-4">Bulk Import Users</h3>
 
             {!bulkJobId ? (
               /* Phase 1: Upload */
@@ -1095,17 +1095,17 @@ const UserManagementContent: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => bulkFileInputRef.current?.click()}
-                    className="px-4 py-2 text-sm font-medium border border-gray-300 rounded-md hover:bg-gray-50"
+                    className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container-high border border-outline-variant rounded-md hover:bg-outline-variant/20"
                   >
                     Choose File
                   </button>
                   {bulkFile && (
-                    <span className="ml-3 text-sm text-gray-600">{bulkFile.name}</span>
+                    <span className="ml-3 text-sm text-on-surface-variant">{bulkFile.name}</span>
                   )}
                 </div>
 
-                <div className="flex gap-3 justify-end pt-2 border-t border-gray-100">
-                  <button type="button" onClick={handleBulkModalClose} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                <div className="flex gap-3 justify-end pt-2 border-t border-outline-variant/50">
+                  <button type="button" onClick={handleBulkModalClose} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container-high border border-outline-variant rounded-md hover:bg-outline-variant/20">
                     Cancel
                   </button>
                   <button
@@ -1126,7 +1126,7 @@ const UserManagementContent: React.FC = () => {
                     bulkJobStatus?.status === 'completed' ? 'bg-green-100 text-green-800' :
                     bulkJobStatus?.status === 'failed' ? 'bg-red-100 text-red-800' :
                     bulkJobStatus?.status === 'processing' ? 'bg-blue-100 text-blue-800' :
-                    'bg-gray-100 text-gray-800'
+                    'bg-surface-container-high text-on-surface-variant'
                   }`}>
                     {bulkJobStatus?.status || 'pending'}
                   </span>
@@ -1138,7 +1138,7 @@ const UserManagementContent: React.FC = () => {
                 {bulkJobStatus && (
                   <>
                     {/* Progress bar */}
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-surface-container-high rounded-full h-2">
                       <div
                         className="bg-primary h-2 rounded-full transition-all duration-300"
                         style={{ width: `${bulkJobStatus.summary.total > 0 ? (bulkJobStatus.summary.processed / bulkJobStatus.summary.total) * 100 : 0}%` }}
@@ -1148,10 +1148,10 @@ const UserManagementContent: React.FC = () => {
                     {/* Summary */}
                     <table className="w-full text-sm border-collapse">
                       <tbody>
-                        <tr className="border-b"><td className="py-1 text-gray-500">Total</td><td className="py-1 font-medium text-right">{bulkJobStatus.summary.total}</td></tr>
-                        <tr className="border-b"><td className="py-1 text-gray-500">Processed</td><td className="py-1 font-medium text-right">{bulkJobStatus.summary.processed}</td></tr>
-                        <tr className="border-b"><td className="py-1 text-green-600">Created</td><td className="py-1 font-medium text-right text-green-600">{bulkJobStatus.summary.created}</td></tr>
-                        <tr className="border-b"><td className="py-1 text-red-600">Failed</td><td className="py-1 font-medium text-right text-red-600">{bulkJobStatus.summary.failed}</td></tr>
+                        <tr className="border-b border-outline-variant/30"><td className="py-1 text-outline">Total</td><td className="py-1 font-medium text-right text-on-surface">{bulkJobStatus.summary.total}</td></tr>
+                        <tr className="border-b border-outline-variant/30"><td className="py-1 text-outline">Processed</td><td className="py-1 font-medium text-right text-on-surface">{bulkJobStatus.summary.processed}</td></tr>
+                        <tr className="border-b border-outline-variant/30"><td className="py-1 text-green-600">Created</td><td className="py-1 font-medium text-right text-green-600">{bulkJobStatus.summary.created}</td></tr>
+                        <tr className="border-b border-outline-variant/30"><td className="py-1 text-red-600">Failed</td><td className="py-1 font-medium text-right text-red-600">{bulkJobStatus.summary.failed}</td></tr>
                         <tr><td className="py-1 text-yellow-600">Skipped</td><td className="py-1 font-medium text-right text-yellow-600">{bulkJobStatus.summary.skipped}</td></tr>
                       </tbody>
                     </table>
@@ -1181,7 +1181,7 @@ const UserManagementContent: React.FC = () => {
                   </>
                 )}
 
-                <div className="flex justify-end pt-2 border-t border-gray-100">
+                <div className="flex justify-end pt-2 border-t border-outline-variant/50">
                   <button
                     type="button"
                     onClick={handleBulkModalClose}
@@ -1200,9 +1200,9 @@ const UserManagementContent: React.FC = () => {
       {/* Change Role & Zonal Modal */}
       {showRoleZonalModal && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-lg w-full mx-4 max-h-[90vh] flex flex-col">
-            <h3 className="text-lg font-semibold mb-1">{isFieldIncharge ? 'Change AC Assignment' : 'Change Role \u0026 Zonal'}</h3>
-            <p className="text-sm text-gray-600 mb-4">
+          <div className="bg-surface-container rounded-lg p-6 max-w-lg w-full mx-4 max-h-[90vh] flex flex-col">
+            <h3 className="text-lg font-semibold text-on-surface mb-1">{isFieldIncharge ? 'Change AC Assignment' : 'Change Role \u0026 Zonal'}</h3>
+            <p className="text-sm text-on-surface-variant mb-4">
               For:{' '}
               <span className="font-medium">
                 {selectedUser.profile?.firstName} {selectedUser.profile?.lastName}
@@ -1213,13 +1213,13 @@ const UserManagementContent: React.FC = () => {
               {/* Role section — hidden for field-incharge (they can only change AC, not role) */}
               {!isFieldIncharge && (
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-on-surface-variant mb-2">
                     Role
                   </label>
                   <select
                     value={selectedRole}
                     onChange={(e) => setSelectedRole(e.target.value as UserRole)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-3 py-2 border border-outline-variant bg-surface-container-low text-on-surface rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <option value="respondent">Respondent</option>
                     <option value="client">Client</option>
@@ -1238,14 +1238,14 @@ const UserManagementContent: React.FC = () => {
               {/* Zone picker — shown when assigning field-incharge role (admins only) */}
               {!isFieldIncharge && selectedRole === 'field-incharge' && (
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-on-surface-variant mb-2">
                     Zone <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={selectedZone}
                     onChange={(e) => setSelectedZone(e.target.value)}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-3 py-2 border border-outline-variant bg-surface-container-low text-on-surface rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <option value="">Select zone…</option>
                     <option value="North">North</option>
@@ -1254,7 +1254,7 @@ const UserManagementContent: React.FC = () => {
                     <option value="West">West</option>
                     <option value="Central">Central</option>
                   </select>
-                  <p className="mt-1 text-xs text-gray-400">Field Incharge has access to all field-agents within this zone.</p>
+                  <p className="mt-1 text-xs text-outline">Field Incharge has access to all field-agents within this zone.</p>
                 </div>
               )}
 
@@ -1262,7 +1262,7 @@ const UserManagementContent: React.FC = () => {
               {selectedRole !== 'field-incharge' && !zoneHierarchyLoading && allAcFlat.length > 0 && (
                 <>
                   <div className="mb-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-on-surface-variant mb-2">
                       Assembly Constituencies
                     </label>
 
@@ -1294,33 +1294,33 @@ const UserManagementContent: React.FC = () => {
                       placeholder="Search by AC name, district…"
                       value={acSearchText}
                       onChange={e => setAcSearchText(e.target.value)}
-                      className="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="w-full px-3 py-2 mb-2 border border-outline-variant bg-surface-container-low text-on-surface rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
 
                   {/* AC list */}
-                  <div className="overflow-y-auto flex-1 border border-gray-200 rounded-md divide-y divide-gray-100">
+                  <div className="overflow-y-auto flex-1 border border-outline-variant rounded-md divide-y divide-outline-variant/10">
                     {modalFilteredAcs.length === 0 ? (
-                      <p className="py-6 text-center text-sm text-gray-400">No results</p>
+                      <p className="py-6 text-center text-sm text-outline">No results</p>
                     ) : (
                       modalFilteredAcs.map(ac => {
                         const isChecked = selectedAcNos.includes(ac.acNo);
                         return (
                           <label
                             key={ac.acNo}
-                            className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-gray-50 ${isChecked ? 'bg-blue-50' : ''}`}
+                            className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-surface-container-high ${isChecked ? 'bg-primary/10' : ''}`}
                           >
                             <input
                               type="checkbox"
                               checked={isChecked}
                               onChange={() => toggleAcNo(ac.acNo)}
-                              className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                              className="h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary"
                             />
                             <span className="flex-1 min-w-0">
-                              <span className="block text-sm font-medium text-gray-800 truncate">
+                              <span className="block text-sm font-medium text-on-surface truncate">
                                 {ac.name}
                               </span>
-                              <span className="block text-xs text-gray-500">
+                              <span className="block text-xs text-outline">
                                 {ac.district} · <span className="font-medium">{ac.zone}</span> · #{ac.acNo}
                               </span>
                             </span>
@@ -1330,17 +1330,17 @@ const UserManagementContent: React.FC = () => {
                     )}
                   </div>
 
-                  <p className="mt-2 text-xs text-gray-400">
+                  <p className="mt-2 text-xs text-outline">
                     {selectedAcNos.length} constituency{selectedAcNos.length !== 1 ? 's' : ''} selected
                   </p>
                 </>
               )}
 
-              <div className="flex gap-3 justify-end mt-4 pt-4 border-t border-gray-100">
+              <div className="flex gap-3 justify-end mt-4 pt-4 border-t border-outline-variant/50">
                 <button
                   type="button"
                   onClick={() => setShowRoleZonalModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container-high border border-outline-variant rounded-md hover:bg-outline-variant/20"
                 >
                   Cancel
                 </button>

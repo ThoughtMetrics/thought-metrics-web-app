@@ -84,14 +84,14 @@ const TrackingLinkForm: React.FC = () => {
   const links = linksResponse?.data || [];
 
   return (
-    <div className="h-full overflow-y-auto bg-gray-50 py-12 px-4 text-text-dark">
+    <div className="h-full overflow-y-auto bg-surface-container-low py-12 px-4 text-text-dark">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">
+        <h1 className="text-3xl font-bold text-on-surface mb-8">
           Create Tracking Link
         </h1>
 
         {/* Link Creation Form */}
-        <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div className="bg-surface-container rounded-lg shadow-lg p-8 mb-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <TextInputAtom
               id="name"
@@ -225,7 +225,7 @@ const TrackingLinkForm: React.FC = () => {
               <button
                 type="button"
                 onClick={() => (window.location.href = '/admin/analytics')}
-                className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+                className="bg-surface-container-high text-on-surface-variant px-6 py-3 rounded-lg font-medium hover:bg-outline-variant/20 transition-colors"
               >
                 View All Links
               </button>
@@ -265,34 +265,34 @@ const TrackingLinkForm: React.FC = () => {
         </div>
 
         {/* Recent Tracking Links */}
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+        <div className="bg-surface-container rounded-lg shadow-lg p-8">
+          <h2 className="text-xl font-semibold text-on-surface mb-4">
             Recent Tracking Links
           </h2>
           <div className="space-y-4">
             {linksLoading ? (
-              <p className="text-gray-500 text-center py-8">Loading links...</p>
+              <p className="text-outline text-center py-8">Loading links...</p>
             ) : links.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">No links created yet</p>
+              <p className="text-outline text-center py-8">No links created yet</p>
             ) : (
               links.slice(0, 10).map((link) => (
                 <div
                   key={link.id}
-                  className="border border-gray-200 rounded-lg p-4 hover:border-primary transition-colors"
+                  className="border border-outline-variant rounded-lg p-4 hover:border-primary transition-colors"
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-gray-900">{link.name}</h3>
+                    <h3 className="font-semibold text-on-surface">{link.name}</h3>
                     <span
                       className={`px-2 py-1 text-xs rounded ${
                         link.isActive
                           ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
+                          : 'bg-surface-container-high text-on-surface-variant'
                       }`}
                     >
                       {link.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </div>
-                  <div className="space-y-1 text-sm text-gray-600 mb-3">
+                  <div className="space-y-1 text-sm text-on-surface-variant mb-3">
                     {link.utmSource && (
                       <p>
                         <strong>Source:</strong> {link.utmSource}
@@ -310,7 +310,7 @@ const TrackingLinkForm: React.FC = () => {
                     )}
                   </div>
                   <div className="flex items-center gap-2 mb-2">
-                    <code className="flex-1 px-2 py-1 bg-gray-100 rounded text-xs text-gray-800">
+                    <code className="flex-1 px-2 py-1 bg-surface-container-high rounded text-xs text-on-surface">
                       {link.fullTrackingUrl}
                     </code>
                     <button
@@ -321,7 +321,7 @@ const TrackingLinkForm: React.FC = () => {
                     </button>
                   </div>
                   {link.stats && (
-                    <div className="flex gap-4 text-xs text-gray-500 mt-2">
+                    <div className="flex gap-4 text-xs text-outline mt-2">
                       <span>👥 {link.stats.uniqueVisitors || 0} visitors</span>
                       <span>✅ {link.stats.registrations || 0} signups</span>
                     </div>

@@ -27,7 +27,7 @@ const CampaignDetailPanel: React.FC<{ link: TrackingLink }> = ({ link }) => {
   const conversionPct = visitors > 0 ? ((registrations / visitors) * 100).toFixed(1) : '0.0';
   const conversionNum = parseFloat(conversionPct);
   const conversionColor =
-    conversionNum >= 10 ? 'text-green-600' : conversionNum >= 5 ? 'text-amber-500' : 'text-gray-400';
+    conversionNum >= 10 ? 'text-green-600' : conversionNum >= 5 ? 'text-amber-500' : 'text-outline';
 
   const copyToClipboard = (text: string) => {
     void navigator.clipboard.writeText(text).then(() => toast.success('Copied!'));
@@ -52,73 +52,73 @@ const CampaignDetailPanel: React.FC<{ link: TrackingLink }> = ({ link }) => {
           { label: 'Clicks', value: clicks },
           { label: 'Registrations', value: registrations },
         ].map((stat) => (
-          <div key={stat.label} className="bg-gray-50 rounded-lg p-3 text-center">
-            <div className="text-xl font-bold text-gray-900">{stat.value}</div>
-            <div className="text-xs text-gray-500 mt-0.5">{stat.label}</div>
+          <div key={stat.label} className="bg-surface-container-low rounded-lg p-3 text-center">
+            <div className="text-xl font-bold text-on-surface">{stat.value}</div>
+            <div className="text-xs text-outline mt-0.5">{stat.label}</div>
           </div>
         ))}
-        <div className="bg-gray-50 rounded-lg p-3 text-center">
+        <div className="bg-surface-container-low rounded-lg p-3 text-center">
           <div className={`text-xl font-bold ${conversionColor}`}>{conversionPct}%</div>
-          <div className="text-xs text-gray-500 mt-0.5">Conversion</div>
+          <div className="text-xs text-outline mt-0.5">Conversion</div>
         </div>
       </div>
 
       {/* UTM & Link details */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
         {utmFields.map((f) => (
-          <div key={f.label} className="flex justify-between border-b border-gray-100 pb-2">
-            <span className="text-gray-500">{f.label}</span>
-            <span className="font-medium text-gray-800">{f.value || '—'}</span>
+          <div key={f.label} className="flex justify-between border-b border-outline-variant/50 pb-2">
+            <span className="text-outline">{f.label}</span>
+            <span className="font-medium text-on-surface">{f.value || '—'}</span>
           </div>
         ))}
-        <div className="flex justify-between border-b border-gray-100 pb-2 items-center">
-          <span className="text-gray-500">Short Code</span>
+        <div className="flex justify-between border-b border-outline-variant/50 pb-2 items-center">
+          <span className="text-outline">Short Code</span>
           <div className="flex items-center gap-1.5">
-            <code className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded">{link.shortCode}</code>
-            <button onClick={() => copyToClipboard(link.shortCode)} className="text-gray-400 hover:text-gray-600">
+            <code className="font-mono text-xs bg-surface-container-high px-1.5 py-0.5 rounded">{link.shortCode}</code>
+            <button onClick={() => copyToClipboard(link.shortCode)} className="text-outline hover:text-on-surface-variant">
               <Copy className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
-        <div className="flex justify-between border-b border-gray-100 pb-2 items-center">
-          <span className="text-gray-500">Tracking URL</span>
+        <div className="flex justify-between border-b border-outline-variant/50 pb-2 items-center">
+          <span className="text-outline">Tracking URL</span>
           <div className="flex items-center gap-1.5 max-w-[240px]">
-            <span className="text-gray-800 truncate text-xs">{link.fullTrackingUrl}</span>
-            <button onClick={() => copyToClipboard(link.fullTrackingUrl)} className="flex-shrink-0 text-gray-400 hover:text-gray-600">
+            <span className="text-on-surface truncate text-xs">{link.fullTrackingUrl}</span>
+            <button onClick={() => copyToClipboard(link.fullTrackingUrl)} className="flex-shrink-0 text-outline hover:text-on-surface-variant">
               <Copy className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
-        <div className="flex justify-between border-b border-gray-100 pb-2 items-center">
-          <span className="text-gray-500">Destination URL</span>
+        <div className="flex justify-between border-b border-outline-variant/50 pb-2 items-center">
+          <span className="text-outline">Destination URL</span>
           <div className="flex items-center gap-1.5 max-w-[240px]">
-            <span className="text-gray-800 truncate text-xs">{link.destinationUrl}</span>
-            <button onClick={() => copyToClipboard(link.destinationUrl)} className="flex-shrink-0 text-gray-400 hover:text-gray-600">
+            <span className="text-on-surface truncate text-xs">{link.destinationUrl}</span>
+            <button onClick={() => copyToClipboard(link.destinationUrl)} className="flex-shrink-0 text-outline hover:text-on-surface-variant">
               <Copy className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
-        <div className="flex justify-between border-b border-gray-100 pb-2">
-          <span className="text-gray-500">Allocated Survey</span>
-          <span className="font-medium text-gray-800">{link.allocatedSurveyId || '—'}</span>
+        <div className="flex justify-between border-b border-outline-variant/50 pb-2">
+          <span className="text-outline">Allocated Survey</span>
+          <span className="font-medium text-on-surface">{link.allocatedSurveyId || '—'}</span>
         </div>
-        <div className="flex justify-between border-b border-gray-100 pb-2">
-          <span className="text-gray-500">Post-signup redirect</span>
-          <span className="font-medium text-gray-800">{link.postSignupRedirect || '—'}</span>
+        <div className="flex justify-between border-b border-outline-variant/50 pb-2">
+          <span className="text-outline">Post-signup redirect</span>
+          <span className="font-medium text-on-surface">{link.postSignupRedirect || '—'}</span>
         </div>
-        <div className="flex justify-between border-b border-gray-100 pb-2">
-          <span className="text-gray-500">Redirect to signup</span>
-          <span className="font-medium text-gray-800">{link.redirectToSignup ? 'Yes' : 'No'}</span>
+        <div className="flex justify-between border-b border-outline-variant/50 pb-2">
+          <span className="text-outline">Redirect to signup</span>
+          <span className="font-medium text-on-surface">{link.redirectToSignup ? 'Yes' : 'No'}</span>
         </div>
-        <div className="flex justify-between border-b border-gray-100 pb-2">
-          <span className="text-gray-500">Status</span>
-          <span className={`font-medium ${link.isActive ? 'text-green-600' : 'text-gray-400'}`}>
+        <div className="flex justify-between border-b border-outline-variant/50 pb-2">
+          <span className="text-outline">Status</span>
+          <span className={`font-medium ${link.isActive ? 'text-green-600' : 'text-outline'}`}>
             {link.isActive ? 'Active' : 'Inactive'}
           </span>
         </div>
-        <div className="flex justify-between border-b border-gray-100 pb-2">
-          <span className="text-gray-500">Created</span>
-          <span className="font-medium text-gray-800">{formatDate(link.createdAt)}</span>
+        <div className="flex justify-between border-b border-outline-variant/50 pb-2">
+          <span className="text-outline">Created</span>
+          <span className="font-medium text-on-surface">{formatDate(link.createdAt)}</span>
         </div>
       </div>
     </div>
@@ -141,7 +141,7 @@ const CampaignsManagementContent: React.FC = () => {
     n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
 
   return (
-    <div className="h-full flex bg-gray-50 text-text-dark">
+    <div className="h-full flex bg-surface-container-low text-text-dark">
       <AdminSidebar />
 
       <main className="h-full overflow-y-auto flex-1 p-8">
@@ -149,8 +149,8 @@ const CampaignsManagementContent: React.FC = () => {
           {/* Page header */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-1">Campaigns</h1>
-              <p className="text-gray-600">Manage tracking links and campaign performance</p>
+              <h1 className="text-3xl font-bold text-on-surface mb-1">Campaigns</h1>
+              <p className="text-on-surface-variant">Manage tracking links and campaign performance</p>
             </div>
             <a
               href="/admin/create-tracking-link"
@@ -167,8 +167,8 @@ const CampaignsManagementContent: React.FC = () => {
           )}
 
           {!linksLoading && links.length === 0 && (
-            <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-              <p className="text-gray-500 mb-3">No campaigns found.</p>
+            <div className="bg-surface-container rounded-lg shadow-sm p-12 text-center">
+              <p className="text-outline mb-3">No campaigns found.</p>
               <a
                 href="/admin/create-tracking-link"
                 className="text-primary font-medium hover:underline"
@@ -179,18 +179,18 @@ const CampaignsManagementContent: React.FC = () => {
           )}
 
           {!linksLoading && links.length > 0 && (
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="bg-surface-container rounded-lg shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-200 bg-gray-50">
-                      <th className="text-left px-4 py-3 font-semibold text-gray-700">Campaign Name</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-700">UTM Source</th>
-                      <th className="text-left px-4 py-3 font-semibold text-gray-700">Short Code</th>
-                      <th className="text-right px-4 py-3 font-semibold text-gray-700">Visitors</th>
-                      <th className="text-right px-4 py-3 font-semibold text-gray-700">Registrations</th>
-                      <th className="text-right px-4 py-3 font-semibold text-gray-700">Conversion</th>
-                      <th className="text-center px-4 py-3 font-semibold text-gray-700">Actions</th>
+                    <tr className="border-b border-outline-variant bg-surface-container-low">
+                      <th className="text-left px-4 py-3 font-semibold text-on-surface-variant">Campaign Name</th>
+                      <th className="text-left px-4 py-3 font-semibold text-on-surface-variant">UTM Source</th>
+                      <th className="text-left px-4 py-3 font-semibold text-on-surface-variant">Short Code</th>
+                      <th className="text-right px-4 py-3 font-semibold text-on-surface-variant">Visitors</th>
+                      <th className="text-right px-4 py-3 font-semibold text-on-surface-variant">Registrations</th>
+                      <th className="text-right px-4 py-3 font-semibold text-on-surface-variant">Conversion</th>
+                      <th className="text-center px-4 py-3 font-semibold text-on-surface-variant">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -207,34 +207,34 @@ const CampaignsManagementContent: React.FC = () => {
                           ? 'text-green-600'
                           : conversionNum >= 5
                           ? 'text-amber-500'
-                          : 'text-gray-500';
+                          : 'text-outline';
 
                       return (
                         <React.Fragment key={link.id}>
                           <tr
-                            className={`border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer ${
-                              selectedLinkId === link.id ? 'bg-blue-50' : ''
+                            className={`border-b border-outline-variant/20 hover:bg-surface-container-high transition-colors cursor-pointer ${
+                              selectedLinkId === link.id ? 'bg-primary/10' : ''
                             }`}
                             onClick={() => setSelectedLinkId(selectedLinkId === link.id ? null : link.id)}
                           >
                             <td className="px-4 py-3">
-                              <div className="font-medium text-gray-900">{link.name}</div>
+                              <div className="font-medium text-on-surface">{link.name}</div>
                               {link.utmCampaign && (
-                                <div className="text-xs text-gray-400 mt-0.5">{link.utmCampaign}</div>
+                                <div className="text-xs text-outline mt-0.5">{link.utmCampaign}</div>
                               )}
                             </td>
-                            <td className="px-4 py-3 text-gray-600">
+                            <td className="px-4 py-3 text-on-surface-variant">
                               {link.utmSource || '-'}
                             </td>
                             <td className="px-4 py-3">
-                              <code className="px-2 py-0.5 bg-gray-100 rounded text-xs font-mono text-gray-700">
+                              <code className="px-2 py-0.5 bg-surface-container-high rounded text-xs font-mono text-on-surface-variant">
                                 {link.shortCode}
                               </code>
                             </td>
-                            <td className="px-4 py-3 text-right text-gray-600">
+                            <td className="px-4 py-3 text-right text-on-surface-variant">
                               {formatNumber(visitors)}
                             </td>
-                            <td className="px-4 py-3 text-right text-gray-600">
+                            <td className="px-4 py-3 text-right text-on-surface-variant">
                               {formatNumber(registrations)}
                             </td>
                             <td className={`px-4 py-3 text-right font-medium ${conversionColor}`}>
@@ -245,14 +245,14 @@ const CampaignsManagementContent: React.FC = () => {
                                 <button
                                   onClick={() => copyLink(link.fullTrackingUrl)}
                                   title="Copy link"
-                                  className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+                                  className="p-1.5 rounded hover:bg-surface-container-high text-outline hover:text-on-surface-variant transition-colors"
                                 >
                                   <Copy className="w-4 h-4" />
                                 </button>
                                 <a
                                   href={`/admin/edit-tracking-link/${link.id}`}
                                   title="Edit campaign"
-                                  className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+                                  className="p-1.5 rounded hover:bg-surface-container-high text-outline hover:text-on-surface-variant transition-colors"
                                 >
                                   <Pencil className="w-4 h-4" />
                                 </a>
@@ -264,9 +264,9 @@ const CampaignsManagementContent: React.FC = () => {
                           {selectedLinkId === link.id && (
                             <tr>
                               <td colSpan={7} className="px-0 py-0">
-                                <div className="bg-white border-t border-b border-blue-100 px-6 py-6">
+                                <div className="bg-surface-container border-t border-b border-primary/20 px-6 py-6">
                                   <div className="flex items-center justify-between mb-5">
-                                    <h2 className="font-semibold text-lg text-gray-900">
+                                    <h2 className="font-semibold text-lg text-on-surface">
                                       {link.name} — Details
                                     </h2>
                                     <div className="flex gap-2">
@@ -278,13 +278,13 @@ const CampaignsManagementContent: React.FC = () => {
                                       </a>
                                       <button
                                         onClick={() => copyLink(link.fullTrackingUrl)}
-                                        className="px-3 py-1.5 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                        className="px-3 py-1.5 text-sm font-medium text-on-surface-variant border border-outline-variant rounded-lg hover:bg-surface-container-high transition-colors"
                                       >
                                         Copy Link
                                       </button>
                                       <button
                                         onClick={() => setSelectedLinkId(null)}
-                                        className="p-1.5 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                        className="p-1.5 text-on-surface-variant border border-outline-variant rounded-lg hover:bg-surface-container-high transition-colors"
                                       >
                                         <X className="w-4 h-4" />
                                       </button>

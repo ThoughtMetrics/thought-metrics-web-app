@@ -16,10 +16,10 @@ function StorageBar({ used = 0, quota = CLIENT_QUOTA_BYTES }: { used?: number; q
   const fmt = (b: number) => b < 1048576 ? `${(b / 1024).toFixed(0)} KB` : `${(b / 1048576).toFixed(1)} MB`;
   return (
     <div className="flex items-center gap-2 min-w-[140px]">
-      <div className="flex-1 bg-gray-100 rounded-full h-2">
+      <div className="flex-1 bg-surface-container-high rounded-full h-2">
         <div className={`${color} h-2 rounded-full transition-all`} style={{ width: `${pct}%` }} />
       </div>
-      <span className="text-xs text-gray-500 whitespace-nowrap">{fmt(used)} / {fmt(q)}</span>
+      <span className="text-xs text-outline whitespace-nowrap">{fmt(used)} / {fmt(q)}</span>
     </div>
   );
 }
@@ -126,15 +126,15 @@ const ClientsManagementContent: React.FC = () => {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="h-full flex bg-gray-50 text-text-dark">
+    <div className="h-full flex bg-surface-container-low text-text-dark">
       <AdminSidebar />
 
       <main className="h-full overflow-y-auto flex-1 p-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Clients</h1>
-              <p className="text-gray-500 mt-1">{total} client{total !== 1 ? 's' : ''} total</p>
+              <h1 className="text-3xl font-bold text-on-surface">Clients</h1>
+              <p className="text-outline mt-1">{total} client{total !== 1 ? 's' : ''} total</p>
             </div>
             <button
               onClick={() => setShowCreateModal(true)}
@@ -145,61 +145,61 @@ const ClientsManagementContent: React.FC = () => {
           </div>
 
           {/* Search */}
-          <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+          <div className="bg-surface-container rounded-lg shadow-sm p-4 mb-4">
             <input
               type="text"
               placeholder="Search by name or email..."
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="border border-outline-variant rounded-lg px-3 py-2 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-primary/30 bg-surface-container-low text-on-surface"
             />
           </div>
 
           {/* Table */}
-          <div className="bg-white rounded-lg shadow-sm">
+          <div className="bg-surface-container rounded-lg shadow-sm">
             {loading ? (
               <div className="p-12 flex justify-center"><LoaderUI message="Loading clients..." /></div>
             ) : clients.length === 0 ? (
-              <div className="p-12 text-center text-gray-500">No clients found.</div>
+              <div className="p-12 text-center text-outline">No clients found.</div>
             ) : (
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-surface-container-low border-b border-outline-variant">
                   <tr>
-                    <th className="px-4 py-3 text-left font-medium text-gray-600">Name</th>
-                    <th className="px-4 py-3 text-left font-medium text-gray-600">Email</th>
-                    <th className="px-4 py-3 text-left font-medium text-gray-600">Company</th>
-                    <th className="px-4 py-3 text-left font-medium text-gray-600">Storage</th>
-                    <th className="px-4 py-3 text-left font-medium text-gray-600">Joined</th>
-                    <th className="px-4 py-3 text-left font-medium text-gray-600">Actions</th>
+                    <th className="px-4 py-3 text-left font-medium text-on-surface-variant">Name</th>
+                    <th className="px-4 py-3 text-left font-medium text-on-surface-variant">Email</th>
+                    <th className="px-4 py-3 text-left font-medium text-on-surface-variant">Company</th>
+                    <th className="px-4 py-3 text-left font-medium text-on-surface-variant">Storage</th>
+                    <th className="px-4 py-3 text-left font-medium text-on-surface-variant">Joined</th>
+                    <th className="px-4 py-3 text-left font-medium text-on-surface-variant">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-outline-variant/20">
                   {clients.map((client) => (
-                    <tr key={client._id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3 font-medium text-gray-900">
+                    <tr key={client._id} className="hover:bg-surface-container-high transition-colors">
+                      <td className="px-4 py-3 font-medium text-on-surface">
                         {client.profile?.firstName} {client.profile?.lastName}
                       </td>
-                      <td className="px-4 py-3 text-gray-600">{client.email}</td>
-                      <td className="px-4 py-3 text-gray-600">{(client as any).companyName || '—'}</td>
+                      <td className="px-4 py-3 text-on-surface-variant">{client.email}</td>
+                      <td className="px-4 py-3 text-on-surface-variant">{(client as any).companyName || '—'}</td>
                       <td className="px-4 py-3">
                         <StorageBar used={(client as any).storageUsed ?? 0} quota={(client as any).storageQuota} />
                       </td>
-                      <td className="px-4 py-3 text-gray-500">
+                      <td className="px-4 py-3 text-outline">
                         {client.createdAt ? new Date(client.createdAt).toLocaleDateString() : '—'}
                       </td>
                       <td className="px-4 py-3 relative">
                         <button
                           onClick={() => setOpenMenuId(openMenuId === client._id ? null : client._id)}
-                          className="p-1 rounded hover:bg-gray-100 text-gray-500"
+                          className="p-1 rounded hover:bg-surface-container-high text-outline"
                         >
                           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                             <circle cx="12" cy="5" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="12" cy="19" r="1.5" />
                           </svg>
                         </button>
                         {openMenuId === client._id && (
-                          <div className="absolute right-4 top-10 bg-white border border-gray-200 rounded-lg shadow-lg z-10 w-40 py-1">
-                            <button onClick={() => openEdit(client)} className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50">Edit</button>
-                            <a href={`/admin/surveys?clientId=${client._id}`} className="block px-4 py-2 text-sm hover:bg-gray-50">View Surveys</a>
+                          <div className="absolute right-4 top-10 bg-surface-container border border-outline-variant rounded-lg shadow-lg z-10 w-40 py-1">
+                            <button onClick={() => openEdit(client)} className="w-full px-4 py-2 text-left text-sm hover:bg-surface-container-high">Edit</button>
+                            <a href={`/admin/surveys?clientId=${client._id}`} className="block px-4 py-2 text-sm hover:bg-surface-container-high">View Surveys</a>
                             <button onClick={() => handleDelete(client)} className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50">Deactivate</button>
                           </div>
                         )}
@@ -214,10 +214,10 @@ const ClientsManagementContent: React.FC = () => {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between mt-4">
-              <p className="text-sm text-gray-500">Page {page} of {totalPages}</p>
+              <p className="text-sm text-outline">Page {page} of {totalPages}</p>
               <div className="flex gap-2">
-                <button disabled={page === 1} onClick={() => setPage(p => p - 1)} className="px-3 py-1 rounded border text-sm disabled:opacity-40">Prev</button>
-                <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)} className="px-3 py-1 rounded border text-sm disabled:opacity-40">Next</button>
+                <button disabled={page === 1} onClick={() => setPage(p => p - 1)} className="px-3 py-1 rounded border border-outline-variant text-sm disabled:opacity-40">Prev</button>
+                <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)} className="px-3 py-1 rounded border border-outline-variant text-sm disabled:opacity-40">Next</button>
               </div>
             </div>
           )}
@@ -227,30 +227,30 @@ const ClientsManagementContent: React.FC = () => {
       {/* Create Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
+          <div className="bg-surface-container rounded-xl shadow-xl p-6 w-full max-w-md">
             <h2 className="text-xl font-semibold mb-4">Create Client</h2>
             <div className="space-y-3">
               <div>
-                <label className="text-sm font-medium text-gray-700">Email *</label>
+                <label className="text-sm font-medium text-on-surface-variant">Email *</label>
                 <input type="email" value={createForm.email} onChange={e => setCreateForm(f => ({ ...f, email: e.target.value }))}
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                  className="mt-1 w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-surface-container-low" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-sm font-medium text-gray-700">First Name *</label>
+                  <label className="text-sm font-medium text-on-surface-variant">First Name *</label>
                   <input type="text" value={createForm.firstName} onChange={e => setCreateForm(f => ({ ...f, firstName: e.target.value }))}
-                    className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                    className="mt-1 w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-surface-container-low" />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Last Name</label>
+                  <label className="text-sm font-medium text-on-surface-variant">Last Name</label>
                   <input type="text" value={createForm.lastName} onChange={e => setCreateForm(f => ({ ...f, lastName: e.target.value }))}
-                    className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                    className="mt-1 w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-surface-container-low" />
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">Company Name</label>
+                <label className="text-sm font-medium text-on-surface-variant">Company Name</label>
                 <input type="text" value={createForm.companyName} onChange={e => setCreateForm(f => ({ ...f, companyName: e.target.value }))}
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                  className="mt-1 w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-surface-container-low" />
               </div>
               <label className="flex items-center gap-2 text-sm">
                 <input type="checkbox" checked={createForm.sendWelcomeEmail} onChange={e => setCreateForm(f => ({ ...f, sendWelcomeEmail: e.target.checked }))} />
@@ -258,7 +258,7 @@ const ClientsManagementContent: React.FC = () => {
               </label>
             </div>
             <div className="flex justify-end gap-3 mt-6">
-              <button onClick={() => setShowCreateModal(false)} className="px-4 py-2 rounded-lg border text-sm">Cancel</button>
+              <button onClick={() => setShowCreateModal(false)} className="px-4 py-2 rounded-lg border border-outline-variant text-sm">Cancel</button>
               <button onClick={handleCreate} disabled={createLoading || !createForm.email || !createForm.firstName}
                 className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:opacity-90 disabled:opacity-50">
                 {createLoading ? 'Creating...' : 'Create Client'}
@@ -271,29 +271,29 @@ const ClientsManagementContent: React.FC = () => {
       {/* Edit Modal */}
       {showEditModal && editTarget && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
+          <div className="bg-surface-container rounded-xl shadow-xl p-6 w-full max-w-md">
             <h2 className="text-xl font-semibold mb-4">Edit Client</h2>
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-sm font-medium text-gray-700">First Name</label>
+                  <label className="text-sm font-medium text-on-surface-variant">First Name</label>
                   <input type="text" value={editForm.firstName} onChange={e => setEditForm(f => ({ ...f, firstName: e.target.value }))}
-                    className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                    className="mt-1 w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-surface-container-low" />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Last Name</label>
+                  <label className="text-sm font-medium text-on-surface-variant">Last Name</label>
                   <input type="text" value={editForm.lastName} onChange={e => setEditForm(f => ({ ...f, lastName: e.target.value }))}
-                    className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                    className="mt-1 w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-surface-container-low" />
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">Company Name</label>
+                <label className="text-sm font-medium text-on-surface-variant">Company Name</label>
                 <input type="text" value={editForm.companyName} onChange={e => setEditForm(f => ({ ...f, companyName: e.target.value }))}
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                  className="mt-1 w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-surface-container-low" />
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">
-              <button onClick={() => setShowEditModal(false)} className="px-4 py-2 rounded-lg border text-sm">Cancel</button>
+              <button onClick={() => setShowEditModal(false)} className="px-4 py-2 rounded-lg border border-outline-variant text-sm">Cancel</button>
               <button onClick={handleEdit} className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:opacity-90">
                 Save Changes
               </button>

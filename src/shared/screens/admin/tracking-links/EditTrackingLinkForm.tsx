@@ -100,12 +100,12 @@ const EditTrackingLinkFormContent: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-full bg-gray-50">
+      <div className="flex h-full bg-surface-container-low">
         <AdminSidebar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-4" />
-            <p className="text-gray-600">Loading tracking link...</p>
+            <p className="text-on-surface-variant">Loading tracking link...</p>
           </div>
         </div>
       </div>
@@ -114,11 +114,11 @@ const EditTrackingLinkFormContent: React.FC = () => {
 
   if (!linkResponse?.data) {
     return (
-      <div className="flex h-full bg-gray-50">
+      <div className="flex h-full bg-surface-container-low">
         <AdminSidebar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <p className="text-gray-600 mb-4">Tracking link not found</p>
+            <p className="text-on-surface-variant mb-4">Tracking link not found</p>
             <button
               onClick={handleBack}
               className="text-primary hover:underline"
@@ -134,7 +134,7 @@ const EditTrackingLinkFormContent: React.FC = () => {
   const link = linkResponse.data;
 
   return (
-    <div className="flex h-full bg-gray-50">
+    <div className="flex h-full bg-surface-container-low">
       <AdminSidebar />
       <div className="flex-1 overflow-y-auto py-12 px-4 text-text-dark">
         <div className="max-w-4xl mx-auto">
@@ -142,24 +142,24 @@ const EditTrackingLinkFormContent: React.FC = () => {
           <div className="mb-8">
             <button
               onClick={handleBack}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+              className="flex items-center gap-2 text-on-surface-variant hover:text-on-surface mb-4"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Analytics
             </button>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-on-surface">
               Edit Tracking Link
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-on-surface-variant mt-2">
               Short Code:{' '}
-              <code className="bg-gray-100 px-2 py-1 rounded">
+              <code className="bg-surface-container-high px-2 py-1 rounded">
                 {link.shortCode}
               </code>
             </p>
           </div>
 
           {/* Edit Form */}
-          <div className="bg-white rounded-lg shadow-lg p-8">
+          <div className="bg-surface-container rounded-lg shadow-lg p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               <TextInputAtom
                 id="name"
@@ -314,7 +314,7 @@ const EditTrackingLinkFormContent: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleBack}
-                  className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+                  className="bg-surface-container-high text-on-surface-variant px-6 py-3 rounded-lg font-medium hover:bg-outline-variant/20 transition-colors"
                 >
                   Cancel
                 </button>
@@ -323,32 +323,32 @@ const EditTrackingLinkFormContent: React.FC = () => {
 
             {/* Link Stats */}
             {link.stats && (
-              <div className="mt-8 pt-8 border-t border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="mt-8 pt-8 border-t border-outline-variant">
+                <h3 className="text-lg font-semibold text-on-surface mb-4">
                   Link Statistics
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600">Unique Visitors</p>
-                    <p className="text-2xl font-bold text-gray-900">
+                  <div className="bg-surface-container-low p-4 rounded-lg">
+                    <p className="text-sm text-on-surface-variant">Unique Visitors</p>
+                    <p className="text-2xl font-bold text-on-surface">
                       {link.stats.uniqueVisitors || 0}
                     </p>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600">Registrations</p>
-                    <p className="text-2xl font-bold text-gray-900">
+                  <div className="bg-surface-container-low p-4 rounded-lg">
+                    <p className="text-sm text-on-surface-variant">Registrations</p>
+                    <p className="text-2xl font-bold text-on-surface">
                       {link.stats.registrations || 0}
                     </p>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600">Page Views</p>
-                    <p className="text-2xl font-bold text-gray-900">
+                  <div className="bg-surface-container-low p-4 rounded-lg">
+                    <p className="text-sm text-on-surface-variant">Page Views</p>
+                    <p className="text-2xl font-bold text-on-surface">
                       {link.stats.pageViews || 0}
                     </p>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600">Conversion Rate</p>
-                    <p className="text-2xl font-bold text-gray-900">
+                  <div className="bg-surface-container-low p-4 rounded-lg">
+                    <p className="text-sm text-on-surface-variant">Conversion Rate</p>
+                    <p className="text-2xl font-bold text-on-surface">
                       {(link.stats.uniqueVisitors ?? 0) > 0
                         ? (
                             ((link.stats.registrations ?? 0) /

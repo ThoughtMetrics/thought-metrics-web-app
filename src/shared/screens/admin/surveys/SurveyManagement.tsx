@@ -163,7 +163,7 @@ const SurveyManagementContent: React.FC = () => {
   ];
 
   return (
-    <div className="h-full flex bg-gray-50 text-text-dark">
+    <div className="h-full flex bg-surface-container-low text-text-dark">
       <AdminSidebar />
       {showPicker && <MethodologyPickerModal onClose={() => setShowPicker(false)} />}
 
@@ -172,8 +172,8 @@ const SurveyManagementContent: React.FC = () => {
           {/* Page header — Surveys */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-1">Surveys</h1>
-              <p className="text-gray-600">Manage survey templates</p>
+              <h1 className="text-3xl font-bold text-on-surface mb-1">Surveys</h1>
+              <p className="text-on-surface-variant">Manage survey templates</p>
             </div>
             <button
               onClick={() => setShowPicker(true)}
@@ -187,16 +187,16 @@ const SurveyManagementContent: React.FC = () => {
               {/* Search + status filter row */}
               <div className="flex flex-wrap gap-3 mb-4 items-center">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search by name or ID…"
-                    className="pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary w-64"
+                    className="pl-9 pr-3 py-2 text-sm border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary w-64 bg-surface-container text-on-surface"
                   />
                 </div>
-                <div className="flex gap-1 bg-white rounded-lg p-1 border border-gray-200">
+                <div className="flex gap-1 bg-surface-container rounded-lg p-1 border border-outline-variant">
                   {statusTabs.map((tab) => (
                     <button
                       key={tab.value}
@@ -204,7 +204,7 @@ const SurveyManagementContent: React.FC = () => {
                       className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                         statusTab === tab.value
                           ? 'bg-primary text-white'
-                          : 'text-gray-600 hover:bg-gray-100'
+                          : 'text-on-surface-variant hover:bg-surface-container-high'
                       }`}
                     >
                       {tab.label}
@@ -225,46 +225,46 @@ const SurveyManagementContent: React.FC = () => {
                 </div>
               )}
               {!isLoading && !isError && filteredSurveys.length === 0 && (
-                <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                  <p className="text-gray-500">No surveys found.</p>
+                <div className="bg-surface-container rounded-lg shadow-sm p-12 text-center">
+                  <p className="text-outline">No surveys found.</p>
                 </div>
               )}
 
               {/* Rich table */}
               {!isLoading && !isError && filteredSurveys.length > 0 && (
-                <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div className="bg-surface-container rounded-lg shadow-sm overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-gray-200 bg-gray-50">
-                          <th className="text-left px-4 py-3 font-semibold text-gray-700">Survey ID</th>
-                          <th className="text-left px-4 py-3 font-semibold text-gray-700">Label</th>
-                          <th className="text-left px-4 py-3 font-semibold text-gray-700">Status</th>
-                          <th className="text-left px-4 py-3 font-semibold text-gray-700">Type</th>
-                          <th className="text-left px-4 py-3 font-semibold text-gray-700">Responses</th>
-                          <th className="text-left px-4 py-3 font-semibold text-gray-700">Total</th>
-                          <th className="text-left px-4 py-3 font-semibold text-gray-700">Today</th>
-                          <th className="text-left px-4 py-3 font-semibold text-gray-700">Start</th>
-                          <th className="text-left px-4 py-3 font-semibold text-gray-700">End</th>
-                          <th className="text-left px-4 py-3 font-semibold text-gray-700">Layout</th>
-                          <th className="text-center px-4 py-3 font-semibold text-gray-700">Actions</th>
+                        <tr className="border-b border-outline-variant bg-surface-container-low">
+                          <th className="text-left px-4 py-3 font-semibold text-on-surface-variant">Survey ID</th>
+                          <th className="text-left px-4 py-3 font-semibold text-on-surface-variant">Label</th>
+                          <th className="text-left px-4 py-3 font-semibold text-on-surface-variant">Status</th>
+                          <th className="text-left px-4 py-3 font-semibold text-on-surface-variant">Type</th>
+                          <th className="text-left px-4 py-3 font-semibold text-on-surface-variant">Responses</th>
+                          <th className="text-left px-4 py-3 font-semibold text-on-surface-variant">Total</th>
+                          <th className="text-left px-4 py-3 font-semibold text-on-surface-variant">Today</th>
+                          <th className="text-left px-4 py-3 font-semibold text-on-surface-variant">Start</th>
+                          <th className="text-left px-4 py-3 font-semibold text-on-surface-variant">End</th>
+                          <th className="text-left px-4 py-3 font-semibold text-on-surface-variant">Layout</th>
+                          <th className="text-center px-4 py-3 font-semibold text-on-surface-variant">Actions</th>
                         </tr>
                       </thead>
                       <tbody>
                         {filteredSurveys.map((s) => (
                           <React.Fragment key={s.id}>
                             <tr
-                              className={`border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer ${
-                                selectedSurvey?.id === s.id ? 'bg-blue-50' : ''
+                              className={`border-b border-outline-variant/20 hover:bg-surface-container-high transition-colors cursor-pointer ${
+                                selectedSurvey?.id === s.id ? 'bg-primary/10' : ''
                               }`}
                               onClick={() =>
                                 setSelectedSurvey(selectedSurvey?.id === s.id ? null : s)
                               }
                             >
-                              <td className="px-4 py-3 font-mono text-xs text-gray-500 max-w-[120px] truncate">
+                              <td className="px-4 py-3 font-mono text-xs text-outline max-w-[120px] truncate">
                                 {s.surveyId ?? s.id}
                               </td>
-                              <td className="px-4 py-3 font-medium text-gray-900 max-w-[180px]">
+                              <td className="px-4 py-3 font-medium text-on-surface max-w-[180px]">
                                 <span className="flex items-center gap-1.5 flex-wrap">
                                   {s.label}
                                   {s.templateMongoId && (
@@ -292,20 +292,20 @@ const SurveyManagementContent: React.FC = () => {
                                   {s.type ?? 'respondent'}
                                 </span>
                               </td>
-                              <td className="px-4 py-3 text-gray-600">
+                              <td className="px-4 py-3 text-on-surface-variant">
                                 {s.currentResponses}
                                 {s.maxResponses ? ` / ${s.maxResponses}` : ''}
                               </td>
-                              <td className="px-4 py-3 text-gray-600">
+                              <td className="px-4 py-3 text-on-surface-variant">
                                 {s.totalSubmissions != null ? s.totalSubmissions : '—'}
                               </td>
-                              <td className="px-4 py-3 text-gray-600">
+                              <td className="px-4 py-3 text-on-surface-variant">
                                 {s.todaySubmissions != null ? s.todaySubmissions : '—'}
                               </td>
-                              <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
+                              <td className="px-4 py-3 text-on-surface-variant whitespace-nowrap">
                                 {formatDate(s.startDate)}
                               </td>
-                              <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
+                              <td className="px-4 py-3 text-on-surface-variant whitespace-nowrap">
                                 {s.expireDate ? formatDate(s.expireDate) : 'No limit'}
                               </td>
                               <td className="px-4 py-3">
@@ -329,18 +329,18 @@ const SurveyManagementContent: React.FC = () => {
                                     onClick={() =>
                                       setOpenMenuId(openMenuId === s.id ? null : s.id)
                                     }
-                                    className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+                                    className="p-1.5 rounded hover:bg-surface-container-high text-outline hover:text-on-surface-variant transition-colors"
                                   >
                                     <MoreVertical className="w-4 h-4" />
                                   </button>
                                   {openMenuId === s.id && (
-                                    <div className="absolute right-0 mt-1 w-44 bg-white border border-gray-200 rounded-lg shadow-lg z-20 py-1">
+                                    <div className="absolute right-0 mt-1 w-44 bg-surface-container border border-outline-variant rounded-lg shadow-lg z-20 py-1">
                                       <button
                                         onClick={() => {
                                           setSelectedSurvey(selectedSurvey?.id === s.id ? null : s);
                                           setOpenMenuId(null);
                                         }}
-                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                        className="w-full text-left px-4 py-2 text-sm text-on-surface-variant hover:bg-surface-container-high"
                                       >
                                         View Details
                                       </button>
@@ -349,7 +349,7 @@ const SurveyManagementContent: React.FC = () => {
                                           setDownloadSurvey(s);
                                           setOpenMenuId(null);
                                         }}
-                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                        className="w-full text-left px-4 py-2 text-sm text-on-surface-variant hover:bg-surface-container-high"
                                       >
                                         Downloads
                                       </button>
@@ -364,7 +364,7 @@ const SurveyManagementContent: React.FC = () => {
                                                 setEditingSurvey(s);
                                               }
                                             }}
-                                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                            className="w-full text-left px-4 py-2 text-sm text-on-surface-variant hover:bg-surface-container-high"
                                           >
                                             Edit
                                           </button>
@@ -374,19 +374,19 @@ const SurveyManagementContent: React.FC = () => {
                                               setOpenMenuId(null);
                                             }}
                                             disabled={isDuplicating}
-                                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                                            className="w-full text-left px-4 py-2 text-sm text-on-surface-variant hover:bg-surface-container-high disabled:opacity-50"
                                           >
                                             {isDuplicating ? 'Loading…' : 'Duplicate'}
                                           </button>
                                         </>
                                       )}
-                                      <div className="border-t border-gray-100 my-1" />
+                                      <div className="border-t border-outline-variant/50 my-1" />
                                       <button
                                         onClick={() => {
                                           handleCopyLink(s);
                                           setOpenMenuId(null);
                                         }}
-                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                        className="w-full text-left px-4 py-2 text-sm text-on-surface-variant hover:bg-surface-container-high"
                                       >
                                         Copy Link
                                       </button>
@@ -398,7 +398,7 @@ const SurveyManagementContent: React.FC = () => {
                                               setOpenMenuId(null);
                                             }}
                                             disabled={(s.status as string) === 'archived'}
-                                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                                            className="w-full text-left px-4 py-2 text-sm text-on-surface-variant hover:bg-surface-container-high disabled:opacity-40 disabled:cursor-not-allowed"
                                           >
                                             Archive
                                           </button>
@@ -408,11 +408,11 @@ const SurveyManagementContent: React.FC = () => {
                                               setOpenMenuId(null);
                                             }}
                                             disabled={(s.status as string) !== 'archived'}
-                                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                                            className="w-full text-left px-4 py-2 text-sm text-on-surface-variant hover:bg-surface-container-high disabled:opacity-40 disabled:cursor-not-allowed"
                                           >
                                             Unarchive
                                           </button>
-                                          <div className="border-t border-gray-100 my-1" />
+                                          <div className="border-t border-outline-variant/50 my-1" />
                                           <button
                                             onClick={() => {
                                               handleDelete(s);
@@ -434,29 +434,29 @@ const SurveyManagementContent: React.FC = () => {
                             {selectedSurvey?.id === s.id && (
                               <tr>
                                 <td colSpan={11} className="px-0 py-0">
-                                  <div className="bg-white border-t border-b border-blue-100 px-6 py-6">
+                                  <div className="bg-surface-container border-t border-b border-primary/20 px-6 py-6">
                                     <div className="flex items-center justify-between mb-5">
-                                      <h2 className="font-semibold text-lg text-gray-900">
+                                      <h2 className="font-semibold text-lg text-on-surface">
                                         {s.label} — Analytics
                                       </h2>
                                       <div className="flex gap-2">
                                         <button
                                           onClick={() => setPdfTrigger((t) => t + 1)}
                                           title="Download PDF Report"
-                                          className="p-1.5 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                          className="p-1.5 text-on-surface-variant border border-outline-variant rounded-lg hover:bg-surface-container-high transition-colors"
                                         >
                                           <FileText className="w-5 h-5 text-red-600" />
                                         </button>
                                         <button
                                           onClick={() => setDownloadSurvey(s)}
                                           title="Download XLSX"
-                                          className="p-1.5 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                          className="p-1.5 text-on-surface-variant border border-outline-variant rounded-lg hover:bg-surface-container-high transition-colors"
                                         >
                                           <FileSpreadsheet className="w-5 h-5 text-green-600" />
                                         </button>
                                         <button
                                           onClick={() => setSelectedSurvey(null)}
-                                          className="p-1.5 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                          className="p-1.5 text-on-surface-variant border border-outline-variant rounded-lg hover:bg-surface-container-high transition-colors"
                                         >
                                           <X className="w-4 h-4" />
                                         </button>
@@ -479,20 +479,20 @@ const SurveyManagementContent: React.FC = () => {
 
                   {/* Pagination */}
                   {surveyTotal > 0 && (
-                    <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                      <div className="flex items-center gap-3 text-sm text-gray-700">
+                    <div className="px-6 py-4 border-t border-outline-variant flex items-center justify-between">
+                      <div className="flex items-center gap-3 text-sm text-on-surface-variant">
                         <span>
                           {(surveyPage - 1) * surveyLimit + 1}–{Math.min(surveyPage * surveyLimit, surveyTotal)} of {surveyTotal}
                         </span>
                         <div className="flex items-center gap-1.5">
-                          <span className="text-gray-500">Rows:</span>
+                          <span className="text-outline">Rows:</span>
                           <select
                             value={surveyLimit}
                             onChange={(e) => {
                               setSurveyLimit(Number(e.target.value));
                               setSurveyPage(1);
                             }}
-                            className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                            className="text-sm border border-outline-variant rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary/50 bg-surface-container text-on-surface"
                           >
                             {[10, 25, 50, 100].map((n) => (
                               <option key={n} value={n}>{n}</option>
@@ -504,14 +504,14 @@ const SurveyManagementContent: React.FC = () => {
                         <button
                           onClick={() => setSurveyPage((p) => Math.max(1, p - 1))}
                           disabled={surveyPage === 1}
-                          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container border border-outline-variant rounded-md hover:bg-surface-container-high disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           Previous
                         </button>
                         <button
                           onClick={() => setSurveyPage((p) => Math.min(surveyTotalPages, p + 1))}
                           disabled={surveyPage === surveyTotalPages}
-                          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container border border-outline-variant rounded-md hover:bg-surface-container-high disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           Next
                         </button>
@@ -538,13 +538,13 @@ const SurveyManagementContent: React.FC = () => {
 
       {showDeleteConfirm && surveyToDelete && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <div className="bg-surface-container rounded-lg p-6 max-w-md w-full mx-4">
             <h3 className="text-lg font-semibold mb-2">Delete Survey</h3>
-            <p className="text-gray-600 mb-6">
-              Are you sure you want to delete <span className="font-medium">{surveyToDelete.label}</span>? This cannot be undone.
+            <p className="text-on-surface-variant mb-6">
+              Are you sure you want to delete <span className="font-medium text-on-surface">{surveyToDelete.label}</span>? This cannot be undone.
             </p>
             <div className="flex gap-3 justify-end">
-              <button onClick={() => setShowDeleteConfirm(false)} className="px-4 py-2 border rounded-lg text-sm">Cancel</button>
+              <button onClick={() => setShowDeleteConfirm(false)} className="px-4 py-2 border border-outline-variant rounded-lg text-sm text-on-surface-variant">Cancel</button>
               <button onClick={() => void handleDeleteConfirm()} disabled={deleteSurvey.isPending} className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm disabled:opacity-50">
                 {deleteSurvey.isPending ? 'Deleting…' : 'Delete'}
               </button>

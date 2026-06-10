@@ -825,7 +825,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
 
   return (
     <>
-      <div className="h-full flex bg-gray-50 text-text-dark">
+      <div className="h-full flex bg-surface-container-low text-text-dark">
         <AdminSidebar />
 
         <main className="h-full overflow-y-auto flex-1 p-8">
@@ -833,10 +833,10 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
             {/* Header */}
             <div className="flex justify-between items-center mb-8">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-3xl font-bold text-on-surface">
                   Survey Analytics
                 </h1>
-                <p className="text-gray-600 mt-1">
+                <p className="text-on-surface-variant mt-1">
                   Track submissions across all surveys
                 </p>
               </div>
@@ -865,13 +865,13 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left: Surveys List */}
                 <div className="lg:col-span-2">
-                  <div className="bg-white rounded-lg shadow">
-                    <div className="p-6 border-b border-gray-200">
+                  <div className="bg-surface-container rounded-lg shadow">
+                    <div className="p-6 border-b border-outline-variant">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <h2 className="text-xl font-semibold text-gray-900">
+                        <h2 className="text-xl font-semibold text-on-surface">
                           All Surveys ({filteredSurveys.length})
                           {totalPages > 1 && (
-                            <span className="ml-2 text-sm font-normal text-gray-500">
+                            <span className="ml-2 text-sm font-normal text-outline">
                               — page {page} of {totalPages}
                             </span>
                           )}
@@ -879,13 +879,13 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                         <div className="flex flex-col sm:flex-row gap-3">
                           {/* Search */}
                           <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline" />
                             <input
                               type="text"
                               placeholder="Search surveys..."
                               value={searchQuery}
                               onChange={(e) => setSearchQuery(e.target.value)}
-                              className="pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary w-full sm:w-56"
+                              className="pl-9 pr-3 py-2 text-sm border border-outline-variant bg-surface-container-low text-on-surface rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary w-full sm:w-56"
                             />
                           </div>
                           {/* Type Filter */}
@@ -896,7 +896,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                 e.target.value as 'all' | 'respondent' | 'agent'
                               )
                             }
-                            className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white"
+                            className="px-3 py-2 text-sm border border-outline-variant bg-surface-container text-on-surface rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
                           >
                             <option value="all">All Types</option>
                             <option value="respondent">Respondent</option>
@@ -906,7 +906,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                           <select
                             value={industryFilter}
                             onChange={(e) => setIndustryFilter(e.target.value)}
-                            className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white"
+                            className="px-3 py-2 text-sm border border-outline-variant bg-surface-container text-on-surface rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
                           >
                             {INDUSTRY_FILTERS.map((opt) => (
                               <option key={opt.value} value={opt.value}>
@@ -919,31 +919,31 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                     </div>
                     <div className="overflow-x-auto">
                       <table className="w-full">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-surface-container-low">
                           <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-outline uppercase">
                               Survey Name
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-outline uppercase">
                               Type
                             </th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-6 py-3 text-right text-xs font-medium text-outline uppercase">
                               Total
                             </th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-6 py-3 text-right text-xs font-medium text-outline uppercase">
                               Today
                             </th>
-                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                            <th className="px-6 py-3 text-center text-xs font-medium text-outline uppercase">
                               Actions
                             </th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200">
+                        <tbody className="divide-y divide-outline-variant/20">
                           {filteredSurveys.length === 0 ? (
                             <tr>
                               <td
                                 colSpan={5}
-                                className="px-6 py-12 text-center text-gray-500"
+                                className="px-6 py-12 text-center text-outline"
                               >
                                 {searchQuery ||
                                 typeFilter !== 'all' ||
@@ -956,9 +956,9 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                             paginatedSurveys.map((survey) => (
                               <tr
                                 key={survey.id}
-                                className={`hover:bg-gray-50 cursor-pointer ${
+                                className={`hover:bg-surface-container-high cursor-pointer ${
                                   selectedSurvey === survey.surveyId
-                                    ? 'bg-blue-50'
+                                    ? 'bg-primary/10'
                                     : ''
                                 }`}
                                 onClick={() =>
@@ -967,10 +967,10 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                 }
                               >
                                 <td className="px-6 py-4">
-                                  <div className="text-sm font-medium text-gray-900">
+                                  <div className="text-sm font-medium text-on-surface">
                                     {survey.label || 'Untitled Survey'}
                                   </div>
-                                  <div className="text-xs text-gray-500">
+                                  <div className="text-xs text-outline">
                                     {survey.surveyId || 'N/A'}
                                   </div>
                                 </td>
@@ -988,7 +988,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                   </span>
                                 </td>
                                 <td className="px-6 py-4 text-right">
-                                  <span className="text-sm font-semibold text-gray-900">
+                                  <span className="text-sm font-semibold text-on-surface">
                                     {formatNumber(survey.totalSubmissions ?? 0)}
                                   </span>
                                 </td>
@@ -1016,12 +1016,12 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                         )
                                       }
                                       disabled={!survey.surveyId}
-                                      className="p-1 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                      className="p-1 rounded hover:bg-surface-container-high text-outline hover:text-on-surface-variant disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                       <MoreVertical className="w-4 h-4" />
                                     </button>
                                     {openActionMenuId === survey.id && (
-                                      <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                                      <div className="absolute right-0 mt-1 w-40 bg-surface-container border border-outline-variant rounded-lg shadow-lg z-10">
                                         <button
                                           onClick={() => {
                                             setOpenActionMenuId(null);
@@ -1030,7 +1030,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                                 survey.surveyId
                                               );
                                           }}
-                                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg"
+                                          className="w-full text-left px-4 py-2 text-sm text-on-surface-variant hover:bg-surface-container-high rounded-t-lg"
                                         >
                                           View Details
                                         </button>
@@ -1044,7 +1044,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                             setShowDownloadModal(true);
                                           }}
                                           disabled={!survey.surveyId}
-                                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-b-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                          className="w-full text-left px-4 py-2 text-sm text-on-surface-variant hover:bg-surface-container-high rounded-b-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                           Download
                                         </button>
@@ -1061,8 +1061,8 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
 
                     {/* Pagination */}
                     {totalPages > 1 && (
-                      <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                        <div className="text-sm text-gray-700">
+                      <div className="px-6 py-4 border-t border-outline-variant flex items-center justify-between">
+                        <div className="text-sm text-on-surface-variant">
                           Showing {(page - 1) * limit + 1}–
                           {Math.min(page * limit, filteredSurveys.length)} of{' '}
                           {filteredSurveys.length}
@@ -1071,7 +1071,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                           <button
                             onClick={() => setPage((p) => Math.max(1, p - 1))}
                             disabled={page === 1}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container border border-outline-variant rounded-md hover:bg-surface-container-high disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Previous
                           </button>
@@ -1080,7 +1080,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                               setPage((p) => Math.min(totalPages, p + 1))
                             }
                             disabled={page === totalPages}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container border border-outline-variant rounded-md hover:bg-surface-container-high disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Next
                           </button>
@@ -1094,7 +1094,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                 <div className="lg:col-span-1">
                   {selectedSurvey ? (
                     isLoadingDetails ? (
-                      <div className="bg-white rounded-lg shadow p-6 flex items-center justify-center h-64">
+                      <div className="bg-surface-container rounded-lg shadow p-6 flex items-center justify-center h-64">
                         <Loader2 className="w-6 h-6 animate-spin text-primary" />
                       </div>
                     ) : isRespondentSurvey ? (
@@ -1129,19 +1129,19 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                           pageEnd
                         );
                         return (
-                          <div className="bg-white rounded-lg shadow p-6">
+                          <div className="bg-surface-container rounded-lg shadow p-6">
                             <div className="flex items-center gap-2 mb-4">
                               <Users className="w-5 h-5 text-primary" />
-                              <h3 className="text-lg font-semibold text-gray-900">
+                              <h3 className="text-lg font-semibold text-on-surface">
                                 Responses
                               </h3>
                             </div>
                             {topUsers.length === 0 ? (
                               <div className="text-center py-8">
-                                <p className="text-sm text-gray-500">
+                                <p className="text-sm text-outline">
                                   No responses yet
                                 </p>
-                                <p className="text-xs text-gray-400 mt-1">
+                                <p className="text-xs text-outline mt-1">
                                   Responses will appear after submissions are
                                   made
                                 </p>
@@ -1158,10 +1158,10 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                       setResponsesPage(0);
                                     }}
                                     placeholder="Search responses…"
-                                    className="w-full pl-8 pr-8 py-1.5 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder-gray-400"
+                                    className="w-full pl-8 pr-8 py-1.5 text-sm border border-outline-variant bg-surface-container-low text-on-surface rounded-lg focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder-outline"
                                   />
                                   <svg
-                                    className="absolute left-2.5 top-2 w-4 h-4 text-gray-400"
+                                    className="absolute left-2.5 top-2 w-4 h-4 text-outline"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -1179,7 +1179,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                         setResponsesSearch('');
                                         setResponsesPage(0);
                                       }}
-                                      className="absolute right-2 top-1.5 text-gray-400 hover:text-gray-600"
+                                      className="absolute right-2 top-1.5 text-outline hover:text-on-surface-variant"
                                     >
                                       <svg
                                         className="w-4 h-4"
@@ -1199,7 +1199,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                 </div>
                                 {filteredUsers.length === 0 ? (
                                   <div className="text-center py-6">
-                                    <p className="text-sm text-gray-500">
+                                    <p className="text-sm text-outline">
                                       No matching responses
                                     </p>
                                   </div>
@@ -1212,7 +1212,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                         return (
                                           <div
                                             key={user?.userId || globalIndex}
-                                            className="flex items-center justify-between px-2 py-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                                            className="flex items-center justify-between px-2 py-2 rounded-lg cursor-pointer hover:bg-surface-container-high transition-colors"
                                             onClick={() =>
                                               user && openContributorModal(user)
                                             }
@@ -1221,7 +1221,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
                                                 #{globalIndex + 1}
                                               </div>
-                                              <div className="text-sm font-medium text-gray-900 truncate max-w-[140px]">
+                                              <div className="text-sm font-medium text-on-surface truncate max-w-[140px]">
                                                 {user?.displayName ||
                                                   (user?.userId
                                                     ? `${user.userId.slice(0, 8)}...`
@@ -1236,7 +1236,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                       })}
                                     </div>
                                     {totalResponsePages > 1 && (
-                                      <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+                                      <div className="flex items-center justify-between mt-4 pt-3 border-t border-outline-variant/50">
                                         <button
                                           onClick={() =>
                                             setResponsesPage((p) =>
@@ -1244,11 +1244,11 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                             )
                                           }
                                           disabled={clampedPage === 0}
-                                          className="flex items-center gap-1 text-xs text-primary disabled:text-gray-300 hover:underline disabled:no-underline"
+                                          className="flex items-center gap-1 text-xs text-primary disabled:text-outline hover:underline disabled:no-underline"
                                         >
                                           ‹ Prev
                                         </button>
-                                        <span className="text-xs text-gray-500">
+                                        <span className="text-xs text-outline">
                                           Page {clampedPage + 1} of{' '}
                                           {totalResponsePages} ·{' '}
                                           {filteredUsers.length} total
@@ -1266,7 +1266,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                             clampedPage >=
                                             totalResponsePages - 1
                                           }
-                                          className="flex items-center gap-1 text-xs text-primary disabled:text-gray-300 hover:underline disabled:no-underline"
+                                          className="flex items-center gap-1 text-xs text-primary disabled:text-outline hover:underline disabled:no-underline"
                                         >
                                           Next ›
                                         </button>
@@ -1283,16 +1283,16 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                       /* Full analytics for agent surveys */
                       <div className="space-y-6">
                         {/* Question Response Charts */}
-                        <div className="bg-white rounded-lg shadow p-6">
+                        <div className="bg-surface-container rounded-lg shadow p-6">
                           <div className="flex items-center gap-2 mb-4">
                             <TrendingUp className="w-5 h-5 text-primary" />
-                            <h3 className="text-lg font-semibold text-gray-900">
+                            <h3 className="text-lg font-semibold text-on-surface">
                               Response Analysis
                             </h3>
                           </div>
                           <Suspense
                             fallback={
-                              <div className="h-48 animate-pulse bg-gray-50 rounded-lg" />
+                              <div className="h-48 animate-pulse bg-surface-container-low rounded-lg" />
                             }
                           >
                             <SurveyQuestionCharts
@@ -1304,20 +1304,20 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                         </div>
 
                         {/* Location Map */}
-                        <div className="bg-white rounded-lg shadow p-6">
+                        <div className="bg-surface-container rounded-lg shadow p-6">
                           <div className="flex items-center gap-2 mb-4">
                             <MapPin className="w-5 h-5 text-primary" />
-                            <h3 className="text-lg font-semibold text-gray-900">
+                            <h3 className="text-lg font-semibold text-on-surface">
                               Response Locations
                             </h3>
-                            <span className="text-xs text-gray-400 ml-1">
+                            <span className="text-xs text-outline ml-1">
                               ({locationPoints.reduce((s, p) => s + p.count, 0)}{' '}
                               with GPS)
                             </span>
                           </div>
                           <Suspense
                             fallback={
-                              <div className="h-48 bg-gray-50 rounded-lg border border-gray-200 animate-pulse" />
+                              <div className="h-48 bg-surface-container-low rounded-lg border border-outline-variant animate-pulse" />
                             }
                           >
                             <SurveyLocationMap
@@ -1337,19 +1337,19 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                         </div>
 
                         {/* Zonal Breakdown */}
-                        <div className="bg-white rounded-lg shadow p-6">
+                        <div className="bg-surface-container rounded-lg shadow p-6">
                           <div className="flex items-center gap-2 mb-4">
                             <MapPin className="w-5 h-5 text-primary" />
-                            <h3 className="text-lg font-semibold text-gray-900">
+                            <h3 className="text-lg font-semibold text-on-surface">
                               By Zone
                             </h3>
                           </div>
                           {zonalStats.length === 0 ? (
                             <div className="text-center py-8">
-                              <p className="text-sm text-gray-500">
+                              <p className="text-sm text-outline">
                                 No zonal data available
                               </p>
-                              <p className="text-xs text-gray-400 mt-1">
+                              <p className="text-xs text-outline mt-1">
                                 Data will appear after submissions are made
                               </p>
                             </div>
@@ -1365,14 +1365,14 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                 return (
                                   <div key={stat.zone || index}>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium text-gray-700">
+                                      <span className="font-medium text-on-surface-variant">
                                         {formatZone(stat?.zone || 'Unknown')}
                                       </span>
-                                      <span className="text-gray-900 font-semibold">
+                                      <span className="text-on-surface font-semibold">
                                         {formatNumber(stat?.count || 0)}
                                       </span>
                                     </div>
-                                    <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div className="w-full bg-surface-container-high rounded-full h-2">
                                       <div
                                         className={`h-2 rounded-full ${getZoneColor(stat?.zone || '', index)}`}
                                         style={{
@@ -1388,19 +1388,19 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                         </div>
 
                         {/* District Breakdown */}
-                        <div className="bg-white rounded-lg shadow p-6">
+                        <div className="bg-surface-container rounded-lg shadow p-6">
                           <div className="flex items-center gap-2 mb-4">
                             <MapPin className="w-5 h-5 text-green-600" />
-                            <h3 className="text-lg font-semibold text-gray-900">
+                            <h3 className="text-lg font-semibold text-on-surface">
                               By District
                             </h3>
                           </div>
                           {districtStats.length === 0 ? (
                             <div className="text-center py-8">
-                              <p className="text-sm text-gray-500">
+                              <p className="text-sm text-outline">
                                 No district data available
                               </p>
-                              <p className="text-xs text-gray-400 mt-1">
+                              <p className="text-xs text-outline mt-1">
                                 Data will appear after submissions are made
                               </p>
                             </div>
@@ -1416,14 +1416,14 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                 return (
                                   <div key={stat.district || index}>
                                     <div className="flex justify-between text-sm mb-1">
-                                      <span className="font-medium text-gray-700">
+                                      <span className="font-medium text-on-surface-variant">
                                         {stat?.district || 'Unknown'}
                                       </span>
-                                      <span className="text-gray-900 font-semibold">
+                                      <span className="text-on-surface font-semibold">
                                         {formatNumber(stat?.count || 0)}
                                       </span>
                                     </div>
-                                    <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div className="w-full bg-surface-container-high rounded-full h-2">
                                       <div
                                         className={`h-2 rounded-full ${getDistrictColor(index)}`}
                                         style={{
@@ -1435,7 +1435,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                 );
                               })}
                               {districtStats.length > 10 && (
-                                <p className="text-xs text-gray-400 text-center">
+                                <p className="text-xs text-outline text-center">
                                   +{districtStats.length - 10} more districts
                                 </p>
                               )}
@@ -1444,19 +1444,19 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                         </div>
 
                         {/* Daily Trend */}
-                        <div className="bg-white rounded-lg shadow p-6">
+                        <div className="bg-surface-container rounded-lg shadow p-6">
                           <div className="flex items-center gap-2 mb-4">
                             <Calendar className="w-5 h-5 text-primary" />
-                            <h3 className="text-lg font-semibold text-gray-900">
+                            <h3 className="text-lg font-semibold text-on-surface">
                               Last 14 Days
                             </h3>
                           </div>
                           {dailyStats.length === 0 ? (
                             <div className="text-center py-8">
-                              <p className="text-sm text-gray-500">
+                              <p className="text-sm text-outline">
                                 No daily data available
                               </p>
-                              <p className="text-xs text-gray-400 mt-1">
+                              <p className="text-xs text-outline mt-1">
                                 Submission history will appear here
                               </p>
                             </div>
@@ -1467,12 +1467,12 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                   key={stat?.date || idx}
                                   className="flex justify-between items-center text-sm"
                                 >
-                                  <span className="text-gray-600">
+                                  <span className="text-on-surface-variant">
                                     {stat?.date
                                       ? formatDate(stat.date)
                                       : 'Unknown'}
                                   </span>
-                                  <span className="font-semibold text-gray-900">
+                                  <span className="font-semibold text-on-surface">
                                     {formatNumber(stat?.count ?? 0)}
                                   </span>
                                 </div>
@@ -1482,19 +1482,19 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                         </div>
 
                         {/* Top Contributors */}
-                        <div className="bg-white rounded-lg shadow p-6">
+                        <div className="bg-surface-container rounded-lg shadow p-6">
                           <div className="flex items-center gap-2 mb-4">
                             <Users className="w-5 h-5 text-primary" />
-                            <h3 className="text-lg font-semibold text-gray-900">
+                            <h3 className="text-lg font-semibold text-on-surface">
                               Top Contributors
                             </h3>
                           </div>
                           {topUsers.length === 0 ? (
                             <div className="text-center py-8">
-                              <p className="text-sm text-gray-500">
+                              <p className="text-sm text-outline">
                                 No contributor data available
                               </p>
-                              <p className="text-xs text-gray-400 mt-1">
+                              <p className="text-xs text-outline mt-1">
                                 Top contributors will appear here
                               </p>
                             </div>
@@ -1510,19 +1510,19 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                                       #{index + 1}
                                     </div>
                                     <div>
-                                      <div className="text-sm font-medium text-gray-900">
+                                      <div className="text-sm font-medium text-on-surface">
                                         {user?.displayName ||
                                           (user?.userId
                                             ? `${user.userId.slice(0, 8)}...`
                                             : 'Unknown')}
                                       </div>
-                                      <div className="text-xs text-gray-500">
+                                      <div className="text-xs text-outline">
                                         {formatZone(user?.zone || 'Unknown')}
                                       </div>
                                     </div>
                                   </div>
                                   <div className="text-right">
-                                    <div className="text-sm font-semibold text-gray-900">
+                                    <div className="text-sm font-semibold text-on-surface">
                                       {formatNumber(user?.total ?? 0)}
                                     </div>
                                     <div className="text-xs text-orange-600">
@@ -1537,9 +1537,9 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                       </div>
                     )
                   ) : (
-                    <div className="bg-white rounded-lg shadow p-12 text-center">
-                      <TrendingUp className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600">
+                    <div className="bg-surface-container rounded-lg shadow p-12 text-center">
+                      <TrendingUp className="w-12 h-12 text-outline mx-auto mb-4" />
+                      <p className="text-on-surface-variant">
                         Select a survey to view detailed analytics
                       </p>
                     </div>
@@ -1554,9 +1554,9 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
       {/* Contributor Answers Modal */}
       {selectedContributor !== null && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 flex flex-col max-h-[85vh]">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900 truncate pr-4">
+          <div className="bg-surface-container rounded-xl shadow-xl w-full max-w-lg mx-4 flex flex-col max-h-[85vh]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-outline-variant">
+              <h2 className="text-lg font-semibold text-on-surface truncate pr-4">
                 {selectedContributor.displayName ||
                   (selectedContributor.userId
                     ? `${selectedContributor.userId.slice(0, 8)}...`
@@ -1567,7 +1567,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                   setSelectedContributor(null);
                   setContributorModalData(null);
                 }}
-                className="text-gray-400 hover:text-gray-600 text-xl leading-none flex-shrink-0"
+                className="text-outline hover:text-on-surface-variant text-xl leading-none flex-shrink-0"
               >
                 ✕
               </button>
@@ -1578,49 +1578,49 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                   <Loader2 className="w-6 h-6 animate-spin text-primary" />
                 </div>
               ) : contributorModalData?.response == null ? (
-                <p className="text-gray-500 text-sm text-center py-8">
+                <p className="text-outline text-sm text-center py-8">
                   No response found for this contributor.
                 </p>
               ) : (
                 <>
                   {/* Respondent info card */}
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-5 text-sm space-y-1">
+                  <div className="bg-surface-container-low border border-outline-variant rounded-lg p-4 mb-5 text-sm space-y-1">
                     {contributorModalData.response.respondent?.name && (
                       <div className="flex gap-3">
-                        <span className="text-gray-500 w-20 flex-shrink-0">
+                        <span className="text-outline w-20 flex-shrink-0">
                           Name
                         </span>
-                        <span className="text-gray-900">
+                        <span className="text-on-surface">
                           {contributorModalData.response.respondent.name}
                         </span>
                       </div>
                     )}
                     {contributorModalData.response.respondent?.phone && (
                       <div className="flex gap-3">
-                        <span className="text-gray-500 w-20 flex-shrink-0">
+                        <span className="text-outline w-20 flex-shrink-0">
                           Phone
                         </span>
-                        <span className="text-gray-900">
+                        <span className="text-on-surface">
                           {contributorModalData.response.respondent.phone}
                         </span>
                       </div>
                     )}
                     {contributorModalData.response.respondent?.email && (
                       <div className="flex gap-3">
-                        <span className="text-gray-500 w-20 flex-shrink-0">
+                        <span className="text-outline w-20 flex-shrink-0">
                           Email
                         </span>
-                        <span className="text-gray-900">
+                        <span className="text-on-surface">
                           {contributorModalData.response.respondent.email}
                         </span>
                       </div>
                     )}
                     {contributorModalData.response.submittedAt && (
                       <div className="flex gap-3">
-                        <span className="text-gray-500 w-20 flex-shrink-0">
+                        <span className="text-outline w-20 flex-shrink-0">
                           Submitted
                         </span>
-                        <span className="text-gray-900">
+                        <span className="text-on-surface">
                           {new Date(
                             contributorModalData.response.submittedAt
                           ).toLocaleString()}
@@ -1645,10 +1645,10 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                         : '—';
                       return (
                         <div key={q.id}>
-                          <p className="text-xs font-semibold text-gray-500 mb-1">
+                          <p className="text-xs font-semibold text-outline mb-1">
                             {q.text}
                           </p>
-                          <p className="text-sm text-gray-900">
+                          <p className="text-sm text-on-surface">
                             {answerText || '—'}
                           </p>
                         </div>
@@ -1665,28 +1665,28 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
       {/* Download Modal */}
       {showDownloadModal && downloadSurvey && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
+          <div className="bg-surface-container rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-on-surface">
                 Download Responses (XLSX)
               </h2>
               <button
                 onClick={() => setShowDownloadModal(false)}
-                className="text-gray-400 hover:text-gray-600 text-xl leading-none"
+                className="text-outline hover:text-on-surface-variant text-xl leading-none"
               >
                 ✕
               </button>
             </div>
-            <p className="text-sm text-gray-600 mb-5">
+            <p className="text-sm text-on-surface-variant mb-5">
               <span className="font-medium">{downloadSurvey.label}</span>
               {downloadSurvey.surveyId && (
-                <span className="ml-2 text-black">
+                <span className="ml-2 text-on-surface">
                   ({downloadSurvey.surveyId})
                 </span>
               )}
             </p>
-            <div className="mb-4 text-black">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-on-surface-variant mb-2">
                 Time Period
               </label>
               <select
@@ -1694,7 +1694,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                 onChange={(e) =>
                   setTimePeriod(e.target.value as typeof timePeriod)
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white"
+                className="w-full px-3 py-2 border border-outline-variant bg-surface-container-low text-on-surface rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
               >
                 <option value="1day">Last 1 Day</option>
                 <option value="3days">Last 3 Days</option>
@@ -1704,27 +1704,27 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
               </select>
             </div>
             {timePeriod === 'custom' && (
-              <div className="grid grid-cols-2 gap-4 mb-4 text-black">
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-on-surface-variant mb-1">
                     From Date
                   </label>
                   <input
                     type="date"
                     value={customFromDate}
                     onChange={(e) => setCustomFromDate(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                    className="w-full px-3 py-2 border border-outline-variant bg-surface-container-low text-on-surface rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-on-surface-variant mb-1">
                     To Date
                   </label>
                   <input
                     type="date"
                     value={customToDate}
                     onChange={(e) => setCustomToDate(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                    className="w-full px-3 py-2 border border-outline-variant bg-surface-container-low text-on-surface rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
                   />
                 </div>
               </div>
@@ -1732,7 +1732,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
             <div className="flex justify-end gap-3 mt-6">
               <button
                 onClick={() => setShowDownloadModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container-high border border-outline-variant rounded-md hover:bg-outline-variant/20"
               >
                 Cancel
               </button>
@@ -1785,21 +1785,21 @@ const MiniPager: React.FC<{
 }> = ({ page, total, count, onPrev, onNext }) => {
   if (total <= 1) return null;
   return (
-    <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
+    <div className="flex items-center justify-between mt-2 pt-2 border-t border-outline-variant/50">
       <button
         onClick={onPrev}
         disabled={page === 0}
-        className="text-[10px] text-primary disabled:text-gray-300 hover:underline disabled:no-underline"
+        className="text-[10px] text-primary disabled:text-outline hover:underline disabled:no-underline"
       >
         ‹ Prev
       </button>
-      <span className="text-[10px] text-gray-400">
+      <span className="text-[10px] text-outline">
         {page + 1}/{total} · {count} total
       </span>
       <button
         onClick={onNext}
         disabled={page >= total - 1}
-        className="text-[10px] text-primary disabled:text-gray-300 hover:underline disabled:no-underline"
+        className="text-[10px] text-primary disabled:text-outline hover:underline disabled:no-underline"
       >
         Next ›
       </button>
@@ -1849,14 +1849,14 @@ function MultiSelectDropdown({ label, options, selected, onChange, placeholder =
         type="button"
         onClick={() => options.length > 0 && setOpen(o => !o)}
         disabled={options.length === 0}
-        className={`px-3 py-2 text-sm border border-gray-300 rounded-md bg-white flex items-center gap-1 ${options.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 cursor-pointer'}`}
+        className={`px-3 py-2 text-sm border border-outline-variant bg-surface-container text-on-surface rounded-md flex items-center gap-1 ${options.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-surface-container-high cursor-pointer'}`}
       >
         {buttonText}
         <svg className="w-3 h-3 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
       </button>
       {open && (
-        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-[200px]">
-          <div className="px-3 pt-2 pb-1 border-b border-gray-100">
+        <div className="absolute top-full left-0 mt-1 bg-surface-container border border-outline-variant rounded-md shadow-lg z-50 min-w-[200px]">
+          <div className="px-3 pt-2 pb-1 border-b border-outline-variant/50">
             <div className="relative">
               <input
                 type="text"
@@ -1865,34 +1865,34 @@ function MultiSelectDropdown({ label, options, selected, onChange, placeholder =
                 onChange={e => setSearch(e.target.value)}
                 onClick={e => e.stopPropagation()}
                 autoFocus
-                className="w-full text-xs border border-gray-200 rounded px-2 py-1.5 pr-6 focus:outline-none focus:border-primary"
+                className="w-full text-xs border border-outline-variant bg-surface-container-low text-on-surface rounded px-2 py-1.5 pr-6 focus:outline-none focus:border-primary"
               />
               {search && (
                 <button
                   type="button"
                   onClick={() => setSearch('')}
-                  className="absolute right-1.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface-variant"
                 >
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
               )}
             </div>
           </div>
-          <div className="px-3 py-1.5 border-b border-gray-100 flex gap-3 text-xs">
+          <div className="px-3 py-1.5 border-b border-outline-variant/50 flex gap-3 text-xs">
             <button type="button" className="text-primary hover:underline" onClick={() => onChange([...new Set([...selected, ...filteredOptions])])}>Select all</button>
-            <button type="button" className="text-gray-500 hover:underline" onClick={() => onChange(selected.filter(s => !filteredOptions.includes(s)))}>Clear</button>
+            <button type="button" className="text-outline hover:underline" onClick={() => onChange(selected.filter(s => !filteredOptions.includes(s)))}>Clear</button>
           </div>
           <div className="max-h-48 overflow-y-auto">
             {filteredOptions.length === 0 ? (
-              <p className="text-xs text-gray-400 text-center py-3">No matches</p>
+              <p className="text-xs text-outline text-center py-3">No matches</p>
             ) : (
               filteredOptions.map(opt => (
-                <label key={opt} className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer text-sm">
+                <label key={opt} className="flex items-center gap-2 px-3 py-2 hover:bg-surface-container-high cursor-pointer text-sm text-on-surface">
                   <input
                     type="checkbox"
                     checked={selected.includes(opt)}
                     onChange={() => toggleOption(opt)}
-                    className="h-4 w-4 text-primary border-gray-300 rounded"
+                    className="h-4 w-4 text-primary border-outline-variant rounded"
                   />
                   <span className="truncate">{getLabel(opt)}</span>
                 </label>
@@ -2422,17 +2422,17 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                 <div className="mb-5">
                   <div className="flex items-center gap-2 mb-3">
                     <MapPin className="w-4 h-4 text-primary" />
-                    <h3 className="text-sm font-semibold text-gray-900">
+                    <h3 className="text-sm font-semibold text-on-surface">
                       Response Locations
                     </h3>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-outline">
                       ({locationPoints.reduce((s, p) => s + p.count, 0)} with
                       GPS)
                     </span>
                   </div>
                   <Suspense
                     fallback={
-                      <div className="h-40 bg-gray-50 rounded-lg border border-gray-200 animate-pulse" />
+                      <div className="h-40 bg-surface-container-low rounded-lg border border-outline-variant animate-pulse" />
                     }
                   >
                     <SurveyLocationMap
@@ -2461,7 +2461,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                         {[1, 2, 3].map((i) => (
                           <div
                             key={i}
-                            className="h-48 animate-pulse bg-gray-50 rounded-xl border border-gray-200"
+                            className="h-48 animate-pulse bg-surface-container-low rounded-xl border border-outline-variant"
                           />
                         ))}
                       </div>
@@ -2481,17 +2481,17 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                     <div>
                       <div className="flex items-center gap-2 mb-3">
                         <MapPin className="w-4 h-4 text-primary" />
-                        <h3 className="text-sm font-semibold text-gray-900">
+                        <h3 className="text-sm font-semibold text-on-surface">
                           Response Locations
                         </h3>
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-outline">
                           ({locationPoints.reduce((s, p) => s + p.count, 0)}{' '}
                           with GPS)
                         </span>
                       </div>
                       <Suspense
                         fallback={
-                          <div className="h-40 bg-gray-50 rounded-lg border border-gray-200 animate-pulse" />
+                          <div className="h-40 bg-surface-container-low rounded-lg border border-outline-variant animate-pulse" />
                         }
                       >
                         <SurveyLocationMap
@@ -2516,7 +2516,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                   {topUsers.length > 0 && <div>
                     <div className="flex items-center gap-2 mb-3">
                       <Users className="w-4 h-4 text-primary" />
-                      <h3 className="text-sm font-semibold text-gray-900">
+                      <h3 className="text-sm font-semibold text-on-surface">
                         Responses ({topUsers.length})
                       </h3>
                     </div>
@@ -2531,10 +2531,10 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                               setResponsesPage(0);
                             }}
                             placeholder="Search…"
-                            className="w-full pl-7 pr-7 py-1.5 text-xs border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder-gray-400"
+                            className="w-full pl-7 pr-7 py-1.5 text-xs border border-outline-variant bg-surface-container-low text-on-surface rounded-lg focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder-outline"
                           />
                           <svg
-                            className="absolute left-2 top-2 w-3.5 h-3.5 text-gray-400"
+                            className="absolute left-2 top-2 w-3.5 h-3.5 text-outline"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -2552,7 +2552,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                                 setResponsesSearch('');
                                 setResponsesPage(0);
                               }}
-                              className="absolute right-2 top-1.5 text-gray-400 hover:text-gray-600"
+                              className="absolute right-2 top-1.5 text-outline hover:text-on-surface-variant"
                             >
                               <svg
                                 className="w-3.5 h-3.5"
@@ -2571,7 +2571,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                           )}
                         </div>
                         {filteredUsers.length === 0 ? (
-                          <p className="text-xs text-gray-500 text-center py-3">
+                          <p className="text-xs text-outline text-center py-3">
                             No matching responses
                           </p>
                         ) : (
@@ -2582,7 +2582,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                                 return (
                                   <div
                                     key={user?.userId || globalIndex}
-                                    className="flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                                    className="flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer hover:bg-surface-container-high transition-colors"
                                     onClick={() =>
                                       user && openContributor(user)
                                     }
@@ -2591,7 +2591,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                                       <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-[10px] flex-shrink-0">
                                         #{globalIndex + 1}
                                       </div>
-                                      <span className="text-xs font-medium text-gray-900 truncate max-w-[130px]">
+                                      <span className="text-xs font-medium text-on-surface truncate max-w-[130px]">
                                         {user?.displayName ||
                                           (user?.userId
                                             ? `${user.userId.slice(0, 8)}...`
@@ -2714,7 +2714,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
             />
 
             {/* Divider */}
-            <div className="h-6 w-px bg-gray-200 mx-1" />
+            <div className="h-6 w-px bg-outline-variant mx-1" />
 
             {/* Show Boundaries toggle */}
             <button
@@ -2724,7 +2724,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                 showBoundaries
                   ? 'bg-primary text-white border-primary'
-                  : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+                  : 'bg-surface-container text-on-surface-variant border-outline-variant hover:bg-surface-container-high'
               }`}
             >
               {isBoundaryLoading
@@ -2737,7 +2737,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
             <button
               onClick={handleDownloadBoundaries}
               title="Download boundary data as JSON"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-outline-variant bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors"
             >
               <Download className="w-3.5 h-3.5" />
               Download
@@ -2748,7 +2748,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
               onClick={() => boundaryUploadRef.current?.click()}
               disabled={isUploading}
               title="Upload new boundary data JSON"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-outline-variant bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors disabled:opacity-50"
             >
               {isUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
               Upload
@@ -2778,16 +2778,16 @@ export const SurveyAnalyticsDetailPanel: React.FC<
             <div className="mb-5">
               <div className="flex items-center gap-2 mb-3">
                 <MapPin className="w-4 h-4 text-primary" />
-                <h3 className="text-sm font-semibold text-gray-900">
+                <h3 className="text-sm font-semibold text-on-surface">
                   Response Locations
                 </h3>
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-outline">
                   ({locationPoints.reduce((s, p) => s + p.count, 0)} with GPS)
                 </span>
               </div>
               <Suspense
                 fallback={
-                  <div className="h-40 bg-gray-50 rounded-lg border border-gray-200 animate-pulse" />
+                  <div className="h-40 bg-surface-container-low rounded-lg border border-outline-variant animate-pulse" />
                 }
               >
                 <SurveyLocationMap
@@ -2817,7 +2817,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                     {[1, 2, 3].map((i) => (
                       <div
                         key={i}
-                        className="h-48 animate-pulse bg-gray-50 rounded-xl border border-gray-200"
+                        className="h-48 animate-pulse bg-surface-container-low rounded-xl border border-outline-variant"
                       />
                     ))}
                   </div>
@@ -2836,17 +2836,17 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <MapPin className="w-4 h-4 text-primary" />
-                    <h3 className="text-sm font-semibold text-gray-900">
+                    <h3 className="text-sm font-semibold text-on-surface">
                       Response Locations
                     </h3>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-outline">
                       ({locationPoints.reduce((s, p) => s + p.count, 0)} with
                       GPS)
                     </span>
                   </div>
                   <Suspense
                     fallback={
-                      <div className="h-40 bg-gray-50 rounded-lg border border-gray-200 animate-pulse" />
+                      <div className="h-40 bg-surface-container-low rounded-lg border border-outline-variant animate-pulse" />
                     }
                   >
                     <SurveyLocationMap
@@ -2871,7 +2871,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
               {visZonal.length > 0 && <div>
                 <div className="flex items-center gap-2 mb-3">
                   <MapPin className="w-4 h-4 text-primary" />
-                  <h3 className="text-sm font-semibold text-gray-900">
+                  <h3 className="text-sm font-semibold text-on-surface">
                     By Zone
                   </h3>
                 </div>
@@ -2886,14 +2886,14 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                       return (
                         <div key={stat.zone || index}>
                           <div className="flex justify-between text-xs mb-1">
-                            <span className="font-medium text-gray-700">
+                            <span className="font-medium text-on-surface-variant">
                               {panelFormatZone(stat?.zone || 'Unknown')}
                             </span>
-                            <span className="text-gray-900 font-semibold">
+                            <span className="text-on-surface font-semibold">
                               {panelFormatNumber(stat?.count || 0)}
                             </span>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-1.5">
+                          <div className="w-full bg-surface-container-high rounded-full h-1.5">
                             <div
                               className={`h-1.5 rounded-full ${panelGetZoneColor(stat?.zone || '', index)}`}
                               style={{ width: `${Math.max(percentage, 0)}%` }}
@@ -2910,7 +2910,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
               {visDistrict.length > 0 && <div>
                 <div className="flex items-center gap-2 mb-3">
                   <MapPin className="w-4 h-4 text-green-600" />
-                  <h3 className="text-sm font-semibold text-gray-900">
+                  <h3 className="text-sm font-semibold text-on-surface">
                     By District
                   </h3>
                 </div>
@@ -2937,14 +2937,14 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                             return (
                               <div key={stat.district || index}>
                                 <div className="flex justify-between text-xs mb-1">
-                                  <span className="font-medium text-gray-700">
+                                  <span className="font-medium text-on-surface-variant">
                                     {stat?.district || 'Unknown'}
                                   </span>
-                                  <span className="text-gray-900 font-semibold">
+                                  <span className="text-on-surface font-semibold">
                                     {panelFormatNumber(stat?.count || 0)}
                                   </span>
                                 </div>
-                                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                <div className="w-full bg-surface-container-high rounded-full h-1.5">
                                   <div
                                     className={`h-1.5 rounded-full ${panelGetDistrictColor(cp * PAGE_SIZE + index)}`}
                                     style={{ width: `${Math.max(pct, 0)}%` }}
@@ -2978,7 +2978,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <MapPin className="w-4 h-4 text-orange-500" />
-                    <h3 className="text-sm font-semibold text-gray-900">By AC</h3>
+                    <h3 className="text-sm font-semibold text-on-surface">By AC</h3>
                   </div>
                   <div className="space-y-2">
                     {visAc.map((stat, index) => {
@@ -2987,10 +2987,10 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                       return (
                         <div key={stat.ac || index}>
                           <div className="flex justify-between text-xs mb-1">
-                            <span className="font-medium text-gray-700">{stat.ac}</span>
-                            <span className="font-semibold text-gray-900">{panelFormatNumber(stat.count)}</span>
+                            <span className="font-medium text-on-surface-variant">{stat.ac}</span>
+                            <span className="font-semibold text-on-surface">{panelFormatNumber(stat.count)}</span>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-1.5">
+                          <div className="w-full bg-surface-container-high rounded-full h-1.5">
                             <div className="h-1.5 rounded-full bg-orange-400" style={{ width: `${pct}%` }} />
                           </div>
                         </div>
@@ -3004,7 +3004,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
               {visDailyStats.length > 0 && <div>
                 <div className="flex items-center gap-2 mb-3">
                   <Calendar className="w-4 h-4 text-primary" />
-                  <h3 className="text-sm font-semibold text-gray-900">
+                  <h3 className="text-sm font-semibold text-on-surface">
                     Last 14 Days
                   </h3>
                   {isFiltered && (
@@ -3030,12 +3030,12 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                               key={stat?.date || idx}
                               className="flex justify-between items-center text-xs"
                             >
-                              <span className="text-gray-600">
+                              <span className="text-on-surface-variant">
                                 {stat?.date
                                   ? panelFormatDate(stat.date)
                                   : 'Unknown'}
                               </span>
-                              <span className="font-semibold text-gray-900">
+                              <span className="font-semibold text-on-surface">
                                 {panelFormatNumber(stat?.count ?? 0)}
                               </span>
                             </div>
@@ -3060,7 +3060,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
               {visContributors.length > 0 && <div>
                 <div className="flex items-center gap-2 mb-3">
                   <Users className="w-4 h-4 text-primary" />
-                  <h3 className="text-sm font-semibold text-gray-900">
+                  <h3 className="text-sm font-semibold text-on-surface">
                     Top Contributors
                   </h3>
                   {isFiltered && (
@@ -3093,19 +3093,19 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                                     #{globalIndex + 1}
                                   </div>
                                   <div>
-                                    <div className="text-xs font-medium text-gray-900 truncate max-w-[110px]">
+                                    <div className="text-xs font-medium text-on-surface truncate max-w-[110px]">
                                       {user?.displayName ||
                                         (user?.userId
                                           ? `${user.userId.slice(0, 8)}...`
                                           : 'Unknown')}
                                     </div>
-                                    <div className="text-[10px] text-gray-500">
+                                    <div className="text-[10px] text-outline">
                                       {panelFormatZone(user?.zone || 'Unknown')}
                                     </div>
                                   </div>
                                 </div>
                                 <div className="text-right flex-shrink-0">
-                                  <div className="text-xs font-semibold text-gray-900">
+                                  <div className="text-xs font-semibold text-on-surface">
                                     {panelFormatNumber(user?.total ?? 0)}
                                   </div>
                                   <div className="text-[10px] text-orange-600">
@@ -3144,9 +3144,9 @@ export const SurveyAnalyticsDetailPanel: React.FC<
       {/* Contributor Answers Modal */}
       {selectedContributor !== null && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 flex flex-col max-h-[85vh]">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900 truncate pr-4">
+          <div className="bg-surface-container rounded-xl shadow-xl w-full max-w-lg mx-4 flex flex-col max-h-[85vh]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-outline-variant">
+              <h2 className="text-lg font-semibold text-on-surface truncate pr-4">
                 {selectedContributor.displayName ||
                   (selectedContributor.userId
                     ? `${selectedContributor.userId.slice(0, 8)}...`
@@ -3157,7 +3157,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                   setSelectedContributor(null);
                   setContributorModalData(null);
                 }}
-                className="text-gray-400 hover:text-gray-600 text-xl leading-none flex-shrink-0"
+                className="text-outline hover:text-on-surface-variant text-xl leading-none flex-shrink-0"
               >
                 ✕
               </button>
@@ -3168,48 +3168,48 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                   <Loader2 className="w-6 h-6 animate-spin text-primary" />
                 </div>
               ) : contributorModalData?.response == null ? (
-                <p className="text-gray-500 text-sm text-center py-8">
+                <p className="text-outline text-sm text-center py-8">
                   No response found for this contributor.
                 </p>
               ) : (
                 <>
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-5 text-sm space-y-1">
+                  <div className="bg-surface-container-low border border-outline-variant rounded-lg p-4 mb-5 text-sm space-y-1">
                     {contributorModalData.response.respondent?.name && (
                       <div className="flex gap-3">
-                        <span className="text-gray-500 w-20 flex-shrink-0">
+                        <span className="text-outline w-20 flex-shrink-0">
                           Name
                         </span>
-                        <span className="text-gray-900">
+                        <span className="text-on-surface">
                           {contributorModalData.response.respondent.name}
                         </span>
                       </div>
                     )}
                     {contributorModalData.response.respondent?.phone && (
                       <div className="flex gap-3">
-                        <span className="text-gray-500 w-20 flex-shrink-0">
+                        <span className="text-outline w-20 flex-shrink-0">
                           Phone
                         </span>
-                        <span className="text-gray-900">
+                        <span className="text-on-surface">
                           {contributorModalData.response.respondent.phone}
                         </span>
                       </div>
                     )}
                     {contributorModalData.response.respondent?.email && (
                       <div className="flex gap-3">
-                        <span className="text-gray-500 w-20 flex-shrink-0">
+                        <span className="text-outline w-20 flex-shrink-0">
                           Email
                         </span>
-                        <span className="text-gray-900">
+                        <span className="text-on-surface">
                           {contributorModalData.response.respondent.email}
                         </span>
                       </div>
                     )}
                     {contributorModalData.response.submittedAt && (
                       <div className="flex gap-3">
-                        <span className="text-gray-500 w-20 flex-shrink-0">
+                        <span className="text-outline w-20 flex-shrink-0">
                           Submitted
                         </span>
-                        <span className="text-gray-900">
+                        <span className="text-on-surface">
                           {new Date(
                             contributorModalData.response.submittedAt
                           ).toLocaleString()}
@@ -3233,10 +3233,10 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                         : '—';
                       return (
                         <div key={q.id}>
-                          <p className="text-xs font-semibold text-gray-500 mb-1">
+                          <p className="text-xs font-semibold text-outline mb-1">
                             {q.text}
                           </p>
-                          <p className="text-sm text-gray-900">{answerText}</p>
+                          <p className="text-sm text-on-surface">{answerText}</p>
                         </div>
                       );
                     })}
@@ -3572,32 +3572,32 @@ export const SurveyDownloadModal: React.FC<SurveyDownloadModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
+      <div className="bg-surface-container rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-on-surface">
             Download Responses (XLSX)
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-xl leading-none"
+            className="text-outline hover:text-on-surface-variant text-xl leading-none"
           >
             ✕
           </button>
         </div>
-        <p className="text-sm text-gray-600 mb-5">
+        <p className="text-sm text-on-surface-variant mb-5">
           <span className="font-medium">{survey.label}</span>
           {survey.surveyId && (
-            <span className="ml-2 text-black">({survey.surveyId})</span>
+            <span className="ml-2 text-on-surface">({survey.surveyId})</span>
           )}
         </p>
-        <div className="mb-4 text-black">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-on-surface-variant mb-2">
             Time Period
           </label>
           <select
             value={timePeriod}
             onChange={(e) => setTimePeriod(e.target.value as typeof timePeriod)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary bg-white"
+            className="w-full px-3 py-2 border border-outline-variant bg-surface-container-low text-on-surface rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
           >
             <option value="1day">Last 1 Day</option>
             <option value="3days">Last 3 Days</option>
@@ -3607,27 +3607,27 @@ export const SurveyDownloadModal: React.FC<SurveyDownloadModalProps> = ({
           </select>
         </div>
         {timePeriod === 'custom' && (
-          <div className="grid grid-cols-2 gap-4 mb-4 text-black">
+          <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-on-surface-variant mb-1">
                 From Date
               </label>
               <input
                 type="date"
                 value={customFromDate}
                 onChange={(e) => setCustomFromDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                className="w-full px-3 py-2 border border-outline-variant bg-surface-container-low text-on-surface rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-on-surface-variant mb-1">
                 To Date
               </label>
               <input
                 type="date"
                 value={customToDate}
                 onChange={(e) => setCustomToDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                className="w-full px-3 py-2 border border-outline-variant bg-surface-container-low text-on-surface rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
               />
             </div>
           </div>
@@ -3635,7 +3635,7 @@ export const SurveyDownloadModal: React.FC<SurveyDownloadModalProps> = ({
         <div className="flex justify-end gap-3 mt-6">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container-high border border-outline-variant rounded-md hover:bg-outline-variant/20"
           >
             Cancel
           </button>

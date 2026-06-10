@@ -87,13 +87,13 @@ const AnalyticsDashboardContent: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex bg-gray-50 text-text-dark">
+    <div className="h-full flex bg-surface-container-low text-text-dark">
       <AdminSidebar />
       <div className="h-full flex-1 overflow-y-auto py-8 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-on-surface">
               Analytics Dashboard
             </h1>
             <div className="flex gap-4">
@@ -129,11 +129,11 @@ const AnalyticsDashboardContent: React.FC = () => {
 
           {/* Overview Stats */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-surface-container rounded-lg shadow p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Unique Visitors</p>
-                  <p className="text-3xl font-bold text-gray-900">
+                  <p className="text-sm text-on-surface-variant mb-1">Unique Visitors</p>
+                  <p className="text-3xl font-bold text-on-surface">
                     {overview ? formatNumber(overview.uniqueVisitors) : '0'}
                   </p>
                 </div>
@@ -155,11 +155,11 @@ const AnalyticsDashboardContent: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-surface-container rounded-lg shadow p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Total Sessions</p>
-                  <p className="text-3xl font-bold text-gray-900">
+                  <p className="text-sm text-on-surface-variant mb-1">Total Sessions</p>
+                  <p className="text-3xl font-bold text-on-surface">
                     {overview ? formatNumber(overview.totalSessions) : '0'}
                   </p>
                 </div>
@@ -181,11 +181,11 @@ const AnalyticsDashboardContent: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-surface-container rounded-lg shadow p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Page Views</p>
-                  <p className="text-3xl font-bold text-gray-900">
+                  <p className="text-sm text-on-surface-variant mb-1">Page Views</p>
+                  <p className="text-3xl font-bold text-on-surface">
                     {overview ? formatNumber(overview.pageViews) : '0'}
                   </p>
                 </div>
@@ -213,11 +213,11 @@ const AnalyticsDashboardContent: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-surface-container rounded-lg shadow p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Registrations</p>
-                  <p className="text-3xl font-bold text-gray-900">
+                  <p className="text-sm text-on-surface-variant mb-1">Registrations</p>
+                  <p className="text-3xl font-bold text-on-surface">
                     {overview ? formatNumber(overview.registrations) : '0'}
                   </p>
                 </div>
@@ -241,45 +241,45 @@ const AnalyticsDashboardContent: React.FC = () => {
           </div>
 
           {/* Tracking Links Table */}
-          <div className="bg-white rounded-lg shadow mb-8">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">
+          <div className="bg-surface-container rounded-lg shadow mb-8">
+            <div className="p-6 border-b border-outline-variant">
+              <h2 className="text-xl font-semibold text-on-surface">
                 Tracking Links Performance
               </h2>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead className="bg-surface-container-low">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-outline uppercase tracking-wider">
                       Campaign Name
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-outline uppercase tracking-wider">
                       UTM Source
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-outline uppercase tracking-wider">
                       Short Code
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-outline uppercase tracking-wider">
                       Visitors
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-outline uppercase tracking-wider">
                       Registrations
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-outline uppercase tracking-wider">
                       Conversion
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-outline uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-outline-variant/20">
                   {links.length === 0 ? (
                     <tr>
                       <td
                         colSpan={7}
-                        className="px-6 py-12 text-center text-gray-500"
+                        className="px-6 py-12 text-center text-outline"
                       >
                         No tracking links found.{' '}
                         <a
@@ -300,29 +300,29 @@ const AnalyticsDashboardContent: React.FC = () => {
                           : '0.0';
 
                       return (
-                        <tr key={link.id} className="hover:bg-gray-50">
+                        <tr key={link.id} className="hover:bg-surface-container-high">
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-gray-900">
+                            <div className="text-sm font-medium text-on-surface">
                               {link.name}
                             </div>
                             {link.utmCampaign && (
-                              <div className="text-xs text-gray-500">
+                              <div className="text-xs text-outline">
                                 {link.utmCampaign}
                               </div>
                             )}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-on-surface-variant">
                             {link.utmSource || '-'}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <code className="text-xs bg-gray-100 px-2 py-1 rounded">
+                            <code className="text-xs bg-surface-container-high px-2 py-1 rounded">
                               {link.shortCode}
                             </code>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-on-surface">
                             {formatNumber(visitors)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-on-surface">
                             {formatNumber(registrations)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -346,7 +346,7 @@ const AnalyticsDashboardContent: React.FC = () => {
                               >
                                 Copy Link
                               </button>
-                              <span className="text-gray-300">|</span>
+                              <span className="text-outline-variant">|</span>
                               <a
                                 href={`/admin/edit-tracking-link/${link.id}`}
                                 className="text-blue-600 hover:text-blue-800 font-medium"
@@ -365,60 +365,60 @@ const AnalyticsDashboardContent: React.FC = () => {
           </div>
 
           {/* Recent Visitors */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">
+          <div className="bg-surface-container rounded-lg shadow">
+            <div className="p-6 border-b border-outline-variant">
+              <h2 className="text-xl font-semibold text-on-surface">
                 Recent Visitors
               </h2>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead className="bg-surface-container-low">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-outline uppercase tracking-wider">
                       Visitor ID
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-outline uppercase tracking-wider">
                       Source
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-outline uppercase tracking-wider">
                       Location
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-outline uppercase tracking-wider">
                       Registered
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-outline uppercase tracking-wider">
                       First Seen
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-outline-variant/20">
                   {visitors.length === 0 ? (
                     <tr>
                       <td
                         colSpan={5}
-                        className="px-6 py-12 text-center text-gray-500"
+                        className="px-6 py-12 text-center text-outline"
                       >
                         No visitors yet
                       </td>
                     </tr>
                   ) : (
                     visitors.map((visitor) => (
-                      <tr key={visitor.id} className="hover:bg-gray-50">
+                      <tr key={visitor.id} className="hover:bg-surface-container-high">
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <code className="text-xs bg-gray-100 px-2 py-1 rounded">
+                          <code className="text-xs bg-surface-container-high px-2 py-1 rounded">
                             {visitor.id.slice(0, 8)}...
                           </code>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-on-surface-variant">
                           {visitor.lastUtmSource || '-'}
                           {visitor.lastUtmMedium && (
-                            <span className="text-gray-400">
+                            <span className="text-outline">
                               /{visitor.lastUtmMedium}
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-on-surface-variant">
                           {visitor.city || ''} {visitor.country || ''}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -432,7 +432,7 @@ const AnalyticsDashboardContent: React.FC = () => {
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-on-surface-variant">
                           {formatDate(visitor.firstSeenAt)}
                         </td>
                       </tr>
