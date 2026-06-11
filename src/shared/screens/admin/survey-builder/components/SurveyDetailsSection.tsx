@@ -166,7 +166,7 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
                     onClick={() => setSettings({ defaultFormLayout: value })}
                     className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors text-left ${
                       settings.defaultFormLayout === value
-                        ? 'bg-primary text-white border-primary'
+                        ? 'bg-primary text-on-primary border-primary'
                         : 'bg-surface-container text-on-surface-variant border-outline-variant hover:border-primary'
                     }`}
                   >
@@ -311,7 +311,7 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
               <div className="pt-4 pb-8">
                 <button
                   onClick={onContinue}
-                  className="w-full py-3 px-6 bg-primary text-white rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm"
+                  className="w-full py-3 px-6 bg-primary text-on-primary rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm"
                 >
                   All Setup. Let's build the survey &rarr;
                 </button>

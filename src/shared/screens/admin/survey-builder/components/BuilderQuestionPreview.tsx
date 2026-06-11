@@ -509,7 +509,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
                 } : undefined}
                 className={`mt-2 px-4 py-1.5 text-sm rounded border transition-colors ${
                   isDKSelected
-                    ? 'bg-primary text-white border-primary'
+                    ? 'bg-primary text-on-primary border-primary'
                     : 'bg-surface-container text-custom-grey-3 border-custom-grey-2 hover:border-primary hover:text-primary'
                 }`}
               >

@@ -80,7 +80,7 @@ export const DoubleSlider: React.FC<DoubleSliderProps> = ({
       <div className="space-y-6">
         {/* Labels */}
         {(minLabel || minValue) && (
-          <div className="flex justify-between text-sm md:text-base text-black mb-2">
+          <div className="flex justify-between text-sm md:text-base text-on-surface mb-2">
             <span>{`${minLabel ?? 'Min'}: ${minValue}`}</span>
             <span>{`${maxLabel ?? 'Max'}: ${maxValue}`}</span>
           </div>
@@ -89,7 +89,7 @@ export const DoubleSlider: React.FC<DoubleSliderProps> = ({
         {/* Double Slider */}
         <div className="relative h-16">
           {/* Background Track */}
-          <div className="absolute top-1/2 -translate-y-1/2 w-full h-2 bg-gray-300 rounded-lg" />
+          <div className="absolute top-1/2 -translate-y-1/2 w-full h-2 bg-outline-variant rounded-lg" />
 
           {/* Active Range */}
           <div
@@ -153,7 +153,7 @@ export const DoubleSlider: React.FC<DoubleSliderProps> = ({
 
         {/* Selected Range Display */}
         <div className="text-center">
-          <span className="text-lg md:text-xl font-medium text-black">
+          <span className="text-lg md:text-xl font-medium text-on-surface">
             Rs. {localRange.min} - Rs. {localRange.max}
           </span>
         </div>

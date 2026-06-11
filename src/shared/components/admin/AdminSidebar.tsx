@@ -118,7 +118,7 @@ const AdminSidebar: React.FC = () => {
               title={isCollapsed ? link.label : undefined}
               className={`flex items-center gap-3 px-2 py-3 rounded-lg transition-colors ${
                 isActive(link.href)
-                  ? 'bg-primary text-white font-medium'
+                  ? 'bg-primary text-on-primary font-medium'
                   : 'text-on-surface-variant hover:bg-surface-container-high font-medium'
               } ${isCollapsed ? 'justify-center' : ''}`}
             >

@@ -162,7 +162,7 @@ const QuestionPreviewPanel: React.FC = () => {
               onClick={() => setActiveLanguage(lang)}
               className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
                 activeLanguage === lang
-                  ? 'bg-primary text-white'
+                  ? 'bg-primary text-on-primary'
                   : 'bg-surface-container-high text-on-surface-variant hover:bg-outline-variant'
               }`}
             >
@@ -364,7 +364,7 @@ const QuestionPreviewPanel: React.FC = () => {
               </div>
               <button
                 onClick={() => { setPreviewAnswers({}); setPreviewNavIdx(0); setPreviewDone(false); }}
-                className="mt-2 px-5 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+                className="mt-2 px-5 py-2 bg-primary text-on-primary rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
               >
                 Restart
               </button>

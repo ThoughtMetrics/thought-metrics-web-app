@@ -90,7 +90,7 @@ const TemplateSettingsPanel: React.FC = () => {
                   onClick={() => setSettings({ defaultFormLayout: layout })}
                   className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
                     settings.defaultFormLayout === layout
-                      ? 'bg-primary text-white border-primary'
+                      ? 'bg-primary text-on-primary border-primary'
                       : 'bg-surface-container text-on-surface-variant border-outline-variant hover:border-primary'
                   }`}
                 >
@@ -109,7 +109,7 @@ const TemplateSettingsPanel: React.FC = () => {
                   onClick={() => setSettings({ defaultType: t })}
                   className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
                     settings.defaultType === t
-                      ? 'bg-primary text-white border-primary'
+                      ? 'bg-primary text-on-primary border-primary'
                       : 'bg-surface-container text-on-surface-variant border-outline-variant hover:border-primary'
                   }`}
                 >

@@ -307,7 +307,7 @@ const EditTrackingLinkFormContent: React.FC = () => {
                       ? 'Updating...'
                       : 'Update Tracking Link'
                   }
-                  className="flex-1 bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                  className="flex-1 bg-primary text-on-primary px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
                   disabled={updateMutation.isPending}
                   loading={updateMutation.isPending}
                 />

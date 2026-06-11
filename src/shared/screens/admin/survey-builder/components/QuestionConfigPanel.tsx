@@ -963,7 +963,7 @@ const QuestionConfigPanel: React.FC = () => {
                       type="button"
                       onClick={() => setQuestionConfig(selectedQuestionIndex, { gaborPresentationMode: m })}
                       className={`flex-1 py-1.5 text-xs font-medium transition-colors ${idx === 0 ? 'border-r border-outline-variant' : ''} ${
-                        mode === m ? 'bg-primary text-white' : 'text-outline hover:bg-surface-container-high'
+                        mode === m ? 'bg-primary text-on-primary' : 'text-outline hover:bg-surface-container-high'
                       }`}
                     >
                       {m === 'sequential' ? 'Sequential' : 'All at once'}

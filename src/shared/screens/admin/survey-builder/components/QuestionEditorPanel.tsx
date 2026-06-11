@@ -491,7 +491,7 @@ const QuestionEditorPanel: React.FC = () => {
               </div>
               <button
                 onClick={() => { setPreviewAnswers({}); setPreviewNavIdx(0); setPreviewDone(false); }}
-                className="mt-2 px-5 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+                className="mt-2 px-5 py-2 bg-primary text-on-primary rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
               >
                 Restart
               </button>
@@ -653,7 +653,7 @@ const QuestionEditorPanel: React.FC = () => {
               <div className="px-8 py-8" onClick={(e) => e.stopPropagation()}>
                 <div className={`mx-auto w-full space-y-5 ${isNarrowList ? 'max-w-sm' : 'max-w-xl'}`}>
                   <div className="flex items-start gap-3">
-                    <span className="flex-shrink-0 w-6 h-6 bg-primary text-white text-xs font-bold flex items-center justify-center rounded mt-1">
+                    <span className="flex-shrink-0 w-6 h-6 bg-primary text-on-primary text-xs font-bold flex items-center justify-center rounded mt-1">
                       {question.order}
                     </span>
                     <div className="flex-1 min-w-0">
@@ -758,7 +758,7 @@ const QuestionEditorPanel: React.FC = () => {
                       key={l}
                       onClick={() => { setActiveLanguage(l); setGlobalLanguage(l as 'en' | 'ta'); }}
                       className={`px-2.5 py-1 rounded text-xs font-medium transition-colors ${
-                        activeLanguage === l ? 'bg-primary text-white' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high border border-outline-variant'
+                        activeLanguage === l ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high border border-outline-variant'
                       }`}
                     >
                       {LANG_LABELS[l]}
@@ -877,7 +877,7 @@ const QuestionEditorPanel: React.FC = () => {
 
             {/* Badge + headless question text + description */}
             <div className="flex items-start gap-3">
-              <span className="flex-shrink-0 w-6 h-6 bg-primary text-white text-xs font-bold flex items-center justify-center rounded mt-1">
+              <span className="flex-shrink-0 w-6 h-6 bg-primary text-on-primary text-xs font-bold flex items-center justify-center rounded mt-1">
                 {question.order}
               </span>
               <div className="flex-1 min-w-0">
@@ -983,7 +983,7 @@ const QuestionEditorPanel: React.FC = () => {
                 key={l}
                 onClick={() => { setActiveLanguage(l); setGlobalLanguage(l as 'en' | 'ta'); }}
                 className={`px-2.5 py-1 rounded text-xs font-medium transition-colors ${
-                  lang === l ? 'bg-primary text-white' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high border border-outline-variant'
+                  lang === l ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high border border-outline-variant'
                 }`}
               >
                 {LANG_LABELS[l]}

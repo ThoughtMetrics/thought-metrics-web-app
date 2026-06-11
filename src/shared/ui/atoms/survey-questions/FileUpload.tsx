@@ -190,7 +190,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
               ${isUploading ? 'cursor-wait opacity-70' : 'cursor-pointer'}
               ${isDragging
                 ? 'border-primary bg-primary/5'
-                : 'border-custom-grey-1 hover:border-primary bg-white'
+                : 'border-custom-grey-1 hover:border-primary bg-surface-container'
               }
             `}
           >
@@ -211,7 +211,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
                   </div>
-                  <p className="text-base text-black">
+                  <p className="text-base text-on-surface">
                     {translations.common.uploading || 'Uploading...'}
                   </p>
                 </>
@@ -222,7 +222,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                     </svg>
                   </div>
-                  <p className="text-base text-black">
+                  <p className="text-base text-on-surface">
                     {translations.surveyQuestions.dragDropFile || 'Drag & drop or click to upload'}
                   </p>
                   <p className="text-sm text-custom-grey-3">
@@ -237,7 +237,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
           </div>
         ) : (
           /* File Preview */
-          <div className="border border-custom-grey-1 rounded-lg p-4 bg-white">
+          <div className="border border-custom-grey-1 rounded-lg p-4 bg-surface-container">
             <div className="flex items-center gap-4">
               {/* Preview or Icon */}
               {isImage(value.mimeType) ? (
@@ -256,7 +256,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
               {/* File Info */}
               <div className="flex-1 min-w-0">
-                <p className="text-base font-medium text-black truncate">
+                <p className="text-base font-medium text-on-surface truncate">
                   {value.fileName}
                 </p>
                 <p className="text-sm text-custom-grey-3">

@@ -203,7 +203,7 @@ export const ConstantSum: React.FC<ConstantSumProps> = ({
               return (
                 <div
                   key={option.value}
-                  className="border border-custom-grey-1 rounded-lg bg-white overflow-hidden"
+                  className="border border-custom-grey-1 rounded-lg bg-surface-container overflow-hidden"
                 >
                   {/* Main option row */}
                   <div className="flex items-center gap-4 p-2 hover:border-primary group">
@@ -213,14 +213,14 @@ export const ConstantSum: React.FC<ConstantSumProps> = ({
                       max={remaining + (localAllocation[option.value] ?? 0)}
                       value={localAllocation[option.value] ?? 0}
                       onChange={(e) => handleChange(option.value, e.target.value)}
-                      className="w-16 py-1 border border-custom-grey-1 rounded focus:border-primary outline-none bg-white text-center group-hover:border-primary"
+                      className="w-16 py-1 border border-custom-grey-1 rounded focus:border-primary outline-none bg-surface-container text-center group-hover:border-primary"
                     />
-                    <span className="flex-1 text-base md:text-lg text-black">{option.label}</span>
+                    <span className="flex-1 text-base md:text-lg text-on-surface">{option.label}</span>
                     {hasAttrs && (
                       <button
                         type="button"
                         onClick={() => setExpandedOption(isExpanded ? null : option.value)}
-                        className="p-1 text-gray-400 hover:text-primary transition-colors"
+                        className="p-1 text-outline hover:text-primary transition-colors"
                         title="Show details"
                       >
                         <ChevronDown
@@ -229,13 +229,13 @@ export const ConstantSum: React.FC<ConstantSumProps> = ({
                       </button>
                     )}
                     <button
-                      className="h-8 w-8 bg-white rounded-lg flex justify-center items-center relative group/button border border-custom-grey-1 focus:border-primary outline-none"
+                      className="h-8 w-8 bg-surface-container rounded-lg flex justify-center items-center relative group/button border border-custom-grey-1 focus:border-primary outline-none"
                       onClick={() => decreaseVal(option.value)}
                     >
                       <div className="w-4 h-0.5 bg-custom-grey-1 group-hover/button:bg-primary"></div>
                     </button>
                     <button
-                      className="h-8 w-8 bg-white rounded-lg flex justify-center items-center relative group/button border border-custom-grey-1 focus:border-primary outline-none"
+                      className="h-8 w-8 bg-surface-container rounded-lg flex justify-center items-center relative group/button border border-custom-grey-1 focus:border-primary outline-none"
                       onClick={() => increaseVal(option.value)}
                     >
                       <div className="w-4 h-0.5 bg-custom-grey-1 group-hover/button:bg-primary"></div>
@@ -299,15 +299,15 @@ export const ConstantSum: React.FC<ConstantSumProps> = ({
               return (
                 <div
                   key={option.value}
-                  className="border border-custom-grey-1 rounded-lg bg-white overflow-hidden"
+                  className="border border-custom-grey-1 rounded-lg bg-surface-container overflow-hidden"
                 >
                   <div className="flex items-center gap-4 p-2">
-                    <span className="flex-1 text-base text-black">{option.label}</span>
+                    <span className="flex-1 text-base text-on-surface">{option.label}</span>
                     {hasAttrs && (
                       <button
                         type="button"
                         onClick={() => setExpandedOption(isExpanded ? null : option.value)}
-                        className="p-1 text-gray-400 hover:text-primary transition-colors"
+                        className="p-1 text-outline hover:text-primary transition-colors"
                         title="Show details"
                       >
                         <ChevronDown
@@ -321,7 +321,7 @@ export const ConstantSum: React.FC<ConstantSumProps> = ({
                       max={ratingMax ?? 10}
                       value={localRatings[option.value] ?? 0}
                       onChange={(e) => handleRatingChange(option.value, e.target.value)}
-                      className="w-16 py-1 border border-custom-grey-1 rounded focus:border-primary outline-none bg-white text-center"
+                      className="w-16 py-1 border border-custom-grey-1 rounded focus:border-primary outline-none bg-surface-container text-center"
                     />
                   </div>
 
@@ -370,15 +370,15 @@ export const ConstantSum: React.FC<ConstantSumProps> = ({
               return (
                 <div
                   key={option.value}
-                  className="border border-custom-grey-1 rounded-lg bg-white overflow-hidden"
+                  className="border border-custom-grey-1 rounded-lg bg-surface-container overflow-hidden"
                 >
                   <div className="flex items-center gap-4 p-2">
-                    <span className="flex-1 text-base text-black">{option.label}</span>
+                    <span className="flex-1 text-base text-on-surface">{option.label}</span>
                     {hasAttrs && (
                       <button
                         type="button"
                         onClick={() => setExpandedOption(isExpanded ? null : option.value)}
-                        className="p-1 text-gray-400 hover:text-primary transition-colors"
+                        className="p-1 text-outline hover:text-primary transition-colors"
                         title="Show details"
                       >
                         <ChevronDown
@@ -387,14 +387,14 @@ export const ConstantSum: React.FC<ConstantSumProps> = ({
                       </button>
                     )}
                     <button
-                      className="h-8 w-8 bg-white rounded-lg flex justify-center items-center relative group/button border border-custom-grey-1 focus:border-primary outline-none"
+                      className="h-8 w-8 bg-surface-container rounded-lg flex justify-center items-center relative group/button border border-custom-grey-1 focus:border-primary outline-none"
                       onClick={() => decreaseQty(option.value)}
                     >
                       <div className="w-4 h-0.5 bg-custom-grey-1 group-hover/button:bg-primary"></div>
                     </button>
                     <span className="w-10 text-center text-base font-medium text-text-dark">{qty}</span>
                     <button
-                      className="h-8 w-8 bg-white rounded-lg flex justify-center items-center relative group/button border border-custom-grey-1 focus:border-primary outline-none"
+                      className="h-8 w-8 bg-surface-container rounded-lg flex justify-center items-center relative group/button border border-custom-grey-1 focus:border-primary outline-none"
                       onClick={() => increaseQty(option.value)}
                     >
                       <div className="w-4 h-0.5 bg-custom-grey-1 group-hover/button:bg-primary"></div>

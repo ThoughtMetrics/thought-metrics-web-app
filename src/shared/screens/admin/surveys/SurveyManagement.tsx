@@ -177,7 +177,7 @@ const SurveyManagementContent: React.FC = () => {
             </div>
             <button
               onClick={() => setShowPicker(true)}
-              className="px-5 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
+              className="px-5 py-2.5 bg-primary text-on-primary rounded-lg font-medium hover:bg-primary/90 transition-colors"
             >
               + New Survey
             </button>
@@ -203,7 +203,7 @@ const SurveyManagementContent: React.FC = () => {
                       onClick={() => { setStatusTab(tab.value); setSurveyPage(1); }}
                       className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                         statusTab === tab.value
-                          ? 'bg-primary text-white'
+                          ? 'bg-primary text-on-primary'
                           : 'text-on-surface-variant hover:bg-surface-container-high'
                       }`}
                     >

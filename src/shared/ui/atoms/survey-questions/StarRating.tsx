@@ -72,7 +72,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
 
         {/* Rating Label */}
         {ratingLabels && (
-          <p className="text-base md:text-lg text-black text-center">
+          <p className="text-base md:text-lg text-on-surface text-center">
             {Object.entries(ratingLabels)
               .map((ratingLabel) => `${ratingLabel[0]}=${ratingLabel[1]}`)
               .join(', ')}

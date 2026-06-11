@@ -59,8 +59,8 @@ export const MaxDiff: React.FC<MaxDiffProps> = ({
       <div className="space-y-2">
         {/* Column header */}
         <div className="flex justify-between items-center px-1 mb-1">
-          <span className="text-xs font-medium text-gray-500">← Least important</span>
-          <span className="text-xs font-medium text-gray-500">Most important →</span>
+          <span className="text-xs font-medium text-outline">← Least important</span>
+          <span className="text-xs font-medium text-outline">Most important →</span>
         </div>
 
         {items.map((item) => {
@@ -76,7 +76,7 @@ export const MaxDiff: React.FC<MaxDiffProps> = ({
                   ? 'bg-primary/10 border-primary'
                   : itemSelection === 'worst'
                   ? 'bg-rose-50 border-rose-300'
-                  : 'bg-white border-custom-grey-1'
+                  : 'bg-surface-container border-custom-grey-1'
               }`}
             >
               <div className="flex items-center gap-2 p-2.5">
@@ -87,14 +87,14 @@ export const MaxDiff: React.FC<MaxDiffProps> = ({
                   className={`flex-shrink-0 px-2.5 py-1 rounded text-xs font-medium border transition-colors ${
                     itemSelection === 'worst'
                       ? 'bg-rose-500 text-white border-rose-500'
-                      : 'border-gray-300 text-gray-500 hover:border-rose-400 hover:text-rose-500'
+                      : 'border-outline-variant text-outline hover:border-rose-400 hover:text-rose-500'
                   }`}
                 >
                   Least
                 </button>
 
                 {/* Item label */}
-                <span className="flex-1 text-sm md:text-base text-black text-center px-1 min-w-0 break-words">
+                <span className="flex-1 text-sm md:text-base text-on-surface text-center px-1 min-w-0 break-words">
                   {item.label}
                 </span>
 
@@ -103,7 +103,7 @@ export const MaxDiff: React.FC<MaxDiffProps> = ({
                   <button
                     type="button"
                     onClick={() => setExpandedItem(isExpanded ? null : item.id)}
-                    className="flex-shrink-0 p-1 text-gray-400 hover:text-primary transition-colors"
+                    className="flex-shrink-0 p-1 text-outline hover:text-primary transition-colors"
                     title="Show details"
                   >
                     <ChevronDown
@@ -118,8 +118,8 @@ export const MaxDiff: React.FC<MaxDiffProps> = ({
                   onClick={() => handleSelectionChange(item.id, 'best')}
                   className={`flex-shrink-0 px-2.5 py-1 rounded text-xs font-medium border transition-colors ${
                     itemSelection === 'best'
-                      ? 'bg-primary text-white border-primary'
-                      : 'border-gray-300 text-gray-500 hover:border-primary hover:text-primary'
+                      ? 'bg-primary text-on-primary border-primary'
+                      : 'border-outline-variant text-outline hover:border-primary hover:text-primary'
                   }`}
                 >
                   Most

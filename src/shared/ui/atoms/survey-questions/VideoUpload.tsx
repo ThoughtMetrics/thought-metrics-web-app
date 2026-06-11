@@ -144,7 +144,7 @@ export const VideoUpload: React.FC<VideoUploadProps> = ({
             onDrop={(e) => { e.preventDefault(); setIsDragging(false); const f = e.dataTransfer.files?.[0]; if (f) handleFileSelect(f); }}
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
             onDragLeave={() => setIsDragging(false)}
-            className={`border border-dashed rounded-lg p-8 text-center transition-colors ${isUploading ? 'cursor-wait opacity-70' : 'cursor-pointer'} ${isDragging ? 'border-primary bg-primary/5' : 'border-custom-grey-1 hover:border-primary bg-white'}`}
+            className={`border border-dashed rounded-lg p-8 text-center transition-colors ${isUploading ? 'cursor-wait opacity-70' : 'cursor-pointer'} ${isDragging ? 'border-primary bg-primary/5' : 'border-custom-grey-1 hover:border-primary bg-surface-container'}`}
           >
             <input
               ref={fileInputRef}
@@ -163,7 +163,7 @@ export const VideoUpload: React.FC<VideoUploadProps> = ({
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
                   </div>
-                  <p className="text-base text-black">{translations.common.uploading || 'Uploading...'}</p>
+                  <p className="text-base text-on-surface">{translations.common.uploading || 'Uploading...'}</p>
                 </>
               ) : (
                 <>
@@ -172,18 +172,18 @@ export const VideoUpload: React.FC<VideoUploadProps> = ({
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.069A1 1 0 0121 8.845v6.31a1 1 0 01-1.447.894L15 14M4 8h8a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4a2 2 0 012-2z" />
                     </svg>
                   </div>
-                  <p className="text-base text-black">Drag & drop or click to upload video</p>
+                  <p className="text-base text-on-surface">Drag & drop or click to upload video</p>
                   <p className="text-sm text-custom-grey-3">MP4, WebM, MOV · Max {maxSizeMB}MB · Max {maxDurationSec}s</p>
                 </>
               )}
             </div>
           </div>
         ) : (
-          <div className="border border-custom-grey-1 rounded-lg p-4 bg-white space-y-3">
+          <div className="border border-custom-grey-1 rounded-lg p-4 bg-surface-container space-y-3">
             <video src={value.url} controls className="w-full rounded" />
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-black truncate">{value.fileName}</p>
+                <p className="text-sm font-medium text-on-surface truncate">{value.fileName}</p>
                 <p className="text-xs text-custom-grey-3">{formatFileSize(value.fileSize)}</p>
               </div>
               <button

@@ -87,11 +87,11 @@ export const Ranking: React.FC<RankingProps> = ({
               onDragStart={() => handleDragStart(itemId)}
               onDragOver={handleDragOver}
               onDrop={() => handleDrop(index)}
-              className="border border-custom-grey-1 rounded-lg cursor-move hover:border-primary transition-colors bg-white overflow-hidden"
+              className="border border-custom-grey-1 rounded-lg cursor-move hover:border-primary transition-colors bg-surface-container overflow-hidden"
             >
               <div className="flex items-center space-x-3 p-4">
                 {/* Rank Number */}
-                <div className="flex items-center justify-center w-8 h-8 rounded border border-custom-grey-1 bg-white text-sm font-medium flex-shrink-0">
+                <div className="flex items-center justify-center w-8 h-8 rounded border border-custom-grey-1 bg-surface-container text-sm font-medium flex-shrink-0">
                   {index + 1}
                 </div>
                 {/* Drag Handle Icon */}
@@ -101,12 +101,12 @@ export const Ranking: React.FC<RankingProps> = ({
                   <div className="w-1 h-1 bg-custom-grey-3 rounded-full" />
                 </div>
                 {/* Item Label */}
-                <span className="flex-1 text-base md:text-lg text-black">{item?.label}</span>
+                <span className="flex-1 text-base md:text-lg text-on-surface">{item?.label}</span>
                 {hasAttrs && (
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); setExpandedItem(isExpanded ? null : itemId); }}
-                    className="flex-shrink-0 p-1 text-gray-400 hover:text-primary transition-colors"
+                    className="flex-shrink-0 p-1 text-outline hover:text-primary transition-colors"
                     title="Show details"
                   >
                     <ChevronDown

@@ -70,7 +70,7 @@ export const MatrixGrid: React.FC<MatrixGridProps> = ({
           return (
             <div key={row.value + index} className="space-y-3">
               {/* Row Label */}
-              <label className="block text-base md:text-lg text-black font-medium">
+              <label className="block text-base md:text-lg text-on-surface font-medium">
                 {row.label}
               </label>
 
@@ -78,7 +78,7 @@ export const MatrixGrid: React.FC<MatrixGridProps> = ({
               <select
                 value={selectedColValue || ''}
                 onChange={(e) => handleSelectionChange(row.value, e.target.value)}
-                className="w-full px-3 py-2 border-b-2 bg-white focus:bg-white focus:outline-none transition-colors border-custom-grey-1 focus:border-primary text-black"
+                className="w-full px-3 py-2 border-b-2 bg-surface-container focus:bg-surface-container focus:outline-none transition-colors border-custom-grey-1 focus:border-primary text-on-surface"
               >
                 <option value=''>{translations.surveyQuestions.selectOption}</option>
                 {rowCols.map((column) => (
@@ -103,8 +103,8 @@ export const MatrixGrid: React.FC<MatrixGridProps> = ({
                     }
                     className="w-3.5 h-3.5 accent-primary"
                   />
-                  <label htmlFor={`ip_${row.value}`} className="text-xs text-gray-500">
-                    {intensePurchaseLabel} <span className="text-gray-400">(optional)</span>
+                  <label htmlFor={`ip_${row.value}`} className="text-xs text-outline">
+                    {intensePurchaseLabel} <span className="text-outline">(optional)</span>
                   </label>
                 </div>
               )}

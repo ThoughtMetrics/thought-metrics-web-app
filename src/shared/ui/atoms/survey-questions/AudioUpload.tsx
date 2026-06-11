@@ -144,7 +144,7 @@ export const AudioUpload: React.FC<AudioUploadProps> = ({
             onDrop={(e) => { e.preventDefault(); setIsDragging(false); const f = e.dataTransfer.files?.[0]; if (f) handleFileSelect(f); }}
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
             onDragLeave={() => setIsDragging(false)}
-            className={`border border-dashed rounded-lg p-8 text-center transition-colors ${isUploading ? 'cursor-wait opacity-70' : 'cursor-pointer'} ${isDragging ? 'border-primary bg-primary/5' : 'border-custom-grey-1 hover:border-primary bg-white'}`}
+            className={`border border-dashed rounded-lg p-8 text-center transition-colors ${isUploading ? 'cursor-wait opacity-70' : 'cursor-pointer'} ${isDragging ? 'border-primary bg-primary/5' : 'border-custom-grey-1 hover:border-primary bg-surface-container'}`}
           >
             <input
               ref={fileInputRef}
@@ -163,7 +163,7 @@ export const AudioUpload: React.FC<AudioUploadProps> = ({
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
                   </div>
-                  <p className="text-base text-black">{translations.common.uploading || 'Uploading...'}</p>
+                  <p className="text-base text-on-surface">{translations.common.uploading || 'Uploading...'}</p>
                 </>
               ) : (
                 <>
@@ -172,18 +172,18 @@ export const AudioUpload: React.FC<AudioUploadProps> = ({
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4M12 3a4 4 0 014 4v4a4 4 0 01-8 0V7a4 4 0 014-4z" />
                     </svg>
                   </div>
-                  <p className="text-base text-black">Drag & drop or click to upload audio</p>
+                  <p className="text-base text-on-surface">Drag & drop or click to upload audio</p>
                   <p className="text-sm text-custom-grey-3">MP3, WAV, OGG · Max {maxSizeMB}MB · Max {maxDurationSec}s</p>
                 </>
               )}
             </div>
           </div>
         ) : (
-          <div className="border border-custom-grey-1 rounded-lg p-4 bg-white space-y-3">
+          <div className="border border-custom-grey-1 rounded-lg p-4 bg-surface-container space-y-3">
             <audio src={value.url} controls className="w-full" />
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-black truncate">{value.fileName}</p>
+                <p className="text-sm font-medium text-on-surface truncate">{value.fileName}</p>
                 <p className="text-xs text-custom-grey-3">{formatFileSize(value.fileSize)}</p>
               </div>
               <button

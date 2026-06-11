@@ -178,7 +178,7 @@ const ConditionalLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
                 onClick={() => saveConditions(conditions, 'and')}
                 className={`text-xs px-2 py-1 rounded font-medium transition-colors ${
                   !isOrMode
-                    ? 'bg-primary text-white'
+                    ? 'bg-primary text-on-primary'
                     : 'bg-surface-container-high text-on-surface-variant hover:bg-outline-variant'
                 }`}
               >
@@ -188,7 +188,7 @@ const ConditionalLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
                 onClick={() => saveConditions(conditions, 'or')}
                 className={`text-xs px-2 py-1 rounded font-medium transition-colors ${
                   isOrMode
-                    ? 'bg-primary text-white'
+                    ? 'bg-primary text-on-primary'
                     : 'bg-surface-container-high text-on-surface-variant hover:bg-outline-variant'
                 }`}
               >

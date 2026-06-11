@@ -138,7 +138,7 @@ const ClientsManagementContent: React.FC = () => {
             </div>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="bg-primary text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity"
+              className="bg-primary text-on-primary px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity"
             >
               + Create Client
             </button>
@@ -260,7 +260,7 @@ const ClientsManagementContent: React.FC = () => {
             <div className="flex justify-end gap-3 mt-6">
               <button onClick={() => setShowCreateModal(false)} className="px-4 py-2 rounded-lg border border-outline-variant text-sm">Cancel</button>
               <button onClick={handleCreate} disabled={createLoading || !createForm.email || !createForm.firstName}
-                className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:opacity-90 disabled:opacity-50">
+                className="px-4 py-2 rounded-lg bg-primary text-on-primary text-sm font-medium hover:opacity-90 disabled:opacity-50">
                 {createLoading ? 'Creating...' : 'Create Client'}
               </button>
             </div>
@@ -294,7 +294,7 @@ const ClientsManagementContent: React.FC = () => {
             </div>
             <div className="flex justify-end gap-3 mt-6">
               <button onClick={() => setShowEditModal(false)} className="px-4 py-2 rounded-lg border border-outline-variant text-sm">Cancel</button>
-              <button onClick={handleEdit} className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:opacity-90">
+              <button onClick={handleEdit} className="px-4 py-2 rounded-lg bg-primary text-on-primary text-sm font-medium hover:opacity-90">
                 Save Changes
               </button>
             </div>

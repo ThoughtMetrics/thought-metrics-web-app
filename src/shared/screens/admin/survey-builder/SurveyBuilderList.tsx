@@ -59,7 +59,7 @@ const SurveyBuilderListContent: React.FC = () => {
             </div>
             <button
               onClick={() => setShowPicker(true)}
-              className="px-5 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
+              className="px-5 py-2.5 bg-primary text-on-primary rounded-lg font-medium hover:bg-primary/90 transition-colors"
             >
               + New Template
             </button>
@@ -82,7 +82,7 @@ const SurveyBuilderListContent: React.FC = () => {
               <p className="text-outline mb-4">No templates yet.</p>
               <button
                 onClick={() => setShowPicker(true)}
-                className="px-5 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                className="px-5 py-2.5 bg-primary text-on-primary rounded-lg font-medium hover:bg-primary/90 transition-colors"
               >
                 Create your first template
               </button>
@@ -239,7 +239,7 @@ const SurveyBuilderListPanelContent: React.FC = () => {
           <p className="text-outline mb-4">No templates yet.</p>
           <button
             onClick={() => setShowPicker(true)}
-            className="px-5 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors"
+            className="px-5 py-2.5 bg-primary text-on-primary rounded-lg font-medium hover:bg-primary/90 transition-colors"
           >
             Create your first template
           </button>

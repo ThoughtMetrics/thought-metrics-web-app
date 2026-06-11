@@ -73,7 +73,7 @@ export const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
   };
 
   return (
-    <div className="relative flex w-full border-b-2 bg-custom-grey-5 focus-within:bg-white focus-within:border-primary border-custom-grey-2 transition-colors">
+    <div className="relative flex w-full border-b-2 bg-custom-grey-5 focus-within:bg-surface-container focus-within:border-primary border-custom-grey-2 transition-colors">
       {/* Country picker button */}
       <div ref={dropdownRef} className="relative flex-shrink-0">
         <button
@@ -82,7 +82,7 @@ export const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
           className="flex items-center gap-1.5 px-3 py-3 border-r-2 border-custom-grey-2 h-full focus:outline-none"
         >
           <span className="text-lg leading-none">{selectedCountry.flag}</span>
-          <span className="text-base text-black">{selectedCountry.code}</span>
+          <span className="text-base text-on-surface">{selectedCountry.code}</span>
           <svg
             className="w-4 h-4 text-custom-grey-2"
             fill="none"
@@ -96,7 +96,7 @@ export const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
 
         {/* Dropdown */}
         {dropdownOpen && (
-          <div className="absolute left-0 top-full z-50 w-72 bg-white border border-gray-200 rounded-lg shadow-lg mt-1 flex flex-col max-h-72">
+          <div className="absolute left-0 top-full z-50 w-72 bg-surface-container border border-outline-variant rounded-lg shadow-lg mt-1 flex flex-col max-h-72">
             {/* Search */}
             <div className="p-2 border-b border-gray-100 flex-shrink-0">
               <input
@@ -105,14 +105,14 @@ export const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="Search country or code..."
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:border-primary"
+                className="w-full px-3 py-2 text-sm border border-outline-variant rounded-md focus:outline-none focus:border-primary"
               />
             </div>
 
             {/* List */}
             <div className="overflow-y-auto flex-1">
               {filtered.length === 0 ? (
-                <p className="text-center text-gray-400 text-sm py-4">No countries found</p>
+                <p className="text-center text-outline text-sm py-4">No countries found</p>
               ) : (
                 filtered.map((country, idx) => {
                   const isSelected = country.code === selectedCode;
@@ -132,7 +132,7 @@ export const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
                         {country.name}
                       </span>
                       <span
-                        className={`text-sm flex-shrink-0 ${isSelected ? 'text-primary font-semibold' : 'text-gray-500'}`}
+                        className={`text-sm flex-shrink-0 ${isSelected ? 'text-primary font-semibold' : 'text-outline'}`}
                       >
                         {country.code}
                       </span>

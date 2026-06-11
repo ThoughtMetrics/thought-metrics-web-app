@@ -188,7 +188,7 @@ const SkipLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
                         onClick={() => updateRule(rIdx, { timing: t })}
                         className={`flex-1 text-xs py-1 rounded font-medium border transition-colors ${
                           rule.timing === t
-                            ? 'bg-primary text-white border-primary'
+                            ? 'bg-primary text-on-primary border-primary'
                             : 'bg-surface-container text-on-surface-variant border-outline-variant hover:border-primary/30'
                         }`}
                       >
@@ -223,7 +223,7 @@ const SkipLogicConfig: React.FC<Props> = ({ question, qIdx }) => {
                             onClick={() => updateRule(rIdx, { conditionMode: m })}
                             className={`text-xs px-2 py-0.5 rounded font-medium transition-colors ${
                               (rule.conditionMode ?? 'and') === m
-                                ? 'bg-primary text-white'
+                                ? 'bg-primary text-on-primary'
                                 : 'bg-surface-container-high text-on-surface-variant hover:bg-outline-variant'
                             }`}
                           >

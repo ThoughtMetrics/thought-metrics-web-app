@@ -290,7 +290,7 @@ function SurveyImportManagementContent() {
           </div>
           <button
             onClick={openNewSurvey}
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors"
           >
             <Upload className="w-4 h-4" />
             Import New Survey
@@ -310,7 +310,7 @@ function SurveyImportManagementContent() {
               onClick={() => setTypeFilter(tab.value)}
               className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                 typeFilter === tab.value
-                  ? 'bg-primary text-white'
+                  ? 'bg-primary text-on-primary'
                   : 'bg-surface-container text-outline border border-outline-variant hover:bg-surface-container-high'
               }`}
             >
@@ -475,7 +475,7 @@ function SurveyImportManagementContent() {
                     <button
                       onClick={() => void handleCreateSurvey()}
                       disabled={nameLoading || !wizard.surveyName.trim()}
-                      className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary text-sm font-medium rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       {nameLoading && <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
                       Continue
@@ -596,7 +596,7 @@ function SurveyImportManagementContent() {
                     <button
                       onClick={() => void handleStartImport()}
                       disabled={importLoading || !wizard.preview}
-                      className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary text-sm font-medium rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       {importLoading && <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />}
                       Start Import
@@ -664,7 +664,7 @@ function SurveyImportManagementContent() {
                           {wizard.jobStatus.status === 'completed' && (
                             <a
                               href={`/admin/survey-analytics?surveyId=${wizard.surveyId}`}
-                              className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors"
+                              className="flex items-center gap-1.5 px-4 py-2 bg-primary text-on-primary text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors"
                             >
                               <BarChart2 className="w-4 h-4" />
                               View Analytics

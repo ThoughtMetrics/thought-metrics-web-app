@@ -83,7 +83,7 @@ export const Checkboxes: React.FC<CheckboxProps> = ({
                 className={`border rounded transition-colors ${
                   selectedValues.includes(option.value)
                     ? 'bg-primary/10 border-primary'
-                    : 'bg-white border-custom-grey-1'
+                    : 'bg-surface-container border-custom-grey-1'
                 }`}
               >
                 <div className="flex items-center gap-2 p-2.5">
@@ -95,13 +95,13 @@ export const Checkboxes: React.FC<CheckboxProps> = ({
                       onChange={(e) => handleCheckboxChange(option.value, e.target.checked)}
                       className="h-4 w-4 flex-shrink-0 text-primary focus:ring-primary border-custom-grey-2 rounded"
                     />
-                    <span className="text-sm md:text-base text-black">{option.label}</span>
+                    <span className="text-sm md:text-base text-on-surface">{option.label}</span>
                   </label>
                   {hasAttrs && (
                     <button
                       type="button"
                       onClick={() => setExpandedOption(isExpanded ? null : option.value)}
-                      className="flex-shrink-0 p-1 text-gray-400 hover:text-primary transition-colors"
+                      className="flex-shrink-0 p-1 text-outline hover:text-primary transition-colors"
                       title="Show details"
                     >
                       <ChevronDown
@@ -127,7 +127,7 @@ export const Checkboxes: React.FC<CheckboxProps> = ({
                       value={othersInputText}
                       onChange={(e) => handleOthersTextChange(e.target.value)}
                       placeholder={othersPlaceholder || 'Please specify...'}
-                      className="w-full text-sm px-3 py-2 border border-primary/40 rounded-md focus:outline-none focus:ring-1 focus:ring-primary bg-white transition-colors"
+                      className="w-full text-sm px-3 py-2 border border-primary/40 rounded-md focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container transition-colors"
                       autoFocus
                       onClick={(e) => e.stopPropagation()}
                     />

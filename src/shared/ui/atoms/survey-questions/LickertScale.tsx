@@ -59,7 +59,7 @@ export const LickertScale: React.FC<LickertScaleProps> = ({
       <div className="space-y-3">
         {/* Description */}
         {description && (
-          <p className="text-sm md:text-base text-black">{description}</p>
+          <p className="text-sm md:text-base text-on-surface">{description}</p>
         )}
 
         {/* Lickert Scale Grid */}
@@ -71,8 +71,8 @@ export const LickertScale: React.FC<LickertScaleProps> = ({
               onClick={() => onValueChange(value)}
               className={`aspect-square flex items-center justify-center text-sm md:text-base font-medium border transition-all ${
                 selectedValue === value
-                  ? 'bg-primary text-white border-primary'
-                  : 'bg-white text-black border-custom-grey-1 hover:border-primary'
+                  ? 'bg-primary text-on-primary border-primary'
+                  : 'bg-surface-container text-on-surface border-custom-grey-1 hover:border-primary'
               }`}
             >
               {value}
@@ -82,7 +82,7 @@ export const LickertScale: React.FC<LickertScaleProps> = ({
 
         {/* Labels */}
         {(minLabel || maxLabel) && (
-          <div className="flex justify-between text-sm md:text-base text-black mb-2">
+          <div className="flex justify-between text-sm md:text-base text-on-surface mb-2">
             <span>{`${minValue} = ${minLabel}` || `Min: ${minValue}`}</span>
             <span>{`${maxValue} = ${maxLabel}` || `Max: ${maxValue}`}</span>
           </div>

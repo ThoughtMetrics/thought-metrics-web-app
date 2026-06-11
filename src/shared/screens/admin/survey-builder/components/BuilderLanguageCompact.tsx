@@ -62,7 +62,7 @@ export const BuilderLanguageCompact: React.FC = () => {
               aria-selected={activeLanguage === lang}
               className={`w-full px-4 py-2 text-left text-sm transition-colors duration-150 focus:outline-none focus:bg-custom-grey-2 ${
                 activeLanguage === lang
-                  ? 'bg-primary text-white font-medium'
+                  ? 'bg-primary text-on-primary font-medium'
                   : 'text-custom-text-dark hover:bg-custom-grey-1'
               }`}
             >

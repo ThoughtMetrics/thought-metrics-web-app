@@ -429,7 +429,7 @@ const PublishSurveyModal: React.FC<Props> = ({
         <button
           type="submit"
           disabled={!label.trim()}
-          className="flex-1 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 px-4 py-2 bg-primary text-on-primary rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Next →
         </button>
@@ -478,7 +478,7 @@ const PublishSurveyModal: React.FC<Props> = ({
         <button
           onClick={handlePublish}
           disabled={isBusy}
-          className="w-full px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full px-4 py-2.5 bg-primary text-on-primary rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isBusy ? 'Publishing…' : 'Publish'}
         </button>
@@ -596,7 +596,7 @@ const PublishSurveyModal: React.FC<Props> = ({
               <div key={q.id}>
                 {/* Question badge */}
                 <div className="px-4 py-2 bg-surface-container-low border-b border-outline-variant/50 flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-white text-xs font-bold flex-shrink-0">
+                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-on-primary text-xs font-bold flex-shrink-0">
                     {q.order}
                   </span>
                   <span className="text-xs text-outline truncate">{enText || '(no text)'}</span>
@@ -663,7 +663,7 @@ const PublishSurveyModal: React.FC<Props> = ({
           <button
             onClick={handleSaveTranslation}
             disabled={isBusy}
-            className="flex-1 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2 bg-primary text-on-primary rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isBusy ? 'Saving…' : 'Save'}
           </button>
@@ -687,7 +687,7 @@ const PublishSurveyModal: React.FC<Props> = ({
       <p className="text-xs text-outline">Redirecting to surveys in a moment…</p>
       <button
         onClick={() => { window.location.href = '/admin/surveys'; }}
-        className="mt-2 px-6 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+        className="mt-2 px-6 py-2.5 bg-primary text-on-primary rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
       >
         Go to Surveys
       </button>

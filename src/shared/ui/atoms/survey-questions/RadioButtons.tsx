@@ -50,7 +50,7 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
         value={othersInputText}
         onChange={(e) => handleOthersTextChange(e.target.value)}
         placeholder={othersPlaceholder || 'Please specify...'}
-        className="w-full text-sm px-3 py-2 border border-primary/40 rounded-md focus:outline-none focus:ring-1 focus:ring-primary bg-white transition-colors"
+        className="w-full text-sm px-3 py-2 border border-primary/40 rounded-md focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container transition-colors"
         autoFocus
         onClick={(e) => e.stopPropagation()}
       />
@@ -86,7 +86,7 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
               onValueChange(e.target.value);
               if (e.target.value !== 'others') handleOthersTextChange('');
             }}
-            className="w-full px-3 py-2 border border-custom-grey-1 rounded bg-white focus:bg-white focus:outline-none focus:border-primary transition-colors text-sm md:text-base text-black"
+            className="w-full px-3 py-2 border border-custom-grey-1 rounded bg-surface-container focus:bg-surface-container focus:outline-none focus:border-primary transition-colors text-sm md:text-base text-on-surface"
           >
             <option value="">{translations.surveyQuestions.selectOption}</option>
             {options.map((option) => (
@@ -101,7 +101,7 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
               value={othersInputText}
               onChange={(e) => handleOthersTextChange(e.target.value)}
               placeholder={othersPlaceholder || 'Please specify...'}
-              className="w-full text-sm px-3 py-2 border border-primary/40 rounded-md focus:outline-none focus:ring-1 focus:ring-primary bg-white transition-colors"
+              className="w-full text-sm px-3 py-2 border border-primary/40 rounded-md focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container transition-colors"
               autoFocus
             />
           )}
@@ -119,7 +119,7 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
                   className={`border rounded transition-colors ${
                     selectedValue === option.value
                       ? 'bg-primary/10 border-primary'
-                      : 'bg-white border-custom-grey-1'
+                      : 'bg-surface-container border-custom-grey-1'
                   }`}
                 >
                   <div className="flex items-center gap-2 p-2.5">
@@ -135,13 +135,13 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
                         }}
                         className="h-4 w-4 flex-shrink-0 text-primary focus:ring-primary border-custom-grey-2"
                       />
-                      <span className="text-sm md:text-base text-black">{option.label}</span>
+                      <span className="text-sm md:text-base text-on-surface">{option.label}</span>
                     </label>
                     {hasAttrs && (
                       <button
                         type="button"
                         onClick={() => setExpandedOption(isExpanded ? null : option.value)}
-                        className="flex-shrink-0 p-1 text-gray-400 hover:text-primary transition-colors"
+                        className="flex-shrink-0 p-1 text-outline hover:text-primary transition-colors"
                         title="Show details"
                       >
                         <ChevronDown
@@ -176,8 +176,8 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
                       }
                       className="w-3.5 h-3.5 accent-primary"
                     />
-                    <label htmlFor={`ip_${option.value}`} className="text-xs text-gray-500">
-                      {intensePurchaseLabel} <span className="text-gray-400">(optional)</span>
+                    <label htmlFor={`ip_${option.value}`} className="text-xs text-outline">
+                      {intensePurchaseLabel} <span className="text-outline">(optional)</span>
                     </label>
                   </div>
                 )}

@@ -109,7 +109,7 @@ const AnalyticsDashboardContent: React.FC = () => {
               </button>
               <a
                 href="/admin/create-tracking-link"
-                className="bg-primary text-white px-6 py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                className="bg-primary text-on-primary px-6 py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors"
               >
                 + Create New Link
               </a>

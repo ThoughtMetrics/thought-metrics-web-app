@@ -1743,7 +1743,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                   (timePeriod === 'custom' &&
                     (!customFromDate || !customToDate))
                 }
-                className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-4 py-2 text-sm font-medium text-on-primary bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {isDownloading ? (
                   <>
@@ -2723,7 +2723,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
               title={showBoundaries ? 'Hide AC boundaries' : 'Show AC boundaries'}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                 showBoundaries
-                  ? 'bg-primary text-white border-primary'
+                  ? 'bg-primary text-on-primary border-primary'
                   : 'bg-surface-container text-on-surface-variant border-outline-variant hover:bg-surface-container-high'
               }`}
             >
@@ -3645,7 +3645,7 @@ export const SurveyDownloadModal: React.FC<SurveyDownloadModalProps> = ({
               isDownloading ||
               (timePeriod === 'custom' && (!customFromDate || !customToDate))
             }
-            className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-4 py-2 text-sm font-medium text-on-primary bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {isDownloading ? (
               <>

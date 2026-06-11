@@ -478,7 +478,7 @@ const UserManagementContent: React.FC = () => {
                         }
                         setShowCreateModal(true);
                       }}
-                      className="px-3 py-1.5 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary/90 transition-colors"
+                      className="px-3 py-1.5 text-sm font-medium text-on-primary bg-primary rounded-md hover:bg-primary/90 transition-colors"
                     >
                       + {isFieldIncharge ? 'Add Field Agent' : 'Create User'}
                     </button>
@@ -612,7 +612,7 @@ const UserManagementContent: React.FC = () => {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <div className="h-10 w-10 shrink-0">
-                                <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white font-medium">
+                                <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-on-primary font-medium">
                                   {(
                                     userItem.profile?.firstName?.[0] ||
                                     userItem.email?.[0] ||
@@ -858,7 +858,7 @@ const UserManagementContent: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-custom-blue"
+                  className="px-4 py-2 text-sm font-medium text-on-primary bg-primary rounded-md hover:bg-custom-blue"
                 >
                   Save Changes
                 </button>
@@ -991,9 +991,9 @@ const UserManagementContent: React.FC = () => {
                         .map(acNo => allAcFlat.find(ac => ac.acNo === acNo))
                         .filter(Boolean)
                         .map((ac) => (
-                          <span key={ac!.acNo} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary text-white">
+                          <span key={ac!.acNo} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary text-on-primary">
                             {ac!.name}
-                            <button type="button" onClick={() => toggleCreateAcNo(ac!.acNo)} className="ml-0.5 text-white hover:text-red-200">×</button>
+                            <button type="button" onClick={() => toggleCreateAcNo(ac!.acNo)} className="ml-0.5 text-on-primary hover:text-red-200">×</button>
                           </span>
                         ))}
                     </div>
@@ -1043,7 +1043,7 @@ const UserManagementContent: React.FC = () => {
                 <button type="button" onClick={() => setShowCreateModal(false)} className="px-4 py-2 text-sm font-medium text-on-surface-variant bg-surface-container-high border border-outline-variant rounded-md hover:bg-outline-variant/20">
                   Cancel
                 </button>
-                <button type="submit" disabled={createLoading} className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed">
+                <button type="submit" disabled={createLoading} className="px-4 py-2 text-sm font-medium text-on-primary bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed">
                   {createLoading ? 'Creating…' : 'Create User'}
                 </button>
               </div>
@@ -1112,7 +1112,7 @@ const UserManagementContent: React.FC = () => {
                     type="button"
                     onClick={() => void handleBulkImport()}
                     disabled={!bulkFile}
-                    className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 text-sm font-medium text-on-primary bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Upload &amp; Import
                   </button>
@@ -1186,7 +1186,7 @@ const UserManagementContent: React.FC = () => {
                     type="button"
                     onClick={handleBulkModalClose}
                     disabled={bulkPolling && !['completed', 'failed'].includes(bulkJobStatus?.status || '')}
-                    className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 text-sm font-medium text-on-primary bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Close
                   </button>
@@ -1272,14 +1272,14 @@ const UserManagementContent: React.FC = () => {
                         {selectedAcDetails.map(ac => (
                           <span
                             key={ac.acNo}
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary text-white"
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary text-on-primary"
                           >
                             {ac.name}
                             <span className="text-blue-200 text-xs">({ac.zone})</span>
                             <button
                               type="button"
                               onClick={() => toggleAcNo(ac.acNo)}
-                              className="ml-0.5 text-white hover:text-red-200 leading-none"
+                              className="ml-0.5 text-on-primary hover:text-red-200 leading-none"
                             >
                               ×
                             </button>
@@ -1346,7 +1346,7 @@ const UserManagementContent: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-custom-blue"
+                  className="px-4 py-2 text-sm font-medium text-on-primary bg-primary rounded-md hover:bg-custom-blue"
                 >
                   Update
                 </button>

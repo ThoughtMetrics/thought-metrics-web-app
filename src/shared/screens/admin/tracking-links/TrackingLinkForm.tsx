@@ -218,7 +218,7 @@ const TrackingLinkForm: React.FC = () => {
               <CustomButtonAtom
                 type="submit"
                 label={createMutation.isPending ? 'Creating...' : 'Create Tracking Link'}
-                className="flex-1 bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                className="flex-1 bg-primary text-on-primary px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
                 disabled={createMutation.isPending}
                 loading={createMutation.isPending}
               />
@@ -315,7 +315,7 @@ const TrackingLinkForm: React.FC = () => {
                     </code>
                     <button
                       onClick={() => handleCopyLink(link.fullTrackingUrl)}
-                      className="px-3 py-1 bg-primary text-white rounded text-xs hover:bg-primary/90"
+                      className="px-3 py-1 bg-primary text-on-primary rounded text-xs hover:bg-primary/90"
                     >
                       Copy
                     </button>

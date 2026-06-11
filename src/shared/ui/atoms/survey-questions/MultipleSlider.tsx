@@ -66,10 +66,10 @@ export const MultipleSlider: React.FC<MultipleSliderProps> = ({
             <div key={item.id} className="space-y-3">
               {/* Item Label */}
               <div className="flex justify-between items-center">
-                <span className="text-base md:text-lg text-black font-medium">
+                <span className="text-base md:text-lg text-on-surface font-medium">
                   {item.label}
                 </span>
-                <span className="text-sm md:text-base text-black">
+                <span className="text-sm md:text-base text-on-surface">
                   {currentValue}
                 </span>
               </div>
@@ -89,7 +89,7 @@ export const MultipleSlider: React.FC<MultipleSliderProps> = ({
                 onChange={(e) =>
                   handleSliderChange(item.id, Number(e.target.value))
                 }
-                className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer
+                className="w-full h-2 bg-outline-variant rounded-lg appearance-none cursor-pointer
                            [&::-webkit-slider-thumb]:appearance-none
                            [&::-webkit-slider-thumb]:w-6
                            [&::-webkit-slider-thumb]:h-6

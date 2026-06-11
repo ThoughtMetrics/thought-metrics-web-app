@@ -54,7 +54,7 @@ export const SingleSlider: React.FC<SingleSliderProps> = ({
       <div className="space-y-6">
         {/* Labels */}
         {(minLabel || maxLabel) && (
-          <div className="flex justify-between text-sm md:text-base text-black mb-2">
+          <div className="flex justify-between text-sm md:text-base text-on-surface mb-2">
             <span>{`${minValue} = ${minLabel}` || `Min: ${minValue}`}</span>
             <span>{`${maxValue} = ${maxLabel}` || `Max: ${maxValue}`}</span>
           </div>
@@ -69,7 +69,7 @@ export const SingleSlider: React.FC<SingleSliderProps> = ({
             step={step}
             value={selectedValue}
             onChange={(e) => onValueChange(Number(e.target.value))}
-            className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer
+            className="w-full h-2 bg-outline-variant rounded-lg appearance-none cursor-pointer
                        [&::-webkit-slider-thumb]:appearance-none
                        [&::-webkit-slider-thumb]:w-6
                        [&::-webkit-slider-thumb]:h-6
@@ -90,7 +90,7 @@ export const SingleSlider: React.FC<SingleSliderProps> = ({
 
         {/* Selected Value Display */}
         <div className="text-center">
-          <span className="text-lg md:text-xl font-medium text-black">
+          <span className="text-lg md:text-xl font-medium text-on-surface">
             {selectedValue}
           </span>
         </div>
