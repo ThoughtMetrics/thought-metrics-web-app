@@ -690,9 +690,9 @@ const QuestionConfigPanel: React.FC = () => {
           const isOptimal = n >= 8 && ips >= 3 && ips <= 6 && sets >= 8 && sets <= 15;
 
           const variantClass: Record<GuidanceVariant, string> = {
-            ok:   'bg-green-50 border-green-200 text-green-700',
-            warn: 'bg-amber-50 border-amber-200 text-amber-700',
-            info: 'bg-blue-50 border-blue-200 text-blue-700',
+            ok:   'bg-green-500/10 border-green-500/25 text-green-400',
+            warn: 'bg-amber-500/10 border-amber-500/25 text-amber-400',
+            info: 'bg-primary/10 border-primary/30 text-primary',
           };
 
           return (
@@ -820,14 +820,19 @@ const QuestionConfigPanel: React.FC = () => {
 
               {/* Live Guidance */}
               <div className="pt-3 border-t border-outline-variant/50 space-y-2">
-                <span className="block text-xs font-semibold text-outline uppercase tracking-wide">Live Guidance</span>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <svg className="w-3.5 h-3.5 text-outline flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.347.347a3.195 3.195 0 00-.94 2.252v.108a2 2 0 01-2 2h-1a2 2 0 01-2-2v-.108a3.195 3.195 0 00-.94-2.252L7.172 16.9z" />
+                  </svg>
+                  <span className="text-[11px] font-semibold text-outline uppercase tracking-[0.05em]">Live guidance</span>
+                </div>
                 {guidance.map((g, i) => (
                   <div key={i} className={`text-xs px-3 py-2 rounded-lg border ${variantClass[g.variant]} leading-relaxed`}>
                     {g.text}
                   </div>
                 ))}
                 {isOptimal && (
-                  <div className="inline-flex items-center gap-1 text-xs font-semibold bg-green-50 border border-green-300 text-green-700 px-3 py-1.5 rounded-full">
+                  <div className="inline-flex items-center gap-1 text-xs font-semibold bg-green-500/10 border border-green-500/25 text-green-400 px-3 py-1.5 rounded-full">
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                     </svg>
@@ -887,9 +892,9 @@ const QuestionConfigPanel: React.FC = () => {
           const isOptimal = n >= 6 && n <= 12 && minPrice < maxPrice && spread >= 50 && mode === 'sequential' && showQual;
 
           const variantClass: Record<GuidanceVariant, string> = {
-            ok:   'bg-green-50 border-green-200 text-green-700',
-            warn: 'bg-amber-50 border-amber-200 text-amber-700',
-            info: 'bg-blue-50 border-blue-200 text-blue-700',
+            ok:   'bg-green-500/10 border-green-500/25 text-green-400',
+            warn: 'bg-amber-500/10 border-amber-500/25 text-amber-400',
+            info: 'bg-primary/10 border-primary/30 text-primary',
           };
 
           return (
@@ -982,14 +987,19 @@ const QuestionConfigPanel: React.FC = () => {
 
               {/* Live Guidance */}
               <div className="pt-3 border-t border-outline-variant/50 space-y-2">
-                <span className="block text-xs font-semibold text-outline uppercase tracking-wide">Live Guidance</span>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <svg className="w-3.5 h-3.5 text-outline flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.347.347a3.195 3.195 0 00-.94 2.252v.108a2 2 0 01-2 2h-1a2 2 0 01-2-2v-.108a3.195 3.195 0 00-.94-2.252L7.172 16.9z" />
+                  </svg>
+                  <span className="text-[11px] font-semibold text-outline uppercase tracking-[0.05em]">Live guidance</span>
+                </div>
                 {guidance.map((g, i) => (
                   <div key={i} className={`text-xs px-3 py-2 rounded-lg border ${variantClass[g.variant]} leading-relaxed`}>
                     {g.text}
                   </div>
                 ))}
                 {isOptimal && (
-                  <div className="inline-flex items-center gap-1 text-xs font-semibold bg-green-50 border border-green-300 text-green-700 px-3 py-1.5 rounded-full">
+                  <div className="inline-flex items-center gap-1 text-xs font-semibold bg-green-500/10 border border-green-500/25 text-green-400 px-3 py-1.5 rounded-full">
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                     </svg>
