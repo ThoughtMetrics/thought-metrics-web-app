@@ -75,7 +75,7 @@ export const MultipleSlider: React.FC<MultipleSliderProps> = ({
               </div>
 
               {/* Min/Max Labels */}
-              <div className="flex justify-between text-xs md:text-sm text-custom-grey-3">
+              <div className="flex justify-between text-xs md:text-sm text-outline">
                 <span className="text-primary">{item.minLabel || itemMinValue}</span>
                 <span className="text-primary">{item.maxLabel || itemMaxValue}</span>
               </div>

@@ -141,7 +141,7 @@ const GaborGrangerCanvasEditor: React.FC<Props> = ({ question, qIdx }) => {
                 value={opt.label}
                 onChange={(e) => handlePriceChange(i, e.target.value)}
                 placeholder="0"
-                className="flex-1 min-w-0 bg-transparent text-sm text-on-surface placeholder-gray-300 focus:outline-none"
+                className="flex-1 min-w-0 bg-transparent text-sm text-on-surface placeholder-outline/40 focus:outline-none"
               />
             </div>
 

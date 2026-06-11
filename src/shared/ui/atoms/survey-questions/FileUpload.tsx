@@ -175,7 +175,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       <div className="space-y-4">
         {/* Sub-label / Instructions */}
         {subLabel && (
-          <p className="text-sm text-custom-grey-3">{subLabel}</p>
+          <p className="text-sm text-outline">{subLabel}</p>
         )}
 
         {/* Drop Zone */}
@@ -218,17 +218,17 @@ export const FileUpload: React.FC<FileUploadProps> = ({
               ) : (
                 <>
                   <div className="w-12 h-12 mx-auto rounded-full bg-custom-grey-2 flex items-center justify-center">
-                    <svg className="w-6 h-6 text-custom-grey-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-6 h-6 text-outline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                     </svg>
                   </div>
                   <p className="text-base text-on-surface">
                     {translations.surveyQuestions.dragDropFile || 'Drag & drop or click to upload'}
                   </p>
-                  <p className="text-sm text-custom-grey-3">
+                  <p className="text-sm text-outline">
                     {translations.surveyQuestions.maxFileSize || 'Max size'}: {maxSizeMB}MB
                   </p>
-                  <p className="text-xs text-custom-grey-3">
+                  <p className="text-xs text-outline">
                     {translations.surveyQuestions.allowedTypes || 'Allowed'}: JPG, PNG, PDF
                   </p>
                 </>
@@ -248,7 +248,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                 />
               ) : (
                 <div className="w-16 h-16 rounded bg-custom-grey-2 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-custom-grey-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-8 h-8 text-outline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
@@ -259,7 +259,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                 <p className="text-base font-medium text-on-surface truncate">
                   {value.fileName}
                 </p>
-                <p className="text-sm text-custom-grey-3">
+                <p className="text-sm text-outline">
                   {formatFileSize(value.fileSize)}
                 </p>
               </div>
@@ -267,7 +267,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
               {/* Remove Button */}
               <button
                 onClick={handleRemoveFile}
-                className="p-2 text-custom-grey-3 hover:text-red-500 transition-colors"
+                className="p-2 text-outline hover:text-red-500 transition-colors"
                 title={translations.surveyQuestions.removeFile || 'Remove'}
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -284,7 +284,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         )}
 
         {/* Size limit info */}
-        <p className="text-xs text-custom-grey-3">
+        <p className="text-xs text-outline">
           {translations.surveyQuestions.supportedFormats || 'Supported formats'}: JPG, PNG, PDF • {translations.surveyQuestions.maxSize || 'Max'}: {maxSizeMB}MB
         </p>
       </div>

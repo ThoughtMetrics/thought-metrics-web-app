@@ -107,7 +107,7 @@ const McqCanvasEditor: React.FC<Props> = ({ question, qIdx, lang }) => {
                 value={label}
                 onChange={(e) => handleLabelChange(optIdx, e.target.value)}
                 placeholder={lang === 'en' ? `Option ${displayIdx + 1}` : 'Tamil label'}
-                className="flex-1 min-w-0 bg-transparent text-sm text-on-surface placeholder-gray-300 focus:outline-none"
+                className="flex-1 min-w-0 bg-transparent text-sm text-on-surface placeholder-outline/40 focus:outline-none"
               />
             </div>
 

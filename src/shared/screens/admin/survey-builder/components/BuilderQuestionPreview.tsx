@@ -259,7 +259,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
               <select
                 value={interactive ? selectedValue : ''}
                 onChange={interactive ? (e) => { setSelectedValue(e.target.value); onAnswerChange?.(e.target.value); } : undefined}
-                className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-base focus:outline-none focus:bg-surface-container focus:border-primary transition-colors"
+                className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-text-dark text-base focus:outline-none focus:bg-surface-container focus:border-primary transition-colors"
               >
                 <option value="">Select an option...</option>
                 {mcqOptions.map((opt) => (
@@ -442,7 +442,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
               className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-base md:text-lg focus:outline-none focus:bg-surface-container focus:border-primary transition-colors"
             />
             {(textMaxChars || textMinChars) && (
-              <p className="mt-1 text-sm text-custom-grey-3 text-right">
+              <p className="mt-1 text-sm text-outline text-right">
                 {textVal.length}{textMaxChars ? `/${textMaxChars}` : ''} chars
                 {textMinChars && textVal.length < textMinChars ? ` (min ${textMinChars})` : ''}
               </p>
@@ -469,7 +469,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
               className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-base md:text-lg resize-vertical focus:outline-none focus:bg-surface-container focus:border-primary transition-colors"
             />
             {(taMaxChars || taMinChars) && (
-              <p className="mt-1 text-sm text-custom-grey-3 text-right">
+              <p className="mt-1 text-sm text-outline text-right">
                 {textVal.length}{taMaxChars ? `/${taMaxChars}` : ''} chars
                 {taMinChars && textVal.length < taMinChars ? ` (min ${taMinChars})` : ''}
               </p>
@@ -510,7 +510,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
                 className={`mt-2 px-4 py-1.5 text-sm rounded border transition-colors ${
                   isDKSelected
                     ? 'bg-primary text-on-primary border-primary'
-                    : 'bg-surface-container text-custom-grey-3 border-custom-grey-2 hover:border-primary hover:text-primary'
+                    : 'bg-surface-container text-on-surface-variant border-custom-grey-2 hover:border-primary hover:text-primary'
                 }`}
               >
                 {isDKSelected ? `✓ ${dkLabel}` : dkLabel}
@@ -641,7 +641,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
       default:
         return (
           <SurveyQuestionWrapper {...commonProps}>
-            <p className="text-sm text-custom-grey-3 py-4 text-center">
+            <p className="text-sm text-outline py-4 text-center">
               No preview available for this question type.
             </p>
           </SurveyQuestionWrapper>

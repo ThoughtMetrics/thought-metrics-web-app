@@ -96,9 +96,9 @@ export const Ranking: React.FC<RankingProps> = ({
                 </div>
                 {/* Drag Handle Icon */}
                 <div className="flex flex-col space-y-0.5 flex-shrink-0">
-                  <div className="w-1 h-1 bg-custom-grey-3 rounded-full" />
-                  <div className="w-1 h-1 bg-custom-grey-3 rounded-full" />
-                  <div className="w-1 h-1 bg-custom-grey-3 rounded-full" />
+                  <div className="w-1 h-1 bg-outline-variant rounded-full" />
+                  <div className="w-1 h-1 bg-outline-variant rounded-full" />
+                  <div className="w-1 h-1 bg-outline-variant rounded-full" />
                 </div>
                 {/* Item Label */}
                 <span className="flex-1 text-base md:text-lg text-on-surface">{item?.label}</span>

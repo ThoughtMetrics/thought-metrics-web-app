@@ -73,11 +73,8 @@ body {
   input:-webkit-autofill:focus,
   input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px var(--custom-grey-5) inset !important;
-    /* Change 'white' to your desired background color */
-    -webkit-text-fill-color: black !important;
-    /* Change 'black' to your desired text color */
+    -webkit-text-fill-color: var(--on-surface) !important;
     transition: background-color 5000s ease-in-out 0s;
-    /* Prevents immediate color change */
   }
 }
 
@@ -92,12 +89,12 @@ astro-island {
   box-sizing: border-box;
 }
 
-/* Force black text in all form controls — prevents white text under OS dark mode */
+/* Form controls follow the active theme — inherit text color from parent */
 input,
 select,
 textarea {
-  color: #111827;
-  color-scheme: light;
+  color: inherit;
+  color-scheme: light dark;
 }
 
 @keyframes cursor-blink {

@@ -168,12 +168,12 @@ export const VideoUpload: React.FC<VideoUploadProps> = ({
               ) : (
                 <>
                   <div className="w-12 h-12 mx-auto rounded-full bg-custom-grey-2 flex items-center justify-center">
-                    <svg className="w-6 h-6 text-custom-grey-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-6 h-6 text-outline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.069A1 1 0 0121 8.845v6.31a1 1 0 01-1.447.894L15 14M4 8h8a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4a2 2 0 012-2z" />
                     </svg>
                   </div>
                   <p className="text-base text-on-surface">Drag & drop or click to upload video</p>
-                  <p className="text-sm text-custom-grey-3">MP4, WebM, MOV · Max {maxSizeMB}MB · Max {maxDurationSec}s</p>
+                  <p className="text-sm text-outline">MP4, WebM, MOV · Max {maxSizeMB}MB · Max {maxDurationSec}s</p>
                 </>
               )}
             </div>
@@ -184,11 +184,11 @@ export const VideoUpload: React.FC<VideoUploadProps> = ({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-on-surface truncate">{value.fileName}</p>
-                <p className="text-xs text-custom-grey-3">{formatFileSize(value.fileSize)}</p>
+                <p className="text-xs text-outline">{formatFileSize(value.fileSize)}</p>
               </div>
               <button
                 onClick={handleRemove}
-                className="p-2 text-custom-grey-3 hover:text-red-500 transition-colors"
+                className="p-2 text-outline hover:text-red-500 transition-colors"
                 title="Remove"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
