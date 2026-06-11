@@ -61,7 +61,8 @@ const QUESTION_GROUPS: {
   },
 ];
 
-// Opacity-based colors work correctly in both dark and light mode
+// text-* colors use the dark-mode bright variant by default;
+// [[data-theme='light']_&]: overrides to a darker shade for light mode readability
 const TYPE_BADGE_COLORS: Partial<Record<QuestionType, string>> = {
   [QuestionType.TEXT]: 'bg-white/[0.06] text-outline',
   [QuestionType.TEXTAREA]: 'bg-white/[0.06] text-outline',
@@ -72,18 +73,18 @@ const TYPE_BADGE_COLORS: Partial<Record<QuestionType, string>> = {
   [QuestionType.CURRENCY]: 'bg-white/[0.06] text-outline',
   [QuestionType.FILE]: 'bg-white/[0.06] text-outline',
   [QuestionType.TEXT_DISPLAY]: 'bg-white/[0.06] text-outline',
-  [QuestionType.MCQ_SINGLE]: 'bg-green-500/15 text-green-400',
-  [QuestionType.MCQ_MULTIPLE]: 'bg-green-500/15 text-green-400',
-  [QuestionType.RANKING]: 'bg-green-500/15 text-green-400',
-  [QuestionType.RATING]: 'bg-amber-500/15 text-amber-400',
-  [QuestionType.LIKERT_SCALE]: 'bg-amber-500/15 text-amber-400',
-  [QuestionType.SCALE]: 'bg-amber-500/15 text-amber-400',
-  [QuestionType.DOUBLE_SLIDER]: 'bg-amber-500/15 text-amber-400',
-  [QuestionType.MULTI_SLIDER]: 'bg-amber-500/15 text-amber-400',
-  [QuestionType.MATRIX]: 'bg-blue-500/15 text-blue-400',
-  [QuestionType.MAX_DIFF]: 'bg-blue-500/15 text-blue-400',
-  [QuestionType.CONSTANT_SUM]: 'bg-blue-500/15 text-blue-400',
-  [QuestionType.GABOR_GRANGER]: 'bg-violet-500/15 text-violet-300',
+  [QuestionType.MCQ_SINGLE]: "bg-green-500/15 text-green-400 [[data-theme='light']_&]:text-green-700",
+  [QuestionType.MCQ_MULTIPLE]: "bg-green-500/15 text-green-400 [[data-theme='light']_&]:text-green-700",
+  [QuestionType.RANKING]: "bg-green-500/15 text-green-400 [[data-theme='light']_&]:text-green-700",
+  [QuestionType.RATING]: "bg-amber-500/15 text-amber-400 [[data-theme='light']_&]:text-amber-700",
+  [QuestionType.LIKERT_SCALE]: "bg-amber-500/15 text-amber-400 [[data-theme='light']_&]:text-amber-700",
+  [QuestionType.SCALE]: "bg-amber-500/15 text-amber-400 [[data-theme='light']_&]:text-amber-700",
+  [QuestionType.DOUBLE_SLIDER]: "bg-amber-500/15 text-amber-400 [[data-theme='light']_&]:text-amber-700",
+  [QuestionType.MULTI_SLIDER]: "bg-amber-500/15 text-amber-400 [[data-theme='light']_&]:text-amber-700",
+  [QuestionType.MATRIX]: "bg-blue-500/15 text-blue-400 [[data-theme='light']_&]:text-blue-700",
+  [QuestionType.MAX_DIFF]: "bg-blue-500/15 text-blue-400 [[data-theme='light']_&]:text-blue-700",
+  [QuestionType.CONSTANT_SUM]: "bg-blue-500/15 text-blue-400 [[data-theme='light']_&]:text-blue-700",
+  [QuestionType.GABOR_GRANGER]: "bg-violet-500/15 text-violet-300 [[data-theme='light']_&]:text-violet-700",
 };
 
 const TYPE_LABELS: Partial<Record<QuestionType, string>> = {
@@ -246,7 +247,7 @@ const QuestionListPanel: React.FC = () => {
                       q.config.showIfAll?.length ||
                       q.config.showIfAny?.length) && (
                       <span
-                        className="text-[9px] font-semibold px-1 py-0.5 rounded-sm bg-amber-500/15 text-amber-400 flex-shrink-0 leading-tight"
+                        className="text-[9px] font-semibold px-1 py-0.5 rounded-sm bg-amber-500/15 text-amber-400 [[data-theme='light']_&]:text-amber-700 flex-shrink-0 leading-tight"
                         title="Has conditional logic"
                       >
                         IF

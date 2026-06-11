@@ -690,8 +690,8 @@ const QuestionConfigPanel: React.FC = () => {
           const isOptimal = n >= 8 && ips >= 3 && ips <= 6 && sets >= 8 && sets <= 15;
 
           const variantClass: Record<GuidanceVariant, string> = {
-            ok:   'bg-green-500/10 border-green-500/25 text-green-400',
-            warn: 'bg-amber-500/10 border-amber-500/25 text-amber-400',
+            ok:   "bg-green-500/10 border-green-500/25 text-green-400 [[data-theme='light']_&]:text-green-700",
+            warn: "bg-amber-500/10 border-amber-500/25 text-amber-400 [[data-theme='light']_&]:text-amber-700",
             info: 'bg-primary/10 border-primary/30 text-primary',
           };
 
@@ -832,7 +832,7 @@ const QuestionConfigPanel: React.FC = () => {
                   </div>
                 ))}
                 {isOptimal && (
-                  <div className="inline-flex items-center gap-1 text-xs font-semibold bg-green-500/10 border border-green-500/25 text-green-400 px-3 py-1.5 rounded-full">
+                  <div className="inline-flex items-center gap-1 text-xs font-semibold bg-green-500/10 border border-green-500/25 text-green-400 [[data-theme='light']_&]:text-green-700 px-3 py-1.5 rounded-full">
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                     </svg>
@@ -892,8 +892,8 @@ const QuestionConfigPanel: React.FC = () => {
           const isOptimal = n >= 6 && n <= 12 && minPrice < maxPrice && spread >= 50 && mode === 'sequential' && showQual;
 
           const variantClass: Record<GuidanceVariant, string> = {
-            ok:   'bg-green-500/10 border-green-500/25 text-green-400',
-            warn: 'bg-amber-500/10 border-amber-500/25 text-amber-400',
+            ok:   "bg-green-500/10 border-green-500/25 text-green-400 [[data-theme='light']_&]:text-green-700",
+            warn: "bg-amber-500/10 border-amber-500/25 text-amber-400 [[data-theme='light']_&]:text-amber-700",
             info: 'bg-primary/10 border-primary/30 text-primary',
           };
 
@@ -999,7 +999,7 @@ const QuestionConfigPanel: React.FC = () => {
                   </div>
                 ))}
                 {isOptimal && (
-                  <div className="inline-flex items-center gap-1 text-xs font-semibold bg-green-500/10 border border-green-500/25 text-green-400 px-3 py-1.5 rounded-full">
+                  <div className="inline-flex items-center gap-1 text-xs font-semibold bg-green-500/10 border border-green-500/25 text-green-400 [[data-theme='light']_&]:text-green-700 px-3 py-1.5 rounded-full">
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                     </svg>
