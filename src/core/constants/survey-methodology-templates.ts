@@ -175,6 +175,39 @@ function mkGaborGranger(
   };
 }
 
+function mkVanWestendorp(
+  order: number,
+  mainQuestion: string,
+  productDesc: string,
+  currency = '₹',
+): IBuilderQuestion {
+  return {
+    id: uid(),
+    order,
+    questionType: QuestionType.VAN_WESTENDORP,
+    text: mainQuestion,
+    translations: { en: { text: mainQuestion }, ta: { text: '' } },
+    config: {
+      vwProductDescription: productDesc,
+      vwQualifyingQuestion: 'Please consider the following product. Would you consider buying it?',
+      vwShowQualifying: true,
+      vwCurrency: currency,
+      vwMinPrice: 50,
+      vwMaxPrice: 10000,
+      vwPresentationMode: 'sequential' as const,
+      vwShowNMS: false,
+      vwQ1Text: "At what price would this product feel so cheap that you'd question the quality?",
+      vwQ2Text: "At what price would this product feel like a bargain — a great buy for the money?",
+      vwQ3Text: "At what price would this product start to feel expensive, but you'd still consider buying?",
+      vwQ4Text: "At what price would this product be so expensive you would not consider buying it?",
+      vwNMSGoodValueQuestion: "On a scale of 1–5, how likely are you to buy this product at [GoodValue]?",
+      vwNMSExpensiveQuestion: "On a scale of 1–5, how likely are you to buy this product at [Expensive]?",
+    },
+    required: true,
+    allowComment: false,
+  };
+}
+
 // ── Kano MCQ options ──────────────────────────────────────────────────────────
 const KANO_OPTIONS = ['I would be delighted', 'I would expect it', 'I am neutral', 'I can live with it', 'I would dislike it'];
 
@@ -220,11 +253,19 @@ const STARTERS: Partial<Record<SurveyMethodology, StarterBuilder>> = {
   ],
 
   [SurveyMethodology.VAN_WESTENDORP]: () => [
-    mkDisplay(1, 'Please think about [Product / Service]. Answer the following price questions honestly based on your own perception.'),
-    mkNumber(2, 'At what price would this product seem too cheap — so cheap you would question its quality?'),
-    mkNumber(3, 'At what price would this product seem like a bargain — great value for money?'),
-    mkNumber(4, 'At what price would this product start to seem expensive, though you might still consider buying it?'),
-    mkNumber(5, 'At what price would this product be too expensive — you would refuse to buy it?'),
+    mkDisplay(1,
+      '<p><strong>Price Perception Study</strong></p>' +
+      '<p>We want to understand how you perceive the pricing of a product. ' +
+      'Please answer all questions honestly based on your own willingness to pay.</p>',
+    ),
+    mkMcqSingle(2, 'How often do you purchase products in this category?',
+      ['Every week', 'A few times a month', 'Once a month', 'A few times a year', 'Rarely or never'],
+    ),
+    mkVanWestendorp(3,
+      'Based on your experience, please share your price perceptions for [Product].',
+      'Sleek wireless earbuds with 30-hour battery life, active noise cancellation, and IPX5 water resistance. Compatible with all Bluetooth devices.',
+    ),
+    mkText(4, 'Is there anything else you would like to share about the pricing of this type of product?'),
   ],
 
   [SurveyMethodology.GABOR_GRANGER]: () => [

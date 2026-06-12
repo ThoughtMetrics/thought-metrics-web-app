@@ -121,6 +121,7 @@ const QuestionConfigPanel: React.FC = () => {
   ].includes(question.questionType);
   const isMaxDiff = question.questionType === QuestionType.MAX_DIFF;
   const isGaborGranger = question.questionType === QuestionType.GABOR_GRANGER;
+  const isVanWestendorp = question.questionType === QuestionType.VAN_WESTENDORP;
 
   // Others option — derived from options array
   const opts = cfg.options ?? [];
@@ -983,6 +984,159 @@ const QuestionConfigPanel: React.FC = () => {
                 description="Filter out non-buyers before price questions"
                 checked={showQual}
                 onChange={() => setQuestionConfig(selectedQuestionIndex, { gaborShowQualifying: !showQual })}
+              />
+
+              {/* Live Guidance */}
+              <div className="pt-3 border-t border-outline-variant/50 space-y-2">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <svg className="w-3.5 h-3.5 text-outline flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.347.347a3.195 3.195 0 00-.94 2.252v.108a2 2 0 01-2 2h-1a2 2 0 01-2-2v-.108a3.195 3.195 0 00-.94-2.252L7.172 16.9z" />
+                  </svg>
+                  <span className="text-[11px] font-semibold text-outline uppercase tracking-[0.05em]">Live guidance</span>
+                </div>
+                {guidance.map((g, i) => (
+                  <div key={i} className={`text-xs px-3 py-2 rounded-lg border ${variantClass[g.variant]} leading-relaxed`}>
+                    {g.text}
+                  </div>
+                ))}
+                {isOptimal && (
+                  <div className="inline-flex items-center gap-1 text-xs font-semibold bg-green-500/10 border border-green-500/25 text-green-400 [[data-theme='light']_&]:text-green-700 px-3 py-1.5 rounded-full">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Recommended setup
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Van Westendorp (PSM) settings */}
+        {isVanWestendorp && (() => {
+          const currency = cfg.vwCurrency ?? '₹';
+          const minPrice = cfg.vwMinPrice ?? 50;
+          const maxPrice = cfg.vwMaxPrice ?? 10000;
+          const mode = cfg.vwPresentationMode ?? 'sequential';
+          const showQual = cfg.vwShowQualifying ?? true;
+          const showNMS = cfg.vwShowNMS ?? false;
+
+          type GuidanceVariant = 'ok' | 'warn' | 'info' | 'purple';
+          const guidance: Array<{ variant: GuidanceVariant; text: string }> = [];
+
+          if (minPrice >= maxPrice) {
+            guidance.push({ variant: 'warn', text: 'Min price must be lower than max. Widen the acceptable range.' });
+          } else {
+            const spread = Math.round((maxPrice - minPrice) / minPrice * 100);
+            if (spread < 200) {
+              guidance.push({ variant: 'warn', text: `Range ${currency}${minPrice}–${currency}${maxPrice} is narrow. Van Westendorp works best with a wide range — respondents need room to express genuine price perceptions.` });
+            } else {
+              guidance.push({ variant: 'ok', text: `Range ${currency}${minPrice}–${currency}${maxPrice} is wide enough. Respondents can express genuine price perceptions without hitting the boundaries.` });
+            }
+          }
+
+          if (mode === 'sequential') {
+            guidance.push({ variant: 'ok', text: 'Sequential mode — each price question shown separately. Respondents give independent gut reactions without anchoring on earlier answers.' });
+          } else {
+            guidance.push({ variant: 'warn', text: 'All at once mode: respondents see all four questions simultaneously. This strongly increases anchoring bias — their answers will be artificially consistent rather than independent. Sequential is strongly recommended.' });
+          }
+
+          if (showQual) {
+            guidance.push({ variant: 'info', text: 'Qualifying question on. Non-buyers filtered before price questions — cleaner data.' });
+          }
+
+          if (showNMS) {
+            guidance.push({ variant: 'purple', text: "Newton-Miller-Smith on. Purchase likelihood at respondent's own \"good value\" and \"expensive\" prices will be collected. This enables demand curve estimation." });
+          }
+
+          const spread = minPrice < maxPrice ? Math.round((maxPrice - minPrice) / minPrice * 100) : 0;
+          const isOptimal = minPrice < maxPrice && spread >= 200 && mode === 'sequential' && showQual;
+
+          const variantClass: Record<GuidanceVariant, string> = {
+            ok:     "bg-green-500/10 border-green-500/25 text-green-400 [[data-theme='light']_&]:text-green-700",
+            warn:   "bg-amber-500/10 border-amber-500/25 text-amber-400 [[data-theme='light']_&]:text-amber-700",
+            info:   'bg-primary/10 border-primary/30 text-primary',
+            purple: "bg-purple-500/10 border-purple-500/30 text-purple-300 [[data-theme='light']_&]:text-purple-700",
+          };
+
+          return (
+            <div className="space-y-4 pt-3 border-t border-outline-variant/50">
+              <span className="block text-xs font-semibold text-outline uppercase tracking-wide">Van Westendorp (PSM) Settings</span>
+
+              {/* Currency */}
+              <div>
+                <span className="block text-xs font-medium text-on-surface-variant mb-1.5">Currency</span>
+                <select
+                  value={currency}
+                  onChange={(e) => setQuestionConfig(selectedQuestionIndex, { vwCurrency: e.target.value })}
+                  className="w-full border border-outline-variant rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                >
+                  <option value="₹">₹ — Indian Rupee (INR)</option>
+                  <option value="$">$ — US Dollar (USD)</option>
+                  <option value="€">€ — Euro (EUR)</option>
+                  <option value="£">£ — British Pound (GBP)</option>
+                  <option value="¥">¥ — Japanese Yen (JPY)</option>
+                  <option value="S$">S$ — Singapore Dollar (SGD)</option>
+                  <option value="AED">AED — UAE Dirham</option>
+                </select>
+              </div>
+
+              {/* Acceptable price range */}
+              <div>
+                <span className="block text-xs font-medium text-on-surface-variant mb-1.5">Acceptable price range</span>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <span className="block text-xs text-outline mb-1">Min</span>
+                    <input
+                      type="number"
+                      value={minPrice}
+                      onChange={(e) => setQuestionConfig(selectedQuestionIndex, { vwMinPrice: Number(e.target.value) })}
+                      className="w-full border border-outline-variant rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                  </div>
+                  <div>
+                    <span className="block text-xs text-outline mb-1">Max</span>
+                    <input
+                      type="number"
+                      value={maxPrice}
+                      onChange={(e) => setQuestionConfig(selectedQuestionIndex, { vwMaxPrice: Number(e.target.value) })}
+                      className="w-full border border-outline-variant rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Presentation mode */}
+              <div>
+                <span className="block text-xs font-medium text-on-surface-variant mb-1.5">Presentation mode</span>
+                <div className="flex rounded-lg border border-outline-variant overflow-hidden">
+                  {(['sequential', 'allatonce'] as const).map((m, idx) => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => setQuestionConfig(selectedQuestionIndex, { vwPresentationMode: m })}
+                      className={`flex-1 py-1.5 text-xs font-medium transition-colors ${idx === 0 ? 'border-r border-outline-variant' : ''} ${
+                        mode === m ? 'bg-primary text-on-primary' : 'text-outline hover:bg-surface-container-high'
+                      }`}
+                    >
+                      {m === 'sequential' ? 'Sequential' : 'All at once'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Options toggles */}
+              <RightPanelToggle
+                label="Qualifying question"
+                description="Filter out non-buyers before price questions"
+                checked={showQual}
+                onChange={() => setQuestionConfig(selectedQuestionIndex, { vwShowQualifying: !showQual })}
+              />
+              <RightPanelToggle
+                label="Newton, Miller & Smith"
+                description="Add purchase likelihood at respondent's own price points"
+                checked={showNMS}
+                onChange={() => setQuestionConfig(selectedQuestionIndex, { vwShowNMS: !showNMS })}
               />
 
               {/* Live Guidance */}

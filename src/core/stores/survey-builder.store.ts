@@ -57,6 +57,23 @@ function defaultConfigFor(type: QuestionType): IBuilderQuestionConfig {
         rowOptionsMode: 'per-row',
       };
     }
+    case QuestionType.VAN_WESTENDORP:
+      return {
+        vwProductDescription: '',
+        vwQualifyingQuestion: 'Please consider the following product. Would you consider buying it?',
+        vwShowQualifying: true,
+        vwCurrency: '₹',
+        vwMinPrice: 50,
+        vwMaxPrice: 10000,
+        vwPresentationMode: 'sequential',
+        vwShowNMS: false,
+        vwQ1Text: "At what price would this product feel so cheap that you'd question the quality?",
+        vwQ2Text: "At what price would this product feel like a bargain — a great buy for the money?",
+        vwQ3Text: "At what price would this product start to feel expensive, but you'd still consider buying?",
+        vwQ4Text: "At what price would this product be so expensive you would not consider buying it?",
+        vwNMSGoodValueQuestion: "On a scale of 1–5, how likely are you to buy this product at [GoodValue]?",
+        vwNMSExpensiveQuestion: "On a scale of 1–5, how likely are you to buy this product at [Expensive]?",
+      };
     case QuestionType.CONSTANT_SUM:
       return { options: [{ value: 'opt1', label: 'Option 1' }], total: 100, constantSumMode: 'constant-sum', rowOptionsMode: 'per-row' };
     case QuestionType.FILE:

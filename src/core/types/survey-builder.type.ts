@@ -173,6 +173,23 @@ export interface IBuilderQuestionConfig {
   gaborPresentationMode?: 'sequential' | 'allatonce';
   gaborShowQualifying?: boolean;
 
+  // ── Van Westendorp (PSM) ─────────────────────────────────────────────────────
+  vwProductDescription?: string;
+  vwQualifyingQuestion?: string;
+  vwShowQualifying?: boolean;
+  vwCurrency?: string;
+  vwMinPrice?: number;
+  vwMaxPrice?: number;
+  /** 'sequential' (default) | 'allatonce' */
+  vwPresentationMode?: 'sequential' | 'allatonce';
+  vwShowNMS?: boolean;
+  vwQ1Text?: string;
+  vwQ2Text?: string;
+  vwQ3Text?: string;
+  vwQ4Text?: string;
+  vwNMSGoodValueQuestion?: string;
+  vwNMSExpensiveQuestion?: string;
+
   // ── F8: Text/Graphic Display element ─────────────────────────────────────
   /** HTML/rich-text content for TEXT_DISPLAY questions */
   displayHtml?: string;

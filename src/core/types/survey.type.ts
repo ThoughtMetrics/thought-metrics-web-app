@@ -65,6 +65,7 @@ export enum QuestionType {
   RANKING = 'ranking',
   MAX_DIFF = 'max-diff',
   GABOR_GRANGER = 'gabor-granger',
+  VAN_WESTENDORP = 'van-westendorp',
   CONSTANT_SUM = 'constant-sum',
   FILE = 'file',
   VIDEO = 'video',

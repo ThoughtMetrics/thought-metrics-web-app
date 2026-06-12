@@ -34,6 +34,7 @@ import McqCanvasEditor from './McqCanvasEditor';
 import RankingCanvasEditor from './RankingCanvasEditor';
 import MaxDiffCanvasEditor from './MaxDiffCanvasEditor';
 import GaborGrangerCanvasEditor from './GaborGrangerCanvasEditor';
+import VanWestendorpCanvasEditor from './VanWestendorpCanvasEditor';
 
 // ---------------------------------------------------------------------------
 // Type sets for config routing
@@ -87,8 +88,9 @@ const QUESTION_TYPE_LABEL: Record<string, string> = {
   [QuestionType.MULTI_SLIDER]:  'Multi Slider',
   [QuestionType.MATRIX]:        'Matrix',
   [QuestionType.MAX_DIFF]:       'Max Diff',
-  [QuestionType.GABOR_GRANGER]:  'Gabor-Granger',
-  [QuestionType.CONSTANT_SUM]:   'Constant Sum',
+  [QuestionType.GABOR_GRANGER]:   'Gabor-Granger',
+  [QuestionType.VAN_WESTENDORP]:  'Van Westendorp (PSM)',
+  [QuestionType.CONSTANT_SUM]:    'Constant Sum',
   [QuestionType.FILE]:          'File Upload',
   [QuestionType.VIDEO]:         'Video Response',
   [QuestionType.AUDIO]:         'Audio Response',
@@ -585,6 +587,7 @@ const QuestionEditorPanel: React.FC = () => {
       </optgroup>
       <optgroup label="Pricing">
         <option value={QuestionType.GABOR_GRANGER}>Gabor-Granger</option>
+        <option value={QuestionType.VAN_WESTENDORP}>Van Westendorp (PSM)</option>
       </optgroup>
       <optgroup label="Media">
         <option value={QuestionType.VIDEO}>Video Response</option>
@@ -620,6 +623,7 @@ const QuestionEditorPanel: React.FC = () => {
           const isRankingList = question.questionType === QuestionType.RANKING;
           const isMaxDiffList = question.questionType === QuestionType.MAX_DIFF;
           const isGaborGrangerList = question.questionType === QuestionType.GABOR_GRANGER;
+          const isVanWestendorpList = question.questionType === QuestionType.VAN_WESTENDORP;
           const isNarrowList = isMcqList || isRankingList;
 
           // Unified canvas card for all question types
@@ -745,7 +749,9 @@ const QuestionEditorPanel: React.FC = () => {
                         ? <MaxDiffCanvasEditor question={question} qIdx={qIdx} lang={activeLanguage} />
                         : isGaborGrangerList
                           ? <GaborGrangerCanvasEditor question={question} qIdx={qIdx} lang={activeLanguage} />
-                          : renderTypeConfig(qIdx)
+                          : isVanWestendorpList
+                            ? <VanWestendorpCanvasEditor question={question} qIdx={qIdx} lang={activeLanguage} />
+                            : renderTypeConfig(qIdx)
                   }
                 </div>
               </div>
@@ -844,6 +850,7 @@ const QuestionEditorPanel: React.FC = () => {
   const isRankingCanvas = question.questionType === QuestionType.RANKING;
   const isMaxDiffCanvas = question.questionType === QuestionType.MAX_DIFF;
   const isGaborGrangerCanvas = question.questionType === QuestionType.GABOR_GRANGER;
+  const isVanWestendorpCanvas = question.questionType === QuestionType.VAN_WESTENDORP;
   const isNarrowCanvas = isMcqCanvas || isRankingCanvas;
 
   // ── Unified canvas shell for ALL question types ──────────────────────────
@@ -969,7 +976,9 @@ const QuestionEditorPanel: React.FC = () => {
                   ? <MaxDiffCanvasEditor question={question} qIdx={selectedQuestionIndex} lang={lang} />
                   : isGaborGrangerCanvas
                     ? <GaborGrangerCanvasEditor question={question} qIdx={selectedQuestionIndex} lang={lang} />
-                    : renderTypeConfig(selectedQuestionIndex)
+                    : isVanWestendorpCanvas
+                      ? <VanWestendorpCanvasEditor question={question} qIdx={selectedQuestionIndex} lang={lang} />
+                      : renderTypeConfig(selectedQuestionIndex)
             }
             </div>
           </div>
