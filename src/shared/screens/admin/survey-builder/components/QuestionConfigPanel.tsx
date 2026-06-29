@@ -122,6 +122,7 @@ const QuestionConfigPanel: React.FC = () => {
   const isMaxDiff = question.questionType === QuestionType.MAX_DIFF;
   const isGaborGranger = question.questionType === QuestionType.GABOR_GRANGER;
   const isVanWestendorp = question.questionType === QuestionType.VAN_WESTENDORP;
+  const isKanoModel = question.questionType === QuestionType.KANO_MODEL;
 
   // Others option — derived from options array
   const opts = cfg.options ?? [];
@@ -1140,6 +1141,140 @@ const QuestionConfigPanel: React.FC = () => {
               />
 
               {/* Live Guidance */}
+              <div className="pt-3 border-t border-outline-variant/50 space-y-2">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <svg className="w-3.5 h-3.5 text-outline flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.347.347a3.195 3.195 0 00-.94 2.252v.108a2 2 0 01-2 2h-1a2 2 0 01-2-2v-.108a3.195 3.195 0 00-.94-2.252L7.172 16.9z" />
+                  </svg>
+                  <span className="text-[11px] font-semibold text-outline uppercase tracking-[0.05em]">Live guidance</span>
+                </div>
+                {guidance.map((g, i) => (
+                  <div key={i} className={`text-xs px-3 py-2 rounded-lg border ${variantClass[g.variant]} leading-relaxed`}>
+                    {g.text}
+                  </div>
+                ))}
+                {isOptimal && (
+                  <div className="inline-flex items-center gap-1 text-xs font-semibold bg-green-500/10 border border-green-500/25 text-green-400 [[data-theme='light']_&]:text-green-700 px-3 py-1.5 rounded-full">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Recommended setup
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Kano Model settings */}
+        {isKanoModel && (() => {
+          const features: string[] = cfg.kanoFeatures ?? [];
+          const n = features.length;
+          const max = cfg.kanoMaxFeatures ?? n;
+          const mode = cfg.kanoPresentationMode ?? 'paired';
+          const qual = cfg.kanoShowQualifying !== false;
+          const randomise = cfg.kanoRandomiseFeatures !== false;
+
+          type GuidanceVariant = 'ok' | 'warn' | 'info' | 'teal';
+          const guidance: Array<{ variant: GuidanceVariant; text: string }> = [];
+
+          if (n < 3) {
+            guidance.push({ variant: 'warn', text: `Only ${n} feature${n !== 1 ? 's' : ''} — Kano works best with at least 5 features to produce meaningful category spread.` });
+          } else if (n < 5) {
+            guidance.push({ variant: 'warn', text: `${n} features is low. Adding more features gives richer Kano category distribution.` });
+          } else if (n <= 15) {
+            guidance.push({ variant: 'ok', text: `${n} features — good. Each respondent answers ${n * 2} questions total.` });
+          } else {
+            guidance.push({ variant: 'warn', text: `${n} features = ${n * 2} questions per respondent. That's a lot — use max features per respondent to limit fatigue.` });
+          }
+
+          if (max > n) {
+            guidance.push({ variant: 'warn', text: `Max features (${max}) exceeds total features (${n}). Every respondent will see all features.` });
+          } else if (max < n) {
+            guidance.push({ variant: 'teal', text: `Each respondent evaluates ${max} of ${n} features (${max * 2} questions). Good balance of coverage and respondent effort.` });
+          } else {
+            guidance.push({ variant: 'info', text: `Max features equals total features — every respondent sees all ${n} features.` });
+          }
+
+          if (mode === 'paired') {
+            guidance.push({ variant: 'ok', text: "Paired mode: functional + dysfunctional shown together per feature. Each feature stays fresh in the respondent's mind." });
+          } else {
+            guidance.push({ variant: 'info', text: 'Separated mode: all functional questions first, then all dysfunctional. Reduces demand bias — respondents are less likely to notice the paired pattern.' });
+          }
+
+          if (randomise) {
+            guidance.push({ variant: 'ok', text: 'Randomise on — feature order shuffled per respondent. Prevents order bias.' });
+          } else {
+            guidance.push({ variant: 'warn', text: 'Randomise is off — all respondents see features in the same order. Early features may get more attention than later ones.' });
+          }
+
+          if (qual) {
+            guidance.push({ variant: 'info', text: 'Qualifying question on — non-users filtered before feature evaluation.' });
+          }
+
+          const isOptimal = n >= 5 && n <= 15 && max <= n && mode === 'paired' && randomise && qual;
+
+          const variantClass: Record<GuidanceVariant, string> = {
+            ok:   "bg-green-500/10 border-green-500/25 text-green-400 [[data-theme='light']_&]:text-green-700",
+            warn: "bg-amber-500/10 border-amber-500/25 text-amber-400 [[data-theme='light']_&]:text-amber-700",
+            info: 'bg-primary/10 border-primary/30 text-primary',
+            teal: "bg-teal-500/10 border-teal-500/25 text-teal-400 [[data-theme='light']_&]:text-teal-700",
+          };
+
+          return (
+            <div className="space-y-4 pt-3 border-t border-outline-variant/50">
+              <span className="block text-xs font-semibold text-outline uppercase tracking-wide">Kano Model Settings</span>
+
+              {/* Max features per respondent */}
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <span className="text-sm font-medium text-on-surface-variant">Max features per respondent</span>
+                  <p className="text-xs text-outline mt-0.5">Features randomly assigned; reduces fatigue</p>
+                </div>
+                <input
+                  type="number"
+                  min={1}
+                  max={n || 1}
+                  value={cfg.kanoMaxFeatures ?? n}
+                  onChange={(e) => setQuestionConfig(selectedQuestionIndex, { kanoMaxFeatures: Number(e.target.value) })}
+                  className="w-16 border border-outline-variant rounded-lg px-2 py-1.5 text-sm text-right focus:outline-none focus:ring-1 focus:ring-primary flex-shrink-0"
+                />
+              </div>
+
+              {/* Presentation mode */}
+              <div>
+                <span className="block text-xs font-medium text-on-surface-variant mb-1.5">Presentation mode</span>
+                <div className="flex rounded-lg border border-outline-variant overflow-hidden">
+                  {(['paired', 'separated'] as const).map((m, idx) => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => setQuestionConfig(selectedQuestionIndex, { kanoPresentationMode: m })}
+                      className={`flex-1 py-1.5 text-xs font-medium transition-colors ${idx === 0 ? 'border-r border-outline-variant' : ''} ${
+                        mode === m ? 'bg-primary text-on-primary' : 'text-outline hover:bg-surface-container-high'
+                      }`}
+                    >
+                      {m === 'paired' ? 'Paired' : 'Separated'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Options toggles */}
+              <RightPanelToggle
+                label="Qualifying question"
+                description="Filter non-users before feature evaluation"
+                checked={qual}
+                onChange={() => setQuestionConfig(selectedQuestionIndex, { kanoShowQualifying: !qual })}
+              />
+              <RightPanelToggle
+                label="Randomise feature order"
+                description="Shuffle feature order per respondent"
+                checked={randomise}
+                onChange={() => setQuestionConfig(selectedQuestionIndex, { kanoRandomiseFeatures: !randomise })}
+              />
+
+              {/* Live guidance */}
               <div className="pt-3 border-t border-outline-variant/50 space-y-2">
                 <div className="flex items-center gap-1.5 mb-1">
                   <svg className="w-3.5 h-3.5 text-outline flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

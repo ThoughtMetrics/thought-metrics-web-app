@@ -10,11 +10,8 @@ body {
   /* Full-height flex layout - no scrolling at root level */
   display: flex;
   flex-direction: column;
-  /* Prevent bounce scrolling on iOS */
-  position: fixed;
+  /* overscroll-behavior: none prevents iOS bounce scrolling without needing position: fixed */
   overscroll-behavior: none;
-  -webkit-overflow-scrolling: touch;
-  /* end */
   /* scroll-behavior: smooth; */
 }
 

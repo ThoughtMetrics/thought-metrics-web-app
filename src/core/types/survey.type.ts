@@ -71,6 +71,7 @@ export enum QuestionType {
   VIDEO = 'video',
   AUDIO = 'audio',
   CURRENCY = 'currency',
+  KANO_MODEL = 'kano-model',
   TEXT_DISPLAY = 'text-display',
   SMART_FOLLOWUP = 'smart-followup',
 }
@@ -94,6 +95,7 @@ export interface ISurvey {
   createdAt: string;
   updatedAt?: string;
   clientId?: string | null;
+  companyId?: string | null;
   publishedBy?: string | null;
   publishedAt?: string | null;
   totalSubmissions?: number;   // enriched by backend: currentResponses

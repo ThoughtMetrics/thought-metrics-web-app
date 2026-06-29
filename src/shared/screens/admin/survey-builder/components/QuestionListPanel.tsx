@@ -54,6 +54,12 @@ const QUESTION_GROUPS: {
     ],
   },
   {
+    label: 'Concept Testing',
+    types: [
+      { type: QuestionType.KANO_MODEL, label: 'Kano Model' },
+    ],
+  },
+  {
     label: 'Display',
     types: [
       { type: QuestionType.TEXT_DISPLAY, label: 'Text / Graphic Display' },
@@ -85,6 +91,7 @@ const TYPE_BADGE_COLORS: Partial<Record<QuestionType, string>> = {
   [QuestionType.MAX_DIFF]: "bg-blue-500/15 text-blue-400 [[data-theme='light']_&]:text-blue-700",
   [QuestionType.CONSTANT_SUM]: "bg-blue-500/15 text-blue-400 [[data-theme='light']_&]:text-blue-700",
   [QuestionType.GABOR_GRANGER]: "bg-violet-500/15 text-violet-300 [[data-theme='light']_&]:text-violet-700",
+  [QuestionType.KANO_MODEL]: "bg-teal-500/15 text-teal-400 [[data-theme='light']_&]:text-teal-700",
 };
 
 const TYPE_LABELS: Partial<Record<QuestionType, string>> = {
@@ -109,6 +116,7 @@ const TYPE_LABELS: Partial<Record<QuestionType, string>> = {
   [QuestionType.MAX_DIFF]: 'MaxDiff',
   [QuestionType.CONSTANT_SUM]: 'Const. Sum',
   [QuestionType.GABOR_GRANGER]: 'Gabor-Granger',
+  [QuestionType.KANO_MODEL]: 'Kano Model',
 };
 
 const QuestionListPanel: React.FC = () => {

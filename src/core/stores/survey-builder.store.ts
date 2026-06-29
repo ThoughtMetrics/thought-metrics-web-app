@@ -74,6 +74,18 @@ function defaultConfigFor(type: QuestionType): IBuilderQuestionConfig {
         vwNMSGoodValueQuestion: "On a scale of 1–5, how likely are you to buy this product at [GoodValue]?",
         vwNMSExpensiveQuestion: "On a scale of 1–5, how likely are you to buy this product at [Expensive]?",
       };
+    case QuestionType.KANO_MODEL:
+      return {
+        kanoProductName: '',
+        kanoIntroText: '',
+        kanoFunctionalTemplate: 'If your [Product] had [Feature], how would you feel?',
+        kanoDysfunctionalTemplate: 'If your [Product] did NOT have [Feature], how would you feel?',
+        kanoFeatures: ['Feature 1', 'Feature 2', 'Feature 3'],
+        kanoMaxFeatures: 5,
+        kanoPresentationMode: 'paired',
+        kanoShowQualifying: true,
+        kanoRandomiseFeatures: true,
+      };
     case QuestionType.CONSTANT_SUM:
       return { options: [{ value: 'opt1', label: 'Option 1' }], total: 100, constantSumMode: 'constant-sum', rowOptionsMode: 'per-row' };
     case QuestionType.FILE:

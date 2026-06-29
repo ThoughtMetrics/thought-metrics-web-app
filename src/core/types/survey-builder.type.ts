@@ -190,6 +190,17 @@ export interface IBuilderQuestionConfig {
   vwNMSGoodValueQuestion?: string;
   vwNMSExpensiveQuestion?: string;
 
+  // ── Kano Model ────────────────────────────────────────────────────────────
+  kanoProductName?: string;
+  kanoIntroText?: string;
+  kanoFunctionalTemplate?: string;
+  kanoDysfunctionalTemplate?: string;
+  kanoFeatures?: string[];
+  kanoMaxFeatures?: number;
+  kanoPresentationMode?: 'paired' | 'separated';
+  kanoShowQualifying?: boolean;
+  kanoRandomiseFeatures?: boolean;
+
   // ── F8: Text/Graphic Display element ─────────────────────────────────────
   /** HTML/rich-text content for TEXT_DISPLAY questions */
   displayHtml?: string;

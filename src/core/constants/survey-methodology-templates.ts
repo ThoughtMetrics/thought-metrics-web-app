@@ -89,6 +89,30 @@ function mkText(order: number, text: string): IBuilderQuestion {
   };
 }
 
+function mkKanoModel(order: number, productName = ''): IBuilderQuestion {
+  const text = 'Feature evaluation';
+  return {
+    id: uid(),
+    order,
+    questionType: QuestionType.KANO_MODEL,
+    text,
+    translations: { en: { text }, ta: { text: '' } },
+    config: {
+      kanoProductName: productName,
+      kanoIntroText: '',
+      kanoFunctionalTemplate: 'If your [Product] had [Feature], how would you feel?',
+      kanoDysfunctionalTemplate: 'If your [Product] did NOT have [Feature], how would you feel?',
+      kanoFeatures: ['Feature 1', 'Feature 2', 'Feature 3'],
+      kanoMaxFeatures: 5,
+      kanoPresentationMode: 'paired',
+      kanoShowQualifying: true,
+      kanoRandomiseFeatures: true,
+    },
+    required: true,
+    allowComment: false,
+  };
+}
+
 function mkLikert(order: number, text: string): IBuilderQuestion {
   return {
     id: uid(),
@@ -208,9 +232,6 @@ function mkVanWestendorp(
   };
 }
 
-// ── Kano MCQ options ──────────────────────────────────────────────────────────
-const KANO_OPTIONS = ['I would be delighted', 'I would expect it', 'I am neutral', 'I can live with it', 'I would dislike it'];
-
 // ── Starter templates map ─────────────────────────────────────────────────────
 
 type StarterBuilder = () => IBuilderQuestion[];
@@ -218,15 +239,7 @@ type StarterBuilder = () => IBuilderQuestion[];
 const STARTERS: Partial<Record<SurveyMethodology, StarterBuilder>> = {
 
   [SurveyMethodology.MAX_DIFF]: () => [
-    mkDisplay(1,
-      '<p><strong>About this survey</strong></p>' +
-      '<p>In each question you will see a list of items. Please select the one that is <strong>MOST important</strong> to you and the one that is <strong>LEAST important</strong> to you.</p>' +
-      '<p>There are no right or wrong answers — we just want your honest opinion.</p>',
-    ),
-    mkMcqSingle(2, 'How familiar are you with [product / category]?',
-      ['Very familiar', 'Somewhat familiar', 'Not very familiar', 'Not familiar at all'],
-    ),
-    mkMaxDiff(3,
+    mkMaxDiff(1,
       'From the items shown below, which is MOST important and which is LEAST important to you?',
       [
         'Fast delivery',
@@ -240,7 +253,6 @@ const STARTERS: Partial<Record<SurveyMethodology, StarterBuilder>> = {
       ],
       4,
     ),
-    mkText(4, 'Is there anything else you would like to share about what matters most to you?'),
   ],
 
   [SurveyMethodology.A_B_TEST]: () => [
@@ -253,34 +265,17 @@ const STARTERS: Partial<Record<SurveyMethodology, StarterBuilder>> = {
   ],
 
   [SurveyMethodology.VAN_WESTENDORP]: () => [
-    mkDisplay(1,
-      '<p><strong>Price Perception Study</strong></p>' +
-      '<p>We want to understand how you perceive the pricing of a product. ' +
-      'Please answer all questions honestly based on your own willingness to pay.</p>',
-    ),
-    mkMcqSingle(2, 'How often do you purchase products in this category?',
-      ['Every week', 'A few times a month', 'Once a month', 'A few times a year', 'Rarely or never'],
-    ),
-    mkVanWestendorp(3,
+    mkVanWestendorp(1,
       'Based on your experience, please share your price perceptions for [Product].',
       'Sleek wireless earbuds with 30-hour battery life, active noise cancellation, and IPX5 water resistance. Compatible with all Bluetooth devices.',
     ),
-    mkText(4, 'Is there anything else you would like to share about the pricing of this type of product?'),
   ],
 
   [SurveyMethodology.GABOR_GRANGER]: () => [
-    mkDisplay(1,
-      '<p><strong>Price Sensitivity Study</strong></p>' +
-      '<p>You will be shown a product at different price points. Please answer honestly based on your own willingness to purchase.</p>',
-    ),
-    mkMcqSingle(2, 'Which of the following best describes your shopping frequency for this category?',
-      ['Every week', 'A few times a month', 'Once a month', 'A few times a year', 'Rarely or never'],
-    ),
-    mkGaborGranger(3, 'Would you buy this product at the price of [Price]?',
+    mkGaborGranger(1, 'Would you buy this product at the price of [Price]?',
       'Sleek wireless earbuds with 30-hour battery life, active noise cancellation, and IPX5 water resistance. Compatible with all Bluetooth devices.',
       [200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100],
     ),
-    mkText(4, 'Is there anything else you would like to share about this product or its pricing?'),
   ],
 
   [SurveyMethodology.BRAND_PRICE_TRADEOFF]: () => [
@@ -296,12 +291,7 @@ const STARTERS: Partial<Record<SurveyMethodology, StarterBuilder>> = {
   ],
 
   [SurveyMethodology.KANO_MODEL]: () => [
-    mkDisplay(1, 'For each feature below, we will ask two questions: how you feel if the feature IS available, and how you feel if it is NOT available.'),
-    mkMcqSingle(2, 'Feature 1: [Replace with feature name]\n\nHow would you feel if this feature WAS available?', KANO_OPTIONS),
-    mkMcqSingle(3, 'Feature 1: [Replace with feature name]\n\nHow would you feel if this feature was NOT available?', KANO_OPTIONS),
-    mkMcqSingle(4, 'Feature 2: [Replace with feature name]\n\nHow would you feel if this feature WAS available?', KANO_OPTIONS),
-    mkMcqSingle(5, 'Feature 2: [Replace with feature name]\n\nHow would you feel if this feature was NOT available?', KANO_OPTIONS),
-    mkText(6, 'Which feature matters most to you, and why?'),
+    mkKanoModel(1),
   ],
 
   [SurveyMethodology.TURF]: () => [
