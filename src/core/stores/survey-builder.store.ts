@@ -92,6 +92,8 @@ function defaultConfigFor(type: QuestionType): IBuilderQuestionConfig {
       return { acceptedFileTypes: ['pdf', 'jpg', 'png'], maxFileSizeMb: 10 };
     case QuestionType.TEXT_DISPLAY:
       return { displayHtml: '', displayImageUrl: '', displayImageMaxWidth: '100%' };
+    case QuestionType.SMART_FOLLOWUP:
+      return { sourceQuestionId: undefined, aiInstructions: '', requiresAiFeatures: true };
     default:
       return {};
   }

@@ -36,6 +36,7 @@ import MaxDiffCanvasEditor from './MaxDiffCanvasEditor';
 import GaborGrangerCanvasEditor from './GaborGrangerCanvasEditor';
 import VanWestendorpCanvasEditor from './VanWestendorpCanvasEditor';
 import KanoModelCanvasEditor from './KanoModelCanvasEditor';
+import SmartFollowupCanvasEditor from './SmartFollowupCanvasEditor';
 
 // ---------------------------------------------------------------------------
 // Type sets for config routing
@@ -594,6 +595,9 @@ const QuestionEditorPanel: React.FC = () => {
       <optgroup label="Concept Testing">
         <option value={QuestionType.KANO_MODEL}>Kano Model</option>
       </optgroup>
+      <optgroup label="AI">
+        <option value={QuestionType.SMART_FOLLOWUP}>Smart Follow-Up (AI)</option>
+      </optgroup>
       <optgroup label="Media">
         <option value={QuestionType.VIDEO}>Video Response</option>
         <option value={QuestionType.AUDIO}>Audio Response</option>
@@ -630,6 +634,7 @@ const QuestionEditorPanel: React.FC = () => {
           const isGaborGrangerList = question.questionType === QuestionType.GABOR_GRANGER;
           const isVanWestendorpList = question.questionType === QuestionType.VAN_WESTENDORP;
           const isKanoModelList = question.questionType === QuestionType.KANO_MODEL;
+          const isSmartFollowupList = question.questionType === QuestionType.SMART_FOLLOWUP;
           const isNarrowList = isMcqList || isRankingList;
 
           // Unified canvas card for all question types
@@ -759,7 +764,9 @@ const QuestionEditorPanel: React.FC = () => {
                             ? <VanWestendorpCanvasEditor question={question} qIdx={qIdx} lang={activeLanguage} />
                             : isKanoModelList
                               ? <KanoModelCanvasEditor question={question} qIdx={qIdx} />
-                              : renderTypeConfig(qIdx)
+                              : isSmartFollowupList
+                                ? <SmartFollowupCanvasEditor question={question} qIdx={qIdx} lang={activeLanguage} />
+                                : renderTypeConfig(qIdx)
                   }
                 </div>
               </div>
@@ -860,6 +867,7 @@ const QuestionEditorPanel: React.FC = () => {
   const isGaborGrangerCanvas = question.questionType === QuestionType.GABOR_GRANGER;
   const isVanWestendorpCanvas = question.questionType === QuestionType.VAN_WESTENDORP;
   const isKanoModelCanvas = question.questionType === QuestionType.KANO_MODEL;
+  const isSmartFollowupCanvas = question.questionType === QuestionType.SMART_FOLLOWUP;
   const isNarrowCanvas = isMcqCanvas || isRankingCanvas;
 
   // ── Unified canvas shell for ALL question types ──────────────────────────
@@ -989,7 +997,9 @@ const QuestionEditorPanel: React.FC = () => {
                       ? <VanWestendorpCanvasEditor question={question} qIdx={selectedQuestionIndex} lang={lang} />
                       : isKanoModelCanvas
                         ? <KanoModelCanvasEditor question={question} qIdx={selectedQuestionIndex} />
-                        : renderTypeConfig(selectedQuestionIndex)
+                        : isSmartFollowupCanvas
+                          ? <SmartFollowupCanvasEditor question={question} qIdx={selectedQuestionIndex} lang={lang} />
+                          : renderTypeConfig(selectedQuestionIndex)
             }
             </div>
           </div>

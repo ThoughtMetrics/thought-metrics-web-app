@@ -29,7 +29,12 @@ import {
   Ranking,
   MaxDiff,
   ConstantSum,
+  KanoModel,
+  GaborGranger,
+  VanWestendorp,
+  SmartFollowup,
 } from '@/shared/ui/atoms/survey-questions';
+import type { KanoModelAnswer, GaborGrangerAnswer, VanWestendorpAnswer } from '@/core/types/survey.type';
 import { FileUpload } from '@/shared/ui/atoms/survey-questions/FileUpload';
 import { VideoUpload } from '@/shared/ui/atoms/survey-questions/VideoUpload';
 import { AudioUpload } from '@/shared/ui/atoms/survey-questions/AudioUpload';
@@ -124,6 +129,15 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
   const [allocatedPoints, setAllocatedPoints] = useState<Record<string, number>>({});
   const [constRatings, setConstRatings] = useState<Record<string, number>>({});
   const [constQuantities, setConstQuantities] = useState<Record<string, number>>({});
+  const [kanoAnswer, setKanoAnswer] = useState<KanoModelAnswer>({ responses: {} });
+  const [gaborAnswer, setGaborAnswer] = useState<GaborGrangerAnswer>({ mode: 'sequential', responses: {} });
+  const [vwAnswer, setVwAnswer] = useState<VanWestendorpAnswer>({
+    tooCheap: NaN,
+    goodValue: NaN,
+    expensive: NaN,
+    tooExpensive: NaN,
+  });
+  const [followupAnswerVal, setFollowupAnswerVal] = useState('');
 
   const questionText =
     question.translations[lang].text || question.text || '(no question text)';
@@ -636,6 +650,90 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
               </p>
             )}
           </div>
+        );
+
+      case QuestionType.KANO_MODEL:
+        return (
+          <KanoModel
+            {...commonProps}
+            productName={config.kanoProductName}
+            introText={config.kanoIntroText}
+            functionalTemplate={config.kanoFunctionalTemplate}
+            dysfunctionalTemplate={config.kanoDysfunctionalTemplate}
+            features={config.kanoFeatures ?? []}
+            answer={interactive ? kanoAnswer : { responses: {} }}
+            onAnswerChange={(a) => {
+              if (!interactive) return;
+              setKanoAnswer(a);
+              onAnswerChange?.(JSON.stringify(a));
+            }}
+          />
+        );
+
+      case QuestionType.GABOR_GRANGER:
+        return (
+          <GaborGranger
+            {...commonProps}
+            productDescription={config.gaborProductDescription}
+            currency={config.gaborCurrency}
+            prices={resolveOptions(question, lang)}
+            presentationMode={config.gaborPresentationMode ?? 'sequential'}
+            answer={interactive ? gaborAnswer : { mode: 'sequential', responses: {} }}
+            onAnswerChange={(a) => {
+              if (!interactive) return;
+              setGaborAnswer(a);
+              onAnswerChange?.(JSON.stringify(a));
+            }}
+          />
+        );
+
+      case QuestionType.VAN_WESTENDORP:
+        return (
+          <VanWestendorp
+            {...commonProps}
+            productDescription={config.vwProductDescription}
+            currency={config.vwCurrency}
+            minPrice={config.vwMinPrice}
+            maxPrice={config.vwMaxPrice}
+            q1Text={config.vwQ1Text}
+            q2Text={config.vwQ2Text}
+            q3Text={config.vwQ3Text}
+            q4Text={config.vwQ4Text}
+            showNMS={config.vwShowNMS}
+            nmsGoodValueQuestion={config.vwNMSGoodValueQuestion}
+            nmsExpensiveQuestion={config.vwNMSExpensiveQuestion}
+            answer={interactive ? vwAnswer : undefined}
+            onAnswerChange={(a) => {
+              if (!interactive) return;
+              setVwAnswer(a);
+              onAnswerChange?.(JSON.stringify(a));
+            }}
+          />
+        );
+
+      case QuestionType.SMART_FOLLOWUP:
+        return (
+          <SmartFollowup
+            {...commonProps}
+            sourceAnswer="(sample respondent answer shown here during preview)"
+            answer={{
+              sourceAnswer: '',
+              generatedFollowupQuestion: config.aiInstructions
+                ? `Preview: AI will generate a follow-up using — "${config.aiInstructions}"`
+                : 'Preview: AI will generate a follow-up question here.',
+              followupAnswer: followupAnswerVal,
+            }}
+            onAnswerChange={(a) => {
+              if (!interactive) return;
+              setFollowupAnswerVal(a.followupAnswer);
+              onAnswerChange?.(a.followupAnswer);
+            }}
+            fetchFollowupQuestion={async () =>
+              config.aiInstructions
+                ? `Preview: AI will generate a follow-up using — "${config.aiInstructions}"`
+                : 'Preview: AI will generate a follow-up question here.'
+            }
+          />
         );
 
       default:

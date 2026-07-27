@@ -51,12 +51,19 @@ const QUESTION_GROUPS: {
     label: 'Pricing',
     types: [
       { type: QuestionType.GABOR_GRANGER, label: 'Gabor-Granger' },
+      { type: QuestionType.VAN_WESTENDORP, label: 'Van Westendorp (PSM)' },
     ],
   },
   {
     label: 'Concept Testing',
     types: [
       { type: QuestionType.KANO_MODEL, label: 'Kano Model' },
+    ],
+  },
+  {
+    label: 'AI',
+    types: [
+      { type: QuestionType.SMART_FOLLOWUP, label: 'Smart Follow-Up (AI)' },
     ],
   },
   {
@@ -91,7 +98,9 @@ const TYPE_BADGE_COLORS: Partial<Record<QuestionType, string>> = {
   [QuestionType.MAX_DIFF]: "bg-blue-500/15 text-blue-400 [[data-theme='light']_&]:text-blue-700",
   [QuestionType.CONSTANT_SUM]: "bg-blue-500/15 text-blue-400 [[data-theme='light']_&]:text-blue-700",
   [QuestionType.GABOR_GRANGER]: "bg-violet-500/15 text-violet-300 [[data-theme='light']_&]:text-violet-700",
+  [QuestionType.VAN_WESTENDORP]: "bg-violet-500/15 text-violet-300 [[data-theme='light']_&]:text-violet-700",
   [QuestionType.KANO_MODEL]: "bg-teal-500/15 text-teal-400 [[data-theme='light']_&]:text-teal-700",
+  [QuestionType.SMART_FOLLOWUP]: "bg-fuchsia-500/15 text-fuchsia-400 [[data-theme='light']_&]:text-fuchsia-700",
 };
 
 const TYPE_LABELS: Partial<Record<QuestionType, string>> = {
@@ -116,7 +125,9 @@ const TYPE_LABELS: Partial<Record<QuestionType, string>> = {
   [QuestionType.MAX_DIFF]: 'MaxDiff',
   [QuestionType.CONSTANT_SUM]: 'Const. Sum',
   [QuestionType.GABOR_GRANGER]: 'Gabor-Granger',
+  [QuestionType.VAN_WESTENDORP]: 'Van Westendorp',
   [QuestionType.KANO_MODEL]: 'Kano Model',
+  [QuestionType.SMART_FOLLOWUP]: 'Smart Follow-Up',
 };
 
 const QuestionListPanel: React.FC = () => {

@@ -442,3 +442,83 @@ export interface ConstantSumProps extends BaseSurveyQuestionProps {
   onQuantityChange?: (quantities: Record<string, number>) => void;
   volumeMultiplierKey?: string;
 }
+
+// ========== KANO MODEL ==========
+export interface KanoModelFeatureResponse {
+  functional: number; // 1-5, Delighted=1 ... Displeased=5
+  dysfunctional: number; // 1-5
+}
+
+export interface KanoModelAnswer {
+  responses: Record<string, KanoModelFeatureResponse>; // keyed by feature_<index>
+}
+
+export interface KanoModelProps extends BaseSurveyQuestionProps {
+  productName?: string;
+  introText?: string;
+  functionalTemplate?: string; // uses [Feature]/[Product] tokens
+  dysfunctionalTemplate?: string;
+  features: string[];
+  answer?: KanoModelAnswer;
+  onAnswerChange: (answer: KanoModelAnswer) => void;
+}
+
+// ========== GABOR-GRANGER ==========
+export interface GaborGrangerAnswer {
+  mode: 'sequential' | 'allatonce';
+  responses: Record<string, 'yes' | 'no'>; // keyed by price value (e.g. 'price_200')
+  lastYesPrice?: number;
+  firstNoPrice?: number;
+}
+
+export interface GaborGrangerProps extends BaseSurveyQuestionProps {
+  productDescription?: string;
+  qualifyingQuestion?: string;
+  currency?: string;
+  prices: LabelValuePair[]; // config.options
+  presentationMode: 'sequential' | 'allatonce';
+  answer?: GaborGrangerAnswer;
+  onAnswerChange: (answer: GaborGrangerAnswer) => void;
+}
+
+// ========== VAN WESTENDORP (PSM) ==========
+export interface VanWestendorpAnswer {
+  tooCheap: number;
+  goodValue: number;
+  expensive: number;
+  tooExpensive: number;
+  nmsGoodValueLikelihood?: number;
+  nmsExpensiveLikelihood?: number;
+}
+
+export interface VanWestendorpProps extends BaseSurveyQuestionProps {
+  productDescription?: string;
+  qualifyingQuestion?: string;
+  currency?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  q1Text?: string;
+  q2Text?: string;
+  q3Text?: string;
+  q4Text?: string;
+  showNMS?: boolean;
+  nmsGoodValueQuestion?: string;
+  nmsExpensiveQuestion?: string;
+  answer?: VanWestendorpAnswer;
+  onAnswerChange: (answer: VanWestendorpAnswer) => void;
+}
+
+// ========== SMART FOLLOW-UP (AI) ==========
+export interface SmartFollowupAnswer {
+  sourceAnswer: string;
+  generatedFollowupQuestion: string;
+  followupAnswer: string;
+}
+
+export interface SmartFollowupProps extends BaseSurveyQuestionProps {
+  sourceAnswer?: string;
+  answer?: SmartFollowupAnswer;
+  onAnswerChange: (answer: SmartFollowupAnswer) => void;
+  /** Fetches the AI-generated follow-up question text for sourceAnswer. */
+  fetchFollowupQuestion: (sourceAnswer: string) => Promise<string>;
+}

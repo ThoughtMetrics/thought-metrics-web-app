@@ -14,11 +14,14 @@ import { UserRouteGuard } from '@/shared/components/guards/UserRouteGuard';
 import { SurveySuccessMessage } from '@/shared/components/survey/SurveySuccessMessage';
 import { SurveyResponseView } from '@/shared/components/survey/SurveyResponseView';
 import { useEditSurveyResponseMutation } from '@/core/hooks/mutations/survey/use-edit-survey-response.mutation';
+import { useGenerateFollowupMutation } from '@/core/hooks/mutations/survey/use-generate-followup.mutation';
 import { toast } from 'sonner';
 import {
   Checkboxes,
   ConstantSum,
   DoubleSlider,
+  GaborGranger,
+  KanoModel,
   LickertScale,
   MatrixGrid,
   MaxDiff,
@@ -27,8 +30,10 @@ import {
   RadioButtons,
   Ranking,
   SingleSlider,
+  SmartFollowup,
   StarRating,
   SurveyQuestionWrapper,
+  VanWestendorp,
 } from '@/shared/ui/atoms/survey-questions';
 import { COUNTRY_CODES } from '@/core/constants/country-codes';
 import { FileUpload } from '@/shared/ui/atoms/survey-questions/FileUpload';
@@ -133,6 +138,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   const { data: userProfile } = useProfileQuery();
   const submitMutation = useSubmitSurveyMutation();
   const editMutation = useEditSurveyResponseMutation();
+  const generateFollowupMutation = useGenerateFollowupMutation();
   const { translations, language } = useLanguage();
 
   // Map questionId → array index for cascade resolution
@@ -582,6 +588,36 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
 
         case QuestionType.TEXT_DISPLAY:
           return true;
+
+        case QuestionType.KANO_MODEL: {
+          const features: string[] = qData.config?.kanoFeatures || [];
+          if (features.length === 0) return false;
+          const responses = answer.responses || {};
+          return features.every((_: string, i: number) => {
+            const pair = responses[`feature_${i}`];
+            return pair && typeof pair.functional === 'number' && typeof pair.dysfunctional === 'number';
+          });
+        }
+
+        case QuestionType.GABOR_GRANGER: {
+          const responses = answer.responses || {};
+          const responseCount = Object.keys(responses).length;
+          if (answer.mode === 'allatonce') {
+            const priceCount = (qData.config?.options || []).length;
+            return priceCount > 0 && responseCount >= priceCount;
+          }
+          return responseCount > 0;
+        }
+
+        case QuestionType.VAN_WESTENDORP: {
+          const requiredFields = ['tooCheap', 'goodValue', 'expensive', 'tooExpensive'];
+          return requiredFields.every(
+            (field) => typeof answer[field] === 'number' && !isNaN(answer[field])
+          );
+        }
+
+        case QuestionType.SMART_FOLLOWUP:
+          return !!answer.followupAnswer && answer.followupAnswer.trim() !== '';
 
         default:
           return false;
@@ -1103,6 +1139,16 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         return `${Object.values(answer.selections || {}).filter((v) => v === 'best' || v === 'worst').length} items selected`;
       case QuestionType.PHONE:
         return `${answer.countryCode || ''} ${answer.value || ''}`.trim();
+      case QuestionType.KANO_MODEL:
+        return `${Object.keys(answer.responses || {}).length} feature(s) rated`;
+      case QuestionType.GABOR_GRANGER:
+        return `${Object.keys(answer.responses || {}).length} price point(s) answered`;
+      case QuestionType.VAN_WESTENDORP:
+        return answer.tooCheap !== undefined
+          ? `${answer.tooCheap} – ${answer.tooExpensive}`
+          : '';
+      case QuestionType.SMART_FOLLOWUP:
+        return answer.followupAnswer || '';
       default:
         return String(answer.value ?? '');
     }
@@ -1732,6 +1778,72 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
               )}
             </div>
           </SurveyQuestionWrapper>
+        );
+      }
+
+      case QuestionType.KANO_MODEL:
+        return (
+          <KanoModel
+            {...commonProps}
+            productName={config.kanoProductName}
+            introText={config.kanoIntroText}
+            functionalTemplate={config.kanoFunctionalTemplate}
+            dysfunctionalTemplate={config.kanoDysfunctionalTemplate}
+            features={config.kanoFeatures || []}
+            answer={currentAnswer as any}
+            onAnswerChange={(answer) => onChange(answer)}
+          />
+        );
+
+      case QuestionType.GABOR_GRANGER:
+        return (
+          <GaborGranger
+            {...commonProps}
+            productDescription={config.gaborProductDescription}
+            currency={config.gaborCurrency}
+            prices={config.options || []}
+            presentationMode={config.gaborPresentationMode || 'sequential'}
+            answer={currentAnswer as any}
+            onAnswerChange={(answer) => onChange(answer)}
+          />
+        );
+
+      case QuestionType.VAN_WESTENDORP:
+        return (
+          <VanWestendorp
+            {...commonProps}
+            productDescription={config.vwProductDescription}
+            currency={config.vwCurrency}
+            minPrice={config.vwMinPrice}
+            maxPrice={config.vwMaxPrice}
+            q1Text={config.vwQ1Text}
+            q2Text={config.vwQ2Text}
+            q3Text={config.vwQ3Text}
+            q4Text={config.vwQ4Text}
+            showNMS={config.vwShowNMS}
+            nmsGoodValueQuestion={config.vwNMSGoodValueQuestion}
+            nmsExpensiveQuestion={config.vwNMSExpensiveQuestion}
+            answer={currentAnswer as any}
+            onAnswerChange={(answer) => onChange(answer)}
+          />
+        );
+
+      case QuestionType.SMART_FOLLOWUP: {
+        const sourceIdx = config.sourceQuestionId ? questionIdToIndex[config.sourceQuestionId] : undefined;
+        const sourceAnswerData = sourceIdx !== undefined ? answers[sourceIdx] : undefined;
+        const sourceAnswer = sourceAnswerData?.value ?? '';
+        return (
+          <SmartFollowup
+            {...commonProps}
+            sourceAnswer={sourceAnswer}
+            answer={currentAnswer as any}
+            onAnswerChange={(answer) => onChange(answer)}
+            fetchFollowupQuestion={(answerText) =>
+              generateFollowupMutation
+                .mutateAsync({ surveyId, questionId: qData.id, sourceAnswer: answerText })
+                .then((res) => res.data?.followupQuestion || 'Can you tell us more about your answer?')
+            }
+          />
         );
       }
 

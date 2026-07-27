@@ -123,6 +123,7 @@ const QuestionConfigPanel: React.FC = () => {
   const isGaborGranger = question.questionType === QuestionType.GABOR_GRANGER;
   const isVanWestendorp = question.questionType === QuestionType.VAN_WESTENDORP;
   const isKanoModel = question.questionType === QuestionType.KANO_MODEL;
+  const isSmartFollowup = question.questionType === QuestionType.SMART_FOLLOWUP;
 
   // Others option — derived from options array
   const opts = cfg.options ?? [];
@@ -1296,6 +1297,42 @@ const QuestionConfigPanel: React.FC = () => {
                   </div>
                 )}
               </div>
+            </div>
+          );
+        })()}
+
+        {isSmartFollowup && (() => {
+          const hasSource = !!cfg.sourceQuestionId;
+          const hasInstructions = !!cfg.aiInstructions?.trim();
+
+          return (
+            <div className="space-y-3 pt-3 border-t border-outline-variant/50">
+              <span className="block text-xs font-semibold text-outline uppercase tracking-wide">Smart Follow-Up (AI) Settings</span>
+
+              <div className={`text-xs px-3 py-2 rounded-lg border leading-relaxed ${
+                hasSource
+                  ? "bg-green-500/10 border-green-500/25 text-green-400 [[data-theme='light']_&]:text-green-700"
+                  : "bg-amber-500/10 border-amber-500/25 text-amber-400 [[data-theme='light']_&]:text-amber-700"
+              }`}>
+                {hasSource
+                  ? 'Source question selected — configure it in the canvas.'
+                  : 'No source question selected yet. Pick an earlier open-ended (Text / Long Text) question in the canvas.'}
+              </div>
+
+              <div className={`text-xs px-3 py-2 rounded-lg border leading-relaxed ${
+                hasInstructions
+                  ? 'bg-primary/10 border-primary/30 text-primary'
+                  : "bg-amber-500/10 border-amber-500/25 text-amber-400 [[data-theme='light']_&]:text-amber-700"
+              }`}>
+                {hasInstructions
+                  ? 'AI instructions configured — used to steer the follow-up question the AI generates for each respondent.'
+                  : 'No AI instructions set. Without guidance the AI falls back to a generic follow-up prompt.'}
+              </div>
+
+              <p className="text-xs text-outline leading-relaxed">
+                The follow-up question is generated live per-respondent from their answer to the source
+                question — it cannot be authored ahead of time.
+              </p>
             </div>
           );
         })()}

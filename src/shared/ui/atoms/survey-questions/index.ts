@@ -12,3 +12,7 @@ export { Ranking } from './Ranking';
 export { MaxDiff } from './MaxDiff';
 export { ConstantSum } from './ConstantSum';
 export { PhoneInputField } from './PhoneInputField';
+export { KanoModel } from './KanoModel';
+export { GaborGranger } from './GaborGranger';
+export { VanWestendorp } from './VanWestendorp';
+export { SmartFollowup } from './SmartFollowup';

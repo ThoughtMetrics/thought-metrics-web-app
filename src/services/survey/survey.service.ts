@@ -152,6 +152,26 @@ class SurveyService {
   }
 
   /**
+   * Generate an AI follow-up question for a Smart Follow-Up question
+   * (Authenticated endpoint). `aiInstructions` is read server-side from the
+   * template — only the respondent's source answer is sent.
+   */
+  async generateFollowup(
+    surveyId: string,
+    questionId: string,
+    sourceAnswer: string
+  ): Promise<ApiResponse<{ followupQuestion: string }>> {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error('No authenticated user');
+    const token = await user.getIdToken();
+    apiService.setAuthToken(token);
+    return apiService.post<{ followupQuestion: string }>(
+      `${this.basePath}/${surveyId}/questions/${questionId}/ai-followup`,
+      { sourceAnswer }
+    );
+  }
+
+  /**
    * Edit user's own submitted response (Authenticated endpoint)
    * PATCH /surveys/:surveyId/my-response
    */
