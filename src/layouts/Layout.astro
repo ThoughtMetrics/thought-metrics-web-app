@@ -48,24 +48,26 @@ const isProd = import.meta.env.PROD;
   <head>
     <!-- Production-only: disable text selection + block hypothes.is annotation -->
     {isProd && (
-      <Fragment set:html={`
+      <Fragment>
         <style>
-          *, *::before, *::after {
+          {`*, *::before, *::after {
             user-select: none !important;
             -webkit-user-select: none !important;
           }
           input, textarea, select, [contenteditable] {
             user-select: text !important;
             -webkit-user-select: text !important;
-          }
+          }`}
         </style>
         <meta name="hypothesis-nohighlight" content="true" />
-        <script>(function(){
-          window.hypothesisConfig = function() {
-            return { sidebarAppUrl: 'about:blank' };
-          };
-        })();<\/script>
-      `} />
+        <script is:inline>
+          (function(){
+            window.hypothesisConfig = function() {
+              return { sidebarAppUrl: 'about:blank' };
+            };
+          })();
+        </script>
+      </Fragment>
     )}
 
     <!-- Apply saved theme before paint and after every View Transition swap -->

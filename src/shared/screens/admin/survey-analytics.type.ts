@@ -14,6 +14,10 @@ export type QuestionChartType =
   | 'funnel'
   | 'range-bar'
   | 'top-values'
+  | 'kano-quadrant'
+  | 'price-acceptance-curve'
+  | 'psm-curve'
+  | 'qa-list'
   /* legacy types (backward compat) */
   | 'pie'
   | 'rating-distribution'

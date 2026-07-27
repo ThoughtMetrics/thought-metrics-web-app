@@ -6,6 +6,7 @@ import {
   Treemap, FunnelChart, Funnel, LabelList,
 } from 'recharts';
 import type { QuestionChartData } from './survey-analytics.type';
+import { KanoQuadrantChart, PriceAcceptanceCurve, PSMCurveChart, QAListTable } from './SurveyMethodologyCharts';
 
 /* ═══════════════════════════════════════════════════════════════════
    CONSTANTS
@@ -25,6 +26,8 @@ const CHART_LABEL: Record<string, string> = {
   heatmap: 'Heatmap', 'matrix-grouped': 'Matrix',
   treemap: 'Treemap', funnel: 'Funnel',
   'range-bar': 'Range', 'range-summary': 'Range',
+  'kano-quadrant': 'Kano', 'price-acceptance-curve': 'Price Curve',
+  'psm-curve': 'PSM', 'qa-list': 'Follow-Ups',
 };
 
 const TIP = { fontSize: 11, padding: '4px 8px', borderRadius: 6, border: '1px solid #e5e7eb', background: '#fff' };
@@ -42,7 +45,8 @@ function chartWeight(type: string): ChartWeight {
   if (['donut', 'pie', 'rating-stars', 'rating-distribution',
        'range-bar', 'range-summary', 'numeric-summary'].includes(type)) return 'narrow';
   if (['treemap', 'heatmap', 'matrix-grouped', 'stacked-bar',
-       'radar', 'grouped-bar', 'max-diff-bar', 'histogram'].includes(type)) return 'wide';
+       'radar', 'grouped-bar', 'max-diff-bar', 'histogram',
+       'kano-quadrant', 'price-acceptance-curve', 'psm-curve', 'qa-list'].includes(type)) return 'wide';
   return 'medium';
 }
 
@@ -514,6 +518,10 @@ function renderChart(q: QuestionChartData): React.ReactNode {
     case 'funnel':                                    return <FunnelRenderer q={q} />;
     case 'range-bar':                                 return <RangeBar q={q} />;
     case 'numeric-summary': case 'range-summary':     return <StatChips q={q} />;
+    case 'kano-quadrant':                             return <KanoQuadrantChart q={q} />;
+    case 'price-acceptance-curve':                    return <PriceAcceptanceCurve q={q} />;
+    case 'psm-curve':                                 return <PSMCurveChart q={q} />;
+    case 'qa-list':                                   return <QAListTable q={q} />;
     default:                                          return <DonutChart q={q} />;
   }
 }
