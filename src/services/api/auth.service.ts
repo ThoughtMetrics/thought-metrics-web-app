@@ -318,6 +318,25 @@ class AuthService {
   }
 
   /**
+   * Mint a short-lived Firebase custom token for SSO handoff into an embedded
+   * external dashboard iframe (client only). Returns null on failure so
+   * callers can degrade gracefully (e.g. hide the embed) instead of throwing.
+   */
+  async getDashboardSsoToken(): Promise<string | null> {
+    const user = this.getCurrentUser();
+    if (!user) return null;
+
+    try {
+      const token = await user.getIdToken();
+      ApiService.setAuthToken(token);
+      const response = await ApiService.post<{ customToken: string }>('/users/dashboard-sso-token', {});
+      return response.data?.customToken ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
    * Get user by MongoDB _id
    * Uses /users/:id endpoint
    */

@@ -13,6 +13,7 @@ const getEnv = (key: string): string => {
 const runtimeConfig = {
   // Only expose PUBLIC_ prefixed variables to the client
   PUBLIC_STRAPI_API_URL: getEnv('PUBLIC_STRAPI_API_URL'),
+  PUBLIC_CONTENT_TABLE_SAS_URL: getEnv('PUBLIC_CONTENT_TABLE_SAS_URL'),
   PUBLIC_BASE_URL: getEnv('PUBLIC_BASE_URL'),
   PUBLIC_BASE_API_VERSION: getEnv('PUBLIC_BASE_API_VERSION'),
   PUBLIC_SITE_URL: getEnv('PUBLIC_SITE_URL'),

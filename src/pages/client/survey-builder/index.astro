@@ -1,8 +1,3 @@
 ---
-import IntractionLayout from '@/layouts/IntractionLayout.astro';
-import ClientSurveys from '@/shared/screens/client/client-surveys';
+return Astro.redirect('/client/surveys', 301);
 ---
-
-<IntractionLayout title="Survey Builder | Client Portal" description="Build and manage your surveys">
-  <ClientSurveys client:only="react" />
-</IntractionLayout>

@@ -5,6 +5,8 @@ import { Search, MoreVertical, X, FileText, FileSpreadsheet } from 'lucide-react
 import { toast } from 'sonner';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
+import ClientRouteGuard from '@/shared/components/guards/ClientRouteGuard';
+import ClientSidebar from '@/shared/components/client/ClientSidebar';
 import { useAuth } from '@/shared/providers/auth-provider';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 import { useAdminSurveysQuery } from '@/core/hooks/queries/survey-templates/index.queries';
@@ -46,8 +48,16 @@ function formatDate(d?: string | null): string {
   });
 }
 
-const SurveyManagementContent: React.FC = () => {
-  const { isAdmin, isFieldIncharge } = useAuth();
+interface SurveyManagementContentProps {
+  SidebarComponent?: React.ComponentType;
+  builderBasePath?: string;
+}
+
+const SurveyManagementContent: React.FC<SurveyManagementContentProps> = ({
+  SidebarComponent = AdminSidebar,
+  builderBasePath = '/admin/survey-builder',
+}) => {
+  const { isAdmin, isClient, isFieldIncharge } = useAuth();
   const updateSurvey = useUpdateSurveyInstance();
   const deleteSurvey = useDeleteSurveyInstance();
   const [isDuplicating, setIsDuplicating] = useState(false);
@@ -59,6 +69,26 @@ const SurveyManagementContent: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [surveyPage, setSurveyPage] = useState(1);
+
+  // Client scope — set when arriving via Clients → "View Surveys" (?companyId=&clientName=).
+  // Admin-only: a client caller is always force-scoped to their own company
+  // server-side regardless of query params, so this feature is meaningless
+  // (and stays invisible) for the client-mounted version of this page.
+  const [clientFilter, setClientFilter] = useState<{ companyId: string; clientName: string } | null>(null);
+  useEffect(() => {
+    if (!isAdmin) return;
+    const params = new URLSearchParams(window.location.search);
+    const companyId = params.get('companyId');
+    if (companyId) {
+      setClientFilter({ companyId, clientName: params.get('clientName') || 'this client' });
+    }
+  }, [isAdmin]);
+
+  const clearClientFilter = () => {
+    setClientFilter(null);
+    setSurveyPage(1);
+    window.history.replaceState(null, '', window.location.pathname);
+  };
   const [surveyLimit, setSurveyLimit] = useState(10);
   const [selectedSurvey, setSelectedSurvey] = useState<ISurvey | null>(null);
   const [pdfTrigger, setPdfTrigger] = useState(0);
@@ -85,6 +115,7 @@ const SurveyManagementContent: React.FC = () => {
     ...(isFieldIncharge ? { type: 'agent' } : {}),
     ...(statusTab !== 'all' ? { status: statusTab } : {}),
     ...(debouncedSearch ? { search: debouncedSearch } : {}),
+    ...(clientFilter ? { companyId: clientFilter.companyId } : {}),
     page: surveyPage,
     limit: surveyLimit,
   };
@@ -148,7 +179,7 @@ const SurveyManagementContent: React.FC = () => {
       if (!res.data) throw new Error('Template not found');
       const { questions, translations, settings, name } = res.data as any;
       sessionStorage.setItem('tm-duplicate-prefill', JSON.stringify({ questions, translations, settings, name }));
-      window.location.href = '/admin/survey-builder/new';
+      window.location.href = `${builderBasePath}/new`;
     } catch (e: any) {
       toast.error(e.message ?? 'Failed to duplicate');
       setIsDuplicating(false);
@@ -164,8 +195,15 @@ const SurveyManagementContent: React.FC = () => {
 
   return (
     <div className="h-full flex bg-surface-container-low text-text-dark">
-      <AdminSidebar />
-      {showPicker && <MethodologyPickerModal onClose={() => setShowPicker(false)} />}
+      <SidebarComponent />
+      {showPicker && (
+        <MethodologyPickerModal
+          onClose={() => setShowPicker(false)}
+          redirectPath={`${builderBasePath}/new`}
+          companyId={clientFilter?.companyId}
+          companyName={clientFilter?.clientName}
+        />
+      )}
 
       <main className="h-full overflow-y-auto flex-1 p-8">
         <div className="max-w-7xl mx-auto">
@@ -182,6 +220,20 @@ const SurveyManagementContent: React.FC = () => {
               + New Survey
             </button>
           </div>
+
+          {isAdmin && clientFilter && (
+            <div className="flex items-center justify-between mb-4 px-4 py-2.5 bg-primary/10 border border-primary/30 rounded-lg">
+              <span className="text-sm text-on-surface">
+                Showing surveys for <span className="font-semibold">{clientFilter.clientName}</span>
+              </span>
+              <button
+                onClick={clearClientFilter}
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                Clear filter
+              </button>
+            </div>
+          )}
 
           {/* ── Surveys — SQL Survey Instances ─────────────────────────────── */}
               {/* Search + status filter row */}
@@ -269,7 +321,7 @@ const SurveyManagementContent: React.FC = () => {
                                   {s.label}
                                   {s.templateMongoId && (
                                     <a
-                                      href={`/admin/survey-builder/${s.templateMongoId}`}
+                                      href={`${builderBasePath}/${s.templateMongoId}`}
                                       onClick={(e) => e.stopPropagation()}
                                       className="text-xs text-primary hover:underline font-normal flex-shrink-0"
                                     >
@@ -353,13 +405,13 @@ const SurveyManagementContent: React.FC = () => {
                                       >
                                         Downloads
                                       </button>
-                                      {isAdmin && (
+                                      {(isAdmin || isClient) && (
                                         <>
                                           <button
                                             onClick={() => {
                                               setOpenMenuId(null);
                                               if (s.templateMongoId) {
-                                                window.location.href = `/admin/survey-builder/${s.templateMongoId}`;
+                                                window.location.href = `${builderBasePath}/${s.templateMongoId}`;
                                               } else {
                                                 setEditingSurvey(s);
                                               }
@@ -390,7 +442,7 @@ const SurveyManagementContent: React.FC = () => {
                                       >
                                         Copy Link
                                       </button>
-                                      {isAdmin && (
+                                      {(isAdmin || isClient) && (
                                         <>
                                           <button
                                             onClick={() => {
@@ -558,8 +610,14 @@ const SurveyManagementContent: React.FC = () => {
 
 export const SurveyManagement: React.FC = () => (
   <AdminRouteGuard>
-    <SurveyManagementContent />
+    <SurveyManagementContent SidebarComponent={AdminSidebar} builderBasePath="/admin/survey-builder" />
   </AdminRouteGuard>
+);
+
+export const ClientSurveyManagement: React.FC = () => (
+  <ClientRouteGuard>
+    <SurveyManagementContent SidebarComponent={ClientSidebar} builderBasePath="/client/survey-builder" />
+  </ClientRouteGuard>
 );
 
 export default SurveyManagement;

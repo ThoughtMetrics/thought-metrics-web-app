@@ -129,6 +129,13 @@ interface SurveyBuilderState {
   selectedQuestionIndex: number | null;
   activeLanguage: SupportedBuilderLanguage;
 
+  // Client company this survey is being created for (set when arriving via
+  // Clients → "View Surveys" → New Survey; carried through to publish so the
+  // resulting survey instance is scoped under that client's companyId)
+  companyId: string | null;
+  companyName: string | null;
+  setCompanyScope: (companyId: string | null, companyName: string | null) => void;
+
   // Undo / Redo
   _past: BuilderSnapshot[];
   _future: BuilderSnapshot[];
@@ -230,6 +237,9 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
       settings: defaultSettings(),
       selectedQuestionIndex: null,
       activeLanguage: 'en',
+      companyId: null,
+      companyName: null,
+      setCompanyScope: (companyId, companyName) => set({ companyId, companyName }),
       conditionalLogicHighlight: 0,
       _past: [],
       _future: [],
@@ -335,6 +345,8 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
           },
           selectedQuestionIndex: null,
           activeLanguage: 'en',
+          companyId: null,
+          companyName: null,
           _past: [],
           _future: [],
         });
@@ -351,6 +363,8 @@ export const useSurveyBuilderStore = create<SurveyBuilderState>()(
           settings: defaultSettings(),
           selectedQuestionIndex: null,
           activeLanguage: 'en',
+          companyId: null,
+          companyName: null,
           _past: [],
           _future: [],
         }),

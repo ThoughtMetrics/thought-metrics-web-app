@@ -22,6 +22,7 @@
     "@astrojs/react": "^4.4.0",
     "@astrojs/sitemap": "^3.6.0",
     "@astrojs/vercel": "^9.0.5",
+    "@azure/data-tables": "^13.3.2",
     "@tailwindcss/vite": "^4.1.14",
     "@tanstack/react-query": "^5.90.5",
     "@tanstack/react-query-devtools": "^5.90.2",

@@ -82,7 +82,7 @@ const PublishSurveyModal: React.FC<Props> = ({
   const updateSurvey = useUpdateSurveyInstance();
   const discardDraft = useDiscardDraftContent();
 
-  const { questions, translations: storeTranslations, settings: storeSettings, setQuestionTranslation, setTranslation, toCreateRequest, toUpdateRequest } = useSurveyBuilderStore();
+  const { questions, translations: storeTranslations, settings: storeSettings, companyId, companyName, setQuestionTranslation, setTranslation, toCreateRequest, toUpdateRequest } = useSurveyBuilderStore();
 
   // ── Publish form state ───────────────────────────────────────────────────
   const [label, setLabel] = useState(defaultLabel);
@@ -139,6 +139,7 @@ const PublishSurveyModal: React.FC<Props> = ({
       formLayout,
     };
     if (surveyId.trim()) payload.surveyId = surveyId.trim();
+    if (companyId) payload.companyId = companyId;
     return payload;
   };
 
@@ -286,6 +287,11 @@ const PublishSurveyModal: React.FC<Props> = ({
   const renderForm = () => (
     <form onSubmit={handleFormSubmit} className="flex flex-col">
       <div className="px-6 py-5 space-y-4">
+        {companyId && (
+          <div className="px-3 py-2 bg-primary/10 border border-primary/30 rounded-lg text-sm text-on-surface">
+            This survey will be created under <span className="font-semibold">{companyName || 'this client'}</span>'s company.
+          </div>
+        )}
         <div>
           <label className="block text-sm font-medium text-on-surface-variant mb-1">
             Survey Label <span className="text-red-500">*</span>

@@ -1,0 +1,13 @@
+---
+import IntractionLayout from '@/layouts/IntractionLayout.astro';
+import ContentManagement from '@/shared/screens/admin/content-management';
+
+const seoContent = {
+  title: 'Content | Thought Metrics Admin',
+  description: 'Manage resources, insights, reports, and blog content',
+};
+---
+
+<IntractionLayout title={seoContent.title} description={seoContent.description}>
+  <ContentManagement client:only="react" />
+</IntractionLayout>

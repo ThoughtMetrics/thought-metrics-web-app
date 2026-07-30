@@ -6,6 +6,7 @@ import UserManagementService from '@/services/api/user-management.service';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 import ApiService from '@/services/api/api.service';
 import authService from '@/services/api/auth.service';
+import VgpDashboardEmbed from './components/VgpDashboardEmbed';
 
 interface StorageInfo {
   storageUsed: number;
@@ -14,11 +15,13 @@ interface StorageInfo {
 }
 
 interface SurveyItem {
-  _id: string;
-  name: string;
+  id: string;
+  surveyId?: string;
+  label: string;
   status: string;
-  createdAt: string;
+  startDate?: string;
   currentResponses?: number;
+  templateMongoId?: string;
 }
 
 const CLIENT_QUOTA = 20 * 1024 * 1024;
@@ -49,18 +52,17 @@ const ClientDashboardContent: React.FC = () => {
           ApiService.setAuthToken(token);
         }
 
-        const [storageRes, templatesRes] = await Promise.allSettled([
+        const [storageRes, surveysRes] = await Promise.allSettled([
           UserManagementService.getStorageUsage(),
-          ApiService.get<any>('/surveys/templates', { limit: 5 }),
+          ApiService.get<SurveyItem[]>('/surveys/list', { limit: 5 }),
         ]);
 
         if (storageRes.status === 'fulfilled' && storageRes.value.data) {
           setStorage(storageRes.value.data as StorageInfo);
         }
-        if (templatesRes.status === 'fulfilled' && templatesRes.value.data) {
-          const d = templatesRes.value.data;
-          setTemplates(d.templates || d.data || []);
-          setTemplatesTotal(d.total || 0);
+        if (surveysRes.status === 'fulfilled' && surveysRes.value.data) {
+          setTemplates(surveysRes.value.data);
+          setTemplatesTotal((surveysRes.value as any).total ?? surveysRes.value.data.length);
         }
       } catch {
         // non-fatal
@@ -104,9 +106,11 @@ const ClientDashboardContent: React.FC = () => {
             <p className="text-outline mt-1 capitalize">{userRole} account</p>
           </div>
 
+          <VgpDashboardEmbed />
+
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
-            <StatCard label="My Surveys" value={templatesTotal} sub="total templates" />
+            <StatCard label="My Surveys" value={templatesTotal} sub="total surveys" />
             <StatCard
               label="Storage Used"
               value={<span className={storageColor}>{storageDisplay}</span>}
@@ -166,9 +170,13 @@ const ClientDashboardContent: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-outline-variant/20">
                   {templates.map((t) => (
-                    <tr key={t._id} className="hover:bg-surface-container-high">
+                    <tr key={t.id} className="hover:bg-surface-container-high">
                       <td className="px-6 py-3 font-medium text-on-surface">
-                        <a href={`/client/survey-builder/${t._id}`} className="hover:text-primary">{t.name || '(Untitled)'}</a>
+                        {t.templateMongoId ? (
+                          <a href={`/client/survey-builder/${t.templateMongoId}`} className="hover:text-primary">{t.label || '(Untitled)'}</a>
+                        ) : (
+                          t.label || '(Untitled)'
+                        )}
                       </td>
                       <td className="px-6 py-3">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium capitalize ${
@@ -176,7 +184,7 @@ const ClientDashboardContent: React.FC = () => {
                           t.status === 'draft' ? 'bg-surface-container-high text-on-surface-variant' : 'bg-yellow-100 text-yellow-700'
                         }`}>{t.status || 'draft'}</span>
                       </td>
-                      <td className="px-6 py-3 text-outline">{t.createdAt ? new Date(t.createdAt).toLocaleDateString() : '—'}</td>
+                      <td className="px-6 py-3 text-outline">{t.startDate ? new Date(t.startDate).toLocaleDateString() : '—'}</td>
                       <td className="px-6 py-3 text-outline">{t.currentResponses ?? 0}</td>
                     </tr>
                   ))}

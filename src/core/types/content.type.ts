@@ -1,7 +1,5 @@
 // src/types/content.types.ts
 
-import type { StrapiImage } from './strapi.type';
-
 export const ContentType = {
   INSIGHT: 'Insight',
   REPORT: 'Report',
@@ -24,6 +22,20 @@ export const ContentCategory = {
 export type ContentCategoryValue =
   (typeof ContentCategory)[keyof typeof ContentCategory];
 
+// Minimal image shape backed by Azure Table Storage's flat `imgUrl` field —
+// only `url` is ever populated; `formats` stays undefined so the responsive
+// srcset fallback chains already written against Strapi's shape degrade
+// gracefully to the single original-size URL.
+export interface ContentImage {
+  url: string;
+  formats?: {
+    large?: { url: string };
+    medium?: { url: string };
+    small?: { url: string };
+    thumbnail?: { url: string };
+  };
+}
+
 export interface Content {
   id: number;
   documentId: string;
@@ -38,7 +50,7 @@ export interface Content {
   content: string;
   tags: string | null;
   publishedDate: string | null;
-  img: StrapiImage;
+  img: ContentImage;
 }
 
 export interface ContentFilters {

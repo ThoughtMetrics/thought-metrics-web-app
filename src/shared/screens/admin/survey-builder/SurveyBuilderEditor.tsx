@@ -110,6 +110,9 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId, SidebarCompon
           },
         } as any);
         useSurveyBuilderStore.setState({ isDirty: true });
+        if (prefill.companyId) {
+          useSurveyBuilderStore.getState().setCompanyScope(prefill.companyId, prefill.companyName ?? null);
+        }
         // If prefill includes starter questions, jump straight to the builder
         if ((prefill.questions?.length ?? 0) > 0) {
           setEditorSection('questions');

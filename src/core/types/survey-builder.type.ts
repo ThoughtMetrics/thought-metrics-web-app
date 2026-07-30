@@ -282,6 +282,7 @@ export interface ISurveyPublishRequest {
   maxResponses?: number;
   zonalBasedSurvey?: boolean;
   formLayout?: 'paginated' | 'list';
+  companyId?: string;
 }
 
 export interface ISurveyUpdateRequest {

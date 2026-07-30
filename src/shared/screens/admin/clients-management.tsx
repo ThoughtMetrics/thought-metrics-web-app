@@ -44,7 +44,7 @@ const ClientsManagementContent: React.FC = () => {
   // Edit modal
   const [showEditModal, setShowEditModal] = useState(false);
   const [editTarget, setEditTarget] = useState<UserProfile | null>(null);
-  const [editForm, setEditForm] = useState({ firstName: '', lastName: '', companyName: '' });
+  const [editForm, setEditForm] = useState({ firstName: '', lastName: '', companyName: '', dashboardUrl: '' });
 
   const fetchClients = async () => {
     if (!isAuthReady || !user) return;
@@ -90,7 +90,8 @@ const ClientsManagementContent: React.FC = () => {
     setEditForm({
       firstName: client.profile?.firstName || '',
       lastName: client.profile?.lastName || '',
-      companyName: (client as any).companyName || '',
+      companyName: client.companyName || '',
+      dashboardUrl: client.dashboardUrl || '',
     });
     setShowEditModal(true);
     setOpenMenuId(null);
@@ -102,13 +103,24 @@ const ClientsManagementContent: React.FC = () => {
       await UserManagementService.updateUser(editTarget._id, {
         profile: { firstName: editForm.firstName, lastName: editForm.lastName },
         companyName: editForm.companyName,
-      } as any);
+        dashboardUrl: editForm.dashboardUrl,
+      });
       toast.success('Client updated');
       setShowEditModal(false);
       fetchClients();
     } catch {
       toast.error('Failed to update client');
     }
+  };
+
+  const handleOpenWebsite = (client: UserProfile) => {
+    const url = client.dashboardUrl;
+    if (!url) {
+      toast.error('No website URL set for this client — add one via Edit.');
+      return;
+    }
+    window.open(url, '_blank', 'noopener,noreferrer');
+    setOpenMenuId(null);
   };
 
   const handleDelete = async (client: UserProfile) => {
@@ -199,7 +211,13 @@ const ClientsManagementContent: React.FC = () => {
                         {openMenuId === client._id && (
                           <div className="absolute right-4 top-10 bg-surface-container border border-outline-variant rounded-lg shadow-lg z-10 w-40 py-1">
                             <button onClick={() => openEdit(client)} className="w-full px-4 py-2 text-left text-sm hover:bg-surface-container-high">Edit</button>
-                            <a href={`/admin/surveys?clientId=${client._id}`} className="block px-4 py-2 text-sm hover:bg-surface-container-high">View Surveys</a>
+                            <a
+                              href={`/admin/surveys?companyId=${encodeURIComponent(client.companyId || client.firebaseUid)}&clientName=${encodeURIComponent((client as any).companyName || `${client.profile?.firstName ?? ''} ${client.profile?.lastName ?? ''}`.trim() || client.email)}`}
+                              className="block px-4 py-2 text-sm hover:bg-surface-container-high"
+                            >
+                              View Surveys
+                            </a>
+                            <button onClick={() => handleOpenWebsite(client)} className="w-full px-4 py-2 text-left text-sm hover:bg-surface-container-high">Open Website</button>
                             <button onClick={() => handleDelete(client)} className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50">Deactivate</button>
                           </div>
                         )}
@@ -290,6 +308,13 @@ const ClientsManagementContent: React.FC = () => {
                 <label className="text-sm font-medium text-on-surface-variant">Company Name</label>
                 <input type="text" value={editForm.companyName} onChange={e => setEditForm(f => ({ ...f, companyName: e.target.value }))}
                   className="mt-1 w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-surface-container-low" />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-on-surface-variant">Website / Dashboard URL</label>
+                <input type="url" value={editForm.dashboardUrl} onChange={e => setEditForm(f => ({ ...f, dashboardUrl: e.target.value }))}
+                  placeholder="http://localhost:4000"
+                  className="mt-1 w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-surface-container-low" />
+                <p className="text-xs text-outline mt-1">Opened by the "Open Website" action in the client menu.</p>
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">

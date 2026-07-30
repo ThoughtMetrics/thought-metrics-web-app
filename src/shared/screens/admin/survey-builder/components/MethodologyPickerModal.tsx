@@ -15,6 +15,8 @@ import { getStarterQuestions } from '@/core/constants/survey-methodology-templat
 interface Props {
   onClose: () => void;
   redirectPath?: string;
+  companyId?: string;
+  companyName?: string;
 }
 
 function slugify(str: string): string {
@@ -24,7 +26,7 @@ function slugify(str: string): string {
     .replace(/(^-|-$)/g, '');
 }
 
-const MethodologyPickerModal: React.FC<Props> = ({ onClose, redirectPath = '/admin/survey-builder/new' }) => {
+const MethodologyPickerModal: React.FC<Props> = ({ onClose, redirectPath = '/admin/survey-builder/new', companyId, companyName }) => {
   const [activeCategory, setActiveCategory] = useState<MethodologyCategory>('pricing_conjoint');
 
   const handleSelect = (methodology: SurveyMethodology) => {
@@ -39,6 +41,7 @@ const MethodologyPickerModal: React.FC<Props> = ({ onClose, redirectPath = '/adm
         ta: { label: '', description: '', instructions: '' },
       },
       name: `${slugify(meta.label)}-${Date.now().toString().slice(-4)}`,
+      ...(companyId ? { companyId, companyName } : {}),
     };
     try {
       sessionStorage.setItem('tm-duplicate-prefill', JSON.stringify(prefill));
@@ -47,6 +50,11 @@ const MethodologyPickerModal: React.FC<Props> = ({ onClose, redirectPath = '/adm
   };
 
   const handleScratch = () => {
+    if (companyId) {
+      try {
+        sessionStorage.setItem('tm-duplicate-prefill', JSON.stringify({ isDuplicate: false, companyId, companyName }));
+      } catch {}
+    }
     window.location.href = redirectPath;
   };
 

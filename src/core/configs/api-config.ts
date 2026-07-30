@@ -66,6 +66,7 @@ export const getAPIConfig = (): {
   baseURL: string;
   baseAPIVersion: string;
   strapiURL: string;
+  contentTableSasUrl: string;
   queueURL: string;
   firebaseConfig: {
     apiKey: string;
@@ -90,6 +91,9 @@ export const getAPIConfig = (): {
       getPublicEnv('PUBLIC_SITE_URL') || 'https://www.thoughtmetrics.com',
     // SERVER-ONLY: STRAPI_API_URL is never exposed to the browser
     strapiURL: getPublicEnv('PUBLIC_STRAPI_API_URL') || '',
+    // Read-only, query-scoped SAS URL for the Table Storage `content` table —
+    // safe to expose to the browser (no write permissions, public content only)
+    contentTableSasUrl: getPublicEnv('PUBLIC_CONTENT_TABLE_SAS_URL') || '',
 
     // PUBLIC: These are available on both server and client
     baseURL: getPublicEnv('PUBLIC_BASE_URL') || '',

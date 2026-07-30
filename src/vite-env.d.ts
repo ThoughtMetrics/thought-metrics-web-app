@@ -49,6 +49,7 @@ declare module '*.webp' {
 interface Window {
   __APP_CONFIG__?: {
     PUBLIC_STRAPI_API_URL?: string;
+    PUBLIC_CONTENT_TABLE_SAS_URL?: string;
     PUBLIC_BASE_URL?: string;
     PUBLIC_BASE_API_VERSION?: string;
     PUBLIC_SITE_URL?: string;
@@ -70,6 +71,7 @@ interface Window {
 
 interface ImportMetaEnv {
   PUBLIC_STRAPI_API_URL: string;
+  PUBLIC_CONTENT_TABLE_SAS_URL: string;
   PUBLIC_BASE_URL: string;
   PUBLIC_BASE_API_VERSION: string;
   PUBLIC_SITE_URL: string;

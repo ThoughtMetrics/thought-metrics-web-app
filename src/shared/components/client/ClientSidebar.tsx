@@ -20,12 +20,6 @@ const SurveysIcon = () => (
   </svg>
 );
 
-const BuilderIcon = () => (
-  <svg viewBox="0 0 24 24" className="w-full h-full" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
-  </svg>
-);
-
 const AnalyticsIcon = () => (
   <svg viewBox="0 0 24 24" className="w-full h-full" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
     <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" />
@@ -45,7 +39,6 @@ const STORAGE_KEY = 'client-sidebar-collapsed';
 const sidebarLinks: SidebarLink[] = [
   { href: '/client', label: 'Dashboard', icon: <DashboardIcon /> },
   { href: '/client/surveys', label: 'My Surveys', icon: <SurveysIcon /> },
-  { href: '/client/survey-builder', label: 'Survey Builder', icon: <BuilderIcon /> },
   { href: '/client/team', label: 'Team', icon: <TeamIcon /> },
   { href: '/client/analytics', label: 'Analytics', icon: <AnalyticsIcon /> },
 ];

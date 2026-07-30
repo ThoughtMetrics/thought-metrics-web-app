@@ -56,10 +56,20 @@ const ClientsIcon = () => (
   </svg>
 );
 
+const ContentIcon = () => (
+  <svg viewBox="0 0 24 24" className="w-full h-full" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14 3v4a1 1 0 001 1h4" />
+    <path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z" />
+    <line x1="9" y1="13" x2="15" y2="13" />
+    <line x1="9" y1="17" x2="15" y2="17" />
+  </svg>
+);
+
 const sidebarLinks: SidebarLink[] = [
   { href: '/admin', label: 'Dashboard', icon: <DashboardIcon /> },
   { href: '/admin/users', label: 'Users', icon: <UsersIcon /> },
   { href: '/admin/clients', label: 'Clients', icon: <ClientsIcon /> },
+  { href: '/admin/content', label: 'Content', icon: <ContentIcon /> },
   { href: '/admin/surveys', label: 'Surveys', icon: <SurveyIcon /> },
   { href: '/admin/campaigns', label: 'Campaigns', icon: <CampaignsIcon /> },
   { href: '/admin/survey-import', label: 'Survey Import', icon: <ImportIcon /> },
