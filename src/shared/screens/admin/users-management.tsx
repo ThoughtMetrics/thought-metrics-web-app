@@ -45,6 +45,7 @@ const UserManagementContent: React.FC = () => {
   });
   const [selectedRole, setSelectedRole] = useState<UserRole>('respondent');
   const [selectedZone, setSelectedZone] = useState<string>('');
+  const [selectedCompanyName, setSelectedCompanyName] = useState<string>('');
   // Multi-select zonal state for Change Zonal modal
   const [zoneHierarchy, setZoneHierarchy] = useState<ZoneHierarchy>([]);
   const [zoneHierarchyLoading, setZoneHierarchyLoading] = useState(true);
@@ -189,6 +190,7 @@ const UserManagementContent: React.FC = () => {
     setSelectedUser(user);
     setSelectedRole(user.role || 'respondent');
     setSelectedZone(user.zonal || '');
+    setSelectedCompanyName(user.companyName || '');
     if (user.zonalInfo && user.zonalInfo.length > 0) {
       setSelectedAcNos(user.zonalInfo.map(zi => zi.acNo));
     } else {
@@ -270,11 +272,13 @@ const UserManagementContent: React.FC = () => {
 
     try {
       const isFieldInchargeRole = selectedRole === 'field-incharge';
+      const isClientRole = selectedRole === 'client';
       const response = await UserManagementService.updateUserRoleAndZonal(
         selectedUser._id,
         selectedRole,
         isFieldInchargeRole ? undefined : (selectedAcNos.length > 0 ? selectedAcNos : undefined),
-        isFieldInchargeRole ? selectedZone : undefined
+        isFieldInchargeRole ? selectedZone : undefined,
+        isClientRole ? (selectedCompanyName.trim() || undefined) : undefined
       );
 
       if (response.data) {
@@ -1232,6 +1236,27 @@ const UserManagementContent: React.FC = () => {
                       <option value="super-admin">Super Admin</option>
                     )}
                   </select>
+                </div>
+              )}
+
+              {/* Company name — only needed the first time a user is promoted to client
+                  (i.e. they don't already own/belong to a company); becomes the new
+                  company's owner account, companyId is derived server-side from their
+                  own firebaseUid. */}
+              {!isFieldIncharge && selectedRole === 'client' && !selectedUser.companyId && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-on-surface-variant mb-2">
+                    Company Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedCompanyName}
+                    onChange={(e) => setSelectedCompanyName(e.target.value)}
+                    placeholder="e.g. Populus Empowerment Network"
+                    required
+                    className="w-full px-3 py-2 border border-outline-variant bg-surface-container-low text-on-surface rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                  <p className="mt-1 text-xs text-outline">This user becomes the owner account for a new client company.</p>
                 </div>
               )}
 

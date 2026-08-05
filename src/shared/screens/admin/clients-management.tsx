@@ -72,6 +72,7 @@ const ClientsManagementContent: React.FC = () => {
         firstName: createForm.firstName,
         lastName: createForm.lastName || undefined,
         role: 'client',
+        companyName: createForm.companyName || undefined,
         sendWelcomeEmail: createForm.sendWelcomeEmail,
       });
       toast.success('Client created successfully');

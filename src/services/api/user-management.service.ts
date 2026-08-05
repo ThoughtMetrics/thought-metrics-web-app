@@ -38,6 +38,7 @@ export interface UpdateUserRoleZonalRequest {
   role: UserRole;
   acNos?: number[];
   zone?: string;
+  companyName?: string;
 }
 
 export interface AdminCreateUserRequest {
@@ -47,6 +48,7 @@ export interface AdminCreateUserRequest {
   role: UserRole;
   acNos?: number[];
   zone?: string;
+  companyName?: string;
   sendWelcomeEmail: boolean;
 }
 
@@ -92,9 +94,11 @@ class UserManagementService {
   /**
    * Update user role (admin only)
    */
-  async updateUserRole(userId: string, role: UserRole): Promise<ApiResponse<UserProfile>> {
+  async updateUserRole(userId: string, role: UserRole, companyName?: string): Promise<ApiResponse<UserProfile>> {
     await this.ensureAuth();
-    return await ApiService.post<UserProfile>('/users/change-role', { userId, role });
+    const body: { userId: string; role: UserRole; companyName?: string } = { userId, role };
+    if (companyName) body.companyName = companyName;
+    return await ApiService.post<UserProfile>('/users/change-role', body);
   }
 
   /**
@@ -109,11 +113,12 @@ class UserManagementService {
    * Update user role and zonal in a single atomic request (admin only)
    * acNos is optional — omit to update role only
    */
-  async updateUserRoleAndZonal(userId: string, role: UserRole, acNos?: number[], zone?: string): Promise<ApiResponse<UserProfile>> {
+  async updateUserRoleAndZonal(userId: string, role: UserRole, acNos?: number[], zone?: string, companyName?: string): Promise<ApiResponse<UserProfile>> {
     await this.ensureAuth();
     const body: UpdateUserRoleZonalRequest = { userId, role };
     if (acNos && acNos.length > 0) body.acNos = acNos;
     if (zone) body.zone = zone;
+    if (companyName) body.companyName = companyName;
     return await ApiService.post<UserProfile>('/users/change-role-zonal', body);
   }
 
