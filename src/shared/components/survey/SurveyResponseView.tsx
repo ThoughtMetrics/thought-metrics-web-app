@@ -10,13 +10,34 @@ interface SurveyResponseViewProps {
   onClose: () => void;
 }
 
+// Resolves an option's stored value (e.g. "12") to its display label (e.g.
+// "Perambur") — same lookup order getAnswerSummary uses in
+// SurveyDetailComponent.tsx: localized options first, falling back to
+// English, then to the template's default config.options.
+const resolveOptionLabel = (q: any, value: string, language: string): string => {
+  const rawOpts =
+    q.translations?.[language]?.options ||
+    q.translations?.en?.options ||
+    q.config?.options ||
+    [];
+  const matched = rawOpts.find((o: any) => (o.value ?? o.id) === value);
+  return matched?.label || value;
+};
+
 const formatAnswer = (q: any, answer: any, language: string): string => {
   if (!answer || Object.keys(answer).length === 0) return '—';
 
   switch (q.questionType) {
+    case QuestionType.MCQ_SINGLE:
+      if (answer.displayLabel) return answer.displayLabel;
+      if (answer.value == null) return '—';
+      return resolveOptionLabel(q, answer.value, language);
+
     case QuestionType.MCQ_MULTIPLE:
       if (!answer.values?.length) return '—';
-      return answer.values.join(', ');
+      return answer.values
+        .map((v: string) => resolveOptionLabel(q, v, language))
+        .join(', ');
 
     case QuestionType.RATING:
       return answer.stars != null ? `${answer.stars} ★` : '—';
