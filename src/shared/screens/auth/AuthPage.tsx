@@ -16,6 +16,7 @@ import { AuthProvider, useAuth } from '@/shared/providers/auth-provider';
 import { useLanguage } from '@/core/hooks/use-language';
 import { LanguageToggle } from '@/shared/ui/molecules/language-toggle';
 import authService from '@/services/api/auth.service';
+import type { UserProfile } from '@/core/types/user.type';
 
 const { initialFormData, storeName, validationMessages, formResetDelay, ui } =
   loginFormConstant;
@@ -142,6 +143,41 @@ const LoginPage: React.FC = () => {
     return ROUTES.SURVEY_BOARDS;
   };
 
+  // Single source of truth for post-auth routing, driven directly off
+  // profile.role (Mongo-side, already present on any UserProfile we have in
+  // hand) rather than re-deriving it from a fresh Firebase custom-claims
+  // token fetch. isPasswordSignIn is passed in explicitly by each caller
+  // (true only from the email/password form) instead of introspected from
+  // a token result, since that's already known at the call site.
+  const redirectByRole = (profile: UserProfile | null | undefined, isPasswordSignIn: boolean) => {
+    if (profile?.metadata?.forcePasswordReset && isPasswordSignIn) {
+      window.location.href = ROUTES.FORCE_CHANGE_PASSWORD;
+      return;
+    }
+    const role = profile?.role;
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasExplicitRedirect =
+      urlParams.get('redirect') ||
+      localStorage.getItem('tm_allocated_survey') ||
+      localStorage.getItem('tm_redirect_after_signup');
+    if (!hasExplicitRedirect && (role === 'admin' || role === 'super-admin' || role === 'field-incharge')) {
+      window.location.href = ROUTES.ADMIN;
+      return;
+    }
+    if (!hasExplicitRedirect && role === 'client') {
+      window.location.href = ROUTES.CLIENT;
+      return;
+    }
+    window.location.href = getRedirectUrl();
+  };
+
+  // Fallback path for the two cases where we don't already have a profile
+  // in hand from a mutation's return value: (a) the user lands on /login
+  // while already authenticated, or (b) an OAuth *redirect* flow (production
+  // Google/Facebook sign-in) completes on a fresh page load, where
+  // signInMutation never resolves with a value to begin with. Needs its own
+  // profile fetch + a token-result check (to tell password vs OAuth
+  // sign-in-provider apart) since neither is available here otherwise.
   useEffect(() => {
     if (user) {
       void (async () => {
@@ -150,26 +186,11 @@ const LoginPage: React.FC = () => {
             authService.getUserProfile(),
             user.getIdTokenResult(),
           ]);
-          if (profile?.metadata?.forcePasswordReset && tokenResult.signInProvider === 'password') {
-            window.location.href = ROUTES.FORCE_CHANGE_PASSWORD;
-            return;
-          }
-          const role = tokenResult.claims.role as string | undefined;
-          const urlParams = new URLSearchParams(window.location.search);
-          const hasExplicitRedirect =
-            urlParams.get('redirect') ||
-            localStorage.getItem('tm_allocated_survey') ||
-            localStorage.getItem('tm_redirect_after_signup');
-          if (!hasExplicitRedirect && (role === 'admin' || role === 'super-admin' || role === 'field-incharge')) {
-            window.location.href = ROUTES.ADMIN;
-            return;
-          }
-          if (!hasExplicitRedirect && role === 'client') {
-            window.location.href = ROUTES.CLIENT;
-            return;
-          }
-        } catch { /* proceed with normal redirect */ }
-        window.location.href = getRedirectUrl();
+          redirectByRole(profile, tokenResult.signInProvider === 'password');
+        } catch (error) {
+          console.error('[AuthPage] Failed to resolve profile/role after auth state change — falling back to default redirect:', error);
+          window.location.href = getRedirectUrl();
+        }
       })();
     }
   }, [user]);
@@ -184,13 +205,27 @@ const LoginPage: React.FC = () => {
   };
 
   const handleFirebaseSignIn = async (email: string, password: string) => {
-    await signInMutation.mutateAsync({ type: 'email', email, password });
+    // signInWithEmail already fetches the full profile internally as part
+    // of completing sign-in — reuse it directly instead of making a second,
+    // redundant /users/profile/get call (and depending on the `user` effect
+    // above, which only fires once Firebase's onAuthStateChanged listener
+    // catches up) to decide where to redirect.
+    const profile = await signInMutation.mutateAsync({ type: 'email', email, password });
+    redirectByRole(profile ?? null, true);
   };
 
   const handleGoogleSignIn = async () => {
+    setIsNavigating(true);
     try {
-      const result = await signInMutation.mutateAsync({ type: 'google' });
-      if (result) setIsNavigating(true);
+      const profile = await signInMutation.mutateAsync({ type: 'google' });
+      if (profile) {
+        // Popup flow (localhost): profile is already in hand, redirect now.
+        redirectByRole(profile, false);
+      }
+      // Redirect flow (production): mutateAsync resolves with no value —
+      // the browser is navigating to Google's OAuth page regardless, and
+      // completion is handled by the `user` effect above once the app
+      // reloads after the redirect back.
     } catch (error) {
       console.error('Google sign-in failed:', error);
       setIsNavigating(false);
