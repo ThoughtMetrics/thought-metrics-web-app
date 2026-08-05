@@ -56,62 +56,74 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return;
     }
 
+    // Guards against the fallback timeout (below) and a late-arriving
+    // onAuthStateChanged callback both trying to apply state after one of
+    // them has already resolved this effect run.
+    let resolved = false;
+
+    const applyAuthUser = async (firebaseUser: User | null) => {
+      if (resolved) return;
+      resolved = true;
+
+      setUser(firebaseUser);
+
+      // Set or remove auth token in API service
+      if (firebaseUser) {
+        try {
+          const token = await firebaseUser.getIdToken();
+          ApiService.setAuthToken(token);
+
+          // Get user role from Firebase custom claims
+          const idTokenResult = await firebaseUser.getIdTokenResult();
+
+          const role = idTokenResult.claims.role as UserRole | undefined;
+          const zone = idTokenResult.claims.zone as string | undefined;
+          const computedIsAdmin = role === 'admin' || role === 'super-admin';
+          const computedIsSuperAdmin = role === 'super-admin';
+          const computedIsFieldIncharge = role === 'field-incharge';
+          const computedIsClient = role === 'client';
+
+          setUserRole(role || 'respondent');
+          setIsAdmin(computedIsAdmin);
+          setIsSuperAdmin(computedIsSuperAdmin);
+          setIsFieldIncharge(computedIsFieldIncharge);
+          setIsClient(computedIsClient);
+          setUserZone(zone || null);
+        } catch (error) {
+          console.error('Failed to get auth token:', error);
+          ApiService.removeAuthToken();
+          setUserRole(null);
+          setIsAdmin(false);
+          setIsSuperAdmin(false);
+          setIsFieldIncharge(false);
+          setIsClient(false);
+          setUserZone(null);
+        }
+      } else {
+        ApiService.removeAuthToken();
+        setUserRole(null);
+        setIsAdmin(false);
+        setIsSuperAdmin(false);
+        setIsFieldIncharge(false);
+        setUserZone(null);
+      }
+
+      // Mark auth as ready after first state change
+      setIsAuthReady(true);
+    };
+
     // Set up async initialization
     const initAuth = async () => {
       try {
         // Listen to Firebase auth state changes
-        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-          setUser(firebaseUser);
-
-          // Set or remove auth token in API service
-          if (firebaseUser) {
-            try {
-              const token = await firebaseUser.getIdToken();
-              ApiService.setAuthToken(token);
-
-              // Get user role from Firebase custom claims
-              const idTokenResult = await firebaseUser.getIdTokenResult();
-
-              const role = idTokenResult.claims.role as UserRole | undefined;
-              const zone = idTokenResult.claims.zone as string | undefined;
-              const computedIsAdmin = role === 'admin' || role === 'super-admin';
-              const computedIsSuperAdmin = role === 'super-admin';
-              const computedIsFieldIncharge = role === 'field-incharge';
-              const computedIsClient = role === 'client';
-
-              setUserRole(role || 'respondent');
-              setIsAdmin(computedIsAdmin);
-              setIsSuperAdmin(computedIsSuperAdmin);
-              setIsFieldIncharge(computedIsFieldIncharge);
-              setIsClient(computedIsClient);
-              setUserZone(zone || null);
-            } catch (error) {
-              console.error('Failed to get auth token:', error);
-              ApiService.removeAuthToken();
-              setUserRole(null);
-              setIsAdmin(false);
-              setIsSuperAdmin(false);
-              setIsFieldIncharge(false);
-              setIsClient(false);
-              setUserZone(null);
-            }
-          } else {
-            ApiService.removeAuthToken();
-            setUserRole(null);
-            setIsAdmin(false);
-            setIsSuperAdmin(false);
-            setIsFieldIncharge(false);
-            setUserZone(null);
-          }
-
-          // Mark auth as ready after first state change
-          setIsAuthReady(true);
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+          void applyAuthUser(firebaseUser);
         });
 
         return unsubscribe;
       } catch (error) {
         console.error("Failed to set up auth state listener:", error);
-        setIsAuthReady(true);
+        void applyAuthUser(null);
         return () => {}; // Return empty cleanup function
       }
     };
@@ -122,7 +134,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       unsubscribe = cleanup;
     });
 
+    // Fallback: onAuthStateChanged's first callback can, in practice, fail to
+    // fire on some page loads — observed specifically on pages composed of
+    // multiple independently-hydrated Astro islands (client:only), where more
+    // than one AuthProvider instance ends up registering its own listener
+    // against the (module-singleton) Firebase Auth instance. One instance's
+    // listener reliably resolves; a sibling instance's can silently never be
+    // invoked, leaving isAuthReady stuck false and the page blocked forever
+    // behind UserRouteGuard's loading state — with no thrown error to catch.
+    // auth.currentUser is populated synchronously by the SDK as soon as it
+    // has restored a persisted session, independent of any specific
+    // onAuthStateChanged subscription, so it's a safe, same-data fallback
+    // rather than a way of bypassing authentication.
+    const fallbackTimer = window.setTimeout(() => {
+      if (!resolved) {
+        console.warn(
+          '[AuthProvider] onAuthStateChanged did not fire within 6s — falling back to auth.currentUser'
+        );
+        void applyAuthUser(auth.currentUser ?? null);
+      }
+    }, 6000);
+
     return () => {
+      window.clearTimeout(fallbackTimer);
       if (unsubscribe) {
         unsubscribe();
       }
