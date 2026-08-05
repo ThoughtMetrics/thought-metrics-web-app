@@ -9,7 +9,7 @@ interface ClientRouteGuardProps {
 }
 
 const ClientRouteGuardInternal: React.FC<ClientRouteGuardProps> = ({ children }) => {
-  const { user, isAuthReady, isClient } = useAuth();
+  const { user, isAuthReady, isRoleReady, isClient } = useAuth();
   const [isChecking, setIsChecking] = useState(true);
 
   const isLocalhost = typeof window !== 'undefined' &&
@@ -30,15 +30,21 @@ const ClientRouteGuardInternal: React.FC<ClientRouteGuardProps> = ({ children })
       return;
     }
 
+    // isClient comes from an async custom-claims fetch that resolves
+    // separately from (and later than) isAuthReady — wait for isRoleReady
+    // too, or a real client gets bounced to /unauthorized because that
+    // flag just hasn't been fetched yet.
+    if (!isRoleReady) return;
+
     if (!isClient) {
       window.location.href = '/unauthorized';
       return;
     }
 
     setIsChecking(false);
-  }, [user, isAuthReady, isClient, isLocalhost]);
+  }, [user, isAuthReady, isRoleReady, isClient, isLocalhost]);
 
-  if (!isAuthReady || isChecking) {
+  if (!isAuthReady || (!isLocalhost && !isRoleReady) || isChecking) {
     return (
       <div className="h-full flex items-center justify-center bg-gray-50">
         <LoaderUI message="Verifying access..." />

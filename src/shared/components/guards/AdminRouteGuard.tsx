@@ -16,7 +16,7 @@ const AdminRouteGuardInternal: React.FC<AdminRouteGuardProps> = ({
   children,
   requireSuperAdmin = false,
 }) => {
-  const { user, isAuthReady, isAdmin, isSuperAdmin, isFieldIncharge } = useAuth();
+  const { user, isAuthReady, isRoleReady, isAdmin, isSuperAdmin, isFieldIncharge } = useAuth();
   const [isChecking, setIsChecking] = useState(true);
 
   // Check if running on localhost (development mode)
@@ -48,6 +48,15 @@ const AdminRouteGuardInternal: React.FC<AdminRouteGuardProps> = ({
       return;
     }
 
+    // isAdmin/isSuperAdmin/isFieldIncharge come from an async custom-claims
+    // fetch that resolves separately from (and later than) isAuthReady —
+    // wait for isRoleReady too, or a real admin gets bounced to
+    // /unauthorized because those flags just haven't been fetched yet.
+    if (!isRoleReady) {
+      console.debug('[AdminRouteGuard] Waiting for role claims to be ready...');
+      return;
+    }
+
     // Check if user has required permissions
     const hasAccess = requireSuperAdmin ? isSuperAdmin : (isAdmin || isFieldIncharge);
 
@@ -61,10 +70,10 @@ const AdminRouteGuardInternal: React.FC<AdminRouteGuardProps> = ({
 
     console.debug('[AdminRouteGuard] Access granted, rendering content');
     setIsChecking(false);
-  }, [user, isAuthReady, isAdmin, isSuperAdmin, isFieldIncharge, requireSuperAdmin, isLocalhost]);
+  }, [user, isAuthReady, isRoleReady, isAdmin, isSuperAdmin, isFieldIncharge, requireSuperAdmin, isLocalhost]);
 
   // Show loading state while checking auth
-  if (!isAuthReady || isChecking) {
+  if (!isAuthReady || (!isLocalhost && !isRoleReady) || isChecking) {
     return (
       <div className="h-full flex items-center justify-center bg-gray-50">
         <LoaderUI message="Verifying access..." />

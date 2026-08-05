@@ -7,6 +7,16 @@ import type { UserRole } from '@/core/types/user.type';
 interface AuthContextType {
   user: User | null;
   isAuthReady: boolean;
+  /**
+   * True once the role/custom-claims fetch for the current user has
+   * finished (success or failure) — separate from isAuthReady, since that
+   * fetch is async and must not block user/isAuthReady from resolving
+   * quickly. Anything that gates access on isAdmin/isSuperAdmin/isClient/
+   * isFieldIncharge (route guards especially) must wait on isRoleReady too,
+   * not just isAuthReady — otherwise it evaluates those flags' not-yet-
+   * fetched default (false) values and incorrectly concludes "unauthorized".
+   */
+  isRoleReady: boolean;
   userRole: UserRole | null;
   isAdmin: boolean;
   isSuperAdmin: boolean;
@@ -18,6 +28,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthReady: false,
+  isRoleReady: false,
   userRole: null,
   isAdmin: false,
   isSuperAdmin: false,
@@ -52,6 +63,7 @@ const getInitialUser = (): User | null => {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(getInitialUser);
   const [isAuthReady, setIsAuthReady] = useState<boolean>(() => !!getInitialUser());
+  const [isRoleReady, setIsRoleReady] = useState(false);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
@@ -63,6 +75,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Only set up auth listener on client-side
     if (typeof window === "undefined") {
       setIsAuthReady(true);
+      setIsRoleReady(true);
       return;
     }
 
@@ -70,71 +83,85 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (!auth) {
       console.warn("Firebase auth not available");
       setIsAuthReady(true);
+      setIsRoleReady(true);
       return;
     }
 
-    // Guards against the fallback timeout (below) and a late-arriving
-    // onAuthStateChanged callback both trying to apply state after one of
-    // them has already resolved this effect run. Starts pre-resolved when
-    // the lazy useState initializer above already found a current user, so
-    // the listener below only needs to react to FUTURE changes (sign-out,
-    // token refresh) rather than re-applying the same initial state.
-    let resolved = !!getInitialUser();
+    let identityResolved = false;
+    // Guards against fetching the same user's claims twice (once from the
+    // synchronous initial-user check below, once from onAuthStateChanged's
+    // first callback firing with that same user moments later).
+    let roleFetchedForUid: string | null = null;
 
-    // Applies the user/role/claims state. Synchronous for the part
-    // UserRouteGuard (and everything else) actually gates on — `user` and
-    // `isAuthReady` — so a slow or hanging token/claims fetch below can
-    // never itself block those from resolving; the claims fetch updates
-    // the finer-grained role flags independently, whenever it finishes.
-    const applyAuthUser = (firebaseUser: User | null) => {
-      if (resolved) return;
-      resolved = true;
+    const applyRoleClaims = async (firebaseUser: User) => {
+      if (roleFetchedForUid === firebaseUser.uid) return;
+      roleFetchedForUid = firebaseUser.uid;
+      setIsRoleReady(false);
 
-      setUser(firebaseUser);
-      setIsAuthReady(true);
+      try {
+        const token = await firebaseUser.getIdToken();
+        ApiService.setAuthToken(token);
 
-      if (firebaseUser) {
-        void (async () => {
-          try {
-            const token = await firebaseUser.getIdToken();
-            ApiService.setAuthToken(token);
+        // Get user role from Firebase custom claims
+        const idTokenResult = await firebaseUser.getIdTokenResult();
 
-            // Get user role from Firebase custom claims
-            const idTokenResult = await firebaseUser.getIdTokenResult();
+        const role = idTokenResult.claims.role as UserRole | undefined;
+        const zone = idTokenResult.claims.zone as string | undefined;
 
-            const role = idTokenResult.claims.role as UserRole | undefined;
-            const zone = idTokenResult.claims.zone as string | undefined;
-            const computedIsAdmin = role === 'admin' || role === 'super-admin';
-            const computedIsSuperAdmin = role === 'super-admin';
-            const computedIsFieldIncharge = role === 'field-incharge';
-            const computedIsClient = role === 'client';
-
-            setUserRole(role || 'respondent');
-            setIsAdmin(computedIsAdmin);
-            setIsSuperAdmin(computedIsSuperAdmin);
-            setIsFieldIncharge(computedIsFieldIncharge);
-            setIsClient(computedIsClient);
-            setUserZone(zone || null);
-          } catch (error) {
-            console.error('Failed to get auth token:', error);
-            ApiService.removeAuthToken();
-            setUserRole(null);
-            setIsAdmin(false);
-            setIsSuperAdmin(false);
-            setIsFieldIncharge(false);
-            setIsClient(false);
-            setUserZone(null);
-          }
-        })();
-      } else {
+        setUserRole(role || 'respondent');
+        setIsAdmin(role === 'admin' || role === 'super-admin');
+        setIsSuperAdmin(role === 'super-admin');
+        setIsFieldIncharge(role === 'field-incharge');
+        setIsClient(role === 'client');
+        setUserZone(zone || null);
+      } catch (error) {
+        console.error('Failed to get auth token/claims:', error);
         ApiService.removeAuthToken();
         setUserRole(null);
         setIsAdmin(false);
         setIsSuperAdmin(false);
         setIsFieldIncharge(false);
+        setIsClient(false);
         setUserZone(null);
+      } finally {
+        setIsRoleReady(true);
       }
     };
+
+    // Applies the resolved identity (user/isAuthReady) — synchronous, so a
+    // slow or hanging role/claims fetch can never itself block these from
+    // resolving. The role/claims fetch (isRoleReady + the role-derived
+    // flags) updates independently, whenever applyRoleClaims finishes.
+    const applyAuthUser = (firebaseUser: User | null) => {
+      identityResolved = true;
+      setUser(firebaseUser);
+      setIsAuthReady(true);
+
+      if (firebaseUser) {
+        void applyRoleClaims(firebaseUser);
+      } else {
+        roleFetchedForUid = null;
+        ApiService.removeAuthToken();
+        setUserRole(null);
+        setIsAdmin(false);
+        setIsSuperAdmin(false);
+        setIsFieldIncharge(false);
+        setIsClient(false);
+        setUserZone(null);
+        setIsRoleReady(true);
+      }
+    };
+
+    // Kick off the role fetch immediately for a session already known at
+    // mount time (picked up by the lazy useState initializers above) —
+    // user/isAuthReady are already correct in that case, but the role/
+    // claims fetch doesn't happen automatically just because the user
+    // object was already known; it has to be started explicitly here.
+    const initialUser = getInitialUser();
+    if (initialUser) {
+      identityResolved = true;
+      void applyRoleClaims(initialUser);
+    }
 
     let unsubscribe: (() => void) | undefined;
     try {
@@ -149,12 +176,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       applyAuthUser(null);
     }
 
-    // Fallback in case BOTH the synchronous initial check above (still null
-    // at mount time) AND onAuthStateChanged's first callback fail to
-    // resolve anything — same auth.currentUser data, just read again a
-    // short beat later rather than left waiting forever.
+    // Fallback in case onAuthStateChanged's first callback never fires at
+    // all — observed specifically on pages built from multiple
+    // independently-hydrated Astro islands (client:only), where more than
+    // one AuthProvider instance ends up registering its own listener
+    // against the same underlying (module-singleton) Firebase Auth
+    // instance: one instance's listener reliably resolves, a sibling
+    // instance's can silently never be invoked. Re-reads the same
+    // auth.currentUser data a short beat later rather than waiting forever.
     const fallbackTimer = window.setTimeout(() => {
-      if (!resolved) {
+      if (!identityResolved) {
         console.warn(
           '[AuthProvider] onAuthStateChanged did not fire within 3s — falling back to auth.currentUser'
         );
@@ -171,7 +202,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isAuthReady, userRole, isAdmin, isSuperAdmin, isFieldIncharge, isClient, userZone }}>
+    <AuthContext.Provider value={{ user, isAuthReady, isRoleReady, userRole, isAdmin, isSuperAdmin, isFieldIncharge, isClient, userZone }}>
       {children}
     </AuthContext.Provider>
   );
