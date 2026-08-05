@@ -38,8 +38,14 @@ export const Checkboxes: React.FC<CheckboxProps> = ({
     } else {
       onValueChange(selectedValues.filter((v) => v !== value));
       if (value === 'others') {
+        // Local-only reset. Do NOT also call onOthersTextChange here — that
+        // triggers a second, independent setAnswers update in the parent,
+        // computed from the same pre-update `answers` snapshot this render
+        // captured, which clobbers the values change onValueChange just
+        // made instead of building on it. The parent's onValueChange
+        // handler already clears othersText itself as part of that single
+        // update whenever 'others' isn't in the selected values.
         setOthersInputText('');
-        onOthersTextChange?.('');
       }
     }
   };

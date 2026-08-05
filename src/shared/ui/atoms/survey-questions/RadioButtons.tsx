@@ -84,7 +84,17 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
             value={selectedValue || ''}
             onChange={(e) => {
               onValueChange(e.target.value);
-              if (e.target.value !== 'others') handleOthersTextChange('');
+              // Local-only reset (matches the radio variant below) — do NOT
+              // route this through handleOthersTextChange, which also calls
+              // onOthersTextChange and triggers a second, independent
+              // setAnswers update in the parent. That second call computes
+              // its own next-state from the same pre-update `answers`
+              // snapshot this render captured, so it clobbers the value
+              // onValueChange just set instead of building on it — the
+              // parent's onValueChange handler already clears othersText
+              // itself as part of that single update (see
+              // handleMcqSingleChange), so nothing here needs to reach it.
+              if (e.target.value !== 'others') setOthersInputText('');
             }}
             className="w-full px-3 py-2 border border-custom-grey-1 rounded bg-surface-container focus:bg-surface-container focus:outline-none focus:border-primary transition-colors text-sm md:text-base text-on-surface"
           >
