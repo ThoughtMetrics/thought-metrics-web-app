@@ -113,6 +113,10 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
 }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<number, any>>({});
+  // TEMP DEBUG — remove after diagnosing dropdown-select-not-sticking bug
+  useEffect(() => {
+    console.log('[TMDEBUG] answers state committed:', JSON.stringify(answers));
+  }, [answers]);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [showResponseView, setShowResponseView] = useState(false);
@@ -861,6 +865,9 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
     const currentQ = questions[idx];
     const newAnswers: Record<number, any> = { ...answers, [idx]: answer };
 
+    // TEMP DEBUG — remove after diagnosing dropdown-select-not-sticking bug
+    console.log('[TMDEBUG] handleAnswerChangeForIndex called', { idx, answer, newAnswersAtIdx: newAnswers[idx], currentQId: currentQ?.id });
+
     if (currentQ) {
       questions.forEach((q, i) => {
         const dependsOnCurrent = q.config?.dependsOn === currentQ.id;
@@ -868,6 +875,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           currentQ.id
         );
         if (dependsOnCurrent || isInParentChain) {
+          console.log('[TMDEBUG] clearing dependent question', { clearedIdx: i, clearedQId: q.id, dependsOnCurrent, isInParentChain });
           newAnswers[i] = undefined;
           delete prevParentValues.current[q.id];
           setDynamicOptions((prev) => ({ ...prev, [q.id]: [] }));
@@ -883,6 +891,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
       return next;
     });
 
+    console.log('[TMDEBUG] calling setAnswers with', JSON.stringify(newAnswers));
     setAnswers(newAnswers);
     // Auto-save on every answer change in list mode (mirrors mobile app behaviour)
     handleSaveDraft(newAnswers);
@@ -1238,6 +1247,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         );
 
       case QuestionType.MCQ_SINGLE: {
+        // TEMP DEBUG — remove after diagnosing dropdown-select-not-sticking bug
+        console.log('[TMDEBUG] MCQ_SINGLE render', { qIdx, qId: qData.id, isListMode, currentAnswer });
         const hasDynamicSource = !!(
           config.dataSource || config.autoPopulateFrom
         );
