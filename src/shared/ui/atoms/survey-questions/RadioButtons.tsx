@@ -88,9 +88,15 @@ export const RadioButtons: React.FC<RadioButtonProps> = ({
             }}
             className="w-full px-3 py-2 border border-custom-grey-1 rounded bg-surface-container focus:bg-surface-container focus:outline-none focus:border-primary transition-colors text-sm md:text-base text-on-surface"
           >
-            <option value="">{translations.surveyQuestions.selectOption}</option>
+            <option value="" style={{ color: 'var(--on-surface)', backgroundColor: 'var(--surface-container)' }}>
+              {translations.surveyQuestions.selectOption}
+            </option>
             {options.map((option) => (
-              <option key={option.id} value={option.value}>
+              <option
+                key={option.id}
+                value={option.value}
+                style={{ color: 'var(--on-surface)', backgroundColor: 'var(--surface-container)' }}
+              >
                 {option.label}
               </option>
             ))}

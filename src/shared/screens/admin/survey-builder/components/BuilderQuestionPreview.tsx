@@ -112,6 +112,7 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
   // ── Local answer state (used when interactive=true) ──────────────────────
   const [textVal, setTextVal] = useState('');
   const [selectedValue, setSelectedValue] = useState('');
+  const [othersText, setOthersText] = useState('');
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const [selectedStars, setSelectedStars] = useState<number | undefined>(undefined);
   const [likertValue, setLikertValue] = useState<number | undefined>(undefined);
@@ -268,18 +269,28 @@ export const BuilderQuestionPreview: React.FC<BuilderQuestionPreviewProps> = ({
           return { ...opt, isIntensePurchase: srcOpt?.isIntensePurchase };
         });
         if (config.mcqSubType === 'dropdown') {
+          const optionStyle = { color: 'var(--on-surface)', backgroundColor: 'var(--surface-container)' };
           return (
             <SurveyQuestionWrapper {...commonProps}>
               <select
                 value={interactive ? selectedValue : ''}
-                onChange={interactive ? (e) => { setSelectedValue(e.target.value); onAnswerChange?.(e.target.value); } : undefined}
+                onChange={interactive ? (e) => { setSelectedValue(e.target.value); onAnswerChange?.(e.target.value); if (e.target.value !== 'others') setOthersText(''); } : undefined}
                 className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-text-dark text-base focus:outline-none focus:bg-surface-container focus:border-primary transition-colors"
               >
-                <option value="">Select an option...</option>
+                <option value="" style={optionStyle}>Select an option...</option>
                 {mcqOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  <option key={opt.value} value={opt.value} style={optionStyle}>{opt.label}</option>
                 ))}
               </select>
+              {interactive && selectedValue === 'others' && (
+                <input
+                  type="text"
+                  value={othersText}
+                  onChange={(e) => setOthersText(e.target.value)}
+                  placeholder={config.othersPlaceholder || 'Please specify...'}
+                  className="w-full mt-2 px-4 py-3 border-b-2 bg-custom-grey-5 border-custom-grey-2 text-text-dark text-base focus:outline-none focus:bg-surface-container focus:border-primary transition-colors"
+                />
+              )}
             </SurveyQuestionWrapper>
           );
         }

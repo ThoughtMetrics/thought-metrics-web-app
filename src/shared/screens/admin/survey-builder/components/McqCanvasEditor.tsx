@@ -10,6 +10,9 @@ import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const SPECIAL_VALUES = new Set(['others', 'all_of_above']);
 
+const slugifyKey = (v: string) =>
+  v.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '').slice(0, 30);
+
 interface Props {
   question: IBuilderQuestion;
   qIdx: number;
@@ -32,13 +35,35 @@ const McqCanvasEditor: React.FC<Props> = ({ question, qIdx, lang }) => {
   const handleLabelChange = (optIdx: number, value: string) => {
     if (lang === 'en') {
       const next = [...options];
-      next[optIdx] = { ...next[optIdx], label: value };
+      next[optIdx] = {
+        ...next[optIdx],
+        label: value,
+        value: slugifyKey(value) || next[optIdx].value || `opt${optIdx + 1}`,
+      };
       setQuestionConfig(qIdx, { options: next });
     } else {
       const tOpts = [...(question.translations.ta.options ?? options.map((o) => ({ ...o, label: '' })))];
       tOpts[optIdx] = { ...tOpts[optIdx], label: value };
       setQuestionTranslation(qIdx, 'ta', { options: tOpts });
     }
+  };
+
+  // On blur (i.e. once the admin has finished typing, not per-keystroke —
+  // otherwise this would fire mid-word for any label that happens to start
+  // with "Other..."), promote a label of exactly "Other"/"Others" to the
+  // 'others' value the runtime's inline free-text mechanism (RadioButtons/
+  // Checkboxes/SurveyDetailComponent) hardcodes. Without this, a manually-
+  // typed "Other" option keeps its auto-generated optN value forever and
+  // never triggers the specify-text-box behavior.
+  const handleLabelBlur = (optIdx: number) => {
+    if (lang !== 'en') return;
+    const opt = options[optIdx];
+    if (!opt || SPECIAL_VALUES.has(opt.value)) return;
+    const trimmed = opt.label.trim().toLowerCase();
+    if (trimmed !== 'other' && trimmed !== 'others') return;
+    const next = [...options];
+    next[optIdx] = { ...opt, value: 'others' };
+    setQuestionConfig(qIdx, { options: next });
   };
 
   const handleDrop = (targetDisplayIdx: number) => {
@@ -106,6 +131,7 @@ const McqCanvasEditor: React.FC<Props> = ({ question, qIdx, lang }) => {
                 type="text"
                 value={label}
                 onChange={(e) => handleLabelChange(optIdx, e.target.value)}
+                onBlur={() => handleLabelBlur(optIdx)}
                 placeholder={lang === 'en' ? `Option ${displayIdx + 1}` : 'Tamil label'}
                 className="flex-1 min-w-0 bg-transparent text-sm text-on-surface placeholder-outline/40 focus:outline-none"
               />

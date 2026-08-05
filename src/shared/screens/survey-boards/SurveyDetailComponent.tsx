@@ -634,7 +634,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
 
   if (isLoading) {
     return (
-      <div className="min-h-full bg-white flex items-center justify-center">
+      <div className="min-h-full bg-surface-container-low flex items-center justify-center">
         <div className="text-lg text-text-dark">
           {translations.common.loading}
         </div>
@@ -644,7 +644,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
 
   if (!surveyData?.data) {
     return (
-      <div className="min-h-full bg-white flex items-center justify-center">
+      <div className="min-h-full bg-surface-container-low flex items-center justify-center">
         <div className="text-lg text-text-dark">
           {translations.errors.notFound}
         </div>
@@ -687,7 +687,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
   // Check if user has already completed this survey (bypass when in edit mode)
   if (userResponse?.isCompleted && !userResponse?.canUpdate && !isEditMode) {
     return (
-      <div className="min-h-full bg-white flex items-center justify-center">
+      <div className="min-h-full bg-surface-container-low flex items-center justify-center">
         <div className="text-center px-6 max-w-md">
           <div className="text-6xl mb-6 text-green-800">✓</div>
           <h2 className="text-2xl font-semibold mb-4 text-primary">
@@ -1261,7 +1261,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         if (isLoadingDynamic) {
           return (
             <SurveyQuestionWrapper {...commonProps} isNextDisabled={true}>
-              <div className="flex items-center gap-2 py-4 text-gray-500">
+              <div className="flex items-center gap-2 py-4 text-on-surface-variant">
                 <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full" />
                 <span>Loading options...</span>
               </div>
@@ -1277,12 +1277,12 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             '';
           return (
             <SurveyQuestionWrapper {...commonProps}>
-              <div className="flex items-center gap-2 px-3 py-2.5 border border-custom-grey-1 rounded bg-gray-50 text-gray-500 cursor-not-allowed select-none">
-                <svg className="w-4 h-4 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center gap-2 px-3 py-2.5 border border-custom-grey-1 rounded bg-surface-container-high text-outline cursor-not-allowed select-none">
+                <svg className="w-4 h-4 shrink-0 text-outline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
-                <span className="text-sm md:text-base text-gray-600">{displayLabel}</span>
-                <span className="ml-auto text-xs text-gray-400">Auto-populated</span>
+                <span className="text-sm md:text-base text-on-surface-variant">{displayLabel}</span>
+                <span className="ml-auto text-xs text-outline">Auto-populated</span>
               </div>
             </SurveyQuestionWrapper>
           );
@@ -1303,18 +1303,34 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         };
 
         if (config.mcqSubType === 'dropdown') {
+          const optionStyle = { color: 'var(--on-surface)', backgroundColor: 'var(--surface-container)' };
           return (
             <SurveyQuestionWrapper {...commonProps}>
               <select
                 value={currentAnswer?.value ?? ''}
                 onChange={(e) => handleMcqSingleChange(e.target.value)}
-                className="w-full px-4 py-3 border border-custom-grey-2 rounded bg-white text-base focus:outline-none focus:border-primary transition-colors"
+                className="w-full px-4 py-3 border border-custom-grey-2 rounded bg-surface-container text-on-surface text-base focus:outline-none focus:border-primary transition-colors"
               >
-                <option value="">Select an option...</option>
+                <option value="" style={optionStyle}>Select an option...</option>
                 {mcqSingleOptions.map((opt: any) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  <option key={opt.value} value={opt.value} style={optionStyle}>{opt.label}</option>
                 ))}
               </select>
+              {currentAnswer?.value === 'others' && (
+                <input
+                  type="text"
+                  value={currentAnswer?.othersText ?? ''}
+                  onChange={(e) => {
+                    if (isListMode) {
+                      handleAnswerChangeForIndex(qIdx, { ...currentAnswer, othersText: e.target.value });
+                    } else {
+                      onChange({ ...currentAnswer, othersText: e.target.value });
+                    }
+                  }}
+                  placeholder={config.othersPlaceholder || 'Please specify'}
+                  className="w-full mt-2 px-4 py-3 border border-custom-grey-2 rounded bg-surface-container text-on-surface text-base focus:outline-none focus:border-primary transition-colors"
+                />
+              )}
             </SurveyQuestionWrapper>
           );
         }
@@ -1560,7 +1576,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
               minLength={textMinChars}
               maxLength={textMaxChars}
               style={config.inputWidthPx ? { width: `${config.inputWidthPx}px`, maxWidth: '100%' } : undefined}
-              className="px-4 py-3 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors border-custom-grey-2 focus:border-primary text-base md:text-lg w-full"
+              className="px-4 py-3 border-b-2 bg-custom-grey-5 text-on-surface focus:bg-surface-container-high focus:outline-none transition-colors border-custom-grey-2 focus:border-primary text-base md:text-lg w-full"
             />
             {(textMaxChars || textMinChars) && (
               <p className="mt-1 text-sm text-custom-grey-3 text-right">
@@ -1595,7 +1611,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
               }
               maxLength={taMaxChars}
               rows={taRows}
-              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors resize-vertical border-custom-grey-2 focus:border-primary text-base md:text-lg"
+              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 text-on-surface focus:bg-surface-container-high focus:outline-none transition-colors resize-vertical border-custom-grey-2 focus:border-primary text-base md:text-lg"
             />
             {(taMaxChars || taMinChars) && (
               <p className="mt-1 text-sm text-custom-grey-3 text-right">
@@ -1627,7 +1643,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
               min={config.min}
               max={config.max}
               step={config.step || 1}
-              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors border-custom-grey-2 focus:border-primary text-base md:text-lg"
+              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 text-on-surface focus:bg-surface-container-high focus:outline-none transition-colors border-custom-grey-2 focus:border-primary text-base md:text-lg"
             />
             {isDontKnow && (
               <button
@@ -1637,8 +1653,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
                 }
                 className={`mt-2 px-4 py-1.5 text-sm rounded border transition-colors ${
                   isDkSelected
-                    ? 'bg-gray-600 text-white border-gray-600'
-                    : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
+                    ? 'bg-outline text-on-surface border-outline'
+                    : 'bg-surface-container-high text-on-surface-variant border-custom-grey-2 hover:bg-surface-container-highest'
                 }`}
               >
                 {dkLabel}
@@ -1652,7 +1668,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         const currencySymbol = config.currency || '₹';
         return (
           <SurveyQuestionWrapper {...commonProps}>
-            <div className="flex items-center border-b-2 bg-custom-grey-5 focus-within:bg-white focus-within:border-primary border-custom-grey-2 transition-colors">
+            <div className="flex items-center border-b-2 bg-custom-grey-5 text-on-surface focus-within:bg-surface-container-high focus-within:border-primary border-custom-grey-2 transition-colors">
               <span className="pl-4 pr-1 text-base md:text-lg font-medium text-text-dark select-none">
                 {currencySymbol}
               </span>
@@ -1688,7 +1704,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
                 onChange({ ...currentAnswer, value: e.target.value })
               }
               placeholder="example@email.com"
-              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors border-custom-grey-2 focus:border-primary text-base md:text-lg"
+              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 text-on-surface focus:bg-surface-container-high focus:outline-none transition-colors border-custom-grey-2 focus:border-primary text-base md:text-lg"
             />
             {config.customMessage && (
               <p className="mt-2 text-sm text-text-dark">
@@ -1725,7 +1741,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
               }
               min={config.minDate}
               max={config.maxDate}
-              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 focus:bg-white focus:outline-none transition-colors border-custom-grey-2 focus:border-primary text-base md:text-lg"
+              className="w-full px-4 py-3 border-b-2 bg-custom-grey-5 text-on-surface focus:bg-surface-container-high focus:outline-none transition-colors border-custom-grey-2 focus:border-primary text-base md:text-lg"
             />
           </SurveyQuestionWrapper>
         );
@@ -1760,7 +1776,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             <div className="space-y-3">
               {displayHtml && (
                 <div
-                  className="text-base text-gray-800 prose prose-sm max-w-none"
+                  className="text-base text-on-surface prose prose-sm max-w-none"
                   dangerouslySetInnerHTML={{ __html: displayHtml }}
                 />
               )}
@@ -1774,7 +1790,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
                 />
               )}
               {!displayHtml && !displayImageUrl && (
-                <p className="text-gray-400 italic">Display element — no content configured.</p>
+                <p className="text-outline italic">Display element — no content configured.</p>
               )}
             </div>
           </SurveyQuestionWrapper>
@@ -1868,11 +1884,11 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
       visibleIndices.length > 0 ? answeredCount / visibleIndices.length : 0;
 
     return (
-      <div className="flex flex-col bg-white text-black h-full accent-primary caret-primary scheme-light">
+      <div className="flex flex-col bg-surface-container-low text-on-surface h-full accent-primary caret-primary">
         {/* Sticky header */}
-        <div className="shrink-0 border-b border-custom-grey-2 px-4 py-3 md:px-12 md:pb-4 md:pt-6 bg-white z-10 sticky top-0">
+        <div className="shrink-0 border-b border-custom-grey-2 px-4 py-3 md:px-12 md:pb-4 md:pt-6 bg-surface-container-low z-10 sticky top-0">
           <div className="flex items-center justify-between gap-4 mb-3 max-w-4xl mx-auto">
-            <h1 className="text-base md:text-lg font-semibold text-black truncate">
+            <h1 className="text-base md:text-lg font-semibold text-on-surface truncate">
               {surveyData?.data?.survey?.surveyId}: {getSurveyLabel()}
             </h1>
             <div className="flex items-center gap-2 shrink-0">
@@ -1919,8 +1935,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
                   id={`list-q-${qIdx}`}
                   className={`border rounded-xl transition-colors ${
                     listErrors[qIdx]
-                      ? 'border-primary bg-red-50'
-                      : 'border-custom-grey-2 bg-white'
+                      ? 'border-primary bg-error-container'
+                      : 'border-custom-grey-2 bg-surface-container'
                   }`}
                 >
                   {isCollapsed ? (
@@ -1930,10 +1946,10 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
                     >
                       <div className="flex-1 min-w-0">
                         <div className="flex items-baseline gap-1.5 flex-wrap mb-1.5">
-                          <span className="text-xs font-semibold text-gray-500 shrink-0">
+                          <span className="text-xs font-semibold text-on-surface-variant shrink-0">
                             Q{visPos + 1}
                           </span>
-                          <span className="text-sm font-semibold text-gray-900 leading-snug">
+                          <span className="text-sm font-semibold text-on-surface leading-snug">
                             {getQuestionText(questions[qIdx])}
                           </span>
                         </div>
@@ -1947,7 +1963,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
                           e.stopPropagation();
                           setActiveQuestion(qIdx);
                         }}
-                        className="shrink-0 p-2 rounded-md hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                        className="shrink-0 p-2 rounded-md hover:bg-surface-container-high text-outline hover:text-on-surface transition-colors"
                         title="Edit answer"
                       >
                         <svg
@@ -2004,7 +2020,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
       {formLayout === 'list' ? (
         renderListLayout()
       ) : (
-        <div className="flex bg-white h-full accent-primary caret-primary scheme-light">
+        <div className="flex bg-surface-container-low h-full accent-primary caret-primary">
           {renderQuestion()}
         </div>
       )}

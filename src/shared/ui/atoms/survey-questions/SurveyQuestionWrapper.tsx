@@ -104,7 +104,7 @@ export const SurveyQuestionWrapper: React.FC<SurveyQuestionWrapperProps> = ({
           {translations.surveyDetail.question} {questionNumber}
           {isOptional && (
             <span className="ml-2 font-normal">
-              ({translations.surveyDetail.optional})
+              {translations.surveyDetail.optional}
             </span>
           )}
         </p>
