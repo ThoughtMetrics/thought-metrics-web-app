@@ -9,6 +9,7 @@ import ClientRouteGuard from '@/shared/components/guards/ClientRouteGuard';
 import ClientSidebar from '@/shared/components/client/ClientSidebar';
 import { useAuth } from '@/shared/providers/auth-provider';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
+import { PortalMenu } from '@/shared/ui/molecules/portal-menu';
 import { useAdminSurveysQuery } from '@/core/hooks/queries/survey-templates/index.queries';
 import { useUpdateSurveyInstance, useDeleteSurveyInstance } from '@/core/hooks/mutations/survey-template.mutations';
 import surveyService from '@/services/survey/survey.service';
@@ -96,7 +97,10 @@ const SurveyManagementContent: React.FC<SurveyManagementContentProps> = ({
   const [editingSurvey, setEditingSurvey] = useState<ISurvey | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [showPicker, setShowPicker] = useState(false);
-  const menuRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  // Trigger-button refs for the Actions kebab menu — PortalMenu positions
+  // itself off these, so they only need to be the (always-mounted) buttons,
+  // not a wrapping "relative" positioning container.
+  const menuButtonRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Debounce search input → reset to page 1 when search changes
@@ -127,19 +131,6 @@ const SurveyManagementContent: React.FC<SurveyManagementContentProps> = ({
   const surveyTotalPages = Math.max(1, Math.ceil(surveyTotal / surveyLimit));
 
   const filteredSurveys = allSurveys.filter((s) => !s.surveyId?.startsWith('TM-IMP-'));
-
-  // Close kebab menu on outside click
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (openMenuId && menuRef.current[openMenuId]) {
-        if (!menuRef.current[openMenuId]?.contains(e.target as Node)) {
-          setOpenMenuId(null);
-        }
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [openMenuId]);
 
   const handleArchive = async (survey: ISurvey) => {
     if (!window.confirm(`Archive survey "${survey.label}"?`)) return;
@@ -373,11 +364,9 @@ const SurveyManagementContent: React.FC<SurveyManagementContentProps> = ({
                                 className="px-4 py-3 text-center"
                                 onClick={(e) => e.stopPropagation()}
                               >
-                                <div
-                                  className="relative inline-block"
-                                  ref={(el) => { menuRef.current[s.id] = el; }}
-                                >
+                                <div className="inline-block">
                                   <button
+                                    ref={(el) => { menuButtonRefs.current[s.id] = el; }}
                                     onClick={() =>
                                       setOpenMenuId(openMenuId === s.id ? null : s.id)
                                     }
@@ -385,8 +374,13 @@ const SurveyManagementContent: React.FC<SurveyManagementContentProps> = ({
                                   >
                                     <MoreVertical className="w-4 h-4" />
                                   </button>
-                                  {openMenuId === s.id && (
-                                    <div className="absolute right-0 mt-1 w-44 bg-surface-container border border-outline-variant rounded-lg shadow-lg z-20 py-1">
+                                  <PortalMenu
+                                    open={openMenuId === s.id}
+                                    anchorEl={menuButtonRefs.current[s.id]}
+                                    onClose={() => setOpenMenuId(null)}
+                                    align="right"
+                                  >
+                                    <div className="w-44 bg-surface-container border border-outline-variant rounded-lg shadow-lg py-1">
                                       <button
                                         onClick={() => {
                                           setSelectedSurvey(selectedSurvey?.id === s.id ? null : s);
@@ -477,7 +471,7 @@ const SurveyManagementContent: React.FC<SurveyManagementContentProps> = ({
                                         </>
                                       )}
                                     </div>
-                                  )}
+                                  </PortalMenu>
                                 </div>
                               </td>
                             </tr>
