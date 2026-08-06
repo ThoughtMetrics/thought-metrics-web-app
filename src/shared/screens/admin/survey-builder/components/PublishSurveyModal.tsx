@@ -36,6 +36,7 @@ interface Props {
   defaultType?: 'respondent' | 'agent';
   existingSurveyId?: string;
   hasDraftContent?: boolean;
+  backHref?: string; // where "Go to Surveys" / the post-publish auto-redirect lands — panel-specific (/admin/surveys vs /client/surveys)
   onClose: () => void;
   onPublished?: () => void;
 }
@@ -73,6 +74,7 @@ const PublishSurveyModal: React.FC<Props> = ({
   defaultType = 'respondent',
   existingSurveyId,
   hasDraftContent,
+  backHref = '/admin/surveys',
   onClose,
   onPublished,
 }) => {
@@ -117,9 +119,9 @@ const PublishSurveyModal: React.FC<Props> = ({
   // Auto-redirect after showing success
   useEffect(() => {
     if (step !== 'success') return;
-    const t = setTimeout(() => { window.location.href = '/admin/surveys'; }, 3000);
+    const t = setTimeout(() => { window.location.href = backHref; }, 3000);
     return () => clearTimeout(t);
-  }, [step]);
+  }, [step, backHref]);
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === backdropRef.current) onClose();
@@ -701,7 +703,7 @@ const PublishSurveyModal: React.FC<Props> = ({
       </div>
       <p className="text-xs text-outline">Redirecting to surveys in a moment…</p>
       <button
-        onClick={() => { window.location.href = '/admin/surveys'; }}
+        onClick={() => { window.location.href = backHref; }}
         className="mt-2 px-6 py-2.5 bg-primary text-on-primary rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
       >
         Go to Surveys

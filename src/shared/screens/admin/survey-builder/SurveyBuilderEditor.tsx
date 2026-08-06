@@ -471,6 +471,7 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId, SidebarCompon
             defaultType={settings.defaultType}
             existingSurveyId={data?.data?.publishedSurveyId ?? undefined}
             hasDraftContent={hasDraftContent}
+            backHref={backHref}
             onClose={() => setShowPublishModal(false)}
             onPublished={() => clearLocalDraft(templateId)}
           />

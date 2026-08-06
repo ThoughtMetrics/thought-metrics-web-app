@@ -94,7 +94,9 @@ export const useSaveSurveyDraft = () => {
       void queryClient.invalidateQueries({ queryKey: QueryKeys.surveysAdmin.lists() });
       toast.success('Saved as draft');
       useSurveyBuilderStore.setState({ isDirty: false });
-      window.location.href = '/admin/surveys';
+      // Redirect (panel-specific: /admin/surveys vs /client/surveys) is the caller's
+      // responsibility — this hook has no panel context of its own. See the identical
+      // convention on usePublishSurvey above.
     },
     onError: (e: Error) => toast.error(e.message),
   });
