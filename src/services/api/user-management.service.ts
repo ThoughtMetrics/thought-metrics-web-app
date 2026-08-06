@@ -1,6 +1,6 @@
 import ApiService from './api.service';
 import type { ApiResponse } from './api.service';
-import type { UserProfile, UserRole } from '@/core/types/user.type';
+import type { UserProfile, UserProfileData, UserRole } from '@/core/types/user.type';
 import authService from './auth.service';
 
 export interface UserListParams {
@@ -17,6 +17,37 @@ export interface UserListParams {
 
 export interface UserListResponse {
   users: UserProfile[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface CompanyListParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
+// One row per companyId (owner + team members collapsed into one company),
+// not one row per User document — see UsersService.getCompanies on the backend.
+export interface CompanyListItem {
+  companyId: string;
+  companyName?: string;
+  ownerId: string;
+  ownerFirebaseUid: string;
+  ownerEmail?: string;
+  ownerProfile: UserProfileData;
+  memberCount: number;
+  storageUsed?: number;
+  storageQuota?: number | null;
+  dashboardUrl?: string;
+  createdAt: string;
+  metadata?: { isActive?: boolean; [key: string]: any };
+}
+
+export interface CompanyListResponse {
+  companies: CompanyListItem[];
   total: number;
   page: number;
   limit: number;
@@ -81,6 +112,16 @@ class UserManagementService {
   async getUsers(params?: UserListParams): Promise<ApiResponse<UserListResponse>> {
     await this.ensureAuth();
     return await ApiService.get<UserListResponse>('/users', params);
+  }
+
+  /**
+   * Get clients grouped by company — one row per companyId instead of one
+   * row per client User document (a company's team members are collapsed
+   * into the owner's row with a member count).
+   */
+  async getCompanies(params?: CompanyListParams): Promise<ApiResponse<CompanyListResponse>> {
+    await this.ensureAuth();
+    return await ApiService.get<CompanyListResponse>('/users/admin/companies', params);
   }
 
   /**

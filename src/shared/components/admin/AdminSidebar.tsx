@@ -68,7 +68,7 @@ const ContentIcon = () => (
 const sidebarLinks: SidebarLink[] = [
   { href: '/admin', label: 'Dashboard', icon: <DashboardIcon /> },
   { href: '/admin/users', label: 'Users', icon: <UsersIcon /> },
-  { href: '/admin/clients', label: 'Clients', icon: <ClientsIcon /> },
+  { href: '/admin/clients', label: 'Companies', icon: <ClientsIcon /> },
   { href: '/admin/content', label: 'Content', icon: <ContentIcon /> },
   { href: '/admin/surveys', label: 'Surveys', icon: <SurveyIcon /> },
   { href: '/admin/campaigns', label: 'Campaigns', icon: <CampaignsIcon /> },
