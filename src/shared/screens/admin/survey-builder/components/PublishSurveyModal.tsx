@@ -82,7 +82,7 @@ const PublishSurveyModal: React.FC<Props> = ({
   const updateSurvey = useUpdateSurveyInstance();
   const discardDraft = useDiscardDraftContent();
 
-  const { questions, translations: storeTranslations, settings: storeSettings, companyId, companyName, setQuestionTranslation, setTranslation, toCreateRequest, toUpdateRequest } = useSurveyBuilderStore();
+  const { questions, translations: storeTranslations, settings: storeSettings, companyId, companyName, name: storeName, setName, setQuestionTranslation, setTranslation, toCreateRequest, toUpdateRequest } = useSurveyBuilderStore();
 
   // ── Publish form state ───────────────────────────────────────────────────
   const [label, setLabel] = useState(defaultLabel);
@@ -162,7 +162,16 @@ const PublishSurveyModal: React.FC<Props> = ({
       let effectiveTemplateId = templateId;
 
       if (!effectiveTemplateId) {
-        // New template — create it first (backend also creates MySQL draft via _upsertMySQLDraft)
+        // New template — create it first (backend also creates MySQL draft via _upsertMySQLDraft).
+        // `name` is an internal-only slug the builder derives from the en label as the user
+        // types (see SurveyBuilderEditor's handleLabelChange) — this is the backstop for this
+        // save path specifically, which (unlike handleSave) calls toCreateRequest() directly
+        // with no guarantee that derivation already ran.
+        const enLabel = storeTranslations?.en?.label?.trim();
+        if (!storeName.trim() && enLabel) {
+          const slug = enLabel.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+          setName(slug);
+        }
         const res = await createTemplate.mutateAsync(toCreateRequest());
         effectiveTemplateId = res.data?._id ?? null;
         if (!effectiveTemplateId) return; // error toast shown by mutation
