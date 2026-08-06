@@ -125,6 +125,14 @@ class UserManagementService {
   }
 
   /**
+   * Admin: list team members for an arbitrary company (by companyId)
+   */
+  async getCompanyMembers(companyId: string): Promise<ApiResponse<{ members: UserProfile[]; companyId: string }>> {
+    await this.ensureAuth();
+    return await ApiService.get(`/users/admin/companies/${companyId}/members`);
+  }
+
+  /**
    * Get a single user by ID
    */
   async getUserById(userId: string): Promise<ApiResponse<UserProfile>> {

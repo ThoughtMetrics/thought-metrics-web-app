@@ -4,6 +4,7 @@ import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
 import UserManagementService from '@/services/api/user-management.service';
 import type { CompanyListItem } from '@/services/api/user-management.service';
+import type { UserProfile } from '@/core/types/user.type';
 import { toast } from 'sonner';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 
@@ -45,6 +46,12 @@ const ClientsManagementContent: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editTarget, setEditTarget] = useState<CompanyListItem | null>(null);
   const [editForm, setEditForm] = useState({ firstName: '', lastName: '', companyName: '', dashboardUrl: '' });
+
+  // Members modal
+  const [showMembersModal, setShowMembersModal] = useState(false);
+  const [membersTarget, setMembersTarget] = useState<CompanyListItem | null>(null);
+  const [membersList, setMembersList] = useState<UserProfile[]>([]);
+  const [membersLoading, setMembersLoading] = useState(false);
 
   const fetchCompanies = async () => {
     if (!isAuthReady || !user) return;
@@ -96,6 +103,21 @@ const ClientsManagementContent: React.FC = () => {
     });
     setShowEditModal(true);
     setOpenMenuId(null);
+  };
+
+  const openMembers = async (company: CompanyListItem) => {
+    setMembersTarget(company);
+    setShowMembersModal(true);
+    setMembersLoading(true);
+    try {
+      const res = await UserManagementService.getCompanyMembers(company.companyId);
+      setMembersList(res.data?.members ?? []);
+    } catch {
+      toast.error('Failed to load members');
+      setMembersList([]);
+    } finally {
+      setMembersLoading(false);
+    }
   };
 
   const handleEdit = async () => {
@@ -196,8 +218,13 @@ const ClientsManagementContent: React.FC = () => {
                         <div>{company.ownerProfile?.firstName} {company.ownerProfile?.lastName}</div>
                         <div className="text-xs text-outline">{company.ownerEmail}</div>
                       </td>
-                      <td className="px-4 py-3 text-on-surface-variant">
-                        {company.memberCount} member{company.memberCount !== 1 ? 's' : ''}
+                      <td className="px-4 py-3">
+                        <button
+                          onClick={() => openMembers(company)}
+                          className="text-primary hover:underline text-left"
+                        >
+                          {company.memberCount} member{company.memberCount !== 1 ? 's' : ''}
+                        </button>
                       </td>
                       <td className="px-4 py-3">
                         <StorageBar used={company.storageUsed ?? 0} quota={company.storageQuota} />
@@ -328,6 +355,57 @@ const ClientsManagementContent: React.FC = () => {
               <button onClick={handleEdit} className="px-4 py-2 rounded-lg bg-primary text-on-primary text-sm font-medium hover:opacity-90">
                 Save Changes
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Members Modal */}
+      {showMembersModal && membersTarget && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowMembersModal(false)}>
+          <div className="bg-surface-container rounded-xl shadow-xl p-6 w-full max-w-lg max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-xl font-semibold text-on-surface">{membersTarget.companyName || 'Members'}</h2>
+                <p className="text-sm text-outline">{membersList.length} member{membersList.length !== 1 ? 's' : ''}</p>
+              </div>
+              <button onClick={() => setShowMembersModal(false)} className="text-outline hover:text-on-surface">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <div className="overflow-y-auto flex-1 -mx-6 px-6">
+              {membersLoading ? (
+                <div className="p-8 flex justify-center"><LoaderUI message="Loading members..." /></div>
+              ) : membersList.length === 0 ? (
+                <div className="p-8 text-center text-outline">No members found.</div>
+              ) : (
+                <div className="divide-y divide-outline-variant/20">
+                  {membersList.map((member) => {
+                    const isOwner = member.firebaseUid === membersTarget.companyId;
+                    return (
+                      <div key={member._id} className="flex items-center gap-3 py-3">
+                        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm flex-shrink-0">
+                          {(member.profile?.firstName?.[0] || member.email?.[0] || '?').toUpperCase()}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-on-surface truncate">
+                            {member.profile?.displayName || `${member.profile?.firstName || ''} ${member.profile?.lastName || ''}`.trim() || '—'}
+                          </div>
+                          <div className="text-xs text-outline truncate">{member.email}</div>
+                        </div>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${
+                          isOwner ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          {isOwner ? 'Owner' : 'Member'}
+                        </span>
+                        <span className="text-xs text-outline whitespace-nowrap flex-shrink-0 w-20 text-right">
+                          {member.createdAt ? new Date(member.createdAt).toLocaleDateString() : '—'}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>
