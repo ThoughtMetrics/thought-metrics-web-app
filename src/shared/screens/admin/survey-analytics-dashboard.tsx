@@ -34,6 +34,44 @@ const SurveyLocationMap = lazy(() => import('./SurveyLocationMap'));
 const SurveyQuestionCharts = lazy(() => import('./SurveyQuestionCharts'));
 import type { QuestionChartData } from './survey-analytics.type';
 
+// React.lazy() has no built-in error handling — if the dynamic import ever
+// rejects (a dev-server hiccup on a cold import, a flaky connection, a bad
+// deploy where the chunk hash no longer matches), Suspense alone doesn't
+// catch it: the throw propagates past Suspense to the nearest error
+// boundary, and without one here it took down the entire page (blank/black
+// screen, everything unmounted). This scopes that failure to just the one
+// chart. Note a failed lazy() import is permanently cached by React for
+// that component's lifetime, so "Retry" reloads the page rather than
+// re-attempting the same doomed import.
+class ChartErrorBoundary extends React.Component<
+  { children: React.ReactNode; label?: string },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error: unknown) {
+    console.error(`Failed to load ${this.props.label ?? 'chart'}`, error);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="h-48 flex flex-col items-center justify-center gap-2 bg-surface-container-low rounded-lg border border-outline-variant text-sm text-on-surface-variant">
+          <span>Failed to load {this.props.label ?? 'this chart'}.</span>
+          <button
+            onClick={() => window.location.reload()}
+            className="text-primary hover:underline font-medium"
+          >
+            Reload page
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 interface SurveyWithAnalytics extends ISurvey {
   totalSubmissions: number;
   todaySubmissions: number;
@@ -1290,6 +1328,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                               Response Analysis
                             </h3>
                           </div>
+                          <ChartErrorBoundary>
                           <Suspense
                             fallback={
                               <div className="h-48 animate-pulse bg-surface-container-low rounded-lg" />
@@ -1301,6 +1340,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                               onChartTypeChange={handleChartTypeChange}
                             />
                           </Suspense>
+                          </ChartErrorBoundary>
                         </div>
 
                         {/* Location Map */}
@@ -1315,6 +1355,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                               with GPS)
                             </span>
                           </div>
+                          <ChartErrorBoundary>
                           <Suspense
                             fallback={
                               <div className="h-48 bg-surface-container-low rounded-lg border border-outline-variant animate-pulse" />
@@ -1334,6 +1375,7 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                               totalCount={locationTotalCount}
                             />
                           </Suspense>
+                          </ChartErrorBoundary>
                         </div>
 
                         {/* Zonal Breakdown */}
@@ -2430,6 +2472,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                       GPS)
                     </span>
                   </div>
+                  <ChartErrorBoundary>
                   <Suspense
                     fallback={
                       <div className="h-40 bg-surface-container-low rounded-lg border border-outline-variant animate-pulse" />
@@ -2450,11 +2493,13 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                       totalCount={locationTotalCount}
                     />
                   </Suspense>
+                  </ChartErrorBoundary>
                 </div>
               )}
               <div className="flex gap-5 items-start">
                 {/* LEFT — Question charts */}
                 <div className="flex-[3] min-w-0">
+                  <ChartErrorBoundary>
                   <Suspense
                     fallback={
                       <div className="space-y-4">
@@ -2473,6 +2518,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                       onChartTypeChange={handleChartTypeChange}
                     />
                   </Suspense>
+                  </ChartErrorBoundary>
                 </div>
 
                 {/* RIGHT — map + responses */}
@@ -2489,6 +2535,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                           with GPS)
                         </span>
                       </div>
+                      <ChartErrorBoundary>
                       <Suspense
                         fallback={
                           <div className="h-40 bg-surface-container-low rounded-lg border border-outline-variant animate-pulse" />
@@ -2509,6 +2556,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                           totalCount={locationTotalCount}
                         />
                       </Suspense>
+                      </ChartErrorBoundary>
                     </div>
                   )}
 
@@ -2785,6 +2833,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                   ({locationPoints.reduce((s, p) => s + p.count, 0)} with GPS)
                 </span>
               </div>
+              <ChartErrorBoundary>
               <Suspense
                 fallback={
                   <div className="h-40 bg-surface-container-low rounded-lg border border-outline-variant animate-pulse" />
@@ -2805,12 +2854,14 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                   totalCount={locationTotalCount}
                 />
               </Suspense>
+              </ChartErrorBoundary>
             </div>
           )}
 
           <div className="flex gap-5 items-start">
             {/* LEFT — Question charts (Response Analysis) */}
             <div className="flex-3 min-w-0">
+              <ChartErrorBoundary>
               <Suspense
                 fallback={
                   <div className="space-y-4">
@@ -2828,6 +2879,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                   isLoading={false}
                 />
               </Suspense>
+              </ChartErrorBoundary>
             </div>
 
             {/* RIGHT — Analytics sidebar */}
@@ -2844,6 +2896,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                       GPS)
                     </span>
                   </div>
+                  <ChartErrorBoundary>
                   <Suspense
                     fallback={
                       <div className="h-40 bg-surface-container-low rounded-lg border border-outline-variant animate-pulse" />
@@ -2864,6 +2917,7 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                       totalCount={locationTotalCount}
                     />
                   </Suspense>
+                  </ChartErrorBoundary>
                 </div>
               )}
 
