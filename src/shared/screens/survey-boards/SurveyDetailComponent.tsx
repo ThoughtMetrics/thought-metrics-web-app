@@ -37,6 +37,8 @@ import {
 } from '@/shared/ui/atoms/survey-questions';
 import { COUNTRY_CODES } from '@/core/constants/country-codes';
 import { FileUpload } from '@/shared/ui/atoms/survey-questions/FileUpload';
+import { AudioUpload } from '@/shared/ui/atoms/survey-questions/AudioUpload';
+import { VideoUpload } from '@/shared/ui/atoms/survey-questions/VideoUpload';
 import { QueryClientProvider } from '@tanstack/react-query';
 import React, { useState, useEffect, useMemo, useCallback, useRef, useContext } from 'react';
 import { useLanguage } from '@/core/hooks/use-language';
@@ -474,6 +476,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
         }
 
         case QuestionType.FILE:
+        case QuestionType.AUDIO:
+        case QuestionType.VIDEO:
           return !!(answer.file?.fileName && answer.file?.url);
 
         case QuestionType.NUMBER:
@@ -1017,6 +1021,8 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             answer = answerData.stars || null;
             break;
           case QuestionType.FILE:
+          case QuestionType.AUDIO:
+          case QuestionType.VIDEO:
             // Backend expects just the URL string
             answer = answerData.file?.url || null;
             break;
@@ -1157,6 +1163,10 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           .concat((answer.rankedItems?.length ?? 0) > 3 ? '...' : '');
       case QuestionType.FILE:
         return answer.file?.fileName || 'File uploaded';
+      case QuestionType.AUDIO:
+        return answer.file?.fileName || 'Audio recorded';
+      case QuestionType.VIDEO:
+        return answer.file?.fileName || 'Video uploaded';
       case QuestionType.MATRIX:
         return `${Object.keys(answer.values || {}).length} rows answered`;
       case QuestionType.MULTI_SLIDER:
@@ -1792,6 +1802,28 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
             }
             accept={config.accept}
             subLabel={config.subLabel}
+          />
+        );
+
+      case QuestionType.AUDIO:
+        return (
+          <AudioUpload
+            {...commonProps}
+            questionId={qData.id}
+            value={currentAnswer?.file}
+            onFileChange={(file) => onChange({ ...currentAnswer, file })}
+            maxDurationSec={config.maxAudioDurationSec ?? 120}
+          />
+        );
+
+      case QuestionType.VIDEO:
+        return (
+          <VideoUpload
+            {...commonProps}
+            questionId={qData.id}
+            value={currentAnswer?.file}
+            onFileChange={(file) => onChange({ ...currentAnswer, file })}
+            maxDurationSec={config.maxVideoDurationSec ?? 120}
           />
         );
 

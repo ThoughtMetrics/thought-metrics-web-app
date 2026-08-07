@@ -2,40 +2,19 @@
 //
 // Full-width survey details section shown before entering the question builder.
 // Contains: language toggle, metadata form (Label/Description/Instructions),
-// template settings (Layout, Mode, Industry, Allow Anonymous, Capture Fields),
+// template settings (Layout, Mode, Industry, Allow Anonymous),
 // and a CTA to switch to the question builder section.
+//
+// Capture fields (conversation audio / respondent photo) are no longer
+// manually configured here — the backend now defaults them automatically
+// for every client-company-owned template (see
+// SurveyTemplateService._normaliseTemplateData in thought-metrics-web-api).
 
 import React, { useEffect } from 'react';
-import type { ISurveyCaptureField } from '@/core/types/survey.type';
-import type { SupportedBuilderLanguage } from '@/core/types/survey-builder.type';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 
 interface Props {
   onContinue: () => void;
-}
-
-const CAPTURE_TYPES: ISurveyCaptureField['type'][] = [
-  'image',
-  'audio',
-  'video',
-  'file',
-  'text',
-];
-
-const ROOT_LEVEL_KEYS = new Set(['conversationAudio', 'respondentPic']);
-
-function labelToKey(label: string): string {
-  return label
-    .trim()
-    .replace(/[^a-zA-Z0-9 ]/g, '')
-    .split(' ')
-    .filter(Boolean)
-    .map((word, i) =>
-      i === 0
-        ? word.toLowerCase()
-        : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-    )
-    .join('');
 }
 
 const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
@@ -48,7 +27,6 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
   } = useSurveyBuilderStore();
 
   const t = translations[activeLanguage];
-  const captureFields = settings.captureFields ?? [];
 
   // Enforce hidden defaults: mode = public (respondent), industry = Others
   useEffect(() => {
@@ -57,38 +35,6 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
     if (!settings.industry) updates.industry = 'Others';
     if (Object.keys(updates).length > 0) setSettings(updates as any);
   }, []);
-
-  const addField = () => {
-    setSettings({
-      captureFields: [
-        ...captureFields,
-        {
-          key: '',
-          label: '',
-          type: 'text',
-          required: false,
-          storePath: 'root',
-        },
-      ],
-    });
-  };
-
-  const updateField = (i: number, partial: Partial<ISurveyCaptureField>) => {
-    const next = [...captureFields];
-    const updated = { ...next[i], ...partial };
-    if ('label' in partial) {
-      updated.key = labelToKey(partial.label ?? '');
-    }
-    if (ROOT_LEVEL_KEYS.has(updated.key)) {
-      updated.storePath = 'root';
-    }
-    next[i] = updated;
-    setSettings({ captureFields: next });
-  };
-
-  const removeField = (i: number) => {
-    setSettings({ captureFields: captureFields.filter((_, idx) => idx !== i) });
-  };
 
   return (
     <div className="h-full flex flex-col bg-surface-container-low">
@@ -172,108 +118,6 @@ const SurveyDetailsSection: React.FC<Props> = ({ onContinue }) => {
                   >
                     {label}
                   </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Capture Fields */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <span className="text-sm font-medium text-on-surface-variant">
-                    Capture Fields
-                  </span>
-                  <p className="text-xs text-outline mt-0.5">
-                    Extra data to collect alongside answers (photos, audio,
-                    etc.)
-                  </p>
-                </div>
-                <button
-                  onClick={addField}
-                  className="text-xs text-primary hover:underline font-medium"
-                >
-                  + Add Field
-                </button>
-              </div>
-
-              {captureFields.length === 0 && (
-                <p className="text-xs text-outline border border-dashed border-outline-variant rounded-lg p-4 text-center">
-                  No capture fields. Click "+ Add Field" to add photos, audio,
-                  etc.
-                </p>
-              )}
-
-              <div className="space-y-3">
-                {captureFields.map((field, i) => (
-                  <div
-                    key={i}
-                    className="border border-outline-variant rounded-lg p-3 space-y-2 bg-surface-container"
-                  >
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-medium text-on-surface-variant">
-                        Field {i + 1}
-                      </span>
-                      <button
-                        onClick={() => removeField(i)}
-                        className="text-red-400 hover:text-red-600 text-xs"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="block text-xs text-outline mb-1">
-                          Label
-                        </label>
-                        <input
-                          type="text"
-                          value={field.label}
-                          onChange={(e) =>
-                            updateField(i, { label: e.target.value })
-                          }
-                          placeholder="Respondent Photo"
-                          className="w-full border border-outline-variant rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
-                        />
-                        {field.key && (
-                          <p className="text-xs text-outline mt-0.5">
-                            Key: <span className="font-mono">{field.key}</span>
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-xs text-outline mb-1">
-                          Type
-                        </label>
-                        <select
-                          value={field.type}
-                          onChange={(e) =>
-                            updateField(i, {
-                              type: e.target
-                                .value as ISurveyCaptureField['type'],
-                            })
-                          }
-                          className="w-full border border-outline-variant rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-surface-container"
-                        >
-                          {CAPTURE_TYPES.map((t) => (
-                            <option key={t} value={t}>
-                              {t}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={field.required ?? false}
-                        onChange={(e) =>
-                          updateField(i, { required: e.target.checked })
-                        }
-                        className="w-4 h-4 accent-primary"
-                      />
-                      <span className="text-xs text-on-surface-variant">Required</span>
-                    </label>
-                  </div>
                 ))}
               </div>
             </div>
