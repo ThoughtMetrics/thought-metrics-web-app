@@ -239,19 +239,51 @@ class UserManagementService {
   }
 
   /**
-   * Create a team member (company owner only)
+   * Create a team member (Owner only — technical or promoted co-owner)
    */
-  async createTeamMember(data: { email: string; firstName: string; lastName?: string }): Promise<ApiResponse<{ user: UserProfile }>> {
+  async createTeamMember(data: { email: string; firstName: string; lastName?: string; companyRole?: 'owner' | 'contributor' | 'member' }): Promise<ApiResponse<{ user: UserProfile }>> {
     await this.ensureAuth();
     return await ApiService.post('/users/team', data);
   }
 
   /**
-   * Remove a team member (company owner only)
+   * Remove a team member (Owner only — technical or promoted co-owner)
    */
   async removeTeamMember(memberId: string): Promise<ApiResponse<void>> {
     await this.ensureAuth();
     return await ApiService.delete(`/users/team/${memberId}`);
+  }
+
+  /**
+   * Change a team member's company role (Owner only — technical or promoted co-owner)
+   */
+  async changeTeamMemberRole(memberId: string, companyRole: 'owner' | 'contributor' | 'member'): Promise<ApiResponse<{ user: UserProfile }>> {
+    await this.ensureAuth();
+    return await ApiService.patch(`/users/team/${memberId}/role`, { companyRole });
+  }
+
+  /**
+   * Admin: create a team member for an arbitrary company
+   */
+  async adminCreateTeamMember(companyId: string, data: { email: string; firstName: string; lastName?: string; companyRole?: 'owner' | 'contributor' | 'member' }): Promise<ApiResponse<{ user: UserProfile }>> {
+    await this.ensureAuth();
+    return await ApiService.post(`/users/admin/companies/${companyId}/members`, data);
+  }
+
+  /**
+   * Admin: remove a team member from an arbitrary company
+   */
+  async adminRemoveTeamMember(companyId: string, memberId: string): Promise<ApiResponse<void>> {
+    await this.ensureAuth();
+    return await ApiService.delete(`/users/admin/companies/${companyId}/members/${memberId}`);
+  }
+
+  /**
+   * Admin: change a team member's company role for an arbitrary company
+   */
+  async adminChangeTeamMemberRole(companyId: string, memberId: string, companyRole: 'owner' | 'contributor' | 'member'): Promise<ApiResponse<{ user: UserProfile }>> {
+    await this.ensureAuth();
+    return await ApiService.patch(`/users/admin/companies/${companyId}/members/${memberId}/role`, { companyRole });
   }
 }
 

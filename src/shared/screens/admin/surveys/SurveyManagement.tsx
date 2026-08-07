@@ -58,7 +58,8 @@ const SurveyManagementContent: React.FC<SurveyManagementContentProps> = ({
   SidebarComponent = AdminSidebar,
   builderBasePath = '/admin/survey-builder',
 }) => {
-  const { isAdmin, isClient, isFieldIncharge } = useAuth();
+  const { isAdmin, isClient, isFieldIncharge, companyRole } = useAuth();
+  const canManageSurveys = isAdmin || (isClient && (companyRole === 'owner' || companyRole === 'contributor'));
   const updateSurvey = useUpdateSurveyInstance();
   const deleteSurvey = useDeleteSurveyInstance();
   const [isDuplicating, setIsDuplicating] = useState(false);
@@ -204,12 +205,14 @@ const SurveyManagementContent: React.FC<SurveyManagementContentProps> = ({
               <h1 className="text-3xl font-bold text-on-surface mb-1">Surveys</h1>
               <p className="text-on-surface-variant">Manage survey templates</p>
             </div>
-            <button
-              onClick={() => setShowPicker(true)}
-              className="px-5 py-2.5 bg-primary text-on-primary rounded-lg font-medium hover:bg-primary/90 transition-colors"
-            >
-              + New Survey
-            </button>
+            {canManageSurveys && (
+              <button
+                onClick={() => setShowPicker(true)}
+                className="px-5 py-2.5 bg-primary text-on-primary rounded-lg font-medium hover:bg-primary/90 transition-colors"
+              >
+                + New Survey
+              </button>
+            )}
           </div>
 
           {isAdmin && clientFilter && (
@@ -399,7 +402,7 @@ const SurveyManagementContent: React.FC<SurveyManagementContentProps> = ({
                                       >
                                         Downloads
                                       </button>
-                                      {(isAdmin || isClient) && (
+                                      {canManageSurveys && (
                                         <>
                                           <button
                                             onClick={() => {
@@ -436,7 +439,7 @@ const SurveyManagementContent: React.FC<SurveyManagementContentProps> = ({
                                       >
                                         Copy Link
                                       </button>
-                                      {(isAdmin || isClient) && (
+                                      {canManageSurveys && (
                                         <>
                                           <button
                                             onClick={() => {

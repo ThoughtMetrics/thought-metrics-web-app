@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/shared/providers/auth-provider';
 import AdminSidebar from '@/shared/components/admin/AdminSidebar';
 import AdminRouteGuard from '@/shared/components/guards/AdminRouteGuard';
@@ -7,8 +7,25 @@ import type { CompanyListItem } from '@/services/api/user-management.service';
 import type { UserProfile } from '@/core/types/user.type';
 import { toast } from 'sonner';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
+import { PortalMenu } from '@/shared/ui/molecules/portal-menu';
 
 const CLIENT_QUOTA_BYTES = 20 * 1024 * 1024;
+
+type CompanyRole = 'owner' | 'contributor' | 'member';
+
+const ROLE_BADGE: Record<CompanyRole, string> = {
+  owner: 'bg-purple-100 text-purple-800',
+  contributor: 'bg-emerald-100 text-emerald-800',
+  member: 'bg-blue-100 text-blue-800',
+};
+
+const ROLE_LABEL: Record<CompanyRole, string> = {
+  owner: 'Owner',
+  contributor: 'Contributor',
+  member: 'Member',
+};
+
+const ROLE_OPTIONS: CompanyRole[] = ['owner', 'contributor', 'member'];
 
 function StorageBar({ used = 0, quota = CLIENT_QUOTA_BYTES }: { used?: number; quota?: number | null }) {
   const q = quota ?? CLIENT_QUOTA_BYTES;
@@ -52,6 +69,15 @@ const ClientsManagementContent: React.FC = () => {
   const [membersTarget, setMembersTarget] = useState<CompanyListItem | null>(null);
   const [membersList, setMembersList] = useState<UserProfile[]>([]);
   const [membersLoading, setMembersLoading] = useState(false);
+  const [showAddMemberForm, setShowAddMemberForm] = useState(false);
+  const [addMemberForm, setAddMemberForm] = useState<{ email: string; firstName: string; lastName: string; companyRole: CompanyRole }>({
+    email: '', firstName: '', lastName: '', companyRole: 'contributor',
+  });
+  const [addMemberLoading, setAddMemberLoading] = useState(false);
+  const [addMemberError, setAddMemberError] = useState('');
+  const [memberMenuId, setMemberMenuId] = useState<string | null>(null);
+  const [memberActionLoading, setMemberActionLoading] = useState<string | null>(null);
+  const memberMenuButtonRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
 
   const fetchCompanies = async () => {
     if (!isAuthReady || !user) return;
@@ -117,6 +143,65 @@ const ClientsManagementContent: React.FC = () => {
       setMembersList([]);
     } finally {
       setMembersLoading(false);
+    }
+  };
+
+  const refreshMembers = async () => {
+    if (!membersTarget) return;
+    const res = await UserManagementService.getCompanyMembers(membersTarget.companyId);
+    setMembersList(res.data?.members ?? []);
+    fetchCompanies(); // keep the outer table's memberCount in sync
+  };
+
+  const handleAddMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!membersTarget) return;
+    if (!addMemberForm.email || !addMemberForm.firstName) {
+      setAddMemberError('Email and first name are required');
+      return;
+    }
+    setAddMemberLoading(true);
+    setAddMemberError('');
+    try {
+      await UserManagementService.adminCreateTeamMember(membersTarget.companyId, addMemberForm);
+      setShowAddMemberForm(false);
+      setAddMemberForm({ email: '', firstName: '', lastName: '', companyRole: 'contributor' });
+      await refreshMembers();
+      toast.success('Member added');
+    } catch (err: any) {
+      setAddMemberError(err?.data?.message || err?.message || 'Failed to add member');
+    } finally {
+      setAddMemberLoading(false);
+    }
+  };
+
+  const handleChangeMemberRole = async (memberId: string, newRole: CompanyRole) => {
+    if (!membersTarget) return;
+    setMemberMenuId(null);
+    setMemberActionLoading(memberId);
+    try {
+      await UserManagementService.adminChangeTeamMemberRole(membersTarget.companyId, memberId, newRole);
+      await refreshMembers();
+    } catch (err: any) {
+      toast.error(err?.data?.message || 'Failed to change role');
+    } finally {
+      setMemberActionLoading(null);
+    }
+  };
+
+  const handleRemoveMember = async (memberId: string) => {
+    if (!membersTarget) return;
+    if (!confirm('Remove this team member? This will deactivate their account.')) return;
+    setMemberMenuId(null);
+    setMemberActionLoading(memberId);
+    try {
+      await UserManagementService.adminRemoveTeamMember(membersTarget.companyId, memberId);
+      await refreshMembers();
+      toast.success('Member removed');
+    } catch (err: any) {
+      toast.error(err?.data?.message || 'Failed to remove member');
+    } finally {
+      setMemberActionLoading(null);
     }
   };
 
@@ -362,17 +447,54 @@ const ClientsManagementContent: React.FC = () => {
 
       {/* Members Modal */}
       {showMembersModal && membersTarget && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowMembersModal(false)}>
-          <div className="bg-surface-container rounded-xl shadow-xl p-6 w-full max-w-lg max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => { setShowMembersModal(false); setShowAddMemberForm(false); setMemberMenuId(null); }}>
+          <div className="bg-surface-container rounded-xl shadow-xl p-6 w-full max-w-lg max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-xl font-semibold text-on-surface">{membersTarget.companyName || 'Members'}</h2>
                 <p className="text-sm text-outline">{membersList.length} member{membersList.length !== 1 ? 's' : ''}</p>
               </div>
-              <button onClick={() => setShowMembersModal(false)} className="text-outline hover:text-on-surface">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setShowAddMemberForm(v => !v)}
+                  className="text-sm font-medium text-primary hover:underline"
+                >
+                  + Add Member
+                </button>
+                <button onClick={() => { setShowMembersModal(false); setShowAddMemberForm(false); setMemberMenuId(null); }} className="text-outline hover:text-on-surface">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
             </div>
+
+            {showAddMemberForm && (
+              <form onSubmit={handleAddMember} className="mb-4 p-4 bg-surface-container-low rounded-lg space-y-3">
+                {addMemberError && <div className="bg-red-50 border border-red-200 rounded-lg p-2 text-xs text-red-700">{addMemberError}</div>}
+                <div className="grid grid-cols-2 gap-3">
+                  <input type="text" placeholder="First Name *" value={addMemberForm.firstName}
+                    onChange={e => setAddMemberForm(f => ({ ...f, firstName: e.target.value }))}
+                    className="border border-outline-variant rounded-lg px-3 py-2 text-sm bg-surface-container" required />
+                  <input type="text" placeholder="Last Name" value={addMemberForm.lastName}
+                    onChange={e => setAddMemberForm(f => ({ ...f, lastName: e.target.value }))}
+                    className="border border-outline-variant rounded-lg px-3 py-2 text-sm bg-surface-container" />
+                </div>
+                <input type="email" placeholder="Email *" value={addMemberForm.email}
+                  onChange={e => setAddMemberForm(f => ({ ...f, email: e.target.value }))}
+                  className="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm bg-surface-container" required />
+                <select value={addMemberForm.companyRole}
+                  onChange={e => setAddMemberForm(f => ({ ...f, companyRole: e.target.value as CompanyRole }))}
+                  className="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm bg-surface-container">
+                  {ROLE_OPTIONS.map(r => <option key={r} value={r}>{ROLE_LABEL[r]}</option>)}
+                </select>
+                <div className="flex justify-end gap-2">
+                  <button type="button" onClick={() => setShowAddMemberForm(false)} className="px-3 py-1.5 rounded-lg border border-outline-variant text-xs">Cancel</button>
+                  <button type="submit" disabled={addMemberLoading} className="px-3 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-medium disabled:opacity-50">
+                    {addMemberLoading ? 'Adding...' : 'Add'}
+                  </button>
+                </div>
+              </form>
+            )}
+
             <div className="overflow-y-auto flex-1 -mx-6 px-6">
               {membersLoading ? (
                 <div className="p-8 flex justify-center"><LoaderUI message="Loading members..." /></div>
@@ -381,7 +503,8 @@ const ClientsManagementContent: React.FC = () => {
               ) : (
                 <div className="divide-y divide-outline-variant/20">
                   {membersList.map((member) => {
-                    const isOwner = member.firebaseUid === membersTarget.companyId;
+                    const isTechnicalOwner = member.firebaseUid === membersTarget.companyId;
+                    const memberRole: CompanyRole = (member as any).companyRole || 'member';
                     return (
                       <div key={member._id} className="flex items-center gap-3 py-3">
                         <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm flex-shrink-0">
@@ -393,14 +516,51 @@ const ClientsManagementContent: React.FC = () => {
                           </div>
                           <div className="text-xs text-outline truncate">{member.email}</div>
                         </div>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${
-                          isOwner ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
-                        }`}>
-                          {isOwner ? 'Owner' : 'Member'}
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${ROLE_BADGE[memberRole]}`}>
+                          {memberActionLoading === member._id ? 'Updating…' : ROLE_LABEL[memberRole]}
                         </span>
                         <span className="text-xs text-outline whitespace-nowrap flex-shrink-0 w-20 text-right">
                           {member.createdAt ? new Date(member.createdAt).toLocaleDateString() : '—'}
                         </span>
+                        {!isTechnicalOwner && (
+                          <div className="flex-shrink-0">
+                            <button
+                              ref={(el) => { memberMenuButtonRefs.current[member._id] = el; }}
+                              onClick={() => setMemberMenuId(memberMenuId === member._id ? null : member._id)}
+                              className="p-1 rounded hover:bg-surface-container-high text-outline/40 hover:text-on-surface-variant"
+                            >
+                              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="5" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="12" cy="19" r="1.5" />
+                              </svg>
+                            </button>
+                            <PortalMenu
+                              open={memberMenuId === member._id}
+                              anchorEl={memberMenuButtonRefs.current[member._id]}
+                              onClose={() => setMemberMenuId(null)}
+                              align="right"
+                            >
+                              <div className="bg-surface-container border border-outline-variant rounded-lg shadow-lg w-48 py-1">
+                                <div className="px-4 py-1.5 text-xs font-semibold text-outline uppercase tracking-wider">Set role</div>
+                                {ROLE_OPTIONS.filter(r => r !== memberRole).map(r => (
+                                  <button
+                                    key={r}
+                                    onClick={() => handleChangeMemberRole(member._id, r)}
+                                    className="w-full text-left px-4 py-2 text-sm text-on-surface-variant hover:bg-surface-container-high"
+                                  >
+                                    {ROLE_LABEL[r]}
+                                  </button>
+                                ))}
+                                <div className="border-t border-outline-variant/50 my-1" />
+                                <button
+                                  onClick={() => handleRemoveMember(member._id)}
+                                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            </PortalMenu>
+                          </div>
+                        )}
                       </div>
                     );
                   })}

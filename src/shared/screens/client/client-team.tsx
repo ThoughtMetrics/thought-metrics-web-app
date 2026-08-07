@@ -2,32 +2,51 @@ import React, { useEffect, useState, useRef } from 'react';
 import ClientSidebar from '@/shared/components/client/ClientSidebar';
 import ClientRouteGuard from '@/shared/components/guards/ClientRouteGuard';
 import UserManagementService from '@/services/api/user-management.service';
+import { useAuth } from '@/shared/providers/auth-provider';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
+import { PortalMenu } from '@/shared/ui/molecules/portal-menu';
 import type { UserProfile } from '@/core/types/user.type';
-import authService from '@/services/api/auth.service';
+
+type CompanyRole = 'owner' | 'contributor' | 'member';
 
 interface TeamMember extends UserProfile {
   companyId?: string;
+  companyRole?: CompanyRole;
 }
 
+const ROLE_BADGE: Record<CompanyRole, string> = {
+  owner: 'bg-purple-100 text-purple-800',
+  contributor: 'bg-emerald-100 text-emerald-800',
+  member: 'bg-blue-100 text-blue-800',
+};
+
+const ROLE_LABEL: Record<CompanyRole, string> = {
+  owner: 'Owner',
+  contributor: 'Contributor',
+  member: 'Member',
+};
+
+const ROLE_OPTIONS: CompanyRole[] = ['owner', 'contributor', 'member'];
+
 const ClientTeamContent: React.FC = () => {
+  const { companyRole } = useAuth();
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [companyId, setCompanyId] = useState<string>('');
-  const [currentUserId, setCurrentUserId] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
   const [addError, setAddError] = useState('');
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [removeConfirm, setRemoveConfirm] = useState<string | null>(null);
-  const [form, setForm] = useState({ email: '', firstName: '', lastName: '' });
+  const [roleChanging, setRoleChanging] = useState<string | null>(null);
+  const menuButtonRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
+  const [form, setForm] = useState<{ email: string; firstName: string; lastName: string; companyRole: CompanyRole }>({
+    email: '', firstName: '', lastName: '', companyRole: 'contributor',
+  });
 
-  const isOwner = currentUserId && companyId ? currentUserId === companyId : false;
+  const isOwner = companyRole === 'owner';
 
   useEffect(() => {
-    const user = authService.getCurrentUser();
-    if (user) setCurrentUserId(user.uid);
-
     fetchTeam();
   }, []);
 
@@ -54,7 +73,7 @@ const ClientTeamContent: React.FC = () => {
       const res = await UserManagementService.createTeamMember(form);
       if (res.success) {
         setShowAddModal(false);
-        setForm({ email: '', firstName: '', lastName: '' });
+        setForm({ email: '', firstName: '', lastName: '', companyRole: 'contributor' });
         await fetchTeam();
       } else {
         setAddError((res as any).message || 'Failed to add team member');
@@ -75,6 +94,19 @@ const ClientTeamContent: React.FC = () => {
     } finally {
       setRemoveConfirm(null);
       setOpenMenuId(null);
+    }
+  };
+
+  const handleChangeRole = async (memberId: string, newRole: CompanyRole) => {
+    setOpenMenuId(null);
+    setRoleChanging(memberId);
+    try {
+      await UserManagementService.changeTeamMemberRole(memberId, newRole);
+      setMembers((prev) => prev.map((m) => (m._id === memberId ? { ...m, companyRole: newRole } : m)));
+    } catch (err: any) {
+      alert(err?.data?.message || 'Failed to change role');
+    } finally {
+      setRoleChanging(null);
     }
   };
 
@@ -102,7 +134,7 @@ const ClientTeamContent: React.FC = () => {
 
           {!isOwner && (
             <div className="mb-4 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm text-amber-800">
-              Only the company owner can add or remove team members.
+              Only an Owner can add, remove, or change roles for team members.
             </div>
           )}
 
@@ -124,7 +156,8 @@ const ClientTeamContent: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-outline-variant/20">
                   {members.map((member) => {
-                    const memberIsOwner = member.firebaseUid === companyId || member.companyId === member.firebaseUid;
+                    const isTechnicalOwner = member.firebaseUid === companyId;
+                    const memberRole: CompanyRole = member.companyRole || 'member';
                     return (
                       <tr key={member._id} className="hover:bg-surface-container-high transition-colors">
                         <td className="px-6 py-4">
@@ -139,21 +172,17 @@ const ClientTeamContent: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 text-sm text-on-surface-variant">{member.email || '—'}</td>
                         <td className="px-6 py-4">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            memberIsOwner ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
-                          }`}>
-                            {memberIsOwner ? 'Owner' : 'Member'}
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${ROLE_BADGE[memberRole]}`}>
+                            {roleChanging === member._id ? 'Updating…' : ROLE_LABEL[memberRole]}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-sm text-outline">{member.createdAt ? formatDate(member.createdAt) : '—'}</td>
                         {isOwner && (
                           <td className="px-6 py-4 relative">
-                            {!memberIsOwner && (
-                              <div className="relative">
-                                {openMenuId === member._id && (
-                                  <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
-                                )}
+                            {!isTechnicalOwner && (
+                              <div>
                                 <button
+                                  ref={(el) => { menuButtonRefs.current[member._id] = el; }}
                                   onClick={() => setOpenMenuId(openMenuId === member._id ? null : member._id)}
                                   className="p-1 rounded hover:bg-surface-container-high text-outline/40 hover:text-on-surface-variant"
                                 >
@@ -161,8 +190,24 @@ const ClientTeamContent: React.FC = () => {
                                     <circle cx="12" cy="5" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="12" cy="19" r="1.5" />
                                   </svg>
                                 </button>
-                                {openMenuId === member._id && (
-                                  <div className="absolute right-0 top-8 bg-surface-container border border-outline-variant rounded-lg shadow-lg z-20 w-36 py-1">
+                                <PortalMenu
+                                  open={openMenuId === member._id}
+                                  anchorEl={menuButtonRefs.current[member._id]}
+                                  onClose={() => setOpenMenuId(null)}
+                                  align="right"
+                                >
+                                  <div className="bg-surface-container border border-outline-variant rounded-lg shadow-lg w-48 py-1">
+                                    <div className="px-4 py-1.5 text-xs font-semibold text-outline uppercase tracking-wider">Set role</div>
+                                    {ROLE_OPTIONS.filter((r) => r !== memberRole).map((r) => (
+                                      <button
+                                        key={r}
+                                        onClick={() => handleChangeRole(member._id, r)}
+                                        className="w-full text-left px-4 py-2 text-sm text-on-surface-variant hover:bg-surface-container-high"
+                                      >
+                                        {ROLE_LABEL[r]}
+                                      </button>
+                                    ))}
+                                    <div className="border-t border-outline-variant/50 my-1" />
                                     <button
                                       onClick={() => { setOpenMenuId(null); setRemoveConfirm(member._id); }}
                                       className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
@@ -170,7 +215,7 @@ const ClientTeamContent: React.FC = () => {
                                       Remove
                                     </button>
                                   </div>
-                                )}
+                                </PortalMenu>
                               </div>
                             )}
                           </td>
@@ -225,6 +270,21 @@ const ClientTeamContent: React.FC = () => {
                   className="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                   required
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-on-surface-variant mb-1">Role</label>
+                <select
+                  value={form.companyRole}
+                  onChange={(e) => setForm((f) => ({ ...f, companyRole: e.target.value as CompanyRole }))}
+                  className="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-surface-container-low"
+                >
+                  {ROLE_OPTIONS.map((r) => (
+                    <option key={r} value={r}>{ROLE_LABEL[r]}</option>
+                  ))}
+                </select>
+                <p className="text-xs text-outline mt-1">
+                  Contributor: can create/edit/delete surveys. Member: view-only. Owner: full access, including managing the team.
+                </p>
               </div>
               <p className="text-xs text-outline">Team member will receive the default password: <strong>Welcome@ThoughtMetrics</strong> and will be prompted to change it on first login.</p>
               <div className="flex gap-3 pt-2">

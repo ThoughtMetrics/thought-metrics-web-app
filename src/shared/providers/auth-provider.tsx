@@ -23,6 +23,9 @@ interface AuthContextType {
   isFieldIncharge: boolean;
   isClient: boolean;
   userZone: string | null;
+  companyId: string | null;
+  /** Permission tier within the company (role=client only) — see company-role.util.ts on the backend for enforcement. */
+  companyRole: 'owner' | 'contributor' | 'member' | null;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -35,6 +38,8 @@ const AuthContext = createContext<AuthContextType>({
   isFieldIncharge: false,
   isClient: false,
   userZone: null,
+  companyId: null,
+  companyRole: null,
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -70,6 +75,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isFieldIncharge, setIsFieldIncharge] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [userZone, setUserZone] = useState<string | null>(null);
+  const [companyId, setCompanyId] = useState<string | null>(null);
+  const [companyRole, setCompanyRole] = useState<'owner' | 'contributor' | 'member' | null>(null);
 
   useEffect(() => {
     // Only set up auth listener on client-side
@@ -107,6 +114,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         const role = idTokenResult.claims.role as UserRole | undefined;
         const zone = idTokenResult.claims.zone as string | undefined;
+        const claimCompanyId = idTokenResult.claims.companyId as string | undefined;
+        const claimCompanyRole = idTokenResult.claims.companyRole as 'owner' | 'contributor' | 'member' | undefined;
 
         setUserRole(role || 'respondent');
         setIsAdmin(role === 'admin' || role === 'super-admin');
@@ -114,6 +123,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsFieldIncharge(role === 'field-incharge');
         setIsClient(role === 'client');
         setUserZone(zone || null);
+        setCompanyId(claimCompanyId || null);
+        setCompanyRole(claimCompanyRole || null);
       } catch (error) {
         console.error('Failed to get auth token/claims:', error);
         ApiService.removeAuthToken();
@@ -123,6 +134,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsFieldIncharge(false);
         setIsClient(false);
         setUserZone(null);
+        setCompanyId(null);
+        setCompanyRole(null);
       } finally {
         setIsRoleReady(true);
       }
@@ -148,6 +161,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsFieldIncharge(false);
         setIsClient(false);
         setUserZone(null);
+        setCompanyId(null);
+        setCompanyRole(null);
         setIsRoleReady(true);
       }
     };
@@ -202,7 +217,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isAuthReady, isRoleReady, userRole, isAdmin, isSuperAdmin, isFieldIncharge, isClient, userZone }}>
+    <AuthContext.Provider value={{ user, isAuthReady, isRoleReady, userRole, isAdmin, isSuperAdmin, isFieldIncharge, isClient, userZone, companyId, companyRole }}>
       {children}
     </AuthContext.Provider>
   );

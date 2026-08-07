@@ -37,7 +37,8 @@ function StatCard({ label, value, sub }: { label: string; value: React.ReactNode
 }
 
 const ClientDashboardContent: React.FC = () => {
-  const { user, userRole } = useAuth();
+  const { user, userRole, companyRole } = useAuth();
+  const canManageSurveys = companyRole === 'owner' || companyRole === 'contributor';
   const [storage, setStorage] = useState<StorageInfo | null>(null);
   const [templates, setTemplates] = useState<SurveyItem[]>([]);
   const [templatesTotal, setTemplatesTotal] = useState(0);
@@ -118,10 +119,17 @@ const ClientDashboardContent: React.FC = () => {
             />
             <div className="bg-surface-container rounded-xl shadow-sm p-6 border border-outline-variant/50 flex flex-col justify-between">
               <p className="text-sm font-medium text-outline">Quick Action</p>
-              <a href="/client/survey-builder/new"
-                className="mt-4 inline-block bg-primary text-white text-center px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity text-sm">
-                + New Survey
-              </a>
+              {canManageSurveys ? (
+                <a href="/client/survey-builder/new"
+                  className="mt-4 inline-block bg-primary text-white text-center px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity text-sm">
+                  + New Survey
+                </a>
+              ) : (
+                <a href="/client/surveys"
+                  className="mt-4 inline-block bg-primary text-white text-center px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity text-sm">
+                  View Surveys
+                </a>
+              )}
             </div>
           </div>
 

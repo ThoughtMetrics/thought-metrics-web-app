@@ -123,6 +123,7 @@ export interface UserProfile {
   storageQuota?: number | null;
   companyName?: string;
   companyId?: string;
+  companyRole?: 'owner' | 'contributor' | 'member';
   dashboardUrl?: string;
   createdAt: string;
   updatedAt: string;
