@@ -7,6 +7,7 @@ import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 import { ChevronDown, GripVertical } from 'lucide-react';
 import { RowColumnEditor } from './RowColumnEditor';
 import PipeTokenButton from '../PipeTokenButton';
+import { resolveOptionValue } from '../../utils/option-value.util';
 
 interface Props {
   question: IBuilderQuestion;
@@ -160,9 +161,6 @@ const ItemList: React.FC<{
     </div>
   );
 };
-
-const slugifyKey = (v: string) =>
-  v.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '').slice(0, 30);
 
 const MatrixConfig: React.FC<Props> = ({ question, qIdx }) => {
   const { setQuestionConfig, questions } = useSurveyBuilderStore();
@@ -516,10 +514,11 @@ const MatrixConfig: React.FC<Props> = ({ question, qIdx }) => {
                     value={opt.label}
                     onChange={(e) => {
                       const next = [...opts];
+                      const siblingValues = next.filter((_, si) => si !== i).map((o) => o.value);
                       next[i] = {
                         ...next[i],
                         label: e.target.value,
-                        value: slugifyKey(e.target.value) || `opt${i + 1}`,
+                        value: resolveOptionValue(e.target.value, next[i].value, i, siblingValues),
                       };
                       setQuestionConfig(qIdx, { options: next });
                     }}

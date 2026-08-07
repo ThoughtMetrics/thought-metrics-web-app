@@ -6,11 +6,9 @@
 import React, { useState, useRef } from 'react';
 import type { IBuilderQuestion, SupportedBuilderLanguage } from '@/core/types/survey-builder.type';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
+import { resolveOptionValue } from '../utils/option-value.util';
 
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-const slugifyKey = (v: string) =>
-  v.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '').slice(0, 30);
 
 interface Props {
   question: IBuilderQuestion;
@@ -31,10 +29,11 @@ const MaxDiffCanvasEditor: React.FC<Props> = ({ question, qIdx, lang }) => {
   const handleLabelChange = (optIdx: number, value: string) => {
     if (lang === 'en') {
       const next = [...options];
+      const siblingValues = next.filter((_, i) => i !== optIdx).map((o) => o.value);
       next[optIdx] = {
         ...next[optIdx],
         label: value,
-        value: slugifyKey(value) || `opt${optIdx + 1}`,
+        value: resolveOptionValue(value, next[optIdx].value, optIdx, siblingValues),
       };
       setQuestionConfig(qIdx, { options: next });
     } else {

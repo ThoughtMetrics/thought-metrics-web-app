@@ -6,15 +6,13 @@ import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 import { QuestionType } from '@/core/types/survey.type';
 import { ChevronDown } from 'lucide-react';
 import PipeTokenButton from '../PipeTokenButton';
+import { resolveOptionValue } from '../../utils/option-value.util';
 
 interface Props {
   question: IBuilderQuestion;
   qIdx: number;
   lang: SupportedBuilderLanguage;
 }
-
-const slugifyKey = (v: string) =>
-  v.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '').slice(0, 30);
 
 const ToggleRow: React.FC<{ label: string; checked: boolean; onChange: (v: boolean) => void }> = ({ label, checked, onChange }) => (
   <div className="flex items-center justify-between py-2 px-3 bg-surface-container-low border border-outline-variant rounded-lg">
@@ -59,10 +57,14 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
       if (lines.length === 0) return;
       const othersOpt = options.filter((o) => o.value === 'others');
       const base = regularOptions.length;
-      const newOpts = lines.map((line, i) => ({
-        value: slugifyKey(line) || `opt${base + i + 1}`,
-        label: line,
-      }));
+      const existingValues = regularOptions.map((o) => o.value);
+      const newOpts: typeof regularOptions = [];
+      lines.forEach((line, i) => {
+        newOpts.push({
+          value: resolveOptionValue(line, undefined, base + i, [...existingValues, ...newOpts.map((o) => o.value)]),
+          label: line,
+        });
+      });
       useSurveyBuilderStore.getState().setQuestionConfig(qIdx, {
         options: [...regularOptions, ...newOpts, ...othersOpt],
       });
@@ -84,7 +86,8 @@ const ChoiceConfig: React.FC<Props> = ({ question, qIdx, lang }) => {
 
   const handleLabelChange = (optIdx: number, value: string) => {
     if (lang === 'en') {
-      const newSlug = slugifyKey(value) || `opt${optIdx + 1}`;
+      const siblingValues = options.filter((_, i) => i !== optIdx).map((o) => o.value);
+      const newSlug = resolveOptionValue(value, options[optIdx]?.value, optIdx, siblingValues);
       updateOption(qIdx, optIdx, 'label', value);
       updateOption(qIdx, optIdx, 'value', newSlug);
       // Sync value field in ta.options so publish modal value-based matching stays correct
