@@ -158,6 +158,10 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
   const [contributorModalData, setContributorModalData] = useState<{
     response: any;
     questions: any[];
+    // Every response from this contributor (client-company accounts can
+    // submit multiple times) — `response` is whichever one is currently
+    // displayed; the modal's Prev/Next navigator switches it.
+    allResponses: any[];
   } | null>(null);
   const [isLoadingContributorModal, setIsLoadingContributorModal] =
     useState(false);
@@ -212,8 +216,13 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
     () => surveys.find((s) => s.surveyId === selectedSurvey) ?? null,
     [surveys, selectedSurvey]
   );
+  // Client-company-owned surveys use the agent-type detail view regardless
+  // of their `type` field — company accounts can submit multiple times
+  // (same as field agents), and the respondent view's charts/response-list
+  // are built around one-submission-per-person, which doesn't fit here.
   const isRespondentSurvey =
-    !selectedSurveyObj || selectedSurveyObj.type !== 'agent';
+    !selectedSurveyObj ||
+    (selectedSurveyObj.type !== 'agent' && !selectedSurveyObj.companyId);
 
   // Load all surveys regardless of type — admin should see every published survey
   const loadSurveys = async () => {
@@ -792,13 +801,24 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
       const responses: any[] = Array.isArray(responsesRes.data)
         ? responsesRes.data
         : [];
-      const match =
-        responses.find((r) => r.respondent?.userId === contributor.userId) ??
-        null;
-      setContributorModalData({ response: match, questions });
+      // A contributor may have submitted more than once (client-company
+      // accounts can) — list every one of their responses, most recent
+      // first, rather than only the first match in the array.
+      const matches = responses
+        .filter((r) => r.respondent?.userId === contributor.userId)
+        .sort(
+          (a, b) =>
+            new Date(b.submittedAt).getTime() -
+            new Date(a.submittedAt).getTime()
+        );
+      setContributorModalData({
+        response: matches[0] ?? null,
+        questions,
+        allResponses: matches,
+      });
     } catch (err) {
       console.error('[ContributorModal] Error:', err);
-      setContributorModalData({ response: null, questions: [] });
+      setContributorModalData({ response: null, questions: [], allResponses: [] });
     } finally {
       setIsLoadingContributorModal(false);
     }
@@ -816,9 +836,14 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
       const questions = (detailsRes.data?.template?.questions ?? [])
         .slice()
         .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
-      setContributorModalData({ response: responseRes.data ?? null, questions });
+      const single = responseRes.data ?? null;
+      setContributorModalData({
+        response: single,
+        questions,
+        allResponses: single ? [single] : [],
+      });
     } catch {
-      setContributorModalData({ response: null, questions: [] });
+      setContributorModalData({ response: null, questions: [], allResponses: [] });
     } finally {
       setIsLoadingContributorModal(false);
     }
@@ -1625,6 +1650,57 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                 </p>
               ) : (
                 <>
+                  {/* Multi-response navigator — client-company accounts can submit
+                      more than once; this switches which of their responses
+                      is currently shown below, most-recent first. */}
+                  {contributorModalData.allResponses.length > 1 && (() => {
+                    const idx = contributorModalData.allResponses.findIndex(
+                      (r: any) => r === contributorModalData.response
+                    );
+                    return (
+                      <div className="flex items-center justify-between mb-3 px-3 py-2 bg-primary/5 border border-primary/20 rounded-lg text-xs">
+                        <span className="text-on-surface-variant">
+                          Response {idx + 1} of {contributorModalData.allResponses.length}
+                        </span>
+                        <div className="flex gap-1">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setContributorModalData((prev) =>
+                                prev
+                                  ? { ...prev, response: prev.allResponses[Math.max(0, idx - 1)] }
+                                  : prev
+                              )
+                            }
+                            disabled={idx === 0}
+                            className="px-2 py-1 rounded border border-outline-variant disabled:opacity-30 hover:bg-surface-container-high"
+                          >
+                            ← Newer
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setContributorModalData((prev) =>
+                                prev
+                                  ? {
+                                      ...prev,
+                                      response:
+                                        prev.allResponses[
+                                          Math.min(prev.allResponses.length - 1, idx + 1)
+                                        ],
+                                    }
+                                  : prev
+                              )
+                            }
+                            disabled={idx === contributorModalData.allResponses.length - 1}
+                            className="px-2 py-1 rounded border border-outline-variant disabled:opacity-30 hover:bg-surface-container-high"
+                          >
+                            Older →
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })()}
                   {/* Respondent info card */}
                   <div className="bg-surface-container-low border border-outline-variant rounded-lg p-4 mb-5 text-sm space-y-1">
                     {contributorModalData.response.respondent?.name && (
@@ -1667,6 +1743,36 @@ const SurveyAnalyticsDashboardContent: React.FC = () => {
                             contributorModalData.response.submittedAt
                           ).toLocaleString()}
                         </span>
+                      </div>
+                    )}
+                    {(contributorModalData.response.respondentPic ||
+                      contributorModalData.response.conversationAudio) && (
+                      <div className="flex gap-3">
+                        <span className="text-outline w-20 flex-shrink-0">
+                          Media
+                        </span>
+                        <div className="flex flex-col gap-2 flex-1">
+                          {contributorModalData.response.respondentPic && (
+                            <a
+                              href={contributorModalData.response.respondentPic}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <img
+                                src={contributorModalData.response.respondentPic}
+                                alt="Respondent photo"
+                                className="max-w-[160px] max-h-[160px] rounded-lg border border-outline-variant object-cover"
+                              />
+                            </a>
+                          )}
+                          {contributorModalData.response.conversationAudio && (
+                            <audio
+                              controls
+                              src={contributorModalData.response.conversationAudio}
+                              className="max-w-full"
+                            />
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -1993,6 +2099,10 @@ export const SurveyAnalyticsDetailPanel: React.FC<
   const [contributorModalData, setContributorModalData] = useState<{
     response: any;
     questions: any[];
+    // Every response from this contributor (client-company accounts can
+    // submit multiple times) — `response` is whichever one is currently
+    // displayed; the modal's Prev/Next navigator switches it.
+    allResponses: any[];
   } | null>(null);
   const [isLoadingContributorModal, setIsLoadingContributorModal] =
     useState(false);
@@ -2057,7 +2167,11 @@ export const SurveyAnalyticsDetailPanel: React.FC<
     setLocationMapLoading(false);
   }, []);
 
-  const isRespondentSurvey = survey.type !== 'agent';
+  // Client-company-owned surveys use the agent-type detail view regardless
+  // of their `type` field — company accounts can submit multiple times
+  // (same as field agents), and the respondent view's charts/response-list
+  // are built around one-submission-per-person, which doesn't fit here.
+  const isRespondentSurvey = survey.type !== 'agent' && !survey.companyId;
 
   const formatAnswerForDisplay = (
     answer: any,
@@ -2258,12 +2372,23 @@ export const SurveyAnalyticsDetailPanel: React.FC<
       const responses: any[] = Array.isArray(responsesRes.data)
         ? responsesRes.data
         : [];
-      const match =
-        responses.find((r) => r.respondent?.userId === contributor.userId) ??
-        null;
-      setContributorModalData({ response: match, questions });
+      // A contributor may have submitted more than once (client-company
+      // accounts can) — list every one of their responses, most recent
+      // first, rather than only the first match in the array.
+      const matches = responses
+        .filter((r) => r.respondent?.userId === contributor.userId)
+        .sort(
+          (a, b) =>
+            new Date(b.submittedAt).getTime() -
+            new Date(a.submittedAt).getTime()
+        );
+      setContributorModalData({
+        response: matches[0] ?? null,
+        questions,
+        allResponses: matches,
+      });
     } catch {
-      setContributorModalData({ response: null, questions: [] });
+      setContributorModalData({ response: null, questions: [], allResponses: [] });
     } finally {
       setIsLoadingContributorModal(false);
     }
@@ -2281,9 +2406,14 @@ export const SurveyAnalyticsDetailPanel: React.FC<
       const questions = (detailsRes.data?.template?.questions ?? [])
         .slice()
         .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
-      setContributorModalData({ response: responseRes.data ?? null, questions });
+      const single = responseRes.data ?? null;
+      setContributorModalData({
+        response: single,
+        questions,
+        allResponses: single ? [single] : [],
+      });
     } catch {
-      setContributorModalData({ response: null, questions: [] });
+      setContributorModalData({ response: null, questions: [], allResponses: [] });
     } finally {
       setIsLoadingContributorModal(false);
     }
@@ -2560,12 +2690,17 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                     </div>
                   )}
 
-                  {/* Responses list */}
+                  {/* Responses list — one row per contributor; a contributor
+                      with multiple submissions is still one row here (open
+                      it to page through all of their responses), so the
+                      header counts contributors and total responses
+                      separately rather than conflating the two. */}
                   {topUsers.length > 0 && <div>
                     <div className="flex items-center gap-2 mb-3">
                       <Users className="w-4 h-4 text-primary" />
                       <h3 className="text-sm font-semibold text-on-surface">
-                        Responses ({topUsers.length})
+                        Contributors ({topUsers.length}) ·{' '}
+                        {topUsers.reduce((s, u) => s + (u.total ?? 0), 0)} responses
                       </h3>
                     </div>
                     {(
@@ -3268,6 +3403,36 @@ export const SurveyAnalyticsDetailPanel: React.FC<
                             contributorModalData.response.submittedAt
                           ).toLocaleString()}
                         </span>
+                      </div>
+                    )}
+                    {(contributorModalData.response.respondentPic ||
+                      contributorModalData.response.conversationAudio) && (
+                      <div className="flex gap-3">
+                        <span className="text-outline w-20 flex-shrink-0">
+                          Media
+                        </span>
+                        <div className="flex flex-col gap-2 flex-1">
+                          {contributorModalData.response.respondentPic && (
+                            <a
+                              href={contributorModalData.response.respondentPic}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <img
+                                src={contributorModalData.response.respondentPic}
+                                alt="Respondent photo"
+                                className="max-w-[160px] max-h-[160px] rounded-lg border border-outline-variant object-cover"
+                              />
+                            </a>
+                          )}
+                          {contributorModalData.response.conversationAudio && (
+                            <audio
+                              controls
+                              src={contributorModalData.response.conversationAudio}
+                              className="max-w-full"
+                            />
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
