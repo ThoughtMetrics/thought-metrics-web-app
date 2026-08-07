@@ -70,20 +70,30 @@ const SurveyBoardsSection: React.FC = () => {
 
   const handleSurveyClick = (survey: ISurvey) => {
     // Check if user has already submitted or response is completed
-    // Exception: Field-agents can answer agent surveys multiple times
+    // Exception 1: Field-agents can answer agent surveys multiple times
     const isFieldAgentOnAgentSurvey =
       isFieldAgent && survey.type === SurveyType.AGENT;
+    // Exception 2: a client-role user submitting their OWN company's survey
+    // (companyId match) may submit multiple times — conducting interviews on
+    // behalf of their company. A different company's survey, or a generic
+    // respondent, still gets exactly one submission.
+    const isOwnCompanySubmission =
+      userProfile?.role === 'client' &&
+      !!userProfile?.companyId &&
+      !!survey.companyId &&
+      userProfile.companyId === survey.companyId;
+    const allowsMultipleSubmissions = isFieldAgentOnAgentSurvey || isOwnCompanySubmission;
 
-    if (survey.userResponse?.isCompleted && !isFieldAgentOnAgentSurvey) {
+    if (survey.userResponse?.isCompleted && !allowsMultipleSubmissions) {
       return; // Do nothing if survey is already completed (submitted/approved/declined)
     }
 
     // Use surveyId (TM-xxx format) instead of database UUID for user-friendly URLs
     const surveyIdentifier = survey.surveyId || survey.id;
 
-    // If user has a draft and is NOT field-agent on agent survey, they can resume
-    // Field-agents on agent surveys always start fresh
-    if (survey.userResponse?.canUpdate && !isFieldAgentOnAgentSurvey) {
+    // If user has a draft and multiple submissions aren't allowed, they can resume
+    // When multiple submissions are allowed, always start fresh
+    if (survey.userResponse?.canUpdate && !allowsMultipleSubmissions) {
       window.location.href = `/survey-boards/${surveyIdentifier}?resume=true`;
     } else {
       // Start new survey
@@ -234,12 +244,19 @@ const SurveyBoardsSection: React.FC = () => {
               const canUpdate = survey.userResponse?.canUpdate || false;
               const responseStatus = survey.userResponse?.status;
 
-              // Field-agents can answer agent surveys multiple times
+              // Field-agents can answer agent surveys multiple times; a client-role
+              // user can also answer their own company's survey multiple times.
               const isFieldAgentOnAgentSurvey =
                 isFieldAgent && survey.type === SurveyType.AGENT;
+              const isOwnCompanySubmission =
+                userProfile?.role === 'client' &&
+                !!userProfile?.companyId &&
+                !!survey.companyId &&
+                userProfile.companyId === survey.companyId;
               const isCompleted =
                 (survey.userResponse?.isCompleted || false) &&
-                !isFieldAgentOnAgentSurvey;
+                !isFieldAgentOnAgentSurvey &&
+                !isOwnCompanySubmission;
 
               // Determine status badge text and style
               const getStatusInfo = () => {
