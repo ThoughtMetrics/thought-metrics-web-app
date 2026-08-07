@@ -654,6 +654,23 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
 
   const { survey, template, userResponse } = surveyData.data;
 
+  // Resets local form state for a brand-new response — the just-submitted
+  // one is untouched; this starts a fresh submission for the same survey,
+  // only reachable when canResubmit already confirmed the backend will
+  // accept it. showSuccess gates the entire question-rendering tree via an
+  // early return below, so flipping it back to false remounts that whole
+  // tree fresh — per-question widgets (audio recorder, file upload, etc.)
+  // reset on their own without needing individual cleanup here.
+  const handleResubmit = () => {
+    setAnswers({});
+    setCurrentQuestion(0);
+    setDynamicOptions({});
+    setLoadingOptions({});
+    setListErrors({});
+    setActiveQuestion(null);
+    setShowSuccess(false);
+  };
+
   // Show response view overlay (after submit, before isCompleted guard)
   if (showResponseView) {
     return (
@@ -668,6 +685,16 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
 
   // Show success screen (after submit)
   if (showSuccess) {
+    // A client-role user (owner or team member) submitting their OWN
+    // company's survey may submit multiple times — mirrors the backend's
+    // allowsMultipleSubmissions rule (company-match), so this button only
+    // appears when a resubmission would actually be accepted server-side.
+    const canResubmit =
+      userProfile?.role === 'client' &&
+      !!userProfile?.companyId &&
+      !!survey.companyId &&
+      userProfile.companyId === survey.companyId;
+
     return (
       <SurveySuccessMessage
         onView={() => setShowResponseView(true)}
@@ -675,6 +702,7 @@ const SurveyDetailSection: React.FC<SurveyDetailSectionProps> = ({
           setShowSuccess(false);
           setIsEditMode(true);
         }}
+        onResubmit={canResubmit ? handleResubmit : undefined}
         onClose={
           isFromTrackingLink
             ? undefined

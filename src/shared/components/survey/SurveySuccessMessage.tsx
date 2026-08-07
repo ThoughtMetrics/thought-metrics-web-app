@@ -6,12 +6,14 @@ interface SurveySuccessMessageProps {
   onView?: () => void;
   onEdit?: () => void;
   onClose?: () => void; // "Back to Survey Boards" — hidden if undefined
+  onResubmit?: () => void; // "Submit Another Response" — client/team-member only, hidden if undefined
 }
 
 export const SurveySuccessMessage: React.FC<SurveySuccessMessageProps> = ({
   onView,
   onEdit,
   onClose,
+  onResubmit,
 }) => {
   const { translations } = useLanguage();
 
@@ -59,6 +61,14 @@ export const SurveySuccessMessage: React.FC<SurveySuccessMessageProps> = ({
                 className="bg-white border-2 border-primary text-primary px-6 py-3 rounded-lg hover:bg-red-50 transition w-full font-medium"
               >
                 {translations.surveySuccess.editButton}
+              </button>
+            )}
+            {onResubmit && (
+              <button
+                onClick={onResubmit}
+                className="bg-white border-2 border-primary text-primary px-6 py-3 rounded-lg hover:bg-red-50 transition w-full font-medium"
+              >
+                {translations.surveySuccess.resubmitButton}
               </button>
             )}
             {onClose && (

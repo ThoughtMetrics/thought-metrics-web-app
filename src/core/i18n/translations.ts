@@ -107,6 +107,7 @@ export interface Translations {
     backButton: string;
     viewButton: string;
     editButton: string;
+    resubmitButton: string;
   };
 
   toast: {
@@ -465,6 +466,7 @@ const en: Translations = {
     backButton: 'Back to Surveys',
     viewButton: 'View Response',
     editButton: 'Edit Response',
+    resubmitButton: 'Submit Another Response',
   },
 
   toast: {
@@ -842,6 +844,7 @@ const ta: Translations = {
     backButton: 'கணக்கெடுப்புகளுக்குத் திரும்பு',
     viewButton: 'பதிலைப் பார்க்கவும்',
     editButton: 'பதிலை திருத்து',
+    resubmitButton: 'மற்றொரு பதிலைச் சமர்ப்பிக்கவும்',
   },
 
   toast: {
