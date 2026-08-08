@@ -9,6 +9,7 @@ import ClientRouteGuard from '@/shared/components/guards/ClientRouteGuard';
 import ClientSidebar from '@/shared/components/client/ClientSidebar';
 import { LoaderUI } from '@/shared/ui/atoms/loader/LoaderUI';
 import { useTemplateQuery } from '@/core/hooks/queries/survey-templates/index.queries';
+import { useSurveyDetailsQuery } from '@/core/hooks/queries/survey/use-survey-details.query';
 import { useCreateTemplate, useUpdateTemplate, useSaveSurveyDraft, useSaveDraftContent, useDiscardDraftContent } from '@/core/hooks/mutations/survey-template.mutations';
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 import QuestionListPanel from './components/QuestionListPanel';
@@ -32,6 +33,15 @@ const clearLocalDraft = (id: string | undefined) => {
 
 const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId, SidebarComponent = AdminSidebar, backHref = '/admin/surveys' }) => {
   const { data, isLoading, isError } = useTemplateQuery(templateId);
+
+  // Live survey row for an already-published survey — PublishSurveyModal
+  // needs this to preserve fields (type/visibility/dates/etc.) the user
+  // isn't intentionally changing, instead of resetting them to hardcoded
+  // defaults on every edit (was silently flipping type/visibility back to
+  // stale values on save, e.g. TM-O016's type flipping from respondent to
+  // agent and dropping out of the public survey-boards list).
+  const existingSurveyId = data?.data?.publishedSurveyId ?? undefined;
+  const { data: liveSurveyData, isLoading: isLoadingLiveSurvey } = useSurveyDetailsQuery(existingSurveyId ?? '');
 
   const { name, isDirty, questions, settings, translations, setName, setTranslation, loadTemplate, resetEditor, toCreateRequest, toUpdateRequest, undo, redo, _past, _future } =
     useSurveyBuilderStore();
@@ -408,9 +418,11 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId, SidebarCompon
               {!!translations?.en?.label?.trim() && (
                 <button
                   onClick={handlePublishClick}
-                  disabled={isSaving || !canPublish}
+                  disabled={isSaving || !canPublish || (!!existingSurveyId && isLoadingLiveSurvey)}
                   title={
-                    questions.length === 0
+                    !!existingSurveyId && isLoadingLiveSurvey
+                      ? 'Loading current survey settings…'
+                      : questions.length === 0
                       ? 'Add at least one question before publishing'
                       : !allQuestionsHaveText
                       ? 'All questions must have text before publishing'
@@ -463,13 +475,14 @@ const SurveyBuilderEditorContent: React.FC<Props> = ({ templateId, SidebarCompon
           </div>
         </div>
 
-        {showPublishModal && (
+        {showPublishModal && (!existingSurveyId || !isLoadingLiveSurvey) && (
           <PublishSurveyModal
             templateId={templateId ?? null}
             defaultLabel={translations?.en?.label ?? name}
             defaultFormLayout={settings.defaultFormLayout}
             defaultType={settings.defaultType}
-            existingSurveyId={data?.data?.publishedSurveyId ?? undefined}
+            existingSurveyId={existingSurveyId}
+            existingSurvey={liveSurveyData?.data?.survey}
             hasDraftContent={hasDraftContent}
             backHref={backHref}
             onClose={() => setShowPublishModal(false)}

@@ -6,7 +6,7 @@ import { useCreateTemplate, usePublishSurvey, useUpdateTemplate, useUpdateSurvey
 import { useSurveyBuilderStore } from '@/core/stores/survey-builder.store';
 import type { ISurveyPublishRequest, ISurveyUpdateRequest } from '@/core/types/survey-builder.type';
 import type { SupportedBuilderLanguage } from '@/core/types/survey-builder.type';
-import type { SurveyFormLayout } from '@/core/types/survey.type';
+import type { SurveyFormLayout, ISurvey } from '@/core/types/survey.type';
 import { QuestionType } from '@/core/types/survey.type';
 
 // Industry options (mirrors backend Industry enum)
@@ -35,6 +35,11 @@ interface Props {
   defaultFormLayout: SurveyFormLayout;
   defaultType?: 'respondent' | 'agent';
   existingSurveyId?: string;
+  // Live Postgres row for an already-published survey — used to seed the
+  // form with its ACTUAL current values instead of hardcoded defaults, so
+  // editing/updating doesn't silently reset type/visibility/dates/etc.
+  // back to stale values. Undefined for a brand-new/unpublished survey.
+  existingSurvey?: ISurvey;
   hasDraftContent?: boolean;
   backHref?: string; // where "Go to Surveys" / the post-publish auto-redirect lands — panel-specific (/admin/surveys vs /client/surveys)
   onClose: () => void;
@@ -73,6 +78,7 @@ const PublishSurveyModal: React.FC<Props> = ({
   defaultFormLayout,
   defaultType = 'respondent',
   existingSurveyId,
+  existingSurvey,
   hasDraftContent,
   backHref = '/admin/surveys',
   onClose,
@@ -90,13 +96,22 @@ const PublishSurveyModal: React.FC<Props> = ({
   const [label, setLabel] = useState(defaultLabel);
   const [surveyId, setSurveyId] = useState('');
   const [industry, setIndustry] = useState(storeSettings.industry ?? 'Others');
-  const [type, setType] = useState<'respondent' | 'agent'>(defaultType);
-  const [visibility, setVisibility] = useState<'public' | 'private'>('public');
-  const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10));
-  const [expireDate, setExpireDate] = useState('');
-  const [maxResponses, setMaxResponses] = useState('');
-  const [zonalBasedSurvey, setZonalBasedSurvey] = useState(false);
-  const [formLayout, setFormLayout] = useState<SurveyFormLayout>(defaultFormLayout);
+  // Seeded from the survey's actual live values when editing an
+  // already-published survey (existingSurvey); the hardcoded fallbacks
+  // below only apply to a brand-new/unpublished survey.
+  const [type, setType] = useState<'respondent' | 'agent'>(
+    (existingSurvey?.type as 'respondent' | 'agent' | undefined) ?? defaultType
+  );
+  const [visibility, setVisibility] = useState<'public' | 'private'>(existingSurvey?.visibility ?? 'public');
+  const [startDate, setStartDate] = useState(
+    existingSurvey?.startDate ? existingSurvey.startDate.slice(0, 10) : new Date().toISOString().slice(0, 10)
+  );
+  const [expireDate, setExpireDate] = useState(existingSurvey?.expireDate ? existingSurvey.expireDate.slice(0, 10) : '');
+  const [maxResponses, setMaxResponses] = useState(existingSurvey?.maxResponses ? String(existingSurvey.maxResponses) : '');
+  const [zonalBasedSurvey, setZonalBasedSurvey] = useState(existingSurvey?.zonalBasedSurvey ?? false);
+  const [formLayout, setFormLayout] = useState<SurveyFormLayout>(
+    (existingSurvey?.formLayout as SurveyFormLayout | undefined) ?? defaultFormLayout
+  );
 
   // ── Step & translation state ─────────────────────────────────────────────
   const [step, setStep] = useState<Step>('form');

@@ -126,7 +126,33 @@ const LoginPage: React.FC = () => {
     return userType ? `${ROUTES.SIGN_UP}?userType=${userType}` : ROUTES.SIGN_UP;
   })();
 
-  const getRedirectUrl = () => {
+  // Rejects a candidate redirect target that doesn't belong to the given
+  // role — e.g. a stale `?redirect=/admin/...` left over from a route
+  // guard bouncing a DIFFERENT account, now being honored for whoever just
+  // logged in. /admin* requires an admin/super-admin/field-incharge role,
+  // /client* requires client; anything else (survey-campaign links,
+  // profile edit, etc.) isn't role-gated and is always allowed through.
+  const isRedirectAllowedForRole = (path: string, role: string | null | undefined): boolean => {
+    const clean = path.split('?')[0].split('#')[0];
+    if (clean.startsWith('/admin')) {
+      return role === 'admin' || role === 'super-admin' || role === 'field-incharge';
+    }
+    if (clean.startsWith('/client')) {
+      return role === 'client';
+    }
+    return true;
+  };
+
+  // The role's own landing page — used both as the default (no explicit
+  // redirect) and as the fallback when an explicit redirect target doesn't
+  // belong to this role.
+  const roleDefaultUrl = (role?: string | null): string => {
+    if (role === 'admin' || role === 'super-admin' || role === 'field-incharge') return ROUTES.ADMIN;
+    if (role === 'client') return ROUTES.CLIENT;
+    return ROUTES.SURVEY_BOARDS;
+  };
+
+  const getRedirectUrl = (role?: string | null) => {
     const allocatedSurveyId = localStorage.getItem('tm_allocated_survey');
     if (allocatedSurveyId) {
       localStorage.removeItem('tm_allocated_survey');
@@ -135,12 +161,13 @@ const LoginPage: React.FC = () => {
     const redirectAfter = localStorage.getItem('tm_redirect_after_signup');
     if (redirectAfter) {
       localStorage.removeItem('tm_redirect_after_signup');
-      return redirectAfter;
+      if (isRedirectAllowedForRole(redirectAfter, role)) return redirectAfter;
+      return roleDefaultUrl(role);
     }
     const params = new URLSearchParams(window.location.search);
     const redirectParam = params.get('redirect');
-    if (redirectParam) return redirectParam;
-    return ROUTES.SURVEY_BOARDS;
+    if (redirectParam && isRedirectAllowedForRole(redirectParam, role)) return redirectParam;
+    return roleDefaultUrl(role);
   };
 
   // Single source of truth for post-auth routing, driven directly off
@@ -154,21 +181,7 @@ const LoginPage: React.FC = () => {
       window.location.href = ROUTES.FORCE_CHANGE_PASSWORD;
       return;
     }
-    const role = profile?.role;
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasExplicitRedirect =
-      urlParams.get('redirect') ||
-      localStorage.getItem('tm_allocated_survey') ||
-      localStorage.getItem('tm_redirect_after_signup');
-    if (!hasExplicitRedirect && (role === 'admin' || role === 'super-admin' || role === 'field-incharge')) {
-      window.location.href = ROUTES.ADMIN;
-      return;
-    }
-    if (!hasExplicitRedirect && role === 'client') {
-      window.location.href = ROUTES.CLIENT;
-      return;
-    }
-    window.location.href = getRedirectUrl();
+    window.location.href = getRedirectUrl(profile?.role);
   };
 
   // Fallback path for the two cases where we don't already have a profile

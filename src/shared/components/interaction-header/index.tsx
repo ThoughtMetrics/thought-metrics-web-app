@@ -49,6 +49,13 @@ const InteractionHeaderContent: React.FC = () => {
     try {
       localStorage.removeItem('tm_survey_lock');
       localStorage.removeItem('tm_link_id');
+      // A stale allocated-survey/post-signup redirect left over from an
+      // earlier session on this browser would otherwise hijack the very
+      // next login's post-auth redirect, regardless of that login's role —
+      // every legitimate consumer re-populates these fresh from the URL on
+      // arrival, so nothing relies on them surviving past a logout.
+      localStorage.removeItem('tm_allocated_survey');
+      localStorage.removeItem('tm_redirect_after_signup');
       await authService.signOut();
       window.location.href = ROUTES.HOME;
     } catch (error) {
