@@ -1,4 +1,5 @@
 import type { SignUpData, UserProfile } from '@/core/types/user.type';
+import type { ClientSignUpData } from '@/core/types/client-signup.type';
 import { getAuthErrorDetails } from '@/core/utils/firebase-error-handler';
 import authService from '@/services/api/auth.service';
 import analyticsService from '@/services/api/analytics.service';
@@ -18,10 +19,16 @@ interface SignUpWithFacebookParams {
   type: 'facebook';
 }
 
+interface SignUpClientParams {
+  type: 'client';
+  data: ClientSignUpData;
+}
+
 type SignUpParams =
   | SignUpWithEmailParams
   | SignUpWithGoogleParams
-  | SignUpWithFacebookParams;
+  | SignUpWithFacebookParams
+  | SignUpClientParams;
 
 export const useSignUpMutation = () => {
   return useMutation({
@@ -41,6 +48,8 @@ export const useSignUpMutation = () => {
           const result = await authService.signInWithFacebook();
           return result;
         }
+        case 'client':
+          return await authService.signUpClientWithEmail(params.data);
         default:
           throw new Error('Invalid sign-up type');
       }

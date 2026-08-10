@@ -119,7 +119,7 @@ export const NavMobile: React.FC<NavMobileProps> = ({
                   Join a Paid Survey
                 </a>
                 <a href={`${ROUTES.LOGIN_IN}?userType=client`} className="mobile-btn-filled">
-                  Login
+                  + Create Survey
                 </a>
               </>
             )

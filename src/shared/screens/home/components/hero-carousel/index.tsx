@@ -31,7 +31,7 @@ const HeroCarousel: React.FC = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
             <a href={`${ROUTES.LOGIN_IN}?userType=client`} className="btn-primary">
-              Start Your Research
+              + Create Survey
             </a>
             <div className="flex items-center gap-3 px-4 py-2 bg-surface-container-low rounded-xl">
               <div className="flex -space-x-3">

@@ -118,13 +118,25 @@ const LoginPage: React.FC = () => {
     if (redirectAfter) localStorage.setItem('tm_redirect_after_signup', redirectAfter);
   }, []);
 
-  const signUpHref = (() => {
-    const userType =
-      typeof window !== 'undefined'
-        ? new URLSearchParams(window.location.search).get('userType')
-        : null;
-    return userType ? `${ROUTES.SIGN_UP}?userType=${userType}` : ROUTES.SIGN_UP;
-  })();
+  const userType =
+    typeof window !== 'undefined'
+      ? new URLSearchParams(window.location.search).get('userType')
+      : null;
+  const isClientFlow = userType === 'client';
+  const signUpHref = userType ? `${ROUTES.SIGN_UP}?userType=${userType}` : ROUTES.SIGN_UP;
+
+  const pageTitle = isClientFlow ? 'Client Login' : (translations.auth.login.pageTitle ?? 'Welcome Back');
+  const pageSubtitle = isClientFlow
+    ? 'Log in to manage your surveys and view respondent insights.'
+    : 'Log in to access your surveys and rewards.';
+  const brandHeadline = isClientFlow ? (
+    <>Launch Research<br />That Moves Your<br /><span style={{ color: '#adc7ff' }}>Business Forward.</span></>
+  ) : (
+    <>India's Most<br />Transparent Research<br /><span style={{ color: '#adc7ff' }}>Network.</span></>
+  );
+  const brandSubcopy = isClientFlow
+    ? 'Join businesses using ThoughtMetrics to launch surveys, reach 5,00,000+ verified respondents, and turn insights into decisions.'
+    : 'Join 50,000+ panel members. Earn rewards by sharing your opinions on products, services, and market trends.';
 
   // Rejects a candidate redirect target that doesn't belong to the given
   // role — e.g. a stale `?redirect=/admin/...` left over from a route
@@ -295,11 +307,10 @@ const LoginPage: React.FC = () => {
               <span className="text-xl font-bold text-white">ThoughtMetrics</span>
             </a>
             <h2 className="text-4xl font-extrabold text-white leading-tight mb-4">
-              India's Most<br />Transparent Research<br />
-              <span style={{ color: '#adc7ff' }}>Network.</span>
+              {brandHeadline}
             </h2>
             <p className="text-white/70 text-lg leading-relaxed max-w-sm">
-              Join 50,000+ panel members. Earn rewards by sharing your opinions on products, services, and market trends.
+              {brandSubcopy}
             </p>
           </div>
           <div className="relative z-10 space-y-4">
@@ -354,9 +365,9 @@ const LoginPage: React.FC = () => {
                 <>
                   <div className="mb-8">
                     <h1 className="text-3xl font-extrabold text-on-surface mb-2">
-                      {translations.auth.login.pageTitle ?? 'Welcome Back'}
+                      {pageTitle}
                     </h1>
-                    <p className="text-on-surface-variant">Log in to access your surveys and rewards.</p>
+                    <p className="text-on-surface-variant">{pageSubtitle}</p>
                   </div>
 
                   <form onSubmit={handleSubmit} className="space-y-5" noValidate>

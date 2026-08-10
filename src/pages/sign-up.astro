@@ -1,6 +1,6 @@
 ---
 import IntractionLayout from '@/layouts/IntractionLayout.astro';
-import RespondentSignUpWrapper from '@/shared/screens/auth/respondent-sign-up';
+import SignUpDispatcher from '@/shared/screens/auth/sign-up-dispatcher';
 
 const seoContent = {
   title: 'Sign Up | Create Account - Thought Metrics',
@@ -9,5 +9,5 @@ const seoContent = {
 ---
 
 <IntractionLayout title={seoContent.title} description={seoContent.description}>
-  <RespondentSignUpWrapper client:only="react" />
+  <SignUpDispatcher client:only="react" />
 </IntractionLayout>

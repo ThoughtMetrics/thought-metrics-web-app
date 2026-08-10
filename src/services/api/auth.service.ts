@@ -12,6 +12,7 @@ import {
 import { auth } from '@/core/configs/firebase-config';
 import ApiService from '@/services/api/api.service';
 import type { UserProfile, SignUpData } from '@/core/types/user.type';
+import type { ClientSignUpData } from '@/core/types/client-signup.type';
 
 class AuthService {
   private googleProvider: GoogleAuthProvider | null = null;
@@ -154,6 +155,50 @@ class AuthService {
     await this.syncUserToBackend(userCredential.user, data);
 
     // Fetch and return the full user profile from backend
+    return await this.getUserProfile();
+  }
+
+  /**
+   * Sign up a brand-new CLIENT (company) account. Unlike signUpWithEmail,
+   * does NOT call syncUserToBackend/`/users/profile/sync` (which always
+   * defaults new users to role:"respondent") — instead posts directly to
+   * the client-provisioning endpoint, which internally reuses profileSync
+   * for the base doc and then promotes to `client` with company setup.
+   */
+  async signUpClientWithEmail(data: ClientSignUpData): Promise<UserProfile> {
+    // createUserWithEmailAndPassword already throws auth/email-already-in-use
+    // on collision, so the extra checkUserExists round-trip isn't needed here.
+    const userCredential: UserCredential = await createUserWithEmailAndPassword(
+      auth,
+      data.email,
+      data.password
+    );
+
+    const token = await userCredential.user.getIdToken();
+    ApiService.setAuthToken(token);
+
+    await ApiService.post('/users/client-signup', {
+      firebaseUid: userCredential.user.uid,
+      providerId: userCredential.user.providerId,
+      email: data.email,
+      profile: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone,
+      },
+      companyName: data.companyName,
+    });
+
+    // Force-refresh so this session's token carries the role:"client"/
+    // companyId claims the backend just set — without it, authorize(CLIENT)
+    // -gated calls (e.g. entering /client) would 403 until the token
+    // naturally expires.
+    try {
+      await userCredential.user.getIdToken(true);
+    } catch (refreshError) {
+      console.error('[auth.service] Post-signup token refresh failed:', refreshError);
+    }
+
     return await this.getUserProfile();
   }
 
