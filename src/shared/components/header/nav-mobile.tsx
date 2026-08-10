@@ -115,10 +115,10 @@ export const NavMobile: React.FC<NavMobileProps> = ({
               )
             ) : (
               <>
-                <a href={`${ROUTES.LOGIN_IN}?userType=respondent`} className="mobile-btn-outline">
+                <a href={`${ROUTES.SIGN_UP}?userType=respondent`} className="mobile-btn-outline">
                   Join a Paid Survey
                 </a>
-                <a href={`${ROUTES.LOGIN_IN}?userType=client`} className="mobile-btn-filled">
+                <a href={`${ROUTES.SIGN_UP}?userType=client`} className="mobile-btn-filled">
                   + Create Survey
                 </a>
               </>

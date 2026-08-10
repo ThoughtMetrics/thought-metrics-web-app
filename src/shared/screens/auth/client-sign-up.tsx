@@ -79,7 +79,8 @@ const ClientSignUpPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+    <div className="h-full overflow-y-auto">
+    <div className="grid grid-cols-1 lg:grid-cols-2 lg:min-h-full" style={{ background: 'var(--surface-container-low)' }}>
       {/* Brand panel */}
       <div
         className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden"
@@ -290,6 +291,7 @@ const ClientSignUpPage: React.FC = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };

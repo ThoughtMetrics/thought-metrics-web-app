@@ -57,10 +57,10 @@ export const DesktopActions: React.FC<DesktopActionsProps> = ({ auth, theme, onT
           )
         ) : (
           <>
-            <a href={`${ROUTES.LOGIN_IN}?userType=respondent`} className="btn-hdr-outline">
+            <a href={`${ROUTES.SIGN_UP}?userType=respondent`} className="btn-hdr-outline">
               Join a Paid Survey
             </a>
-            <a href={`${ROUTES.LOGIN_IN}?userType=client`} className="btn-hdr-filled">
+            <a href={`${ROUTES.SIGN_UP}?userType=client`} className="btn-hdr-filled">
               + Create Survey
             </a>
           </>

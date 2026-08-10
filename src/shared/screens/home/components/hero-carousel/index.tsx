@@ -30,7 +30,7 @@ const HeroCarousel: React.FC = () => {
             with precision and speed.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            <a href={`${ROUTES.LOGIN_IN}?userType=client`} className="btn-primary">
+            <a href={`${ROUTES.SIGN_UP}?userType=client`} className="btn-primary">
               + Create Survey
             </a>
             <div className="flex items-center gap-3 px-4 py-2 bg-surface-container-low rounded-xl">
